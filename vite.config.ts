@@ -1,8 +1,8 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import tailwindcss from '@tailwindcss/vite';
-import path from 'path';
-// https://vite.dev/config/
+import path from 'path'
+import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite'
+import tailwindcss from '@tailwindcss/vite'
+
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
@@ -13,10 +13,10 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
-      '/api': {
-        target: 'http://localhost:5000',
+      '/api/v1': {
+        target: 'https://cyberlabs-backend-v1.vercel.app/',
         changeOrigin: true,
       },
     },
   },
-});
+})

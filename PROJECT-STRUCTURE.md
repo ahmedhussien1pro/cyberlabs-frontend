@@ -1,0 +1,128 @@
+# CyberLabs Frontend V2 - Project Structure
+
+## ?? Installed Packages Status
+
+### ? Core (Installed)
+cyberlabs-frontend@0.0.0 D:\Web\cyberlabs-frontend
+Gö£GöÇGöÇ @eslint/js@9.39.2
+Gö£GöÇGöÇ @hookform/resolvers@3.10.0
+Gö£GöÇGöÇ @radix-ui/react-accordion@1.2.12
+Gö£GöÇGöÇ @radix-ui/react-alert-dialog@1.1.15
+Gö£GöÇGöÇ @radix-ui/react-avatar@1.1.11
+Gö£GöÇGöÇ @radix-ui/react-checkbox@1.3.3
+Gö£GöÇGöÇ @radix-ui/react-dialog@1.1.15
+Gö£GöÇGöÇ @radix-ui/react-dropdown-menu@2.1.16
+Gö£GöÇGöÇ @radix-ui/react-label@2.1.8
+Gö£GöÇGöÇ @radix-ui/react-popover@1.1.15
+Gö£GöÇGöÇ @radix-ui/react-progress@1.1.8
+Gö£GöÇGöÇ @radix-ui/react-radio-group@1.3.8
+Gö£GöÇGöÇ @radix-ui/react-select@2.2.6
+Gö£GöÇGöÇ @radix-ui/react-separator@1.1.8
+Gö£GöÇGöÇ @radix-ui/react-slot@1.2.4
+Gö£GöÇGöÇ @radix-ui/react-switch@1.2.6
+Gö£GöÇGöÇ @radix-ui/react-tabs@1.1.13
+Gö£GöÇGöÇ @radix-ui/react-toast@1.2.15
+Gö£GöÇGöÇ @radix-ui/react-tooltip@1.2.8
+Gö£GöÇGöÇ @tanstack/react-query-devtools@5.91.3
+Gö£GöÇGöÇ @tanstack/react-query@5.90.21
+Gö£GöÇGöÇ @testing-library/jest-dom@6.9.1
+Gö£GöÇGöÇ @testing-library/react@16.3.2
+Gö£GöÇGöÇ @testing-library/user-event@14.6.1
+Gö£GöÇGöÇ @types/crypto-js@4.2.2
+Gö£GöÇGöÇ @types/dompurify@3.0.5
+Gö£GöÇGöÇ @types/js-cookie@3.0.6
+Gö£GöÇGöÇ @types/node@24.10.13
+Gö£GöÇGöÇ @types/react-dom@19.2.3
+Gö£GöÇGöÇ @types/react@19.2.14
+Gö£GöÇGöÇ @vitejs/plugin-react-swc@4.2.3
+Gö£GöÇGöÇ @vitest/ui@4.0.18
+Gö£GöÇGöÇ autoprefixer@10.4.24
+Gö£GöÇGöÇ axios@1.13.5
+Gö£GöÇGöÇ class-variance-authority@0.7.1
+Gö£GöÇGöÇ clsx@2.1.1
+Gö£GöÇGöÇ crypto-js@4.2.0
+Gö£GöÇGöÇ date-fns@4.1.0
+Gö£GöÇGöÇ dompurify@3.3.1
+Gö£GöÇGöÇ eslint-plugin-react-hooks@7.0.1
+Gö£GöÇGöÇ eslint-plugin-react-refresh@0.4.26
+Gö£GöÇGöÇ eslint@9.39.2
+Gö£GöÇGöÇ framer-motion@12.34.0
+Gö£GöÇGöÇ globals@16.5.0
+Gö£GöÇGöÇ happy-dom@20.6.1
+Gö£GöÇGöÇ i18next-browser-languagedetector@8.2.0
+Gö£GöÇGöÇ i18next-http-backend@2.7.3
+Gö£GöÇGöÇ i18next@23.16.8
+Gö£GöÇGöÇ js-cookie@3.0.5
+Gö£GöÇGöÇ lucide-react@0.563.0
+Gö£GöÇGöÇ next-themes@0.4.6
+Gö£GöÇGöÇ postcss@8.5.6
+Gö£GöÇGöÇ prettier-plugin-tailwindcss@0.6.14
+Gö£GöÇGöÇ prettier@3.8.1
+Gö£GöÇGöÇ react-dom@19.2.4
+Gö£GöÇGöÇ react-hook-form@7.71.1
+Gö£GöÇGöÇ react-i18next@14.1.3
+Gö£GöÇGöÇ react-router-dom@7.13.0
+Gö£GöÇGöÇ react@19.2.4
+Gö£GöÇGöÇ sonner@1.7.4
+Gö£GöÇGöÇ tailwind-merge@3.4.0
+Gö£GöÇGöÇ tailwindcss-animate@1.0.7
+Gö£GöÇGöÇ tailwindcss@3.4.19
+Gö£GöÇGöÇ typescript-eslint@8.55.0
+Gö£GöÇGöÇ typescript@5.9.3
+Gö£GöÇGöÇ vite-tsconfig-paths@6.1.1
+Gö£GöÇGöÇ vite@7.3.1
+Gö£GöÇGöÇ vitest@4.0.18
+GööGöÇGöÇ zod@4.3.6
+
+
+## ?? Current Folder Structure
+
+- assets/
+- components/
+- core/
+- features/
+- hooks/
+- lib/
+- shared/
+  - ui/
+  - api/
+  - config/
+  - providers/
+  - router/
+  - store/
+  - types/
+  - auth/
+  - courses/
+  - dashboard/
+  - profile/
+  - website/
+    - components/
+    - hooks/
+    - pages/
+    - schemas/
+    - services/
+    - store/
+    - types/
+    - components/
+    - hooks/
+    - pages/
+    - services/
+    - store/
+    - types/
+    - components/
+    - pages/
+    - services/
+    - components/
+    - pages/
+    - services/
+    - store/
+    - types/
+    - components/
+    - pages/
+  - components/
+  - constants/
+  - hooks/
+  - utils/
+    - common/
+    - guards/
+    - layout/

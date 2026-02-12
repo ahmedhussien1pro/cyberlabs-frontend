@@ -1,0 +1,12 @@
+{
+  "required": "{{field}} is required",
+  "email": "Please enter a valid email address",
+  "minLength": "{{field}} must be at least {{min}} characters",
+  "maxLength": "{{field}} must not exceed {{max}} characters",
+  "passwordStrength": "Password must contain uppercase, lowercase, and number",
+  "passwordMatch": "Passwords do not match",
+  "invalidUsername": "Username can only contain letters, numbers, and underscores",
+  "invalidUrl": "Please enter a valid URL",
+  "invalidPhone": "Please enter a valid phone number",
+  "termsRequired": "You must agree to the terms and conditions"
+}

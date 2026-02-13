@@ -30,11 +30,18 @@ export function RegisterForm({ onSuccess, setLoading }: RegisterFormProps) {
   const onSubmit = async (data: RegisterForm) => {
     setLoading(true);
     try {
+      // Use username as name for the backend
       const response = await authService.register(
-        data.username,
+        data.username, // This is sent as 'name' to backend
         data.email,
         data.password,
       );
+      
+      // Check if response has user and token
+      if (!response || !response.user || !response.token) {
+        throw new Error('Invalid response from server');
+      }
+
       login(response.user, response.token);
 
       toast.success('التسجيل نجح!', {
@@ -43,6 +50,7 @@ export function RegisterForm({ onSuccess, setLoading }: RegisterFormProps) {
 
       onSuccess?.(response.user, response.token);
     } catch (error: any) {
+      console.error('Registration error:', error);
       toast.error('فشل التسجيل', {
         description: error.message || 'حاول مرة أخرى',
       });

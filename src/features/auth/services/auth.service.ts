@@ -35,7 +35,9 @@ export const authService = {
       API_ENDPOINTS.AUTH.LOGIN,
       { email, password },
     );
-    return response.data;
+    // apiClient interceptor already returns response.data
+    // So response is already the ApiResponse object
+    return response.data || response;
   },
 
   register: async (
@@ -47,7 +49,8 @@ export const authService = {
       API_ENDPOINTS.AUTH.REGISTER,
       { name, email, password },
     );
-    return response.data;
+    // apiClient interceptor already returns response.data
+    return response.data || response;
   },
 
   // Password Reset
@@ -82,7 +85,7 @@ export const authService = {
       API_ENDPOINTS.AUTH.SEND_OTP,
       { phoneNumber },
     );
-    return response.data;
+    return response.data || response;
   },
 
   verifyOTP: async (
@@ -93,7 +96,7 @@ export const authService = {
       API_ENDPOINTS.AUTH.VERIFY_OTP,
       { phoneNumber, otp },
     );
-    return response.data;
+    return response.data || response;
   },
 
   resendOTP: async (phoneNumber: string): Promise<OTPResponse> => {
@@ -101,7 +104,7 @@ export const authService = {
       API_ENDPOINTS.AUTH.RESEND_OTP,
       { phoneNumber },
     );
-    return response.data;
+    return response.data || response;
   },
 
   // OAuth Authentication
@@ -109,7 +112,7 @@ export const authService = {
     const response = await apiClient.get<ApiResponse<{ url: string }>>(
       API_ENDPOINTS.AUTH.GOOGLE_LOGIN,
     );
-    return response.data;
+    return response.data || response;
   },
 
   googleCallback: async (
@@ -120,14 +123,14 @@ export const authService = {
       API_ENDPOINTS.AUTH.GOOGLE_CALLBACK,
       { code, state },
     );
-    return response.data;
+    return response.data || response;
   },
 
   githubLogin: async (): Promise<{ url: string }> => {
     const response = await apiClient.get<ApiResponse<{ url: string }>>(
       API_ENDPOINTS.AUTH.GITHUB_LOGIN,
     );
-    return response.data;
+    return response.data || response;
   },
 
   githubCallback: async (
@@ -138,7 +141,7 @@ export const authService = {
       API_ENDPOINTS.AUTH.GITHUB_CALLBACK,
       { code, state },
     );
-    return response.data;
+    return response.data || response;
   },
 
   // Logout

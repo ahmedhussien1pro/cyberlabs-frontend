@@ -3,17 +3,26 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { jwtDecode } from 'jwt-decode';
 
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/common/theme-toggle';
-import { authService } from '@/features/auth/services/auth.service';
 import { useAuthStore } from '@/features/auth/store/auth.store';
 import { ROUTES } from '@/shared/constants';
 
 import '../styles/auth-shared.css';
 
 type CallbackStatus = 'processing' | 'success' | 'error';
+
+interface DecodedToken {
+  sub: string; // user id
+  email: string;
+  role: string;
+  type: string;
+  iat: number;
+  exp: number;
+}
 
 export default function OAuthCallbackPage() {
   const navigate = useNavigate();
@@ -23,10 +32,11 @@ export default function OAuthCallbackPage() {
   const [status, setStatus] = useState<CallbackStatus>('processing');
   const [errorMessage, setErrorMessage] = useState<string>('');
   
-  const code = searchParams.get('code');
-  const state = searchParams.get('state');
+  // Get parameters from URL
+  const accessToken = searchParams.get('access_token');
+  const refreshToken = searchParams.get('refresh_token');
+  const expiresIn = searchParams.get('expires_in');
   const error = searchParams.get('error');
-  const provider = searchParams.get('provider'); // google or github
 
   useEffect(() => {
     // Check if there's an error from OAuth provider
@@ -39,48 +49,48 @@ export default function OAuthCallbackPage() {
       return;
     }
 
-    // Check if we have code and state
-    if (!code || !state) {
+    // Check if we have tokens
+    if (!accessToken) {
       setStatus('error');
-      setErrorMessage('Missing authentication parameters');
+      setErrorMessage('Missing authentication token');
       toast.error('Authentication Failed', {
-        description: 'Invalid OAuth callback parameters',
+        description: 'No access token received from OAuth provider',
       });
       return;
     }
 
-    // Process OAuth callback
-    handleOAuthCallback(code, state, provider || 'unknown');
-  }, [code, state, error, provider]);
+    // Process OAuth tokens
+    handleOAuthTokens(accessToken, refreshToken || '');
+  }, [accessToken, refreshToken, error]);
 
-  const handleOAuthCallback = async (
-    authCode: string,
-    authState: string,
-    oauthProvider: string
+  const handleOAuthTokens = async (
+    token: string,
+    refresh: string
   ) => {
     try {
-      let response;
+      // Decode JWT to get user info
+      const decoded = jwtDecode<DecodedToken>(token);
+      
+      // Create user object from decoded token
+      const user = {
+        id: decoded.sub,
+        email: decoded.email,
+        name: decoded.email.split('@')[0], // Extract name from email
+        role: decoded.role.toLowerCase() as 'admin' | 'trainee' | 'content-creator',
+      };
 
-      // Determine which OAuth provider
-      if (oauthProvider === 'google' || window.location.pathname.includes('google')) {
-        response = await authService.googleCallback(authCode, authState);
-      } else if (oauthProvider === 'github' || window.location.pathname.includes('github')) {
-        response = await authService.githubCallback(authCode, authState);
-      } else {
-        throw new Error('Unknown OAuth provider');
+      // Login user with token
+      login(user, token);
+      
+      // Store refresh token if provided
+      if (refresh) {
+        localStorage.setItem('cyberlabs_refreshToken', refresh);
       }
 
-      // Check response
-      if (!response || !response.user || !response.token) {
-        throw new Error('Invalid response from server');
-      }
-
-      // Login user
-      login(response.user, response.token);
       setStatus('success');
 
       toast.success('Welcome!', {
-        description: `Successfully logged in as ${response.user.name}`,
+        description: `Successfully logged in as ${user.email}`,
       });
 
       // Redirect to home after 2 seconds
@@ -88,9 +98,9 @@ export default function OAuthCallbackPage() {
         navigate(ROUTES.HOME);
       }, 2000);
     } catch (err: any) {
-      console.error('OAuth callback error:', err);
+      console.error('OAuth token processing error:', err);
       setStatus('error');
-      setErrorMessage(err.message || 'Failed to authenticate');
+      setErrorMessage(err.message || 'Failed to process authentication token');
       
       toast.error('Authentication Failed', {
         description: err.message || 'Unable to complete OAuth login',

@@ -1,3 +1,4 @@
+// src/core/router/routes.tsx
 import { Suspense } from 'react';
 import { RouteObject } from 'react-router-dom';
 import * as Pages from './lazy-routes';
@@ -15,37 +16,58 @@ const LazyPage = ({
 );
 
 export const routes: RouteObject[] = [
+  // Website Routes
   {
     path: ROUTES.HOME,
     element: <LazyPage Component={Pages.HomePage} />,
   },
   {
-    // about page
     path: ROUTES.ABOUT,
     element: <LazyPage Component={Pages.AboutPage} />,
   },
   {
-    // contact page
     path: ROUTES.CONTACT,
     element: <LazyPage Component={Pages.ContactPage} />,
   },
   {
-    // pricing page
     path: ROUTES.PRICING,
     element: <LazyPage Component={Pages.PricingPage} />,
   },
+
+  // Auth Routes
   {
-    // Test login WITHOUT ProtectedRoute
     path: ROUTES.AUTH.LOGIN,
-    element: <LazyPage Component={Pages.LoginPage} />,
+    element: <LazyPage Component={Pages.AuthPage} />,
+  },
+  {
+    path: ROUTES.AUTH.REGISTER,
+    element: <LazyPage Component={Pages.AuthPage} />,
+  },
+  {
+    path: ROUTES.AUTH.FORGOT_PASSWORD,
+    element: <LazyPage Component={Pages.ForgotPasswordPage} />,
+  },
+  {
+    path: ROUTES.AUTH.RESET_PASSWORD,
+    element: <LazyPage Component={Pages.ResetPasswordPage} />,
+  },
+  {
+    path: ROUTES.AUTH.VERIFY_EMAIL,
+    element: <LazyPage Component={Pages.VerifyEmailPage} />,
+  },
+  {
+    path: ROUTES.AUTH.LOGOUT,
+    element: <LazyPage Component={Pages.LogoutPage} />,
+  },
+
+  // Error Routes
+  {
+    path: ROUTES.UNAUTHORIZED,
+    element: <LazyPage Component={Pages.UnauthorizedPage} />,
   },
   {
     path: '*',
     element: <LazyPage Component={Pages.NotFoundPage} />,
-  },
-  {
-    path: ROUTES.UNAUTHORIZED,
-    element: <LazyPage Component={Pages.UnauthorizedPage} />,
   },
 ];
 

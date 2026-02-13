@@ -1,16 +1,5 @@
-﻿import { lazy } from 'react';
-
-// Auth Pages
-export const LoginPage = lazy(() => import('@/features/auth/pages/auth-page'));
-export const ForgotPasswordPage = lazy(
-  () => import('@/features/auth/pages/forgot-password-page'),
-);
-export const ResetPasswordPage = lazy(
-  () => import('@/features/auth/pages/reset-password-page'),
-);
-export const VerifyEmailPage = lazy(
-  () => import('@/features/auth/pages/verify-email-page'),
-);
+﻿// src/core/router/lazy-routes.tsx
+import { lazy } from 'react';
 
 // Website Pages
 export const HomePage = lazy(
@@ -26,29 +15,23 @@ export const PricingPage = lazy(
   () => import('@/features/website/pages/pricing-page'),
 );
 
-// Course Pages
-export const CoursesPage = lazy(
-  () => import('@/features/courses/pages/courses-page'),
+// Auth Pages
+export const AuthPage = lazy(() => import('@/features/auth/pages/auth-page'));
+export const LoginPage = lazy(() => import('@/features/auth/pages/login-page'));
+export const RegisterPage = lazy(
+  () => import('@/features/auth/pages/register-page'),
 );
-export const CourseDetailPage = lazy(
-  () => import('@/features/courses/pages/course-detail-page'),
+export const ForgotPasswordPage = lazy(
+  () => import('@/features/auth/pages/forgot-password-page'),
 );
-export const LessonPage = lazy(
-  () => import('@/features/courses/pages/lesson-page'),
+export const ResetPasswordPage = lazy(
+  () => import('@/features/auth/pages/reset-password-page'),
 );
-
-// Dashboard Pages
-export const DashboardPage = lazy(
-  () => import('@/features/dashboard/pages/dashboard-page'),
+export const VerifyEmailPage = lazy(
+  () => import('@/features/auth/pages/verify-email-page'),
 );
-export const ProfilePage = lazy(
-  () => import('@/features/dashboard/pages/dashboard-page'),
-);
-export const SettingsPage = lazy(
-  () => import('@/features/dashboard/pages/settings-page'),
-);
-export const EnrolledCoursesPage = lazy(
-  () => import('@/features/dashboard/pages/dashboard-page'),
+export const LogoutPage = lazy(
+  () => import('@/features/auth/pages/logout-page'),
 );
 
 // Error Pages

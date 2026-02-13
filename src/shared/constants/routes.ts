@@ -1,47 +1,44 @@
+// src/shared/constants/routes.ts
 export const ROUTES = {
-  HOME: "/",
-  
-  // Auth Routes
+  HOME: '/',
+  ABOUT: '/about',
+  CONTACT: '/contact',
+  PRICING: '/pricing',
+
   AUTH: {
-    LOGIN: "/login",
-    REGISTER: "/register",
-    FORGOT_PASSWORD: "/forgot-password",
-    RESET_PASSWORD: "/reset-password",
-    VERIFY_EMAIL: "/verify-email",
+    LOGIN: '/login',
+    REGISTER: '/register',
+    FORGOT_PASSWORD: '/forgot-password',
+    RESET_PASSWORD: '/reset-password',
+    VERIFY_EMAIL: '/verify-email',
+    LOGOUT: '/logout',
   },
-  
-  // Dashboard Routes
+
   DASHBOARD: {
-    HOME: "/dashboard",
-    PROFILE: "/dashboard/profile",
-    SETTINGS: "/dashboard/settings",
+    HOME: '/dashboard',
+    ADMIN: '/dashboard/admin',
+    TRAINEE: '/dashboard/trainee',
+    CONTENT_CREATOR: '/dashboard/content-creator',
   },
-  
-  // Course Routes
+
   COURSES: {
-    LIST: "/courses",
+    LIST: '/courses',
     DETAIL: (id: string) => `/courses/${id}`,
-    LESSON: (courseId: string, lessonId: string) => `/courses/${courseId}/lessons/${lessonId}`,
-    ENROLL: (id: string) => `/courses/${id}/enroll`,
+    LESSON: (courseId: string, lessonId: string) =>
+      `/courses/${courseId}/lessons/${lessonId}`,
   },
-  
-  // Profile Routes
+
   PROFILE: {
-    VIEW: (username: string) => `/profile/${username}`,
-    EDIT: "/profile/edit",
-    CERTIFICATES: "/profile/certificates",
-    ACHIEVEMENTS: "/profile/achievements",
+    VIEW: '/profile',
+    EDIT: '/profile/edit',
+    ACHIEVEMENTS: '/profile/achievements',
+    CERTIFICATES: '/profile/certificates',
   },
-  
-  // Website Routes
-  ABOUT: "/about",
-  CONTACT: "/contact",
-  PRICING: "/pricing",
-  BLOG: "/blog",
-  
-  // Error Routes
-  NOT_FOUND: "/404",
-  UNAUTHORIZED: "/401",
-  FORBIDDEN: "/403",
-  SERVER_ERROR: "/500",
-} as const
+
+  LABS: {
+    LIST: '/labs',
+    DETAIL: (id: string) => `/labs/${id}`,
+  },
+
+  UNAUTHORIZED: '/403',
+} as const;

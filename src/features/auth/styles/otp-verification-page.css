@@ -1,0 +1,99 @@
+/* src/features/auth/pages/otp-verification-page.css */
+
+.otp-page {
+  @apply min-h-screen flex items-center justify-center p-4 bg-background;
+}
+
+.otp-page__container {
+  @apply w-full max-w-md;
+}
+
+.otp-page__card {
+  @apply p-8 md:p-10 shadow-2xl;
+}
+
+/* Header */
+.otp-page__header {
+  @apply text-center mb-8;
+}
+
+.otp-page__icon-wrapper {
+  @apply w-24 h-24 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center;
+}
+
+.otp-page__icon {
+  @apply text-primary;
+}
+
+.otp-page__title {
+  @apply text-3xl font-bold text-foreground mb-3;
+}
+
+.otp-page__subtitle {
+  @apply text-muted-foreground text-sm mb-1;
+}
+
+.otp-page__phone {
+  @apply text-foreground font-semibold text-lg;
+}
+
+/* OTP Inputs */
+.otp-page__inputs {
+  @apply flex gap-2 md:gap-3 justify-center mb-8;
+}
+
+.otp-page__input {
+  @apply w-12 h-14 md:w-14 md:h-16 text-center text-2xl font-bold bg-background border-2 border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all caret-transparent;
+}
+
+.otp-page__input:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+/* Resend */
+.otp-page__resend {
+  @apply text-center text-sm text-muted-foreground space-y-1 mb-6;
+}
+
+.otp-page__resend button {
+  @apply text-primary font-semibold hover:underline bg-transparent border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:no-underline transition-all;
+}
+
+/* Back Link */
+.otp-page__back {
+  @apply flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors;
+}
+
+.otp-page__back a {
+  @apply font-medium;
+}
+
+/* Success State */
+.otp-page__success {
+  @apply text-center space-y-6;
+}
+
+.otp-page__success-icon-wrapper {
+  @apply w-24 h-24 mx-auto mb-4 rounded-full bg-green-500/10 flex items-center justify-center;
+}
+
+.otp-page__success-icon {
+  @apply text-green-500;
+}
+
+.otp-page__success-title {
+  @apply text-3xl font-bold text-foreground;
+}
+
+.otp-page__success-text {
+  @apply text-muted-foreground;
+}
+
+.otp-page__success-subtext {
+  @apply text-sm text-muted-foreground;
+}
+
+/* Dark Mode */
+.dark .otp-page__input {
+  @apply bg-background/50;
+}

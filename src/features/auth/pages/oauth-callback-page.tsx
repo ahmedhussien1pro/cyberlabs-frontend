@@ -24,6 +24,18 @@ interface DecodedToken {
   exp: number;
 }
 
+// Map backend roles to frontend roles
+const mapRole = (backendRole: string): 'admin' | 'trainee' | 'content-creator' => {
+  const roleMap: Record<string, 'admin' | 'trainee' | 'content-creator'> = {
+    'ADMIN': 'admin',
+    'STUDENT': 'trainee',
+    'TRAINEE': 'trainee',
+    'CONTENT_CREATOR': 'content-creator',
+  };
+  
+  return roleMap[backendRole.toUpperCase()] || 'trainee';
+};
+
 export default function OAuthCallbackPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -71,26 +83,33 @@ export default function OAuthCallbackPage() {
       // Decode JWT to get user info
       const decoded = jwtDecode<DecodedToken>(token);
       
+      // Extract name from email (before @)
+      const emailName = decoded.email.split('@')[0];
+      const userName = emailName.charAt(0).toUpperCase() + emailName.slice(1);
+      
       // Create user object from decoded token
       const user = {
         id: decoded.sub,
         email: decoded.email,
-        name: decoded.email.split('@')[0], // Extract name from email
-        role: decoded.role.toLowerCase() as 'admin' | 'trainee' | 'content-creator',
+        name: userName,
+        role: mapRole(decoded.role),
       };
+
+      console.log('OAuth User:', user);
 
       // Login user with token
       login(user, token);
       
       // Store refresh token if provided
       if (refresh) {
-        localStorage.setItem('cyberlabs_refreshToken', refresh);
+        const storagePrefix = 'cyberlabs_';
+        localStorage.setItem(`${storagePrefix}refreshToken`, refresh);
       }
 
       setStatus('success');
 
       toast.success('Welcome!', {
-        description: `Successfully logged in as ${user.email}`,
+        description: `Successfully logged in as ${user.name}`,
       });
 
       // Redirect to home after 2 seconds

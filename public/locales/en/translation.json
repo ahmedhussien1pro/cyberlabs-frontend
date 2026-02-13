@@ -1,0 +1,26 @@
+﻿{
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "username": "Username",
+    "confirmPassword": "Confirm Password",
+    "passwordMin6": "Password (min 6 characters)",
+    "forgotPassword": "Forgot password?",
+    "loggingIn": "Logging in...",
+    "registering": "Registering...",
+    "orLoginWith": "or login with social media",
+    "orRegisterWith": "or register with social media",
+    "dontHaveAccount": "Don't have an account?",
+    "alreadyHaveAccount": "Already have an account?",
+    "helloWelcome": "Hello, Welcome!",
+    "welcomeBack": "Welcome Back!",
+    "passwordTooShort": "Password must be at least 6 characters long.",
+    "passwordMismatch": "Passwords do not match. Please try again."
+  },
+  "common": {
+    "title": "CyberLabs",
+    "tagline": "Learn. Code. Excel."
+  }
+}

@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 
 /**
- * Custom hook to manage resend countdown timer
- * Used in OTP verification, email verification, etc.
+ * Custom hook for managing resend cooldown timer
+ * @param initialSeconds - Initial countdown duration in seconds (default: 30)
+ * @returns Object containing countdown state and reset function
  */
 export function useResendTimer(initialSeconds = 30) {
   const [countdown, setCountdown] = useState(initialSeconds);

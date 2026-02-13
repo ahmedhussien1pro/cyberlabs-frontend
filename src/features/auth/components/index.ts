@@ -11,3 +11,8 @@ export * from './password-strength';
 export * from './register-form';
 export * from './social-auth-buttons';
 export * from './toggle-panels';
+
+// New reusable components
+export * from './password-input';
+export * from './resend-button';
+export * from './password-strength-indicator';

@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -81,6 +81,11 @@ export default function AuthPage() {
     try {
       const response = await authService.login(data.email, data.password);
 
+      // Check if response has user and token
+      if (!response || !response.user || !response.token) {
+        throw new Error('Invalid response from server');
+      }
+
       login(response.user, response.token);
 
       toast.success('Welcome Back!', {
@@ -91,6 +96,7 @@ export default function AuthPage() {
         navigate(ROUTES.HOME);
       }, 1000);
     } catch (error: any) {
+      console.error('Login error:', error);
       toast.error('Login Failed', {
         description: error.message || 'Invalid email or password',
       });
@@ -108,6 +114,11 @@ export default function AuthPage() {
         data.password,
       );
 
+      // Check if response has user and token
+      if (!response || !response.user || !response.token) {
+        throw new Error('Invalid response from server');
+      }
+
       login(response.user, response.token);
 
       toast.success('Registration Successful!', {
@@ -118,6 +129,7 @@ export default function AuthPage() {
         navigate(ROUTES.AUTH.VERIFY_EMAIL);
       }, 1000);
     } catch (error: any) {
+      console.error('Registration error:', error);
       toast.error('Registration Failed', {
         description: error.message || 'Please try again',
       });
@@ -126,10 +138,28 @@ export default function AuthPage() {
     }
   };
 
-  const handleSocialLogin = (provider: string) => {
-    toast.info('Coming Soon', {
-      description: `${provider} login will be available soon`,
-    });
+  const handleSocialLogin = async (provider: string) => {
+    try {
+      if (provider === 'Google') {
+        const response = await authService.googleLogin();
+        // Redirect to Google OAuth URL
+        window.location.href = response.url;
+      } else if (provider === 'GitHub') {
+        const response = await authService.githubLogin();
+        // Redirect to GitHub OAuth URL
+        window.location.href = response.url;
+      } else {
+        // For Facebook and LinkedIn - coming soon
+        toast.info('Coming Soon', {
+          description: `${provider} login will be available soon`,
+        });
+      }
+    } catch (error: any) {
+      console.error('OAuth error:', error);
+      toast.error('OAuth Failed', {
+        description: error.message || 'Unable to connect to OAuth provider',
+      });
+    }
   };
 
   return (

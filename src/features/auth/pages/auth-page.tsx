@@ -129,7 +129,11 @@ export default function AuthPage() {
 
       // Check different possible response structures
       const user = response.user || response.data?.user;
-      const token = response.token || response.accessToken || response.access_token || response.data?.token;
+      const token =
+        response.token ||
+        response.accessToken ||
+        response.access_token ||
+        response.data?.token;
 
       if (!user || !token) {
         console.error('Invalid register response structure:', response);
@@ -146,7 +150,7 @@ export default function AuthPage() {
       });
 
       setTimeout(() => {
-        navigate(ROUTES.AUTH.VERIFY_EMAIL);
+        navigate(ROUTES.AUTH.OTP_VERIFICATION);
       }, 1000);
     } catch (error: any) {
       console.error('Registration error:', error);
@@ -155,7 +159,7 @@ export default function AuthPage() {
         response: error.response,
         data: error.response?.data,
       });
-      
+
       toast.error('Registration Failed', {
         description: error.message || 'Please try again',
       });

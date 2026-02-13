@@ -17,7 +17,7 @@ export const API_ENDPOINTS = {
 
     // OTP (Phone)
     SEND_OTP: '/auth/send-otp',
-    VERIFY_OTP: '/auth/verify-otp',
+    VERIFY_OTP: '/auth/verify-email-otp',
     RESEND_OTP: '/auth/resend-otp',
 
     // OAuth

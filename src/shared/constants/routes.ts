@@ -12,6 +12,7 @@ export const ROUTES = {
     RESET_PASSWORD: '/reset-password',
     VERIFY_EMAIL: '/verify-email',
     LOGOUT: '/logout',
+    OTP_VERIFICATION: '/otp',
     OAUTH_CALLBACK: '/auth/callback',
     GOOGLE_CALLBACK: '/auth/google/callback',
     GITHUB_CALLBACK: '/auth/github/callback',

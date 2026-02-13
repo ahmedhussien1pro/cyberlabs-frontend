@@ -17,6 +17,9 @@ export const PricingPage = lazy(
 
 // Auth Pages
 export const AuthPage = lazy(() => import('@/features/auth/pages/auth-page'));
+export const OtpVerificationPage = lazy(
+  () => import('@/features/auth/pages/otp-verification-page'),
+);
 export const ForgotPasswordPage = lazy(
   () => import('@/features/auth/pages/forgot-password-page'),
 );

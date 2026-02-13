@@ -56,6 +56,10 @@ export const routes: RouteObject[] = [
     element: <LazyPage Component={Pages.VerifyEmailPage} />,
   },
   {
+    path: ROUTES.AUTH.OTP_VERIFICATION,
+    element: <LazyPage Component={Pages.OtpVerificationPage} />,
+  },
+  {
     path: ROUTES.AUTH.LOGOUT,
     element: <LazyPage Component={Pages.LogoutPage} />,
   },

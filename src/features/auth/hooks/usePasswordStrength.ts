@@ -1,44 +1,60 @@
 import { useMemo } from 'react';
 
-export interface PasswordStrength {
+interface PasswordStrength {
   hasMinLength: boolean;
   hasUpperCase: boolean;
   hasLowerCase: boolean;
   hasNumber: boolean;
-  hasSpecialChar: boolean;
   score: number;
-  level: 'weak' | 'fair' | 'good' | 'strong';
+  label: 'Weak' | 'Fair' | 'Good' | 'Strong';
+  color: 'weak' | 'fair' | 'good' | 'strong';
 }
 
 /**
- * Custom hook to calculate password strength
- * Returns validation checks and strength level
+ * Custom hook for calculating password strength
+ * @param password - The password string to evaluate
+ * @param minLength - Minimum required length (default: 6)
+ * @returns Object containing password strength indicators and score
  */
 export function usePasswordStrength(
   password: string,
   minLength = 6,
 ): PasswordStrength {
   return useMemo(() => {
-    const checks = {
-      hasMinLength: password.length >= minLength,
-      hasUpperCase: /[A-Z]/.test(password),
-      hasLowerCase: /[a-z]/.test(password),
-      hasNumber: /[0-9]/.test(password),
-      hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password),
-    };
+    const hasMinLength = password.length >= minLength;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
 
-    const score = Object.values(checks).filter(Boolean).length;
+    const score = [hasMinLength, hasUpperCase, hasLowerCase, hasNumber].filter(
+      Boolean,
+    ).length;
 
-    let level: 'weak' | 'fair' | 'good' | 'strong';
-    if (score <= 1) level = 'weak';
-    else if (score <= 2) level = 'fair';
-    else if (score <= 3) level = 'good';
-    else level = 'strong';
+    let label: PasswordStrength['label'];
+    let color: PasswordStrength['color'];
+
+    if (score <= 1) {
+      label = 'Weak';
+      color = 'weak';
+    } else if (score === 2) {
+      label = 'Fair';
+      color = 'fair';
+    } else if (score === 3) {
+      label = 'Good';
+      color = 'good';
+    } else {
+      label = 'Strong';
+      color = 'strong';
+    }
 
     return {
-      ...checks,
+      hasMinLength,
+      hasUpperCase,
+      hasLowerCase,
+      hasNumber,
       score,
-      level,
+      label,
+      color,
     };
   }, [password, minLength]);
 }

@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -15,17 +14,14 @@ import { Preloader } from '@/components/common/preloader';
 import { authService } from '@/features/auth/services/auth.service';
 import { ROUTES } from '@/shared/constants';
 
-import './forgot-password-page.css';
-import '../../../core/styles/globals.css';
+// Import schema
+import { forgotPasswordSchema, ForgotPasswordForm } from '@/features/auth/schemas';
 
-const forgotPasswordSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-});
-
-type ForgotPasswordForm = z.infer<typeof forgotPasswordSchema>;
+// Import shared styles
+import '../styles/auth-shared.css';
+import '../styles/forgot-password-page.css';
 
 export default function ForgotPasswordPage() {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
 
@@ -73,24 +69,22 @@ export default function ForgotPasswordPage() {
         <ThemeToggle />
       </div>
 
-      <section className='forgot-password-page'>
+      <section className='auth-page'>
         <motion.div
-          className='forgot-password-page__container'
+          className='auth-page__container'
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}>
-          <Card className='forgot-password-page__card'>
+          <Card className='auth-page__card'>
             {!emailSent ? (
               <>
                 {/* Header */}
-                <div className='forgot-password-page__header'>
-                  <div className='forgot-password-page__icon-wrapper'>
-                    <Mail className='forgot-password-page__icon' size={48} />
+                <div className='auth-page__header'>
+                  <div className='auth-page__icon-wrapper'>
+                    <Mail className='auth-page__icon' size={48} />
                   </div>
-                  <h1 className='forgot-password-page__title'>
-                    Forgot Password?
-                  </h1>
-                  <p className='forgot-password-page__subtitle'>
+                  <h1 className='auth-page__title'>Forgot Password?</h1>
+                  <p className='auth-page__subtitle'>
                     No worries, we'll send you reset instructions.
                   </p>
                 </div>
@@ -98,36 +92,33 @@ export default function ForgotPasswordPage() {
                 {/* Form */}
                 <form
                   onSubmit={form.handleSubmit(handleSubmit)}
-                  className='forgot-password-page__form'>
-                  <div className='forgot-password-page__input-group'>
+                  className='auth-page__form'>
+                  <div className='auth-page__input-group'>
                     <Input
                       type='email'
                       placeholder='Enter your email'
-                      className='forgot-password-page__input'
+                      className='auth-page__input'
                       {...form.register('email')}
                       disabled={loading}
                     />
-                    <Mail
-                      className='forgot-password-page__input-icon'
-                      size={20}
-                    />
+                    <Mail className='auth-page__input-icon' size={20} />
                   </div>
                   {form.formState.errors.email && (
-                    <p className='forgot-password-page__error'>
+                    <p className='auth-page__error'>
                       {form.formState.errors.email.message}
                     </p>
                   )}
 
                   <Button
                     type='submit'
-                    className='forgot-password-page__submit'
+                    className='auth-page__submit'
                     disabled={loading}>
                     {loading ? 'Sending...' : 'Reset Password'}
                   </Button>
                 </form>
 
                 {/* Back to Login */}
-                <div className='forgot-password-page__back'>
+                <div className='auth-page__back'>
                   <ArrowLeft size={16} />
                   <Link to={ROUTES.AUTH.LOGIN}>Back to Login</Link>
                 </div>
@@ -136,23 +127,21 @@ export default function ForgotPasswordPage() {
               <>
                 {/* Success State */}
                 <motion.div
-                  className='forgot-password-page__success'
+                  className='auth-page__success'
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.3 }}>
-                  <div className='forgot-password-page__success-icon-wrapper'>
+                  <div className='auth-page__success-icon-wrapper'>
                     <CheckCircle
-                      className='forgot-password-page__success-icon'
+                      className='auth-page__success-icon'
                       size={64}
                     />
                   </div>
-                  <h2 className='forgot-password-page__success-title'>
-                    Check your email
-                  </h2>
-                  <p className='forgot-password-page__success-text'>
+                  <h2 className='auth-page__success-title'>Check your email</h2>
+                  <p className='auth-page__success-text'>
                     We sent a password reset link to
                   </p>
-                  <p className='forgot-password-page__success-email'>
+                  <p className='auth-page__success-email'>
                     {form.getValues('email')}
                   </p>
 
@@ -160,11 +149,11 @@ export default function ForgotPasswordPage() {
                     onClick={() =>
                       window.open('https://mail.google.com', '_blank')
                     }
-                    className='forgot-password-page__submit'>
+                    className='auth-page__submit'>
                     Open Email App
                   </Button>
 
-                  <div className='forgot-password-page__resend'>
+                  <div className='auth-page__resend'>
                     <p>Didn't receive the email?</p>
                     <button
                       type='button'
@@ -174,7 +163,7 @@ export default function ForgotPasswordPage() {
                     </button>
                   </div>
 
-                  <div className='forgot-password-page__back'>
+                  <div className='auth-page__back'>
                     <ArrowLeft size={16} />
                     <Link to={ROUTES.AUTH.LOGIN}>Back to Login</Link>
                   </div>

@@ -1,0 +1,634 @@
+/* =====================================================
+   CYBERLABS - AUTH STYLES
+   Unified styles for all authentication pages
+   Version: 2.0
+   ===================================================== */
+
+/* =====================================================
+   TABLE OF CONTENTS
+   1. Shared Layout & Structure
+   2. Login/Register Page (auth-page)
+   3. OTP Verification Page
+   4. Forgot Password Page
+   5. Reset Password Page
+   6. Email Verification Page
+   7. OAuth Callback Page
+   8. Components (Form Elements, Icons, Buttons)
+   9. Animations & Transitions
+   10. Responsive & RTL Support
+   ===================================================== */
+
+/* =====================================================
+   1. SHARED LAYOUT & STRUCTURE
+   ===================================================== */
+
+.auth-page {
+  @apply min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background to-muted;
+}
+
+.auth-page__container {
+  @apply w-full max-w-md;
+}
+
+.auth-page__card {
+  @apply p-8 space-y-6 bg-card border shadow-lg rounded-xl;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* =====================================================
+   2. LOGIN/REGISTER PAGE (auth-page)
+   ===================================================== */
+
+/* Main Container */
+.auth-form {
+  @apply min-h-screen flex items-center justify-center p-4 bg-background;
+}
+
+.auth-form__container {
+  @apply relative w-full max-w-4xl h-[600px] overflow-hidden rounded-3xl shadow-2xl bg-card;
+  transition: all 0.6s ease-in-out;
+}
+
+/* Form Boxes */
+.auth-form__form-box {
+  @apply absolute w-1/2 h-full flex items-center justify-center p-8 z-10;
+  transition: all 0.6s ease-in-out;
+}
+
+.auth-form__form-box--login {
+  @apply right-0 top-0;
+}
+
+.auth-form__form-box--register {
+  @apply left-1/2 top-0 invisible opacity-0;
+}
+
+.auth-form__container--active .auth-form__form-box--login {
+  @apply -left-1/2 opacity-0;
+}
+
+.auth-form__container--active .auth-form__form-box--register {
+  @apply left-0 visible opacity-100;
+}
+
+/* Form Elements */
+.auth-form__form {
+  @apply w-full max-w-md space-y-4;
+}
+
+.auth-form__heading {
+  @apply text-4xl font-bold text-center mb-6 text-primary;
+}
+
+.auth-form__input-box {
+  @apply relative;
+}
+
+.auth-form__input {
+  @apply w-full pr-12 bg-background border-border focus:border-primary;
+}
+
+.auth-form__input-icon {
+  @apply absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none;
+}
+
+.auth-form__input-icon-btn {
+  @apply absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors bg-transparent border-none cursor-pointer;
+}
+
+.auth-form__error {
+  @apply text-sm text-destructive mt-1;
+}
+
+.auth-form__forgot-link {
+  @apply text-right -mt-2;
+}
+
+.auth-form__forgot-link a {
+  @apply text-sm text-muted-foreground hover:text-primary transition-colors;
+}
+
+.auth-form__submit-btn {
+  @apply w-full h-12 text-base font-semibold;
+}
+
+/* Divider */
+.auth-form__divider {
+  @apply flex items-center gap-2 my-6;
+}
+
+/* Social Auth */
+.auth-form__social-icons {
+  @apply flex justify-center gap-3 flex-wrap;
+}
+
+.auth-form__social-link {
+  @apply w-11 h-11 flex items-center justify-center border border-primary text-primary rounded-md hover:bg-primary hover:text-primary-foreground transition-all hover:scale-105 bg-transparent cursor-pointer;
+}
+
+/* Switcher Link (Mobile) */
+.auth-form__switch-link {
+  @apply text-center mt-4 text-sm text-muted-foreground;
+}
+
+.auth-form__switch-btn {
+  @apply text-primary font-semibold hover:underline bg-transparent border-none cursor-pointer;
+}
+
+/* Toggle Panels (Desktop) */
+.auth-form__toggle-box {
+  @apply absolute w-full h-full top-0 left-0 pointer-events-none;
+}
+
+.auth-form__toggle-box::before {
+  content: '';
+  @apply absolute -left-[250%] w-[300%] h-full rounded-[150px] z-20;
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary)) 0%,
+    hsl(var(--primary) / 0.8) 100%
+  );
+  transition: 1.8s ease-in-out;
+}
+
+.auth-form__container--active .auth-form__toggle-box::before {
+  @apply left-1/2;
+}
+
+.auth-form__toggle-panel {
+  @apply absolute w-1/2 h-full flex flex-col justify-center items-center text-center p-8 z-30 text-primary-foreground pointer-events-auto;
+  transition: 0.6s ease-in-out;
+}
+
+.auth-form__toggle-panel--left {
+  @apply left-0;
+  transition-delay: 1.2s;
+}
+
+.auth-form__container--active .auth-form__toggle-panel--left {
+  @apply -left-1/2;
+  transition-delay: 0.6s;
+}
+
+.auth-form__toggle-panel--right {
+  @apply -right-1/2;
+  transition-delay: 0.6s;
+}
+
+.auth-form__container--active .auth-form__toggle-panel--right {
+  @apply right-0;
+  transition-delay: 1.2s;
+}
+
+.auth-form__toggle-heading {
+  @apply text-3xl font-bold mb-4;
+}
+
+.auth-form__toggle-text {
+  @apply my-4 text-base opacity-90;
+}
+
+.auth-form__toggle-btn {
+  @apply bg-transparent border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary px-10 py-3 font-bold;
+  animation: pulse2 2s infinite;
+}
+
+/* =====================================================
+   3. OTP VERIFICATION PAGE
+   ===================================================== */
+
+.otp-page {
+  @apply min-h-screen flex items-center justify-center p-4 bg-background;
+}
+
+.otp-page__container {
+  @apply w-full max-w-md;
+}
+
+.otp-page__card {
+  @apply p-8 md:p-10 shadow-2xl;
+}
+
+/* Header */
+.otp-page__header {
+  @apply text-center mb-8;
+}
+
+.otp-page__icon-wrapper {
+  @apply w-24 h-24 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center;
+}
+
+.otp-page__icon {
+  @apply text-primary;
+}
+
+.otp-page__title {
+  @apply text-3xl font-bold text-foreground mb-3;
+}
+
+.otp-page__subtitle {
+  @apply text-muted-foreground text-sm mb-1;
+}
+
+.otp-page__email,
+.otp-page__phone {
+  @apply text-foreground font-semibold text-lg;
+}
+
+/* OTP Inputs */
+.otp-page__inputs {
+  @apply flex gap-2 md:gap-3 justify-center mb-8;
+}
+
+.otp-page__input {
+  @apply w-12 h-14 md:w-14 md:h-16 text-center text-2xl font-bold bg-background border-2 border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all caret-transparent;
+}
+
+.otp-page__input:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+/* Resend */
+.otp-page__resend {
+  @apply text-center space-y-1 mb-6;
+}
+
+.otp-page__resend p {
+  @apply text-sm text-muted-foreground;
+}
+
+.otp-page__resend button,
+.otp-page__resend-btn {
+  @apply text-sm text-primary font-semibold hover:underline bg-transparent border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:no-underline transition-all flex items-center justify-center gap-2;
+}
+
+.otp-page__resend-text {
+  @apply text-sm text-muted-foreground;
+}
+
+/* Back Link */
+.otp-page__back {
+  @apply flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors;
+}
+
+.otp-page__back a {
+  @apply font-medium;
+}
+
+/* Success State */
+.otp-page__success {
+  @apply text-center space-y-6;
+}
+
+.otp-page__success-icon-wrapper {
+  @apply w-24 h-24 mx-auto mb-4 rounded-full bg-green-500/10 flex items-center justify-center;
+}
+
+.otp-page__success-icon {
+  @apply text-green-500;
+}
+
+.otp-page__success-title {
+  @apply text-3xl font-bold text-foreground;
+}
+
+.otp-page__success-text {
+  @apply text-muted-foreground;
+}
+
+.otp-page__success-subtext {
+  @apply text-sm text-muted-foreground;
+}
+
+/* =====================================================
+   4. SHARED COMPONENTS
+   ===================================================== */
+
+/* Icon Wrappers */
+.auth-page__icon-wrapper {
+  @apply w-20 h-20 mx-auto rounded-full bg-primary/10 flex items-center justify-center;
+}
+
+.auth-page__icon {
+  @apply text-primary;
+}
+
+.auth-page__success-icon-wrapper {
+  @apply w-20 h-20 mx-auto rounded-full bg-green-500/10 flex items-center justify-center;
+}
+
+.auth-page__success-icon {
+  @apply text-green-500;
+}
+
+.auth-page__error-icon-wrapper {
+  @apply w-20 h-20 mx-auto rounded-full bg-destructive/10 flex items-center justify-center;
+}
+
+.auth-page__error-icon {
+  @apply text-destructive;
+}
+
+.auth-page__verifying-icon-wrapper {
+  @apply w-20 h-20 mx-auto rounded-full bg-primary/10 flex items-center justify-center;
+}
+
+.auth-page__verifying-icon {
+  @apply text-primary animate-spin;
+}
+
+/* Headers */
+.auth-page__header {
+  @apply text-center space-y-2;
+}
+
+.auth-page__title {
+  @apply text-2xl font-bold;
+}
+
+.auth-page__subtitle {
+  @apply text-sm text-muted-foreground;
+}
+
+.auth-page__check-email,
+.auth-page__success-email {
+  @apply text-base font-semibold text-foreground;
+}
+
+/* Form Elements */
+.auth-page__form {
+  @apply space-y-4;
+}
+
+.auth-page__input-group {
+  @apply relative;
+}
+
+.auth-page__input {
+  @apply pr-10;
+}
+
+.auth-page__input-icon {
+  @apply absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none;
+}
+
+.auth-page__input-icon--clickable {
+  @apply cursor-pointer hover:text-foreground transition-colors pointer-events-auto;
+}
+
+.auth-page__error {
+  @apply text-sm text-destructive mt-1;
+}
+
+/* Buttons */
+.auth-page__submit,
+.auth-page__skip {
+  @apply w-full;
+}
+
+/* States */
+.auth-page__success,
+.auth-page__error,
+.auth-page__verifying,
+.auth-page__check,
+.auth-page__expired {
+  @apply text-center space-y-4;
+}
+
+.auth-page__success-title,
+.auth-page__error-title,
+.auth-page__verifying-title,
+.auth-page__check-title,
+.auth-page__expired-title {
+  @apply text-xl font-semibold;
+}
+
+.auth-page__success-text,
+.auth-page__error-text,
+.auth-page__verifying-text,
+.auth-page__check-text,
+.auth-page__expired-text {
+  @apply text-muted-foreground;
+}
+
+.auth-page__success-subtext,
+.auth-page__error-subtext,
+.auth-page__check-subtext,
+.auth-page__expired-subtext {
+  @apply text-sm text-muted-foreground;
+}
+
+.auth-page__success-countdown {
+  @apply text-sm text-muted-foreground font-medium;
+}
+
+/* Resend Section */
+.auth-page__resend {
+  @apply text-center space-y-1;
+}
+
+.auth-page__resend p {
+  @apply text-sm text-muted-foreground;
+}
+
+.auth-page__resend button {
+  @apply text-sm text-primary hover:underline font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-opacity;
+}
+
+/* Back Link */
+.auth-page__back {
+  @apply flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer;
+}
+
+.auth-page__back a {
+  @apply hover:underline;
+}
+
+/* Password Strength Indicator */
+.auth-page__strength {
+  @apply space-y-2;
+}
+
+.auth-page__strength-bar {
+  @apply h-2 w-full bg-muted rounded-full overflow-hidden;
+}
+
+.auth-page__strength-fill {
+  @apply h-full transition-all duration-300 ease-in-out;
+}
+
+.auth-page__strength-fill--weak {
+  @apply bg-red-500;
+}
+
+.auth-page__strength-fill--fair {
+  @apply bg-orange-500;
+}
+
+.auth-page__strength-fill--good {
+  @apply bg-yellow-500;
+}
+
+.auth-page__strength-fill--strong {
+  @apply bg-green-500;
+}
+
+.auth-page__strength-text {
+  @apply text-sm text-muted-foreground;
+}
+
+.auth-page__strength-label {
+  @apply font-medium;
+}
+
+.auth-page__strength-label--weak {
+  @apply text-red-500;
+}
+
+.auth-page__strength-label--fair {
+  @apply text-orange-500;
+}
+
+.auth-page__strength-label--good {
+  @apply text-yellow-500;
+}
+
+.auth-page__strength-label--strong {
+  @apply text-green-500;
+}
+
+/* Password Requirements */
+.auth-page__requirements {
+  @apply space-y-2;
+}
+
+.auth-page__requirements-title {
+  @apply text-sm font-medium text-foreground;
+}
+
+.auth-page__requirements-list {
+  @apply space-y-1;
+}
+
+.auth-page__requirements-list li {
+  @apply flex items-center gap-2 text-sm text-muted-foreground;
+}
+
+.auth-page__requirements-list li svg {
+  @apply text-muted-foreground;
+}
+
+.auth-page__requirement--valid {
+  @apply text-green-600 dark:text-green-400;
+}
+
+.auth-page__requirement--valid svg {
+  @apply text-green-600 dark:text-green-400;
+}
+
+/* =====================================================
+   9. ANIMATIONS & TRANSITIONS
+   ===================================================== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse2 {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* =====================================================
+   10. RESPONSIVE & RTL SUPPORT
+   ===================================================== */
+
+/* Mobile Responsive */
+@media (max-width: 767px) {
+  .auth-form__container {
+    @apply h-auto min-h-[600px];
+  }
+
+  .auth-form__form-box {
+    @apply w-full;
+  }
+
+  .auth-form__form-box--login {
+    @apply translate-x-0 opacity-100 visible;
+  }
+
+  .auth-form__container--active .auth-form__form-box--login {
+    @apply -translate-x-full left-0;
+  }
+
+  .auth-form__form-box--register {
+    @apply translate-x-full left-0 visible opacity-100;
+  }
+
+  .auth-form__container--active .auth-form__form-box--register {
+    @apply translate-x-0;
+  }
+
+  .auth-page__card {
+    @apply p-6;
+  }
+
+  .auth-page__title {
+    @apply text-xl;
+  }
+
+  .auth-page__icon-wrapper,
+  .auth-page__success-icon-wrapper,
+  .auth-page__error-icon-wrapper,
+  .auth-page__verifying-icon-wrapper {
+    @apply w-16 h-16;
+  }
+
+  .auth-page__icon,
+  .auth-page__success-icon,
+  .auth-page__error-icon,
+  .auth-page__verifying-icon {
+    @apply w-8 h-8;
+  }
+}
+
+/* RTL Support */
+[dir='rtl'] .auth-page__input,
+[dir='rtl'] .auth-form__input {
+  @apply pl-10 pr-3;
+}
+
+[dir='rtl'] .auth-page__input-icon,
+[dir='rtl'] .auth-form__input-icon,
+[dir='rtl'] .auth-form__input-icon-btn {
+  @apply left-3 right-auto;
+}
+
+[dir='rtl'] .auth-page__back {
+  @apply flex-row-reverse;
+}
+
+[dir='rtl'] .auth-page__requirements-list li {
+  @apply flex-row-reverse;
+}
+
+/* Dark Mode Enhancements */
+.dark .otp-page__input {
+  @apply bg-background/50;
+}
+
+.dark .auth-form__input {
+  @apply bg-background/80;
+}

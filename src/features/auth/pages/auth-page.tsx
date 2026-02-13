@@ -17,7 +17,7 @@ import { authService } from '@/features/auth/services/auth.service';
 import { ROUTES } from '@/shared/constants';
 import { ENV } from '@/shared/constants';
 
-import '../styles/auth-page.css';
+import '../styles/auth.css';
 
 // Validation Schemas
 const loginSchema = z.object({

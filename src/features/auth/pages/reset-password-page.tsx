@@ -15,13 +15,11 @@ import { ROUTES } from '@/shared/constants';
 
 // Import new reusable components and schemas
 import { PasswordInput } from '@/features/auth/components/password-input';
-import { PasswordStrengthIndicator } from '@/features/auth/components/password-strength-indicator';
-import { resetPasswordSchema, ResetPasswordForm } from '@/features/auth/schemas';
+import { PasswordStrengthIndicator } from '@/features/auth/components/password-strength';
+import { resetPasswordSchema } from '@/features/auth/schemas';
 import { usePasswordStrength } from '@/features/auth/hooks/usePasswordStrength';
 
-// Import shared styles
-import '../styles/auth-shared.css';
-import '../styles/reset-password-page.css';
+import '../styles/auth.css';
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate();

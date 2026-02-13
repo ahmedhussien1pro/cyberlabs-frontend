@@ -10,8 +10,7 @@ import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/common/theme-toggle';
 import { useAuthStore } from '@/features/auth/store/auth.store';
 import { ROUTES } from '@/shared/constants';
-
-import '../styles/auth-shared.css';
+import '../styles/auth.css';
 
 type CallbackStatus = 'processing' | 'success' | 'error';
 

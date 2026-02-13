@@ -15,11 +15,13 @@ import { authService } from '@/features/auth/services/auth.service';
 import { ROUTES } from '@/shared/constants';
 
 // Import schema
-import { forgotPasswordSchema, ForgotPasswordForm } from '@/features/auth/schemas';
+import {
+  forgotPasswordSchema,
+  ForgotPasswordForm,
+} from '@/features/auth/schemas';
 
 // Import shared styles
-import '../styles/auth-shared.css';
-import '../styles/forgot-password-page.css';
+import '../styles/auth.css';
 
 export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);

@@ -15,7 +15,7 @@ import { Preloader } from '@/components/common/preloader';
 import { authService } from '@/features/auth/services/auth.service';
 import { ROUTES } from '@/shared/constants';
 
-import '../styles/otp-verification-page.css';
+import '../styles/auth.css';
 
 const OTP_LENGTH = 6;
 const RESEND_COUNTDOWN = 30; // seconds

@@ -11,8 +11,7 @@ import { Preloader } from '@/components/common/preloader';
 import { authService } from '@/features/auth/services/auth.service';
 import { useAuthStore } from '@/features/auth/store/auth.store';
 import { ROUTES } from '@/shared/constants';
-
-import '../styles/verify-email-page.css';
+import '../styles/auth.css';
 
 type VerificationStatus = 'verifying' | 'success' | 'error' | 'expired';
 

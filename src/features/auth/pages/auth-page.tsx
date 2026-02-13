@@ -82,8 +82,11 @@ export default function AuthPage() {
     try {
       const response = await authService.login(data.email, data.password);
 
+      console.log('Login response:', response);
+
       // Check if response has user and token
       if (!response || !response.user || !response.token) {
+        console.error('Invalid login response structure:', response);
         throw new Error('Invalid response from server');
       }
 
@@ -115,12 +118,28 @@ export default function AuthPage() {
         data.password,
       );
 
-      // Check if response has user and token
-      if (!response || !response.user || !response.token) {
-        throw new Error('Invalid response from server');
+      console.log('Register response:', response);
+      console.log('Response type:', typeof response);
+      console.log('Response keys:', response ? Object.keys(response) : 'null');
+
+      // More flexible response handling
+      if (!response) {
+        throw new Error('No response from server');
       }
 
-      login(response.user, response.token);
+      // Check different possible response structures
+      const user = response.user || response.data?.user;
+      const token = response.token || response.accessToken || response.access_token || response.data?.token;
+
+      if (!user || !token) {
+        console.error('Invalid register response structure:', response);
+        console.error('Expected: { user, token }');
+        console.error('Got user:', user);
+        console.error('Got token:', token);
+        throw new Error('Invalid response from server - missing user or token');
+      }
+
+      login(user, token);
 
       toast.success('Registration Successful!', {
         description: `Welcome ${data.username}!`,
@@ -131,6 +150,12 @@ export default function AuthPage() {
       }, 1000);
     } catch (error: any) {
       console.error('Registration error:', error);
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response,
+        data: error.response?.data,
+      });
+      
       toast.error('Registration Failed', {
         description: error.message || 'Please try again',
       });

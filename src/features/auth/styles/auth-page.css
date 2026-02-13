@@ -1,0 +1,188 @@
+﻿/* src/features/auth/pages/auth-page.css */
+.auth-form {
+  @apply min-h-screen flex items-center justify-center p-4 bg-background;
+}
+
+.auth-form__container {
+  @apply relative w-full max-w-4xl h-[600px] overflow-hidden rounded-3xl shadow-2xl bg-card;
+  transition: all 0.6s ease-in-out;
+}
+
+@media (max-width: 767px) {
+  .auth-form__container {
+    @apply h-auto min-h-[600px];
+  }
+}
+
+.auth-form__form-box {
+  @apply absolute w-1/2 h-full flex items-center justify-center p-8 z-10;
+  transition: all 0.6s ease-in-out;
+}
+
+@media (max-width: 767px) {
+  .auth-form__form-box {
+    @apply w-full;
+  }
+}
+
+.auth-form__form-box--login {
+  @apply right-0 top-0;
+}
+
+.auth-form__form-box--register {
+  @apply left-1/2 top-0 invisible opacity-0;
+}
+
+.auth-form__container--active .auth-form__form-box--login {
+  @apply -left-1/2 opacity-0;
+}
+
+.auth-form__container--active .auth-form__form-box--register {
+  @apply left-0 visible opacity-100;
+}
+
+@media (max-width: 767px) {
+  .auth-form__form-box--login {
+    @apply translate-x-0 opacity-100 visible;
+  }
+
+  .auth-form__container--active .auth-form__form-box--login {
+    @apply -translate-x-full left-0;
+  }
+
+  .auth-form__form-box--register {
+    @apply translate-x-full left-0 visible opacity-100;
+  }
+
+  .auth-form__container--active .auth-form__form-box--register {
+    @apply translate-x-0;
+  }
+}
+
+.auth-form__form {
+  @apply w-full max-w-md space-y-4;
+}
+
+.auth-form__heading {
+  @apply text-4xl font-bold text-center mb-6 text-primary;
+}
+
+.auth-form__input-box {
+  @apply relative;
+}
+
+.auth-form__input {
+  @apply w-full pr-12 bg-background border-border focus:border-primary;
+}
+
+.auth-form__input-icon {
+  @apply absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none;
+}
+
+.auth-form__input-icon-btn {
+  @apply absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors bg-transparent border-none cursor-pointer;
+}
+
+.auth-form__error {
+  @apply text-sm text-destructive mt-1;
+}
+
+.auth-form__forgot-link {
+  @apply text-right -mt-2;
+}
+
+.auth-form__forgot-link a {
+  @apply text-sm text-muted-foreground hover:text-primary transition-colors;
+}
+
+.auth-form__submit-btn {
+  @apply w-full h-12 text-base font-semibold;
+}
+
+.auth-form__divider {
+  @apply flex items-center gap-2 my-6;
+}
+
+.auth-form__social-icons {
+  @apply flex justify-center gap-3 flex-wrap;
+}
+
+.auth-form__social-link {
+  @apply w-11 h-11 flex items-center justify-center border border-primary text-primary rounded-md hover:bg-primary hover:text-primary-foreground transition-all hover:scale-105 bg-transparent cursor-pointer;
+}
+
+.auth-form__switch-link {
+  @apply text-center mt-4 text-sm text-muted-foreground;
+}
+
+.auth-form__switch-btn {
+  @apply text-primary font-semibold hover:underline bg-transparent border-none cursor-pointer;
+}
+
+/* Toggle Box */
+.auth-form__toggle-box {
+  @apply absolute w-full h-full top-0 left-0 pointer-events-none;
+}
+
+.auth-form__toggle-box::before {
+  content: '';
+  @apply absolute -left-[250%] w-[300%] h-full rounded-[150px] z-20;
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary)) 0%,
+    hsl(var(--primary) / 0.8) 100%
+  );
+  transition: 1.8s ease-in-out;
+}
+
+.auth-form__container--active .auth-form__toggle-box::before {
+  @apply left-1/2;
+}
+
+.auth-form__toggle-panel {
+  @apply absolute w-1/2 h-full flex flex-col justify-center items-center text-center p-8 z-30 text-primary-foreground pointer-events-auto;
+  transition: 0.6s ease-in-out;
+}
+
+.auth-form__toggle-panel--left {
+  @apply left-0;
+  transition-delay: 1.2s;
+}
+
+.auth-form__container--active .auth-form__toggle-panel--left {
+  @apply -left-1/2;
+  transition-delay: 0.6s;
+}
+
+.auth-form__toggle-panel--right {
+  @apply -right-1/2;
+  transition-delay: 0.6s;
+}
+
+.auth-form__container--active .auth-form__toggle-panel--right {
+  @apply right-0;
+  transition-delay: 1.2s;
+}
+
+.auth-form__toggle-heading {
+  @apply text-3xl font-bold mb-4;
+}
+
+.auth-form__toggle-text {
+  @apply my-4 text-base opacity-90;
+}
+
+.auth-form__toggle-btn {
+  @apply bg-transparent border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary px-10 py-3 font-bold;
+  animation: pulse2 2s infinite;
+}
+
+@keyframes pulse2 {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}

@@ -16,6 +16,7 @@ import { Preloader } from '@/components/common/preloader';
 import { useAuthStore } from '@/features/auth/store/auth.store';
 import { authService } from '@/features/auth/services/auth.service';
 import { ROUTES } from '@/shared/constants';
+import { ENV } from '@/shared/constants';
 
 import '../styles/auth-page.css';
 
@@ -138,16 +139,16 @@ export default function AuthPage() {
     }
   };
 
-  const handleSocialLogin = async (provider: string) => {
+  const handleSocialLogin = (provider: string) => {
     try {
       if (provider === 'Google') {
-        const response = await authService.googleLogin();
-        // Redirect to Google OAuth URL
-        window.location.href = response.url;
+        // Directly navigate to Google OAuth URL
+        const googleAuthUrl = `${ENV.API_URL}/auth/google`;
+        window.location.href = googleAuthUrl;
       } else if (provider === 'GitHub') {
-        const response = await authService.githubLogin();
-        // Redirect to GitHub OAuth URL
-        window.location.href = response.url;
+        // Directly navigate to GitHub OAuth URL
+        const githubAuthUrl = `${ENV.API_URL}/auth/github`;
+        window.location.href = githubAuthUrl;
       } else {
         // For Facebook and LinkedIn - coming soon
         toast.info('Coming Soon', {

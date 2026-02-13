@@ -2,29 +2,29 @@ export const API_ENDPOINTS = {
   // Auth Endpoints
   AUTH: {
     // Email/Password
-    LOGIN: '/api/auth/login',
-    REGISTER: '/api/auth/register',
-    LOGOUT: '/api/auth/logout',
-    REFRESH: '/api/auth/refresh',
+    LOGIN: '/auth/login',
+    REGISTER: '/auth/register',
+    LOGOUT: '/auth/logout',
+    REFRESH: '/auth/refresh',
 
     // Password Reset
-    FORGOT_PASSWORD: '/api/auth/forgot-password',
-    RESET_PASSWORD: '/api/auth/reset-password',
+    FORGOT_PASSWORD: '/auth/forgot-password',
+    RESET_PASSWORD: '/auth/reset-password',
 
     // Email Verification
-    VERIFY_EMAIL: '/api/auth/verify-email',
-    RESEND_VERIFICATION: '/api/auth/resend-verification',
+    VERIFY_EMAIL: '/auth/verify-email',
+    RESEND_VERIFICATION: '/auth/resend-verification',
 
     // OTP (Phone)
-    SEND_OTP: '/api/auth/send-otp',
-    VERIFY_OTP: '/api/auth/verify-otp',
-    RESEND_OTP: '/api/auth/resend-otp',
+    SEND_OTP: '/auth/send-otp',
+    VERIFY_OTP: '/auth/verify-otp',
+    RESEND_OTP: '/auth/resend-otp',
 
     // OAuth
-    GOOGLE_LOGIN: '/api/auth/google',
-    GOOGLE_CALLBACK: '/api/auth/google/callback',
-    GITHUB_LOGIN: '/api/auth/github',
-    GITHUB_CALLBACK: '/api/auth/github/callback',
+    GOOGLE_LOGIN: '/auth/google',
+    GOOGLE_CALLBACK: '/auth/google/callback',
+    GITHUB_LOGIN: '/auth/github',
+    GITHUB_CALLBACK: '/auth/github/callback',
   },
 
   // User Endpoints

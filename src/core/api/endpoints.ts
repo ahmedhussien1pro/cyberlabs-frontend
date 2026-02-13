@@ -6,25 +6,29 @@ export const API_ENDPOINTS = {
     REGISTER: '/auth/register',
     LOGOUT: '/auth/logout',
     REFRESH: '/auth/refresh',
+    ME: '/auth/me',
 
     // Password Reset
     FORGOT_PASSWORD: '/auth/forgot-password',
     RESET_PASSWORD: '/auth/reset-password',
+    CHANGE_PASSWORD: '/auth/change-password',
 
-    // Email Verification
+    // Email Verification (with OTP)
     VERIFY_EMAIL: '/auth/verify-email',
+    VERIFY_EMAIL_OTP: '/auth/verify-email-otp',
     RESEND_VERIFICATION: '/auth/resend-verification',
-
-    // OTP (Phone)
-    SEND_OTP: '/auth/send-otp',
-    VERIFY_OTP: '/auth/verify-email-otp',
-    RESEND_OTP: '/auth/resend-otp',
 
     // OAuth
     GOOGLE_LOGIN: '/auth/google',
     GOOGLE_CALLBACK: '/auth/google/callback',
     GITHUB_LOGIN: '/auth/github',
     GITHUB_CALLBACK: '/auth/github/callback',
+
+    // 2FA
+    TWO_FACTOR_GENERATE: '/auth/2fa/generate',
+    TWO_FACTOR_ENABLE: '/auth/2fa/enable',
+    TWO_FACTOR_DISABLE: '/auth/2fa/disable',
+    TWO_FACTOR_VERIFY: '/auth/2fa/verify',
   },
 
   // User Endpoints

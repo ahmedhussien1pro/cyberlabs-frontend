@@ -1,39 +1,84 @@
+// src/features/auth/components/social-auth-buttons.tsx
 import { toast } from 'sonner';
+import { ENV } from '@/shared/constants';
 
 interface SocialAuthButtonsProps {
   mode?: 'login' | 'register';
-  onSocialAuth?: (provider: string) => void;
+  disabled?: boolean;
 }
 
-const socialProviders = [
-  { name: 'Google', icon: 'fa-google' },
-  { name: 'Facebook', icon: 'fa-facebook-f' },
-  { name: 'GitHub', icon: 'fa-github' },
-  { name: 'LinkedIn', icon: 'fa-linkedin-in' },
+interface SocialProvider {
+  name: string;
+  icon: string;
+  enabled: boolean;
+  url?: string;
+}
+
+const socialProviders: SocialProvider[] = [
+  {
+    name: 'Google',
+    icon: 'fa-google',
+    enabled: true,
+    url: `${ENV.API_URL}/auth/google`,
+  },
+  {
+    name: 'GitHub',
+    icon: 'fa-github',
+    enabled: true,
+    url: `${ENV.API_URL}/auth/github`,
+  },
+  {
+    name: 'Facebook',
+    icon: 'fa-facebook-f',
+    enabled: false, // Coming soon
+  },
+  {
+    name: 'LinkedIn',
+    icon: 'fa-linkedin-in',
+    enabled: false, // Coming soon
+  },
 ];
 
+/**
+ * Social Authentication Buttons
+ * Supports Google and GitHub OAuth
+ */
 export function SocialAuthButtons({
   mode = 'login',
-  onSocialAuth,
+  disabled = false,
 }: SocialAuthButtonsProps) {
-  const handleSocialLogin = (provider: string) => {
-    if (onSocialAuth) {
-      onSocialAuth(provider);
-    } else {
+  const handleSocialAuth = (provider: SocialProvider) => {
+    if (disabled) return;
+
+    if (!provider.enabled) {
       toast.info('Coming Soon', {
-        description: `${provider} ${mode} will be available soon`,
+        description: `${provider.name} ${mode} will be available soon`,
+      });
+      return;
+    }
+
+    try {
+      if (provider.url) {
+        // Redirect to OAuth provider
+        window.location.href = provider.url;
+      }
+    } catch (error) {
+      console.error('OAuth error:', error);
+      toast.error('Authentication Error', {
+        description: `Unable to connect to ${provider.name}`,
       });
     }
   };
 
   return (
-    <div className='flex justify-center gap-3 flex-wrap'>
+    <div className='auth-form__social-icons'>
       {socialProviders.map((provider) => (
         <button
           key={provider.name}
           type='button'
-          onClick={() => handleSocialLogin(provider.name)}
-          className='w-12 h-12 flex items-center justify-center border-2 border-foreground/20 text-foreground rounded-lg hover:border-primary hover:text-primary hover:scale-105 transition-all bg-transparent cursor-pointer'
+          onClick={() => handleSocialAuth(provider)}
+          disabled={disabled}
+          className='auth-form__social-link'
           aria-label={`${mode === 'login' ? 'Login' : 'Register'} with ${provider.name}`}>
           <i className={`fa-brands ${provider.icon}`}></i>
         </button>

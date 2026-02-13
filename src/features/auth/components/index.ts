@@ -1,18 +1,20 @@
-export * from './auth-card';
-export * from './auth-divider';
-export * from './auth-header';
-export * from './auth-input';
-export * from './auth-layout';
-export * from './auth-switcher';
-export * from './back-to-login';
-export * from './login-form';
-export * from './otp-inputs';
-export * from './password-strength';
-export * from './register-form';
-export * from './social-auth-buttons';
-export * from './toggle-panels';
+// src/features/auth/components/index.ts
 
-// New reusable components
-export * from './password-input';
-export * from './resend-button';
-export * from './password-strength-indicator';
+// Layout & Structure
+export { AuthLayout } from './auth-layout';
+export { AuthFormWrapper } from './auth-form-wrapper';
+export { AuthCard } from './auth-card';
+export { AuthHeader } from './auth-header';
+export { TogglePanels } from './toggle-panels';
+
+// Form Components
+export { PasswordInput } from './password-input';
+export { OTPInputs } from './otp-inputs';
+export { FormFieldWrapper } from './form-field-wrapper';
+export { PasswordStrengthIndicator } from './password-strength';
+
+// Utility Components
+export { SocialAuthButtons } from './social-auth-buttons';
+export { AuthDivider } from './auth-divider';
+export { ResendButton } from './resend-button';
+export { BackToLogin } from './back-to-login';

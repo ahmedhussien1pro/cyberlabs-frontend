@@ -9,7 +9,6 @@ import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-// import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator';
 import { ThemeToggle } from '@/components/common/theme-toggle';
 import { Preloader } from '@/components/common/preloader';
@@ -84,13 +83,22 @@ export default function AuthPage() {
 
       console.log('Login response:', response);
 
-      // Check if response has user and token
-      if (!response || !response.user || !response.token) {
+      // ⬅️ تحسين التعامل مع الـ response
+      if (!response || !response.user) {
         console.error('Invalid login response structure:', response);
         throw new Error('Invalid response from server');
       }
 
-      login(response.user, response.token);
+      // ⬅️ التعامل مع accessToken أو token
+      const token = response.accessToken || (response as any).token;
+
+      if (!token) {
+        console.error('No token in response:', response);
+        throw new Error('Authentication token not received');
+      }
+
+      // Store user and token
+      login(response.user, token);
 
       toast.success('Welcome Back!', {
         description: `Hi ${response.user.name}!`,
@@ -119,38 +127,33 @@ export default function AuthPage() {
       );
 
       console.log('Register response:', response);
-      console.log('Response type:', typeof response);
-      console.log('Response keys:', response ? Object.keys(response) : 'null');
 
-      // More flexible response handling
-      if (!response) {
-        throw new Error('No response from server');
-      }
-
-      // Check different possible response structures
-      const user = response.user || response.data?.user;
-      const token =
-        response.token ||
-        response.accessToken ||
-        response.access_token ||
-        response.data?.token;
-
-      if (!user || !token) {
+      // ⬅️ تحسين التعامل مع الـ response
+      if (!response || !response.user) {
         console.error('Invalid register response structure:', response);
-        console.error('Expected: { user, token }');
-        console.error('Got user:', user);
-        console.error('Got token:', token);
-        throw new Error('Invalid response from server - missing user or token');
+        throw new Error('Invalid response from server');
       }
 
-      login(user, token);
+      // ⬅️ التعامل مع accessToken أو token
+      const token = response.accessToken || (response as any).token;
+
+      if (!token) {
+        console.error('No token in response:', response);
+        throw new Error('Authentication token not received');
+      }
+
+      // Store user and token
+      login(response.user, token);
 
       toast.success('Registration Successful!', {
         description: `Welcome ${data.username}!`,
       });
 
+      // ⬅️ تمرير email عبر URL parameters
       setTimeout(() => {
-        navigate(ROUTES.AUTH.OTP_VERIFICATION);
+        navigate(
+          `${ROUTES.AUTH.OTP_VERIFICATION}?email=${encodeURIComponent(data.email)}`,
+        );
       }, 1000);
     } catch (error: any) {
       console.error('Registration error:', error);

@@ -8,9 +8,11 @@ interface LoginResponse {
     name: string;
     email: string;
     role: 'admin' | 'trainee' | 'content-creator';
+    emailVerified?: boolean;
   };
-  token: string;
+  accessToken: string; 
   refreshToken: string;
+  expiresIn: number; 
 }
 
 interface RegisterResponse {
@@ -19,24 +21,26 @@ interface RegisterResponse {
     name: string;
     email: string;
     role: 'trainee';
+    emailVerified: boolean;
   };
-  token: string;
+  accessToken: string; 
+  refreshToken: string;
+  expiresIn: number; 
 }
 
-interface OTPResponse {
+interface VerifyResponse {
   success: boolean;
   message: string;
 }
 
 export const authService = {
-  // Email/Password Auth
+  // ==================== Email/Password Auth ====================
+  
   login: async (email: string, password: string): Promise<LoginResponse> => {
     const response = await apiClient.post<ApiResponse<LoginResponse>>(
       API_ENDPOINTS.AUTH.LOGIN,
       { email, password },
     );
-    // apiClient interceptor already returns response.data
-    // So response is already the ApiResponse object
     return response.data || response;
   },
 
@@ -49,65 +53,97 @@ export const authService = {
       API_ENDPOINTS.AUTH.REGISTER,
       { name, email, password },
     );
-    // apiClient interceptor already returns response.data
     return response.data || response;
   },
 
-  // Password Reset
-  forgotPassword: async (email: string): Promise<void> => {
-    await apiClient.post(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, { email });
+  logout: async (): Promise<void> => {
+    await apiClient.post(API_ENDPOINTS.AUTH.LOGOUT);
+  },
+
+  refreshToken: async (refreshToken: string): Promise<{ accessToken: string; refreshToken: string }> => {
+    const response = await apiClient.post(
+      API_ENDPOINTS.AUTH.REFRESH,
+      { refreshToken }
+    );
+    return response.data || response;
+  },
+
+  // ==================== Password Reset ====================
+  
+  forgotPassword: async (email: string): Promise<VerifyResponse> => {
+    const response = await apiClient.post<ApiResponse<VerifyResponse>>(
+      API_ENDPOINTS.AUTH.FORGOT_PASSWORD,
+      { email }
+    );
+    return response.data || response;
   },
 
   resetPassword: async (
     token: string,
-    password: string,
-    confirmPassword: string,
-  ): Promise<void> => {
-    await apiClient.post(API_ENDPOINTS.AUTH.RESET_PASSWORD, {
-      token,
-      password,
-      confirmPassword,
-    });
-  },
-
-  // Email Verification
-  verifyEmail: async (token: string): Promise<void> => {
-    await apiClient.post(API_ENDPOINTS.AUTH.VERIFY_EMAIL, { token });
-  },
-
-  resendVerificationEmail: async (email: string): Promise<void> => {
-    await apiClient.post(API_ENDPOINTS.AUTH.RESEND_VERIFICATION, { email });
-  },
-
-  // OTP (Phone) Authentication
-  sendOTP: async (phoneNumber: string): Promise<OTPResponse> => {
-    const response = await apiClient.post<ApiResponse<OTPResponse>>(
-      API_ENDPOINTS.AUTH.SEND_OTP,
-      { phoneNumber },
+    newPassword: string,
+  ): Promise<VerifyResponse> => {
+    const response = await apiClient.post<ApiResponse<VerifyResponse>>(
+      API_ENDPOINTS.AUTH.RESET_PASSWORD,
+      { token, newPassword }
     );
     return response.data || response;
   },
 
-  verifyOTP: async (
-    phoneNumber: string,
+  changePassword: async (
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<VerifyResponse> => {
+    const response = await apiClient.post<ApiResponse<VerifyResponse>>(
+      API_ENDPOINTS.AUTH.CHANGE_PASSWORD,
+      { currentPassword, newPassword }
+    );
+    return response.data || response;
+  },
+
+  // ==================== Email Verification ====================
+  
+  /**
+   * Verify email using token from email link
+   * @param token - Token from email verification link
+   */
+  verifyEmailWithToken: async (token: string): Promise<VerifyResponse> => {
+    const response = await apiClient.post<ApiResponse<VerifyResponse>>(
+      API_ENDPOINTS.AUTH.VERIFY_EMAIL,
+      { token }
+    );
+    return response.data || response;
+  },
+
+  /**
+   * Verify email using OTP code (6 digits)
+   * @param email - User's email address
+   * @param otp - 6-digit OTP code
+   */
+  verifyEmailWithOTP: async (
+    email: string,
     otp: string,
-  ): Promise<LoginResponse> => {
-    const response = await apiClient.post<ApiResponse<LoginResponse>>(
-      API_ENDPOINTS.AUTH.VERIFY_OTP,
-      { phoneNumber, otp },
+  ): Promise<VerifyResponse> => {
+    const response = await apiClient.post<ApiResponse<VerifyResponse>>(
+      API_ENDPOINTS.AUTH.VERIFY_EMAIL_OTP,
+      { email, otp }
     );
     return response.data || response;
   },
 
-  resendOTP: async (phoneNumber: string): Promise<OTPResponse> => {
-    const response = await apiClient.post<ApiResponse<OTPResponse>>(
-      API_ENDPOINTS.AUTH.RESEND_OTP,
-      { phoneNumber },
+  /**
+   * Resend verification email/OTP
+   * @param email - User's email address
+   */
+  resendVerificationEmail: async (email: string): Promise<VerifyResponse> => {
+    const response = await apiClient.post<ApiResponse<VerifyResponse>>(
+      API_ENDPOINTS.AUTH.RESEND_VERIFICATION,
+      { email }
     );
     return response.data || response;
   },
 
-  // OAuth Authentication
+  // ==================== OAuth Authentication ====================
+  
   googleLogin: async (): Promise<{ url: string }> => {
     const response = await apiClient.get<ApiResponse<{ url: string }>>(
       API_ENDPOINTS.AUTH.GOOGLE_LOGIN,
@@ -127,7 +163,7 @@ export const authService = {
   },
 
   githubLogin: async (): Promise<{ url: string }> => {
-    const response = await apiClient.get<ApiResponse<{ url: string }>>(
+    const response = await apiClient.get<ApiResponse<{ url: string }>>>(
       API_ENDPOINTS.AUTH.GITHUB_LOGIN,
     );
     return response.data || response;
@@ -144,8 +180,15 @@ export const authService = {
     return response.data || response;
   },
 
-  // Logout
-  logout: async (): Promise<void> => {
-    await apiClient.post(API_ENDPOINTS.AUTH.LOGOUT);
+  // ==================== Get Current User ====================
+  
+  getCurrentUser: async (): Promise<LoginResponse['user']> => {
+    const response = await apiClient.get<ApiResponse<{ user: LoginResponse['user'] }>>(
+      API_ENDPOINTS.AUTH.ME
+    );
+    return response.data?.user || response.user;
   },
 };
+
+// Export types for use in other files
+export type { LoginResponse, RegisterResponse, VerifyResponse };

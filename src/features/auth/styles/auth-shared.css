@@ -1,3 +1,8 @@
+/* =====================================================
+   AUTH SHARED STYLES
+   Common styles for all authentication pages
+   ===================================================== */
+
 /* ===== Common Layout ===== */
 .auth-page {
   @apply min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background to-muted;
@@ -58,8 +63,9 @@
 }
 
 .auth-page__phone,
-.auth-page__email {
-  @apply text-sm font-medium text-foreground;
+.auth-page__check-email,
+.auth-page__success-email {
+  @apply text-base font-semibold text-foreground;
 }
 
 /* ===== Form Elements ===== */
@@ -96,7 +102,7 @@
   @apply w-full;
 }
 
-/* ===== Status States ===== */
+/* ===== States ===== */
 .auth-page__success,
 .auth-page__error,
 .auth-page__verifying,
@@ -128,13 +134,8 @@
   @apply text-sm text-muted-foreground;
 }
 
-.auth-page__success-email,
-.auth-page__check-email {
-  @apply text-sm font-medium text-foreground;
-}
-
 .auth-page__success-countdown {
-  @apply text-sm text-muted-foreground;
+  @apply text-sm text-muted-foreground font-medium;
 }
 
 /* ===== Resend Section ===== */
@@ -147,29 +148,29 @@
 }
 
 .auth-page__resend button {
-  @apply text-sm text-primary hover:underline font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors;
+  @apply text-sm text-primary hover:underline font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-opacity;
 }
 
 /* ===== Back Link ===== */
 .auth-page__back {
-  @apply flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors;
+  @apply flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer;
 }
 
 .auth-page__back a {
   @apply hover:underline;
 }
 
-/* ===== Password Strength ===== */
+/* ===== Password Strength Indicator ===== */
 .auth-page__strength {
   @apply space-y-2;
 }
 
 .auth-page__strength-bar {
-  @apply w-full h-2 bg-muted rounded-full overflow-hidden;
+  @apply h-2 w-full bg-muted rounded-full overflow-hidden;
 }
 
 .auth-page__strength-fill {
-  @apply h-full transition-all duration-300;
+  @apply h-full transition-all duration-300 ease-in-out;
 }
 
 .auth-page__strength-fill--weak {
@@ -229,8 +230,16 @@
   @apply flex items-center gap-2 text-sm text-muted-foreground;
 }
 
+.auth-page__requirements-list li svg {
+  @apply text-muted-foreground;
+}
+
 .auth-page__requirement--valid {
-  @apply text-green-500;
+  @apply text-green-600 dark:text-green-400;
+}
+
+.auth-page__requirement--valid svg {
+  @apply text-green-600 dark:text-green-400;
 }
 
 /* ===== RTL Support ===== */
@@ -250,20 +259,43 @@
   @apply flex-row-reverse;
 }
 
-/* ===== Responsive ===== */
+/* ===== Animations ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-page__card {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* ===== Responsive Adjustments ===== */
 @media (max-width: 640px) {
   .auth-page__card {
     @apply p-6;
   }
-  
+
   .auth-page__title {
     @apply text-xl;
   }
-  
-  .auth-page__success-title,
-  .auth-page__error-title,
-  .auth-page__verifying-title,
-  .auth-page__check-title {
-    @apply text-lg;
+
+  .auth-page__icon-wrapper,
+  .auth-page__success-icon-wrapper,
+  .auth-page__error-icon-wrapper,
+  .auth-page__verifying-icon-wrapper {
+    @apply w-16 h-16;
+  }
+
+  .auth-page__icon,
+  .auth-page__success-icon,
+  .auth-page__error-icon,
+  .auth-page__verifying-icon {
+    @apply w-8 h-8;
   }
 }

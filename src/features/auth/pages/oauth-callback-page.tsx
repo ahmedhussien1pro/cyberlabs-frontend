@@ -25,14 +25,16 @@ interface DecodedToken {
 }
 
 // Map backend roles to frontend roles
-const mapRole = (backendRole: string): 'admin' | 'trainee' | 'content-creator' => {
+const mapRole = (
+  backendRole: string,
+): 'admin' | 'trainee' | 'content-creator' => {
   const roleMap: Record<string, 'admin' | 'trainee' | 'content-creator'> = {
-    'ADMIN': 'admin',
-    'STUDENT': 'trainee',
-    'TRAINEE': 'trainee',
-    'CONTENT_CREATOR': 'content-creator',
+    ADMIN: 'admin',
+    STUDENT: 'trainee',
+    TRAINEE: 'trainee',
+    CONTENT_CREATOR: 'content-creator',
   };
-  
+
   return roleMap[backendRole.toUpperCase()] || 'trainee';
 };
 
@@ -40,10 +42,10 @@ export default function OAuthCallbackPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { login } = useAuthStore();
-  
+
   const [status, setStatus] = useState<CallbackStatus>('processing');
   const [errorMessage, setErrorMessage] = useState<string>('');
-  
+
   // Get parameters from URL
   const accessToken = searchParams.get('access_token');
   const refreshToken = searchParams.get('refresh_token');
@@ -75,18 +77,15 @@ export default function OAuthCallbackPage() {
     handleOAuthTokens(accessToken, refreshToken || '');
   }, [accessToken, refreshToken, error]);
 
-  const handleOAuthTokens = async (
-    token: string,
-    refresh: string
-  ) => {
+  const handleOAuthTokens = async (token: string, refresh: string) => {
     try {
       // Decode JWT to get user info
       const decoded = jwtDecode<DecodedToken>(token);
-      
+
       // Extract name from email (before @)
       const emailName = decoded.email.split('@')[0];
       const userName = emailName.charAt(0).toUpperCase() + emailName.slice(1);
-      
+
       // Create user object from decoded token
       const user = {
         id: decoded.sub,
@@ -95,11 +94,9 @@ export default function OAuthCallbackPage() {
         role: mapRole(decoded.role),
       };
 
-      console.log('OAuth User:', user);
-
       // Login user with token
       login(user, token);
-      
+
       // Store refresh token if provided
       if (refresh) {
         const storagePrefix = 'cyberlabs_';
@@ -120,7 +117,7 @@ export default function OAuthCallbackPage() {
       console.error('OAuth token processing error:', err);
       setStatus('error');
       setErrorMessage(err.message || 'Failed to process authentication token');
-      
+
       toast.error('Authentication Failed', {
         description: err.message || 'Unable to complete OAuth login',
       });
@@ -143,10 +140,7 @@ export default function OAuthCallbackPage() {
             {status === 'processing' && (
               <div className='auth-page__verifying'>
                 <div className='auth-page__verifying-icon-wrapper'>
-                  <Loader2
-                    className='auth-page__verifying-icon'
-                    size={64}
-                  />
+                  <Loader2 className='auth-page__verifying-icon' size={64} />
                 </div>
                 <h2 className='auth-page__verifying-title'>
                   Authenticating...
@@ -164,14 +158,9 @@ export default function OAuthCallbackPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3 }}>
                 <div className='auth-page__success-icon-wrapper'>
-                  <CheckCircle
-                    className='auth-page__success-icon'
-                    size={64}
-                  />
+                  <CheckCircle className='auth-page__success-icon' size={64} />
                 </div>
-                <h2 className='auth-page__success-title'>
-                  Login Successful!
-                </h2>
+                <h2 className='auth-page__success-title'>Login Successful!</h2>
                 <p className='auth-page__success-text'>
                   Redirecting to your dashboard...
                 </p>

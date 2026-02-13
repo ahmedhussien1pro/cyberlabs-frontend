@@ -17,10 +17,6 @@ export const PricingPage = lazy(
 
 // Auth Pages
 export const AuthPage = lazy(() => import('@/features/auth/pages/auth-page'));
-export const LoginPage = lazy(() => import('@/features/auth/pages/login-page'));
-export const RegisterPage = lazy(
-  () => import('@/features/auth/pages/register-page'),
-);
 export const ForgotPasswordPage = lazy(
   () => import('@/features/auth/pages/forgot-password-page'),
 );
@@ -32,6 +28,9 @@ export const VerifyEmailPage = lazy(
 );
 export const LogoutPage = lazy(
   () => import('@/features/auth/pages/logout-page'),
+);
+export const OAuthCallbackPage = lazy(
+  () => import('@/features/auth/pages/oauth-callback-page'),
 );
 
 // Error Pages

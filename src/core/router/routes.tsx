@@ -59,6 +59,19 @@ export const routes: RouteObject[] = [
     path: ROUTES.AUTH.LOGOUT,
     element: <LazyPage Component={Pages.LogoutPage} />,
   },
+  {
+    // Aouth callback route for handling OAuth responses
+    path: ROUTES.AUTH.OAUTH_CALLBACK,
+    element: <LazyPage Component={Pages.OAuthCallbackPage} />,
+  },
+  {
+    path: ROUTES.AUTH.GOOGLE_CALLBACK,
+    element: <LazyPage Component={Pages.OAuthCallbackPage} />,
+  },
+  {
+    path: ROUTES.AUTH.GITHUB_CALLBACK,
+    element: <LazyPage Component={Pages.OAuthCallbackPage} />,
+  },
 
   // Error Routes
   {

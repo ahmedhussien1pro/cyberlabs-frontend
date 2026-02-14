@@ -6,8 +6,8 @@ export const ROUTES = {
   PRICING: '/pricing',
 
   AUTH: {
-    LOGIN: '/login',
-    REGISTER: '/register',
+    LOGIN: '/auth',
+    REGISTER: '/auth',
     FORGOT_PASSWORD: '/forgot-password',
     RESET_PASSWORD: '/reset-password',
     VERIFY_EMAIL: '/verify-email',

@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
-import { jwtDecode } from 'jwt-decode';
 
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,31 +10,8 @@ import { ThemeToggle } from '@/components/common/theme-toggle';
 import { useAuthStore } from '@/features/auth/store/auth.store';
 import { ROUTES } from '@/shared/constants';
 import '../styles/auth.css';
-
+import { tokenUtils, roleUtils } from '@/features/auth/utils';
 type CallbackStatus = 'processing' | 'success' | 'error';
-
-interface DecodedToken {
-  sub: string; // user id
-  email: string;
-  role: string;
-  type: string;
-  iat: number;
-  exp: number;
-}
-
-// Map backend roles to frontend roles
-const mapRole = (
-  backendRole: string,
-): 'admin' | 'trainee' | 'content-creator' => {
-  const roleMap: Record<string, 'admin' | 'trainee' | 'content-creator'> = {
-    ADMIN: 'admin',
-    STUDENT: 'trainee',
-    TRAINEE: 'trainee',
-    CONTENT_CREATOR: 'content-creator',
-  };
-
-  return roleMap[backendRole.toUpperCase()] || 'trainee';
-};
 
 export default function OAuthCallbackPage() {
   const navigate = useNavigate();
@@ -78,9 +54,8 @@ export default function OAuthCallbackPage() {
 
   const handleOAuthTokens = async (token: string, refresh: string) => {
     try {
-      // Decode JWT to get user info
-      const decoded = jwtDecode<DecodedToken>(token);
-
+      // Decode JWT to get user info using centralized utility
+      const decoded = tokenUtils.decode(token);
       // Extract name from email (before @)
       const emailName = decoded.email.split('@')[0];
       const userName = emailName.charAt(0).toUpperCase() + emailName.slice(1);
@@ -90,7 +65,7 @@ export default function OAuthCallbackPage() {
         id: decoded.sub,
         email: decoded.email,
         name: userName,
-        role: mapRole(decoded.role),
+        role: roleUtils.mapBackendRole(decoded.role),
       };
 
       // Login user with token

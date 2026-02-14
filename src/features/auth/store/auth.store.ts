@@ -1,32 +1,33 @@
-import { create } from "zustand"
-import { persist } from "zustand/middleware"
-import type { User, AuthTokens } from "@/core/types"
-import { ENV } from "@/shared/constants"
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import type { User, AuthTokens } from '@/core/types';
+import { ENV } from '@/shared/constants';
+import { tokenManager } from '@/features/auth/utils';
 
 interface AuthState {
-  user: User | null
-  tokens: AuthTokens | null
-  isAuthenticated: boolean
-  isLoading: boolean
+  user: User | null;
+  tokens: AuthTokens | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
 }
 
 interface AuthActions {
-  setUser: (user: User | null) => void
-  setTokens: (tokens: AuthTokens | null) => void
-  login: (user: User, tokens: AuthTokens) => void
-  logout: () => void
-  updateUser: (userData: Partial<User>) => void
-  setLoading: (loading: boolean) => void
+  setUser: (user: User | null) => void;
+  setTokens: (tokens: AuthTokens | null) => void;
+  login: (user: User, tokens: AuthTokens) => void;
+  logout: () => void;
+  updateUser: (userData: Partial<User>) => void;
+  setLoading: (loading: boolean) => void;
 }
 
-type AuthStore = AuthState & AuthActions
+type AuthStore = AuthState & AuthActions;
 
 const initialState: AuthState = {
   user: null,
   tokens: null,
   isAuthenticated: false,
-  isLoading: false, // Changed from true to false
-}
+  isLoading: false,
+};
 
 export const useAuthStore = create<AuthStore>()(
   persist(
@@ -39,33 +40,26 @@ export const useAuthStore = create<AuthStore>()(
           isAuthenticated: !!user,
         }),
 
-      setTokens: (tokens) =>
-        set({ tokens }),
+      setTokens: (tokens) => set({ tokens }),
 
       login: (user, tokens) => {
-        if (tokens.accessToken) {
-          localStorage.setItem(`${ENV.STORAGE_PREFIX}accessToken`, tokens.accessToken)
+        if (tokens.accessToken && tokens.refreshToken) {
+          tokenManager.setTokens(tokens.accessToken, tokens.refreshToken);
         }
-        if (tokens.refreshToken) {
-          localStorage.setItem(`${ENV.STORAGE_PREFIX}refreshToken`, tokens.refreshToken)
-        }
-
         set({
           user,
           tokens,
           isAuthenticated: true,
           isLoading: false,
-        })
+        });
       },
 
       logout: () => {
-        localStorage.removeItem(`${ENV.STORAGE_PREFIX}accessToken`)
-        localStorage.removeItem(`${ENV.STORAGE_PREFIX}refreshToken`)
-
+        tokenManager.clearTokens();
         set({
           ...initialState,
           isLoading: false,
-        })
+        });
       },
 
       updateUser: (userData) =>
@@ -73,8 +67,7 @@ export const useAuthStore = create<AuthStore>()(
           user: state.user ? { ...state.user, ...userData } : null,
         })),
 
-      setLoading: (isLoading) =>
-        set({ isLoading }),
+      setLoading: (isLoading) => set({ isLoading }),
     }),
     {
       name: `${ENV.STORAGE_PREFIX}auth`,
@@ -82,9 +75,10 @@ export const useAuthStore = create<AuthStore>()(
         user: state.user,
         tokens: state.tokens,
         isAuthenticated: state.isAuthenticated,
+        // Don't persist loading state
       }),
-    }
-  )
-)
+    },
+  ),
+);
 
-export default useAuthStore
+export default useAuthStore;

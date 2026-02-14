@@ -7,6 +7,7 @@ export const ENV = {
   ENCRYPTION_KEY: import.meta.env.VITE_ENCRYPTION_KEY,
   IS_DEV: import.meta.env.DEV,
   IS_PROD: import.meta.env.PROD,
-  ENABLE_DEVTOOLS: import.meta.env.VITE_ENABLE_DEVTOOLS === "true",
-  ENABLE_MOCK_API: import.meta.env.VITE_ENABLE_MOCK_API === "true",
-} as const
+  ENABLE_DEVTOOLS: import.meta.env.VITE_ENABLE_DEVTOOLS === 'true',
+  ENABLE_MOCK_API: import.meta.env.VITE_ENABLE_MOCK_API === 'true',
+  NODE_ENV: import.meta.env.MODE,
+} as const;

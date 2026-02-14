@@ -1,4 +1,4 @@
-export type UserRole = 'admin' | 'trainee' | 'content-creator';
+import type { UserRole } from '@/features/auth/types';
 
 type BackendRole = 'ADMIN' | 'STUDENT' | 'TRAINEE' | 'CONTENT_CREATOR';
 

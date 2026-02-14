@@ -1,5 +1,7 @@
 import { ENV } from '@/shared/constants';
 import { tokenUtils } from './token.util';
+import { tokenCrypto } from './token-crypto.util';
+import { sanitize } from './sanitize.util';
 
 class TokenManager {
   private static instance: TokenManager;
@@ -14,10 +16,13 @@ class TokenManager {
     }
     return TokenManager.instance;
   }
-  getAccessToken(): string | null {
+  async getAccessToken(): Promise<string | null> {
     try {
-      const token = localStorage.getItem(`${ENV.STORAGE_PREFIX}accessToken`);
-
+      const encryptedToken = localStorage.getItem(
+        `${ENV.STORAGE_PREFIX}accessToken`,
+      );
+      if (!encryptedToken) return null;
+      const token = await tokenCrypto.decryptToken(encryptedToken);
       if (
         token &&
         tokenUtils.isValidFormat(token) &&
@@ -28,26 +33,37 @@ class TokenManager {
 
       return null;
     } catch (error) {
-      console.error('Error reading access token:', error);
+      sanitize.error('TokenManager.getAccessToken', error);
       return null;
     }
   }
 
-  getRefreshToken(): string | null {
+  async getRefreshToken(): Promise<string | null> {
     try {
-      return localStorage.getItem(`${ENV.STORAGE_PREFIX}refreshToken`);
+      const encryptedToken = localStorage.getItem(
+        `${ENV.STORAGE_PREFIX}refreshToken`,
+      );
+
+      if (!encryptedToken) return null;
+      return await tokenCrypto.decryptToken(encryptedToken);
     } catch (error) {
       console.error('Error reading refresh token:', error);
+      sanitize.error('TokenManager.getRefreshToken', error);
       return null;
     }
   }
 
-  setTokens(accessToken: string, refreshToken: string): void {
+  async setTokens(accessToken: string, refreshToken: string): Promise<void> {
     try {
-      localStorage.setItem(`${ENV.STORAGE_PREFIX}accessToken`, accessToken);
-      localStorage.setItem(`${ENV.STORAGE_PREFIX}refreshToken`, refreshToken);
+      const encryptedAccess = await tokenCrypto.encryptToken(accessToken);
+      const encryptedRefresh = await tokenCrypto.encryptToken(refreshToken);
+      localStorage.setItem(`${ENV.STORAGE_PREFIX}accessToken`, encryptedAccess);
+      localStorage.setItem(
+        `${ENV.STORAGE_PREFIX}refreshToken`,
+        encryptedRefresh,
+      );
     } catch (error) {
-      console.error('Error storing tokens:', error);
+      sanitize.error('TokenManager.setTokens', error);
       throw new Error('Failed to store authentication tokens');
     }
   }
@@ -61,12 +77,12 @@ class TokenManager {
 
       this.cancelRefresh();
     } catch (error) {
-      console.error('Error clearing tokens:', error);
+      sanitize.error('TokenManager.clearTokens', error);
     }
   }
 
-  hasValidTokens(): boolean {
-    const accessToken = this.getAccessToken();
+  async hasValidTokens(): Promise<boolean> {
+    const accessToken = await this.getAccessToken();
     return accessToken !== null;
   }
 
@@ -91,7 +107,7 @@ class TokenManager {
         try {
           await refreshCallback();
         } catch (error) {
-          console.error('Auto-refresh failed:', error);
+          sanitize.error('TokenManager.autoRefresh', error);
         }
       }, refreshTime);
     }
@@ -104,15 +120,15 @@ class TokenManager {
     }
   }
 
-  getRemainingTime(): number {
-    const accessToken = this.getAccessToken();
+  async getRemainingTime(): Promise<number> {
+    const accessToken = await this.getAccessToken();
     if (!accessToken) return 0;
 
     return tokenUtils.getRemainingTime(accessToken);
   }
 
-  isExpiringSoon(thresholdMinutes: number = 5): boolean {
-    const accessToken = this.getAccessToken();
+  async isExpiringSoon(thresholdMinutes: number = 5): Promise<boolean> {
+    const accessToken = await this.getAccessToken();
     if (!accessToken) return true;
 
     return tokenUtils.isExpiringSoon(accessToken, thresholdMinutes);

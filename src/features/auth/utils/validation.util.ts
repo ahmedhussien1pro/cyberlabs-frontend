@@ -1,8 +1,4 @@
-export interface PasswordStrength {
-  score: 0 | 1 | 2 | 3 | 4;
-  feedback: string[];
-  isValid: boolean;
-}
+import type { PasswordStrength } from '@/features/auth/types';
 
 export const authValidation = {
   isValidEmail(email: string): boolean {

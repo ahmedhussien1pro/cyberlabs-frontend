@@ -1,26 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { User, AuthTokens } from '@/core/types';
+import type { AuthState, AuthStore } from '@/features/auth/types';
 import { ENV } from '@/shared/constants';
-import { tokenManager } from '@/features/auth/utils';
-
-interface AuthState {
-  user: User | null;
-  tokens: AuthTokens | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-}
-
-interface AuthActions {
-  setUser: (user: User | null) => void;
-  setTokens: (tokens: AuthTokens | null) => void;
-  login: (user: User, tokens: AuthTokens) => void;
-  logout: () => void;
-  updateUser: (userData: Partial<User>) => void;
-  setLoading: (loading: boolean) => void;
-}
-
-type AuthStore = AuthState & AuthActions;
+import { tokenManager, sanitize } from '@/features/auth/utils';
 
 const initialState: AuthState = {
   user: null,
@@ -42,9 +24,16 @@ export const useAuthStore = create<AuthStore>()(
 
       setTokens: (tokens) => set({ tokens }),
 
-      login: (user, tokens) => {
+      login: async (user, tokens) => {
         if (tokens.accessToken && tokens.refreshToken) {
-          tokenManager.setTokens(tokens.accessToken, tokens.refreshToken);
+          try {
+            await tokenManager.setTokens(
+              tokens.accessToken,
+              tokens.refreshToken,
+            );
+          } catch (error) {
+            sanitize.error('AuthStore.login', error);
+          }
         }
         set({
           user,

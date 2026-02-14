@@ -1,7 +1,8 @@
 // src/features/auth/pages/otp-verification-page.tsx
 'use client';
 
-import { useState, useEffect, useRef, KeyboardEvent } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import type { KeyboardEvent } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, CheckCircle, ArrowLeft, RefreshCw } from 'lucide-react';

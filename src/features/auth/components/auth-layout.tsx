@@ -1,42 +1,29 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { ThemeToggle } from '@/components/common/theme-toggle';
-import { Preloader } from '@/components/common/preloader';
-import { TogglePanels } from './toggle-panels';
+import { AuthErrorBoundary } from './auth-error-boundary';
 
 interface AuthLayoutProps {
   children: ReactNode;
-  isLoading?: boolean;
-  title?: string;
-  showTogglePanels?: boolean;
-  isActive?: boolean;
-  onToggle?: () => void;
+  showThemeToggle?: boolean;
+  className?: string;
 }
 
 export function AuthLayout({
   children,
-  isLoading = false,
-  title = '',
-  showTogglePanels = false,
-  isActive = false,
-  onToggle,
+  showThemeToggle = true,
+  className = '',
 }: AuthLayoutProps) {
   return (
-    <>
-      {isLoading && <Preloader />}
-      <div className='fixed top-4 right-4 z-50'>
-        <ThemeToggle />
-      </div>
-      <section className='auth-page'>
-        <div className='auth-page__container'>
-          <div className='auth-page__form-side'>
-            {title && <h1 className='auth-page__title'>{title}</h1>}
-            <div className='auth-page__form-wrapper'>{children}</div>
-          </div>
-          {showTogglePanels && onToggle && (
-            <TogglePanels isActive={isActive} onToggle={onToggle} />
-          )}
+    <AuthErrorBoundary>
+      {/* Theme Toggle */}
+      {showThemeToggle && (
+        <div className='fixed top-6 right-6 z-50'>
+          <ThemeToggle />
         </div>
-      </section>
-    </>
+      )}
+
+      {/* Main Content */}
+      <section className={`auth-page ${className}`}>{children}</section>
+    </AuthErrorBoundary>
   );
 }

@@ -18,3 +18,6 @@ export { SocialAuthButtons } from './social-auth-buttons';
 export { AuthDivider } from './auth-divider';
 export { ResendButton } from './resend-button';
 export { BackToLogin } from './back-to-login';
+export * from './auth-error-boundary';
+export * from './auth-layout';
+export * from './auth-error-state';

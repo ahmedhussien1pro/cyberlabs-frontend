@@ -1,305 +1,214 @@
-// src/features/auth/pages/otp-verification-page.tsx
-'use client';
-
-import { useState, useEffect, useRef } from 'react';
-import type { KeyboardEvent } from 'react';
-import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, CheckCircle, ArrowLeft, RefreshCw } from 'lucide-react';
+import { Loader2, Mail, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/common/theme-toggle';
-import { Preloader } from '@/components/common/preloader';
+import { useOTPInput, useResendTimer } from '@/features/auth/hooks';
 import { authService } from '@/features/auth/services/auth.service';
 import { ROUTES } from '@/shared/constants';
-
 import '../styles/auth.css';
-
-const OTP_LENGTH = 6;
-const RESEND_COUNTDOWN = 30; // seconds
 
 export default function OTPVerificationPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const email = searchParams.get('email') || '';
+  const email = searchParams.get('email');
 
-  const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
-  const [loading, setLoading] = useState(false);
-  const [verified, setVerified] = useState(false);
-  const [canResend, setCanResend] = useState(false);
-  const [resendCountdown, setResendCountdown] = useState(RESEND_COUNTDOWN);
+  const [isVerifying, setIsVerifying] = useState(false);
 
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  // Use OTP input hook for managing 6 digits
+  const {
+    values: otp,
+    refs: otpRefs,
+    handleChange,
+    handleKeyDown,
+    handlePaste,
+    clear: clearOTP,
+    focus: focusFirstInput,
+    isComplete,
+    otp: otpValue,
+  } = useOTPInput(6);
 
-  // Redirect if no email provided
+  // Use resend timer hook (60 seconds countdown)
+  const { timeLeft, canResend, startTimer } = useResendTimer(60);
+
+  // Check if email exists, redirect if not
   useEffect(() => {
     if (!email) {
       toast.error('Email Required', {
-        description: 'Please register or login first',
+        description: 'Please provide an email address',
       });
       navigate(ROUTES.AUTH.LOGIN);
     }
-  }, [email, navigate]);
 
-  // Focus first input on mount
-  useEffect(() => {
-    inputRefs.current[0]?.focus();
-  }, []);
+    // Focus first input on mount
+    focusFirstInput();
+  }, [email, navigate, focusFirstInput]);
 
-  // Resend countdown timer
-  useEffect(() => {
-    if (resendCountdown > 0) {
-      const timer = setTimeout(() => {
-        setResendCountdown(resendCountdown - 1);
-      }, 1000);
-      return () => clearTimeout(timer);
-    } else {
-      setCanResend(true);
-    }
-  }, [resendCountdown]);
+  /**
+   * Handle OTP verification
+   */
+  const handleVerify = async () => {
+    if (!email) return;
 
-  // Auto-submit when all fields filled
-  useEffect(() => {
-    const otpCode = otp.join('');
-    if (otpCode.length === OTP_LENGTH && !loading && !verified) {
-      handleVerifyOTP(otpCode);
-    }
-  }, [otp, loading, verified]);
-
-  const handleChange = (index: number, value: string) => {
-    // Only allow numbers
-    if (value && !/^\d$/.test(value)) return;
-
-    const newOtp = [...otp];
-    newOtp[index] = value;
-    setOtp(newOtp);
-
-    // Move to next input
-    if (value && index < OTP_LENGTH - 1) {
-      inputRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handleKeyDown = (index: number, e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Backspace') {
-      if (!otp[index] && index > 0) {
-        // Move to previous input if current is empty
-        inputRefs.current[index - 1]?.focus();
-      } else {
-        // Clear current input
-        const newOtp = [...otp];
-        newOtp[index] = '';
-        setOtp(newOtp);
-      }
-    } else if (e.key === 'ArrowLeft' && index > 0) {
-      inputRefs.current[index - 1]?.focus();
-    } else if (e.key === 'ArrowRight' && index < OTP_LENGTH - 1) {
-      inputRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handlePaste = (e: React.ClipboardEvent) => {
-    e.preventDefault();
-    const pastedData = e.clipboardData.getData('text').trim();
-
-    // Only process if it's all digits
-    if (/^\d+$/.test(pastedData)) {
-      const digits = pastedData.slice(0, OTP_LENGTH).split('');
-      const newOtp = [...otp];
-
-      digits.forEach((digit, index) => {
-        if (index < OTP_LENGTH) {
-          newOtp[index] = digit;
-        }
+    if (otpValue.length !== 6) {
+      toast.error('Invalid OTP', {
+        description: 'Please enter all 6 digits',
       });
-
-      setOtp(newOtp);
-
-      // Focus last filled input or next empty
-      const lastFilledIndex = Math.min(digits.length, OTP_LENGTH) - 1;
-      inputRefs.current[lastFilledIndex]?.focus();
+      return;
     }
-  };
 
-  const handleVerifyOTP = async (otpCode: string) => {
-    setLoading(true);
+    setIsVerifying(true);
+
     try {
-      await authService.verifyEmailWithOTP(email, otpCode);
+      await authService.verifyEmailWithOTP(email, otpValue);
 
-      setVerified(true);
-
-      toast.success('Email Verified Successfully!', {
-        description: 'Your account is now active',
+      toast.success('Email Verified!', {
+        description: 'Your email has been successfully verified',
       });
 
-      // Redirect after 2 seconds
-      setTimeout(() => {
-        navigate(ROUTES.HOME);
-      }, 2000);
+      // Redirect to login after successful verification
+      navigate(ROUTES.AUTH.LOGIN);
     } catch (error: any) {
       toast.error('Verification Failed', {
         description: error.message || 'Invalid OTP code',
       });
-
-      // Clear OTP and refocus first input
-      setOtp(Array(OTP_LENGTH).fill(''));
-      inputRefs.current[0]?.focus();
+      clearOTP();
+      focusFirstInput();
     } finally {
-      setLoading(false);
+      setIsVerifying(false);
     }
   };
 
-  const handleResendOTP = async () => {
-    if (!canResend || loading) return;
-
-    setLoading(true);
-    setCanResend(false);
+  /**
+   * Handle resend OTP
+   */
+  const handleResend = async () => {
+    if (!email || !canResend) return;
 
     try {
       await authService.resendVerificationEmail(email);
 
-      toast.success('OTP Sent!', {
-        description: 'A new verification code has been sent to your email',
+      toast.success('OTP Sent', {
+        description: 'A new OTP has been sent to your email',
       });
 
-      // Reset countdown
-      setResendCountdown(RESEND_COUNTDOWN);
-
-      // Clear OTP inputs
-      setOtp(Array(OTP_LENGTH).fill(''));
-      inputRefs.current[0]?.focus();
+      startTimer();
+      clearOTP();
+      focusFirstInput();
     } catch (error: any) {
-      toast.error('Failed to Send', {
-        description: error.message || 'Please try again',
+      toast.error('Failed to Resend', {
+        description: error.message || 'Unable to send OTP',
       });
-      setCanResend(true);
-    } finally {
-      setLoading(false);
     }
   };
 
-  const maskEmail = (email: string) => {
-    if (!email) return '****@****.com';
-    const [localPart, domain] = email.split('@');
-    if (!localPart || !domain) return '****@****.com';
+  /**
+   * Handle Enter key press to submit
+   */
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && isComplete && !isVerifying) {
+        handleVerify();
+      }
+    };
 
-    const maskedLocal =
-      localPart.length > 2
-        ? localPart[0] +
-          '*'.repeat(localPart.length - 2) +
-          localPart[localPart.length - 1]
-        : localPart;
+    window.addEventListener('keypress', handleKeyPress);
+    return () => window.removeEventListener('keypress', handleKeyPress);
+  }, [isComplete, isVerifying, otpValue]);
 
-    return `${maskedLocal}@${domain}`;
-  };
-
-  // Success State
-  if (verified) {
-    return (
-      <>
-        <div className='fixed top-6 right-6 z-50'>
-          <ThemeToggle />
-        </div>
-
-        <section className='otp-page'>
-          <motion.div
-            className='otp-page__container'
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4 }}>
-            <Card className='otp-page__card'>
-              <div className='otp-page__success'>
-                <motion.div
-                  className='otp-page__success-icon-wrapper'
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', delay: 0.2 }}>
-                  <CheckCircle className='otp-page__success-icon' size={64} />
-                </motion.div>
-                <h2 className='otp-page__success-title'>Verified!</h2>
-                <p className='otp-page__success-text'>
-                  Your email has been successfully verified
-                </p>
-                <p className='otp-page__success-subtext'>
-                  Redirecting you to dashboard...
-                </p>
-              </div>
-            </Card>
-          </motion.div>
-        </section>
-      </>
-    );
-  }
-
-  // Main OTP Form
   return (
     <>
-      {loading && <Preloader />}
-
       <div className='fixed top-6 right-6 z-50'>
         <ThemeToggle />
       </div>
 
-      <section className='otp-page'>
+      <section className='auth-page'>
         <motion.div
-          className='otp-page__container'
+          className='auth-page__container'
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}>
-          <Card className='otp-page__card'>
-            {/* Header */}
-            <div className='otp-page__header'>
-              <div className='otp-page__icon-wrapper'>
-                <Mail className='otp-page__icon' size={48} />
-              </div>
-              <h1 className='otp-page__title'>Verify Your Email</h1>
-              <p className='otp-page__subtitle'>We've sent a 6-digit code to</p>
-              <p className='otp-page__email'>{maskEmail(email)}</p>
-            </div>
-
-            {/* OTP Inputs */}
-            <div className='otp-page__inputs' onPaste={handlePaste}>
-              {otp.map((digit, index) => (
-                <Input
-                  key={index}
-                  ref={(el) => (inputRefs.current[index] = el)}
-                  type='text'
-                  inputMode='numeric'
-                  maxLength={1}
-                  value={digit}
-                  onChange={(e) => handleChange(index, e.target.value)}
-                  onKeyDown={(e) => handleKeyDown(index, e)}
-                  className='otp-page__input'
-                  disabled={loading || verified}
-                  autoComplete='off'
-                />
-              ))}
-            </div>
-
-            {/* Resend Section */}
-            <div className='otp-page__resend'>
-              <p className='otp-page__resend-text'>Didn't receive the code?</p>
+          <Card className='auth-page__card'>
+            <div className='auth-page__header'>
               <Button
-                type='button'
-                variant='link'
-                onClick={handleResendOTP}
-                disabled={!canResend || loading}
-                className='otp-page__resend-btn'>
-                <RefreshCw
-                  size={16}
-                  className={loading ? 'animate-spin' : ''}
-                />
-                {canResend ? 'Resend Code' : `Resend in ${resendCountdown}s`}
+                variant='ghost'
+                size='icon'
+                onClick={() => navigate(ROUTES.AUTH.LOGIN)}
+                className='auth-page__back'
+                aria-label='Back to login'>
+                <ArrowLeft size={20} />
               </Button>
+
+              <div className='auth-page__icon-wrapper'>
+                <Mail className='auth-page__icon' size={48} />
+              </div>
+
+              <h1 className='auth-page__title'>Verify Your Email</h1>
+              <p className='auth-page__subtitle'>
+                Enter the 6-digit code sent to
+                <br />
+                <strong>{email}</strong>
+              </p>
             </div>
 
-            {/* Back Link */}
-            <div className='otp-page__back'>
-              <ArrowLeft size={16} />
-              <Link to={ROUTES.AUTH.LOGIN}>Back to Login</Link>
+            <div className='auth-page__form'>
+              {/* OTP Input Fields */}
+              <div className='auth-page__otp-container'>
+                {otp.map((digit, index) => (
+                  <input
+                    key={index}
+                    ref={(el) => {
+                      if (otpRefs.current) {
+                        otpRefs.current[index] = el;
+                      }
+                    }}
+                    type='text'
+                    inputMode='numeric'
+                    maxLength={1}
+                    value={digit}
+                    onChange={(e) => handleChange(index, e.target.value)}
+                    onKeyDown={(e) => handleKeyDown(index, e)}
+                    onPaste={handlePaste}
+                    className='auth-page__otp-input'
+                    disabled={isVerifying}
+                    aria-label={`OTP digit ${index + 1}`}
+                  />
+                ))}
+              </div>
+
+              {/* Verify Button */}
+              <Button
+                onClick={handleVerify}
+                disabled={isVerifying || !isComplete}
+                className='auth-page__submit'>
+                {isVerifying && (
+                  <Loader2 className='animate-spin mr-2' size={16} />
+                )}
+                {isVerifying ? 'Verifying...' : 'Verify Email'}
+              </Button>
+
+              {/* Resend Section */}
+              <div className='auth-page__resend'>
+                <p className='auth-page__resend-text'>
+                  Didn't receive the code?{' '}
+                  {!canResend && (
+                    <span className='text-muted-foreground'>
+                      Resend in {timeLeft}s
+                    </span>
+                  )}
+                </p>
+                <Button
+                  variant='link'
+                  onClick={handleResend}
+                  className='auth-page__resend-button'
+                  disabled={!canResend}>
+                  {canResend ? 'Resend Code' : 'Wait to Resend'}
+                </Button>
+              </div>
             </div>
           </Card>
         </motion.div>

@@ -1,8 +1,12 @@
+// src/features/auth/schemas/login.schema.ts
 import { z } from 'zod';
 
 export const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  email: z
+    .string()
+    .min(1, 'Email is required')
+    .email('Invalid email address'),
+  password: z.string().min(1, 'Password is required'),
 });
 
 export type LoginForm = z.infer<typeof loginSchema>;

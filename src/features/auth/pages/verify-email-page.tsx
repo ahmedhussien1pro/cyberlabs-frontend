@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, CheckCircle, XCircle, Loader2, RefreshCw } from 'lucide-react';
+import { Mail, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ThemeToggle } from '@/components/common/theme-toggle';
 import { Preloader } from '@/components/common/preloader';
+import { BackToLogin, ResendButton } from '@/features/auth/components';
+import { useResendTimer } from '@/features/auth/hooks';
 import { authService } from '@/features/auth/services/auth.service';
 import { useAuthStore } from '@/features/auth/store/auth.store';
 import { ROUTES } from '@/shared/constants';
@@ -24,8 +26,9 @@ export default function VerifyEmailPage() {
   const [status, setStatus] = useState<VerificationStatus>('verifying');
   const [loading, setLoading] = useState(false);
   const [countdown, setCountdown] = useState(5);
-  const [canResend, setCanResend] = useState(false);
-  const [resendCooldown, setResendCooldown] = useState(0);
+
+  // Use resend timer hook (60 seconds cooldown)
+  const { timeLeft, canResend, startTimer } = useResendTimer(60);
 
   // Verify email on mount if token exists
   useEffect(() => {
@@ -34,7 +37,6 @@ export default function VerifyEmailPage() {
     } else {
       // No token means user just registered and needs to check email
       setStatus('success');
-      setCanResend(true);
     }
   }, [token]);
 
@@ -50,22 +52,10 @@ export default function VerifyEmailPage() {
     }
   }, [countdown, status, token, navigate]);
 
-  // Resend cooldown timer
-  useEffect(() => {
-    if (resendCooldown > 0) {
-      const timer = setTimeout(() => {
-        setResendCooldown(resendCooldown - 1);
-      }, 1000);
-      return () => clearTimeout(timer);
-    } else if (resendCooldown === 0 && !canResend) {
-      setCanResend(true);
-    }
-  }, [resendCooldown, canResend]);
-
   const verifyEmail = async (verificationToken: string) => {
     setStatus('verifying');
     try {
-      await authService.verifyEmail(verificationToken);
+      await authService.verifyEmailWithToken(verificationToken);
       setStatus('success');
       toast.success('Email Verified!', {
         description: 'Your email has been successfully verified',
@@ -83,25 +73,30 @@ export default function VerifyEmailPage() {
   };
 
   const handleResendEmail = async () => {
-    if (!canResend || resendCooldown > 0) return;
+    if (!canResend) return;
 
     setLoading(true);
-    setCanResend(false);
 
     try {
       const email = user?.email || '';
+      if (!email) {
+        toast.error('Email not found', {
+          description: 'Please login again',
+        });
+        return;
+      }
+
       await authService.resendVerificationEmail(email);
 
       toast.success('Email Sent!', {
         description: 'A new verification link has been sent to your email',
       });
 
-      setResendCooldown(60); // 60 seconds cooldown
+      startTimer();
     } catch (error: any) {
       toast.error('Failed to Send', {
         description: error.message || 'Please try again',
       });
-      setCanResend(true);
     } finally {
       setLoading(false);
     }
@@ -238,17 +233,13 @@ export default function VerifyEmailPage() {
                   Open Email App
                 </Button>
 
-                <div className='verify-email-page__resend'>
-                  <p>Didn't receive the email?</p>
-                  <button
-                    type='button'
-                    onClick={handleResendEmail}
-                    disabled={!canResend || resendCooldown > 0}>
-                    {resendCooldown > 0
-                      ? `Resend in ${resendCooldown}s`
-                      : 'Click to resend'}
-                  </button>
-                </div>
+                {/* Resend Button Component */}
+                <ResendButton
+                  canResend={canResend}
+                  countdown={timeLeft}
+                  onResend={handleResendEmail}
+                  loading={loading}
+                />
 
                 <Button
                   variant='ghost'
@@ -257,9 +248,8 @@ export default function VerifyEmailPage() {
                   Skip for now
                 </Button>
 
-                <div className='verify-email-page__back'>
-                  <Link to={ROUTES.AUTH.LOGIN}>Back to Login</Link>
-                </div>
+                {/* Back to Login Component */}
+                <BackToLogin />
               </div>
             </Card>
           </motion.div>
@@ -304,21 +294,17 @@ export default function VerifyEmailPage() {
 
                 <Button
                   onClick={handleResendEmail}
-                  disabled={!canResend || resendCooldown > 0}
+                  disabled={!canResend || loading}
                   className='verify-email-page__submit'>
-                  {resendCooldown > 0 ? (
-                    <>
-                      <RefreshCw className='mr-2 h-4 w-4 animate-spin' />
-                      Resend in {resendCooldown}s
-                    </>
-                  ) : (
-                    'Request New Link'
-                  )}
+                  {!canResend
+                    ? `Resend in ${timeLeft}s`
+                    : loading
+                      ? 'Sending...'
+                      : 'Request New Link'}
                 </Button>
 
-                <div className='verify-email-page__back'>
-                  <Link to={ROUTES.AUTH.LOGIN}>Back to Login</Link>
-                </div>
+                {/* Back to Login Component */}
+                <BackToLogin />
               </div>
             </Card>
           </motion.div>
@@ -357,14 +343,13 @@ export default function VerifyEmailPage() {
 
               <Button
                 onClick={handleResendEmail}
-                disabled={!canResend || resendCooldown > 0}
+                disabled={!canResend || loading}
                 className='verify-email-page__submit'>
-                Request New Link
+                {loading ? 'Sending...' : 'Request New Link'}
               </Button>
 
-              <div className='verify-email-page__back'>
-                <Link to={ROUTES.AUTH.LOGIN}>Back to Login</Link>
-              </div>
+              {/* Back to Login Component */}
+              <BackToLogin />
             </div>
           </Card>
         </motion.div>

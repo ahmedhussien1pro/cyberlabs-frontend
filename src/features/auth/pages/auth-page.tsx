@@ -3,19 +3,22 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Mail, User, Eye, EyeOff } from 'lucide-react';
+import { Mail, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
 import { ThemeToggle } from '@/components/common/theme-toggle';
 import { Preloader } from '@/components/common/preloader';
+import {
+  PasswordInput,
+  SocialAuthButtons,
+  AuthDivider,
+} from '@/features/auth/components';
 import { useAuthStore } from '@/features/auth/store/auth.store';
 import { authService } from '@/features/auth/services/auth.service';
 import { ROUTES } from '@/shared/constants';
-import { ENV } from '@/shared/constants';
 
 import '../styles/auth.css';
 
@@ -45,8 +48,6 @@ export default function AuthPage() {
   const { login } = useAuthStore();
   const [isActive, setIsActive] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Login Form
   const loginForm = useForm<LoginForm>({
@@ -72,8 +73,6 @@ export default function AuthPage() {
     setIsActive(!isActive);
     loginForm.reset();
     registerForm.reset();
-    setShowPassword(false);
-    setShowConfirmPassword(false);
   };
 
   const handleLogin = async (data: LoginForm) => {
@@ -83,13 +82,11 @@ export default function AuthPage() {
 
       console.log('Login response:', response);
 
-      // ⬅️ تحسين التعامل مع الـ response
       if (!response || !response.user) {
         console.error('Invalid login response structure:', response);
         throw new Error('Invalid response from server');
       }
 
-      // ⬅️ التعامل مع accessToken أو token
       const token = response.accessToken || (response as any).token;
 
       if (!token) {
@@ -128,13 +125,11 @@ export default function AuthPage() {
 
       console.log('Register response:', response);
 
-      // ⬅️ تحسين التعامل مع الـ response
       if (!response || !response.user) {
         console.error('Invalid register response structure:', response);
         throw new Error('Invalid response from server');
       }
 
-      // ⬅️ التعامل مع accessToken أو token
       const token = response.accessToken || (response as any).token;
 
       if (!token) {
@@ -149,7 +144,6 @@ export default function AuthPage() {
         description: `Welcome ${data.username}!`,
       });
 
-      // ⬅️ تمرير email عبر URL parameters
       setTimeout(() => {
         navigate(
           `${ROUTES.AUTH.OTP_VERIFICATION}?email=${encodeURIComponent(data.email)}`,
@@ -168,30 +162,6 @@ export default function AuthPage() {
       });
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleSocialLogin = (provider: string) => {
-    try {
-      if (provider === 'Google') {
-        // Directly navigate to Google OAuth URL
-        const googleAuthUrl = `${ENV.API_URL}/auth/google`;
-        window.location.href = googleAuthUrl;
-      } else if (provider === 'GitHub') {
-        // Directly navigate to GitHub OAuth URL
-        const githubAuthUrl = `${ENV.API_URL}/auth/github`;
-        window.location.href = githubAuthUrl;
-      } else {
-        // For Facebook and LinkedIn - coming soon
-        toast.info('Coming Soon', {
-          description: `${provider} login will be available soon`,
-        });
-      }
-    } catch (error: any) {
-      console.error('OAuth error:', error);
-      toast.error('OAuth Failed', {
-        description: error.message || 'Unable to connect to OAuth provider',
-      });
     }
   };
 
@@ -218,6 +188,7 @@ export default function AuthPage() {
               className='auth-form__form'>
               <h1 className='auth-form__heading'>Login</h1>
 
+              {/* Email Field */}
               <div className='auth-form__input-box'>
                 <Input
                   type='email'
@@ -234,31 +205,22 @@ export default function AuthPage() {
                 </p>
               )}
 
+              {/* Password Field - Using PasswordInput Component */}
               <div className='auth-form__input-box'>
-                <Input
-                  type={showPassword ? 'text' : 'password'}
+                <PasswordInput
                   placeholder='Password'
-                  className='auth-form__input'
                   {...loginForm.register('password')}
                   disabled={loading}
+                  error={loginForm.formState.errors.password?.message}
                 />
-                <button
-                  type='button'
-                  onClick={() => setShowPassword(!showPassword)}
-                  className='auth-form__input-icon-btn'>
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
               </div>
-              {loginForm.formState.errors.password && (
-                <p className='auth-form__error'>
-                  {loginForm.formState.errors.password.message}
-                </p>
-              )}
 
+              {/* Forgot Password Link */}
               <div className='auth-form__forgot-link'>
                 <Link to={ROUTES.AUTH.FORGOT_PASSWORD}>Forgot password?</Link>
               </div>
 
+              {/* Submit Button */}
               <Button
                 type='submit'
                 className='auth-form__submit-btn'
@@ -266,45 +228,13 @@ export default function AuthPage() {
                 {loading ? 'Logging in...' : 'Login'}
               </Button>
 
-              <div className='auth-form__divider'>
-                <Separator className='flex-1' />
-                <span className='px-2 text-muted-foreground text-sm'>
-                  or login with
-                </span>
-                <Separator className='flex-1' />
-              </div>
+              {/* Auth Divider Component */}
+              <AuthDivider text='or login with' />
 
-              <div className='auth-form__social-icons'>
-                <button
-                  type='button'
-                  onClick={() => handleSocialLogin('Google')}
-                  className='auth-form__social-link'
-                  aria-label='Login with Google'>
-                  <i className='fa-brands fa-google'></i>
-                </button>
-                <button
-                  type='button'
-                  onClick={() => handleSocialLogin('Facebook')}
-                  className='auth-form__social-link'
-                  aria-label='Login with Facebook'>
-                  <i className='fa-brands fa-facebook-f'></i>
-                </button>
-                <button
-                  type='button'
-                  onClick={() => handleSocialLogin('GitHub')}
-                  className='auth-form__social-link'
-                  aria-label='Login with GitHub'>
-                  <i className='fa-brands fa-github'></i>
-                </button>
-                <button
-                  type='button'
-                  onClick={() => handleSocialLogin('LinkedIn')}
-                  className='auth-form__social-link'
-                  aria-label='Login with LinkedIn'>
-                  <i className='fa-brands fa-linkedin-in'></i>
-                </button>
-              </div>
+              {/* Social Auth Buttons Component */}
+              <SocialAuthButtons mode='login' disabled={loading} />
 
+              {/* Register Link - Mobile */}
               <div className='auth-form__switch-link md:hidden'>
                 Don't have an account?{' '}
                 <button
@@ -324,6 +254,7 @@ export default function AuthPage() {
               className='auth-form__form'>
               <h1 className='auth-form__heading'>Register</h1>
 
+              {/* Username Field */}
               <div className='auth-form__input-box'>
                 <Input
                   type='text'
@@ -340,6 +271,7 @@ export default function AuthPage() {
                 </p>
               )}
 
+              {/* Email Field */}
               <div className='auth-form__input-box'>
                 <Input
                   type='email'
@@ -356,52 +288,27 @@ export default function AuthPage() {
                 </p>
               )}
 
+              {/* Password Field - Using PasswordInput Component */}
               <div className='auth-form__input-box'>
-                <Input
-                  type={showPassword ? 'text' : 'password'}
+                <PasswordInput
                   placeholder='Password (min 6 characters)'
-                  className='auth-form__input'
                   {...registerForm.register('password')}
                   disabled={loading}
+                  error={registerForm.formState.errors.password?.message}
                 />
-                <button
-                  type='button'
-                  onClick={() => setShowPassword(!showPassword)}
-                  className='auth-form__input-icon-btn'>
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
               </div>
-              {registerForm.formState.errors.password && (
-                <p className='auth-form__error'>
-                  {registerForm.formState.errors.password.message}
-                </p>
-              )}
 
+              {/* Confirm Password Field - Using PasswordInput Component */}
               <div className='auth-form__input-box'>
-                <Input
-                  type={showConfirmPassword ? 'text' : 'password'}
+                <PasswordInput
                   placeholder='Confirm Password'
-                  className='auth-form__input'
                   {...registerForm.register('confirmPassword')}
                   disabled={loading}
+                  error={registerForm.formState.errors.confirmPassword?.message}
                 />
-                <button
-                  type='button'
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className='auth-form__input-icon-btn'>
-                  {showConfirmPassword ? (
-                    <EyeOff size={18} />
-                  ) : (
-                    <Eye size={18} />
-                  )}
-                </button>
               </div>
-              {registerForm.formState.errors.confirmPassword && (
-                <p className='auth-form__error'>
-                  {registerForm.formState.errors.confirmPassword.message}
-                </p>
-              )}
 
+              {/* Submit Button */}
               <Button
                 type='submit'
                 className='auth-form__submit-btn'
@@ -409,45 +316,13 @@ export default function AuthPage() {
                 {loading ? 'Registering...' : 'Register'}
               </Button>
 
-              <div className='auth-form__divider'>
-                <Separator className='flex-1' />
-                <span className='px-2 text-muted-foreground text-sm'>
-                  or register with
-                </span>
-                <Separator className='flex-1' />
-              </div>
+              {/* Auth Divider Component */}
+              <AuthDivider text='or register with' />
 
-              <div className='auth-form__social-icons'>
-                <button
-                  type='button'
-                  onClick={() => handleSocialLogin('Google')}
-                  className='auth-form__social-link'
-                  aria-label='Register with Google'>
-                  <i className='fa-brands fa-google'></i>
-                </button>
-                <button
-                  type='button'
-                  onClick={() => handleSocialLogin('Facebook')}
-                  className='auth-form__social-link'
-                  aria-label='Register with Facebook'>
-                  <i className='fa-brands fa-facebook-f'></i>
-                </button>
-                <button
-                  type='button'
-                  onClick={() => handleSocialLogin('GitHub')}
-                  className='auth-form__social-link'
-                  aria-label='Register with GitHub'>
-                  <i className='fa-brands fa-github'></i>
-                </button>
-                <button
-                  type='button'
-                  onClick={() => handleSocialLogin('LinkedIn')}
-                  className='auth-form__social-link'
-                  aria-label='Register with LinkedIn'>
-                  <i className='fa-brands fa-linkedin-in'></i>
-                </button>
-              </div>
+              {/* Social Auth Buttons Component */}
+              <SocialAuthButtons mode='register' disabled={loading} />
 
+              {/* Login Link - Mobile */}
               <div className='auth-form__switch-link md:hidden'>
                 Already have an account?{' '}
                 <button

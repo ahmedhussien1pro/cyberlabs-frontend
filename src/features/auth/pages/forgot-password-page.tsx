@@ -1,8 +1,8 @@
+// src/features/auth/pages/forgot-password-page.tsx
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Mail, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -11,13 +11,13 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { ThemeToggle } from '@/components/common/theme-toggle';
 import { Preloader } from '@/components/common/preloader';
+import { BackToLogin } from '@/features/auth/components';
 import { authService } from '@/features/auth/services/auth.service';
-import { ROUTES } from '@/shared/constants';
 
 // Import schema
 import {
   forgotPasswordSchema,
-  ForgotPasswordForm,
+  type ForgotPasswordForm,
 } from '@/features/auth/schemas';
 
 // Import shared styles
@@ -26,6 +26,7 @@ import '../styles/auth.css';
 export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
 
   const form = useForm<ForgotPasswordForm>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -60,7 +61,20 @@ export default function ForgotPasswordPage() {
       return;
     }
 
-    await handleSubmit({ email });
+    setResendLoading(true);
+    try {
+      await authService.forgotPassword(email);
+
+      toast.success('Email Resent!', {
+        description: 'Check your inbox again',
+      });
+    } catch (error: any) {
+      toast.error('Resend Failed', {
+        description: error.message || 'Please try again',
+      });
+    } finally {
+      setResendLoading(false);
+    }
   };
 
   return (
@@ -119,11 +133,8 @@ export default function ForgotPasswordPage() {
                   </Button>
                 </form>
 
-                {/* Back to Login */}
-                <div className='auth-page__back'>
-                  <ArrowLeft size={16} />
-                  <Link to={ROUTES.AUTH.LOGIN}>Back to Login</Link>
-                </div>
+                {/* Back to Login Component */}
+                <BackToLogin />
               </>
             ) : (
               <>
@@ -160,15 +171,13 @@ export default function ForgotPasswordPage() {
                     <button
                       type='button'
                       onClick={handleResendEmail}
-                      disabled={loading}>
-                      Click to resend
+                      disabled={resendLoading}>
+                      {resendLoading ? 'Sending...' : 'Click to resend'}
                     </button>
                   </div>
 
-                  <div className='auth-page__back'>
-                    <ArrowLeft size={16} />
-                    <Link to={ROUTES.AUTH.LOGIN}>Back to Login</Link>
-                  </div>
+                  {/* Back to Login Component */}
+                  <BackToLogin />
                 </motion.div>
               </>
             )}

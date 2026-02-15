@@ -1,3 +1,4 @@
+// src/features/auth/pages/otp-verification-page.tsx
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -7,7 +8,8 @@ import { toast } from 'sonner';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/common/theme-toggle';
-import { useOTPInput, useResendTimer } from '@/features/auth/hooks';
+import { OTPInputs, ResendButton } from '@/features/auth/components';
+import { useResendTimer } from '@/features/auth/hooks';
 import { authService } from '@/features/auth/services/auth.service';
 import { ROUTES } from '@/shared/constants';
 import '../styles/auth.css';
@@ -18,19 +20,7 @@ export default function OTPVerificationPage() {
   const email = searchParams.get('email');
 
   const [isVerifying, setIsVerifying] = useState(false);
-
-  // Use OTP input hook for managing 6 digits
-  const {
-    values: otp,
-    refs: otpRefs,
-    handleChange,
-    handleKeyDown,
-    handlePaste,
-    clear: clearOTP,
-    focus: focusFirstInput,
-    isComplete,
-    otp: otpValue,
-  } = useOTPInput(6);
+  const [otp, setOtp] = useState<string[]>(Array(6).fill(''));
 
   // Use resend timer hook (60 seconds countdown)
   const { timeLeft, canResend, startTimer } = useResendTimer(60);
@@ -43,10 +33,7 @@ export default function OTPVerificationPage() {
       });
       navigate(ROUTES.AUTH.LOGIN);
     }
-
-    // Focus first input on mount
-    focusFirstInput();
-  }, [email, navigate, focusFirstInput]);
+  }, [email, navigate]);
 
   /**
    * Handle OTP verification
@@ -54,6 +41,7 @@ export default function OTPVerificationPage() {
   const handleVerify = async () => {
     if (!email) return;
 
+    const otpValue = otp.join('');
     if (otpValue.length !== 6) {
       toast.error('Invalid OTP', {
         description: 'Please enter all 6 digits',
@@ -76,8 +64,8 @@ export default function OTPVerificationPage() {
       toast.error('Verification Failed', {
         description: error.message || 'Invalid OTP code',
       });
-      clearOTP();
-      focusFirstInput();
+      // Clear OTP on error
+      setOtp(Array(6).fill(''));
     } finally {
       setIsVerifying(false);
     }
@@ -97,8 +85,7 @@ export default function OTPVerificationPage() {
       });
 
       startTimer();
-      clearOTP();
-      focusFirstInput();
+      setOtp(Array(6).fill(''));
     } catch (error: any) {
       toast.error('Failed to Resend', {
         description: error.message || 'Unable to send OTP',
@@ -107,18 +94,35 @@ export default function OTPVerificationPage() {
   };
 
   /**
-   * Handle Enter key press to submit
+   * Check if OTP is complete
    */
-  useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.key === 'Enter' && isComplete && !isVerifying) {
-        handleVerify();
-      }
-    };
+  const isComplete = otp.every((digit) => digit !== '');
 
-    window.addEventListener('keypress', handleKeyPress);
-    return () => window.removeEventListener('keypress', handleKeyPress);
-  }, [isComplete, isVerifying, otpValue]);
+  /**
+   * Handle OTP completion (auto-submit)
+   */
+  const handleComplete = async (otpCode: string) => {
+    if (!email) return;
+
+    setIsVerifying(true);
+
+    try {
+      await authService.verifyEmailWithOTP(email, otpCode);
+
+      toast.success('Email Verified!', {
+        description: 'Your email has been successfully verified',
+      });
+
+      navigate(ROUTES.AUTH.LOGIN);
+    } catch (error: any) {
+      toast.error('Verification Failed', {
+        description: error.message || 'Invalid OTP code',
+      });
+      setOtp(Array(6).fill(''));
+    } finally {
+      setIsVerifying(false);
+    }
+  };
 
   return (
     <>
@@ -156,28 +160,16 @@ export default function OTPVerificationPage() {
             </div>
 
             <div className='auth-page__form'>
-              {/* OTP Input Fields */}
+              {/* OTP Input Component */}
               <div className='auth-page__otp-container'>
-                {otp.map((digit, index) => (
-                  <input
-                    key={index}
-                    ref={(el) => {
-                      if (otpRefs.current) {
-                        otpRefs.current[index] = el;
-                      }
-                    }}
-                    type='text'
-                    inputMode='numeric'
-                    maxLength={1}
-                    value={digit}
-                    onChange={(e) => handleChange(index, e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(index, e)}
-                    onPaste={handlePaste}
-                    className='auth-page__otp-input'
-                    disabled={isVerifying}
-                    aria-label={`OTP digit ${index + 1}`}
-                  />
-                ))}
+                <OTPInputs
+                  value={otp}
+                  onChange={setOtp}
+                  length={6}
+                  disabled={isVerifying}
+                  autoSubmit={true}
+                  onComplete={handleComplete}
+                />
               </div>
 
               {/* Verify Button */}
@@ -191,24 +183,14 @@ export default function OTPVerificationPage() {
                 {isVerifying ? 'Verifying...' : 'Verify Email'}
               </Button>
 
-              {/* Resend Section */}
-              <div className='auth-page__resend'>
-                <p className='auth-page__resend-text'>
-                  Didn't receive the code?{' '}
-                  {!canResend && (
-                    <span className='text-muted-foreground'>
-                      Resend in {timeLeft}s
-                    </span>
-                  )}
-                </p>
-                <Button
-                  variant='link'
-                  onClick={handleResend}
-                  className='auth-page__resend-button'
-                  disabled={!canResend}>
-                  {canResend ? 'Resend Code' : 'Wait to Resend'}
-                </Button>
-              </div>
+              {/* Resend Button Component */}
+              <ResendButton
+                canResend={canResend}
+                countdown={timeLeft}
+                onResend={handleResend}
+                loading={false}
+                text='Resend Code'
+              />
             </div>
           </Card>
         </motion.div>

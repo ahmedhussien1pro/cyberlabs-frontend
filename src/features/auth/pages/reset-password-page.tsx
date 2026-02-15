@@ -1,3 +1,4 @@
+// src/features/auth/pages/reset-password-page.tsx
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -13,11 +14,16 @@ import { Preloader } from '@/components/common/preloader';
 import { authService } from '@/features/auth/services/auth.service';
 import { ROUTES } from '@/shared/constants';
 
-// Import new reusable components and schemas
-import { PasswordInput } from '@/features/auth/components/password-input';
-import { PasswordStrengthIndicator } from '@/features/auth/components/password-strength';
-import { resetPasswordSchema } from '@/features/auth/schemas';
-import { usePasswordStrength } from '@/features/auth/hooks/usePasswordStrength';
+// Import reusable components, schemas, and hooks
+import {
+  PasswordInput,
+  PasswordStrengthIndicator,
+} from '@/features/auth/components';
+import {
+  resetPasswordSchema,
+  type ResetPasswordForm,
+} from '@/features/auth/schemas';
+import { usePasswordStrength } from '@/features/auth/hooks';
 
 import '../styles/auth.css';
 
@@ -58,11 +64,7 @@ export default function ResetPasswordPage() {
 
     setLoading(true);
     try {
-      await authService.resetPassword(
-        token,
-        data.password,
-        data.confirmPassword,
-      );
+      await authService.resetPassword(token, data.password);
 
       setResetSuccess(true);
 
@@ -160,29 +162,35 @@ export default function ResetPasswordPage() {
                 <form
                   onSubmit={form.handleSubmit(handleSubmit)}
                   className='auth-page__form'>
-                  {/* Password Input with Strength Indicator */}
-                  <PasswordInput
-                    placeholder='New Password'
-                    {...form.register('password')}
-                    disabled={loading}
-                    error={form.formState.errors.password?.message}
-                  />
+                  {/* Password Input with Error */}
+                  <div className='auth-page__field'>
+                    <PasswordInput
+                      placeholder='New Password'
+                      {...form.register('password')}
+                      disabled={loading}
+                      error={form.formState.errors.password?.message}
+                    />
+                  </div>
 
                   {/* Password Strength Indicator */}
-                  <PasswordStrengthIndicator password={password} />
+                  {password && (
+                    <PasswordStrengthIndicator password={password} />
+                  )}
 
-                  {/* Confirm Password Input */}
-                  <PasswordInput
-                    placeholder='Confirm New Password'
-                    {...form.register('confirmPassword')}
-                    disabled={loading}
-                    error={form.formState.errors.confirmPassword?.message}
-                  />
+                  {/* Confirm Password Input with Error */}
+                  <div className='auth-page__field'>
+                    <PasswordInput
+                      placeholder='Confirm New Password'
+                      {...form.register('confirmPassword')}
+                      disabled={loading}
+                      error={form.formState.errors.confirmPassword?.message}
+                    />
+                  </div>
 
                   <Button
                     type='submit'
                     className='auth-page__submit'
-                    disabled={loading || strength.score < 4}>
+                    disabled={loading || !strength.isValid}>
                     {loading ? 'Resetting...' : 'Reset Password'}
                   </Button>
                 </form>

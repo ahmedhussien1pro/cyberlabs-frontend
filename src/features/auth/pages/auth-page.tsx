@@ -77,7 +77,6 @@ export default function AuthPage() {
   };
 
   const handleLogin = async (data: LoginForm) => {
-    // ✅ Manual validation (no console errors!)
     const result = loginSchema.safeParse(data);
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
@@ -95,11 +94,13 @@ export default function AuthPage() {
 
     try {
       const response = await authService.login(data.email, data.password);
+      //  i want if password is wrong show toast error with message "Invalid password" and if email is wrong show toast error with message "User not found"
 
       if (!response || !response.user) {
         throw new Error('Invalid response from server');
       }
 
+      // check if account is
       const token = response.accessToken || (response as any).token;
       if (!token) {
         throw new Error('Authentication token not received');

@@ -9,10 +9,6 @@ interface ResendButtonProps {
   countdownText?: (seconds: number) => string;
 }
 
-/**
- * Reusable resend button component with countdown timer
- * Used in OTP, Email Verification, and other auth flows
- */
 export function ResendButton({
   canResend,
   countdown,
@@ -24,10 +20,7 @@ export function ResendButton({
   return (
     <div className='auth-page__resend'>
       <p>Didn't receive the code?</p>
-      <button
-        type='button'
-        onClick={onResend}
-        disabled={!canResend || loading}>
+      <button type='button' onClick={onResend} disabled={!canResend || loading}>
         {loading && <RefreshCw className='inline w-4 h-4 mr-2 animate-spin' />}
         {canResend ? text : countdownText(countdown)}
       </button>

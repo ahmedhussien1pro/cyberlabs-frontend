@@ -23,7 +23,7 @@ import {
   resetPasswordSchema,
   type ResetPasswordForm,
 } from '@/features/auth/schemas';
-import { usePasswordStrength } from '@/features/auth/hooks';
+import { usePasswordStrength } from '@/features/auth/hooks/usePasswordStrength';
 
 import '../styles/auth.css';
 import { LanguageSwitcher } from '@/components/common/language-switcher';

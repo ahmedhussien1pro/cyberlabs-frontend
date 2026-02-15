@@ -11,13 +11,6 @@ import { sanitize } from '@/features/auth/utils';
 
 export const authService = {
   // ==================== Email/Password Auth ====================
-
-  /**
-   * Login user with email and password
-   * @param email - User's email address
-   * @param password - User's password
-   * @returns LoginResponse with user data and tokens
-   */
   login: async (email: string, password: string): Promise<LoginResponse> => {
     if (import.meta.env.DEV) {
       sanitize.log('AuthService.login', { email, password: sanitize.REDACTED });
@@ -29,16 +22,6 @@ export const authService = {
     return response.data || response;
   },
 
-  /**
-   * Register new user
-   * @param name - Username
-   * @param email - User's email address
-   * @param password - User's password
-   * @returns RegisterResponse with user data and tokens
-   *
-   * @note Backend returns 500 when username/email exists.
-   *       These are expected errors and handled gracefully in UI.
-   */
   register: async (
     name: string,
     email: string,
@@ -59,8 +42,6 @@ export const authService = {
       );
       return response.data || response;
     } catch (error: any) {
-      // ✅ Expected errors (username/email exists) - don't log to console
-      // These are handled by parseAuthError in UI with user-friendly messages
       const isExpectedError =
         error.statusCode === 500 ||
         error.statusCode === 400 ||
@@ -74,24 +55,14 @@ export const authService = {
         });
       }
 
-      // Re-throw to be handled by UI layer
       throw error;
     }
   },
 
-  /**
-   * Logout current user
-   * Clears tokens and invalidates session
-   */
   logout: async (): Promise<void> => {
     await apiClient.post(API_ENDPOINTS.AUTH.LOGOUT);
   },
 
-  /**
-   * Refresh access token using refresh token
-   * @param refreshToken - Current refresh token
-   * @returns New access and refresh tokens
-   */
   refreshToken: async (refreshToken: string): Promise<RefreshTokenResponse> => {
     if (import.meta.env.DEV) {
       sanitize.log('AuthService.refreshToken', {
@@ -106,11 +77,6 @@ export const authService = {
 
   // ==================== Password Reset ====================
 
-  /**
-   * Request password reset email
-   * @param email - User's email address
-   * @returns VerifyResponse with success message
-   */
   forgotPassword: async (email: string): Promise<VerifyResponse> => {
     const response = await apiClient.post<ApiResponse<VerifyResponse>>(
       API_ENDPOINTS.AUTH.FORGOT_PASSWORD,

@@ -1,4 +1,3 @@
-// src/features/auth/components/password-input.tsx
 import { useState, forwardRef } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -7,13 +6,6 @@ interface PasswordInputProps extends React.InputHTMLAttributes<HTMLInputElement>
   error?: string;
 }
 
-/**
- * Reusable password input component with toggle visibility
- * Supports both controlled and uncontrolled usage with react-hook-form
- *
- * NOTE: This component only renders the input and toggle button.
- * Error messages should be displayed by the parent component.
- */
 export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
   ({ error, className, ...props }, ref) => {
     const [showPassword, setShowPassword] = useState(false);

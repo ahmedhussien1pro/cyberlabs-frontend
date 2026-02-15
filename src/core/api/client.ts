@@ -97,7 +97,7 @@ apiClient.interceptors.response.use(
         tokenManager.setRefreshPromise(null);
         requestQueue.rejectQueue(refreshError);
         tokenManager.clearTokens();
-        window.location.href = '/login';
+        // window.location.href = '/auth';
         return Promise.reject(refreshError);
       }
     }

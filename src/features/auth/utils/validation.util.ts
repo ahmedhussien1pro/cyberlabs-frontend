@@ -1,99 +1,95 @@
-import type { PasswordStrength } from '@/features/auth/types';
+// src/features/auth/utils/validation.schemas.ts
+import { z } from 'zod';
 
-export const authValidation = {
-  isValidEmail(email: string): boolean {
-    if (!email || typeof email !== 'string') return false;
+// Email validation pattern
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email.trim());
-  },
+// Password validation
+const passwordSchema = z
+  .string()
+  .min(6, 'Password must be at least 6 characters')
+  .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+  .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+  .regex(/[0-9]/, 'Password must contain at least one number');
 
-  checkPasswordStrength(password: string): PasswordStrength {
-    if (!password) {
-      return {
-        score: 0,
-        feedback: ['Password is required'],
-        isValid: false,
-      };
-    }
+// Login Schema
+export const loginSchema = z.object({
+  email: z
+    .string()
+    .min(1, 'Email is required')
+    .regex(emailRegex, 'Invalid email address'),
+  password: z.string().min(1, 'Password is required'),
+});
 
-    const feedback: string[] = [];
-    let score = 0;
+// Register Schema - WITHOUT .refine() for better UX
+export const registerSchema = z.object({
+  username: z
+    .string()
+    .min(3, 'Username must be at least 3 characters')
+    .max(20, 'Username must be less than 20 characters')
+    .regex(
+      /^[a-zA-Z0-9_]+$/,
+      'Username can only contain letters, numbers, and underscores',
+    ),
+  email: z
+    .string()
+    .min(1, 'Email is required')
+    .regex(emailRegex, 'Invalid email address'),
+  password: passwordSchema,
+  confirmPassword: z.string().min(1, 'Please confirm your password'),
+});
 
-    if (password.length < 8) {
-      feedback.push('Password must be at least 8 characters');
-    } else {
-      score++;
-      if (password.length >= 12) score++;
-    }
+// Types
+export type LoginFormData = z.infer<typeof loginSchema>;
+export type RegisterFormData = z.infer<typeof registerSchema>;
 
-    if (!/[a-z]/.test(password)) {
-      feedback.push('Add lowercase letters');
-    } else {
-      score++;
-    }
+// Password Strength Calculator
+export interface PasswordStrength {
+  score: number; // 0-4
+  label: string;
+  color: string;
+  suggestions: string[];
+}
 
-    if (!/[A-Z]/.test(password)) {
-      feedback.push('Add uppercase letters');
-    } else {
-      score++;
-    }
+export function calculatePasswordStrength(password: string): PasswordStrength {
+  if (!password) {
+    return { score: 0, label: '', color: '', suggestions: [] };
+  }
 
-    if (!/\d/.test(password)) {
-      feedback.push('Add numbers');
-    } else {
-      score++;
-    }
+  let score = 0;
+  const suggestions: string[] = [];
 
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-      feedback.push('Add special characters (!@#$%^&*)');
-    } else {
-      score++;
-    }
+  // Length check
+  if (password.length >= 6) score++;
+  if (password.length >= 10) score++;
+  else if (password.length < 6) suggestions.push('Use at least 6 characters');
 
-    score = Math.min(score, 4) as 0 | 1 | 2 | 3 | 4;
+  // Character variety
+  if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++;
+  else suggestions.push('Mix uppercase and lowercase letters');
 
-    const isValid = password.length >= 8 && score >= 2;
+  if (/[0-9]/.test(password)) score++;
+  else suggestions.push('Include numbers');
 
-    return {
-      score,
-      feedback: feedback.length > 0 ? feedback : ['Password is strong'],
-      isValid,
-    };
-  },
+  if (/[^A-Za-z0-9]/.test(password)) score++;
+  else suggestions.push('Add special characters (!@#$%^&*)');
 
-  isValidTokenFormat(token: string): boolean {
-    if (!token || typeof token !== 'string') return false;
+  // Score mapping
+  const strengthMap: Record<number, { label: string; color: string }> = {
+    0: { label: 'Too weak', color: 'bg-red-500' },
+    1: { label: 'Weak', color: 'bg-orange-500' },
+    2: { label: 'Fair', color: 'bg-yellow-500' },
+    3: { label: 'Good', color: 'bg-blue-500' },
+    4: { label: 'Strong', color: 'bg-green-500' },
+    5: { label: 'Very Strong', color: 'bg-green-600' },
+  };
 
-    const parts = token.split('.');
-    if (parts.length !== 3) return false;
+  const strength = strengthMap[Math.min(score, 5)];
 
-    return parts.every((part) => {
-      return /^[A-Za-z0-9_-]+$/.test(part);
-    });
-  },
-
-  isValidOTP(otp: string): boolean {
-    if (!otp || typeof otp !== 'string') return false;
-
-    return /^\d{6}$/.test(otp.trim());
-  },
-
-  isValidName(name: string): boolean {
-    if (!name || typeof name !== 'string') return false;
-
-    const trimmed = name.trim();
-
-    return (
-      trimmed.length >= 2 &&
-      trimmed.length <= 50 &&
-      /^[a-zA-Z\s]+$/.test(trimmed)
-    );
-  },
-
-  sanitizeInput(input: string): string {
-    if (!input || typeof input !== 'string') return '';
-
-    return input.trim().replace(/[<>]/g, '').slice(0, 500);
-  },
-};
+  return {
+    score: Math.min(score, 5),
+    label: strength.label,
+    color: strength.color,
+    suggestions,
+  };
+}

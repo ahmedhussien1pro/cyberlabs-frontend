@@ -11,7 +11,7 @@ export { TogglePanels } from './toggle-panels';
 export { PasswordInput } from './password-input';
 export { OTPInputs } from './otp-inputs';
 export { FormFieldWrapper } from './form-field-wrapper';
-export { PasswordStrengthIndicator } from './password-strength';
+export { PasswordStrengthIndicator } from './password-strength-indicator';
 
 // Utility Components
 export { SocialAuthButtons } from './social-auth-buttons';

@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { Mail, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -14,35 +13,22 @@ import { ThemeToggle } from '@/components/common/theme-toggle';
 import { Preloader } from '@/components/common/preloader';
 import {
   PasswordInput,
+  PasswordStrengthIndicator,
   SocialAuthButtons,
   AuthDivider,
 } from '@/features/auth/components';
 import { useAuthStore } from '@/features/auth/store/auth.store';
 import { authService } from '@/features/auth/services/auth.service';
 import { ROUTES } from '@/shared/constants';
+import {
+  loginSchema,
+  registerSchema,
+  type LoginFormData,
+  type RegisterFormData,
+} from '../utils';
+import { parseAuthError } from '../utils/error-handler';
 
 import '../styles/auth.css';
-
-// Validation Schemas
-const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-});
-
-const registerSchema = z
-  .object({
-    username: z.string().min(3, 'Username must be at least 3 characters'),
-    email: z.string().email('Invalid email address'),
-    password: z.string().min(6, 'Password must be at least 6 characters'),
-    confirmPassword: z.string().min(1, 'Please confirm your password'),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ['confirmPassword'],
-  });
-
-type LoginForm = z.infer<typeof loginSchema>;
-type RegisterForm = z.infer<typeof registerSchema>;
 
 export default function AuthPage() {
   const navigate = useNavigate();
@@ -51,9 +37,9 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
 
   // Login Form
-  const loginForm = useForm<LoginForm>({
+  const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-    mode: 'onTouched', // ✅ Validate only after field is touched
+    mode: 'onBlur', // ✅ Validate only on blur
     defaultValues: {
       email: '',
       password: '',
@@ -61,9 +47,9 @@ export default function AuthPage() {
   });
 
   // Register Form
-  const registerForm = useForm<RegisterForm>({
+  const registerForm = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
-    mode: 'onTouched', // ✅ Validate only after field is touched
+    mode: 'onBlur', // ✅ Validate only on blur
     defaultValues: {
       username: '',
       email: '',
@@ -72,13 +58,26 @@ export default function AuthPage() {
     },
   });
 
+  // Watch password for strength indicator
+  const password = registerForm.watch('password');
+  const confirmPassword = registerForm.watch('confirmPassword');
+
+  // Custom password match validation
+  const passwordsMatch =
+    password && confirmPassword && password === confirmPassword;
+  const showPasswordMismatch =
+    confirmPassword &&
+    confirmPassword.length > 0 &&
+    password !== confirmPassword &&
+    registerForm.formState.touchedFields.confirmPassword;
+
   const togglePanel = () => {
     setIsActive(!isActive);
     loginForm.reset();
     registerForm.reset();
   };
 
-  const handleLogin = async (data: LoginForm) => {
+  const handleLogin = async (data: LoginFormData) => {
     setLoading(true);
     try {
       const response = await authService.login(data.email, data.password);
@@ -99,15 +98,25 @@ export default function AuthPage() {
 
       setTimeout(() => navigate(ROUTES.HOME), 1000);
     } catch (error: any) {
-      toast.error('Login Failed', {
-        description: error.message || 'Invalid email or password',
+      const parsedError = parseAuthError(error);
+      toast.error(parsedError.title, {
+        description: parsedError.message,
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRegister = async (data: RegisterForm) => {
+  const handleRegister = async (data: RegisterFormData) => {
+    // Additional password match validation
+    if (data.password !== data.confirmPassword) {
+      registerForm.setError('confirmPassword', {
+        type: 'manual',
+        message: "Passwords don't match",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await authService.register(
@@ -127,7 +136,7 @@ export default function AuthPage() {
 
       login(response.user, token);
       toast.success('Registration Successful!', {
-        description: `Welcome ${data.username}!`,
+        description: `Welcome ${data.username}! Please verify your email.`,
       });
 
       setTimeout(() => {
@@ -136,45 +145,9 @@ export default function AuthPage() {
         );
       }, 1000);
     } catch (error: any) {
-      let errorMessage = 'Please try again';
-      let errorTitle = 'Registration Failed';
-
-      if (error.message) {
-        const message = error.message.toLowerCase();
-
-        if (
-          message.includes('username') &&
-          (message.includes('exists') ||
-            message.includes('taken') ||
-            message.includes('already') ||
-            message.includes('use'))
-        ) {
-          errorTitle = 'Username Already Taken';
-          errorMessage =
-            'This username is already in use. Please choose another one.';
-        } else if (
-          message.includes('email') &&
-          (message.includes('exists') ||
-            message.includes('registered') ||
-            message.includes('already'))
-        ) {
-          errorTitle = 'Email Already Registered';
-          errorMessage =
-            'This email is already registered. Please login instead.';
-        } else if (
-          error.statusCode === 500 ||
-          message.includes('internal server error')
-        ) {
-          errorTitle = 'Server Error';
-          errorMessage =
-            'Something went wrong on our end. Please try again later.';
-        } else {
-          errorMessage = error.message;
-        }
-      }
-
-      toast.error(errorTitle, {
-        description: errorMessage,
+      const parsedError = parseAuthError(error);
+      toast.error(parsedError.title, {
+        description: parsedError.message,
       });
     } finally {
       setLoading(false);
@@ -253,13 +226,9 @@ export default function AuthPage() {
                 {loading ? 'Logging in...' : 'Login'}
               </Button>
 
-              {/* Auth Divider Component */}
               <AuthDivider text='or login with' />
-
-              {/* Social Auth Buttons Component */}
               <SocialAuthButtons mode='login' disabled={loading} />
 
-              {/* Register Link - Mobile */}
               <div className='auth-form__switch-link md:hidden'>
                 Don't have an account?{' '}
                 <button
@@ -321,7 +290,7 @@ export default function AuthPage() {
               <div>
                 <div className='auth-form__input-box'>
                   <PasswordInput
-                    placeholder='Password (min 6 characters)'
+                    placeholder='Password'
                     className='auth-form__input'
                     {...registerForm.register('password')}
                     disabled={loading}
@@ -331,6 +300,14 @@ export default function AuthPage() {
                   <p className='text-xs text-red-600 dark:text-red-400 mt-1 font-medium'>
                     {registerForm.formState.errors.password.message}
                   </p>
+                )}
+
+                {/* ✅ Password Strength Indicator */}
+                {password && !registerForm.formState.errors.password && (
+                  <PasswordStrengthIndicator
+                    password={password}
+                    className='mt-2'
+                  />
                 )}
               </div>
 
@@ -344,28 +321,37 @@ export default function AuthPage() {
                     disabled={loading}
                   />
                 </div>
-                {registerForm.formState.errors.confirmPassword && (
+
+                {/* ✅ Real-time password match indicator */}
+                {showPasswordMismatch && (
                   <p className='text-xs text-red-600 dark:text-red-400 mt-1 font-medium'>
-                    {registerForm.formState.errors.confirmPassword.message}
+                    Passwords don't match
                   </p>
                 )}
+                {passwordsMatch && confirmPassword.length > 0 && (
+                  <p className='text-xs text-green-600 dark:text-green-400 mt-1 font-medium flex items-center gap-1'>
+                    <span>✓</span> Passwords match
+                  </p>
+                )}
+                {registerForm.formState.errors.confirmPassword &&
+                  !showPasswordMismatch && (
+                    <p className='text-xs text-red-600 dark:text-red-400 mt-1 font-medium'>
+                      {registerForm.formState.errors.confirmPassword.message}
+                    </p>
+                  )}
               </div>
 
               {/* Submit Button */}
               <Button
                 type='submit'
                 className='auth-form__submit-btn'
-                disabled={loading}>
+                disabled={loading || (confirmPassword && !passwordsMatch)}>
                 {loading ? 'Registering...' : 'Register'}
               </Button>
 
-              {/* Auth Divider Component */}
               <AuthDivider text='or register with' />
-
-              {/* Social Auth Buttons Component */}
               <SocialAuthButtons mode='register' disabled={loading} />
 
-              {/* Login Link - Mobile */}
               <div className='auth-form__switch-link md:hidden'>
                 Already have an account?{' '}
                 <button

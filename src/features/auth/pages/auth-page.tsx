@@ -20,13 +20,13 @@ import {
 import { useAuthStore } from '@/features/auth/store/auth.store';
 import { authService } from '@/features/auth/services/auth.service';
 import { ROUTES } from '@/shared/constants';
+import { parseAuthError } from '@/features/auth/utils/error-handler';
 import {
   loginSchema,
   registerSchema,
-  type LoginFormData,
-  type RegisterFormData,
-} from '../utils';
-import { parseAuthError } from '../utils/error-handler';
+  type LoginForm,
+  type RegisterForm,
+} from '@/features/auth/schemas';
 
 import '../styles/auth.css';
 
@@ -37,9 +37,10 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
 
   // Login Form
-  const loginForm = useForm<LoginFormData>({
+  const loginForm = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
-    mode: 'onBlur', // ✅ Validate only on blur
+    mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       email: '',
       password: '',
@@ -47,9 +48,10 @@ export default function AuthPage() {
   });
 
   // Register Form
-  const registerForm = useForm<RegisterFormData>({
+  const registerForm = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
-    mode: 'onBlur', // ✅ Validate only on blur
+    mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       username: '',
       email: '',
@@ -77,7 +79,7 @@ export default function AuthPage() {
     registerForm.reset();
   };
 
-  const handleLogin = async (data: LoginFormData) => {
+  const handleLogin = async (data: LoginForm) => {
     setLoading(true);
     try {
       const response = await authService.login(data.email, data.password);
@@ -107,7 +109,7 @@ export default function AuthPage() {
     }
   };
 
-  const handleRegister = async (data: RegisterFormData) => {
+  const handleRegister = async (data: RegisterForm) => {
     // Additional password match validation
     if (data.password !== data.confirmPassword) {
       registerForm.setError('confirmPassword', {

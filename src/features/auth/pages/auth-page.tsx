@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import { ThemeToggle } from '@/components/common/theme-toggle';
 import { Preloader } from '@/components/common/preloader';
 import {
@@ -40,7 +41,7 @@ export default function AuthPage() {
   const loginForm = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
     mode: 'onBlur',
-    reValidateMode: 'onChange',
+    reValidateMode: 'onBlur', // ✅ Changed from 'onChange' to prevent console errors
     defaultValues: {
       email: '',
       password: '',
@@ -51,18 +52,20 @@ export default function AuthPage() {
   const registerForm = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
     mode: 'onBlur',
-    reValidateMode: 'onChange',
+    reValidateMode: 'onBlur', // ✅ Changed from 'onChange' to prevent console errors
     defaultValues: {
       username: '',
       email: '',
       password: '',
       confirmPassword: '',
+      acceptTerms: false,
     },
   });
 
   // Watch password for strength indicator
   const password = registerForm.watch('password');
   const confirmPassword = registerForm.watch('confirmPassword');
+  const acceptTerms = registerForm.watch('acceptTerms');
 
   // Custom password match validation
   const passwordsMatch =
@@ -343,11 +346,55 @@ export default function AuthPage() {
                   )}
               </div>
 
+              {/* ✅ Terms & Conditions Checkbox */}
+              <div className='flex items-start gap-2 my-3'>
+                <Checkbox
+                  id='acceptTerms'
+                  checked={acceptTerms}
+                  onCheckedChange={(checked) =>
+                    registerForm.setValue('acceptTerms', checked as boolean, {
+                      shouldValidate: true,
+                    })
+                  }
+                  disabled={loading}
+                  className='mt-1'
+                />
+                <label
+                  htmlFor='acceptTerms'
+                  className='text-xs text-muted-foreground leading-relaxed cursor-pointer'>
+                  I agree to the{' '}
+                  <a
+                    href='https://www.booking.com/content/terms.ar.html'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='text-primary hover:underline font-medium'>
+                    Terms and Conditions
+                  </a>{' '}
+                  and{' '}
+                  <a
+                    href='https://www.booking.com/content/privacy.ar.html'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='text-primary hover:underline font-medium'>
+                    Privacy Policy
+                  </a>
+                </label>
+              </div>
+              {registerForm.formState.errors.acceptTerms && (
+                <p className='text-xs text-red-600 dark:text-red-400 -mt-2 mb-2 font-medium'>
+                  {registerForm.formState.errors.acceptTerms.message}
+                </p>
+              )}
+
               {/* Submit Button */}
               <Button
                 type='submit'
                 className='auth-form__submit-btn'
-                disabled={loading || (confirmPassword && !passwordsMatch)}>
+                disabled={
+                  loading ||
+                  (confirmPassword && !passwordsMatch) ||
+                  !acceptTerms
+                }>
                 {loading ? 'Registering...' : 'Register'}
               </Button>
 

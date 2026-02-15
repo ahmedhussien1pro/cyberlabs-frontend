@@ -40,8 +40,7 @@ export default function AuthPage() {
   // Login Form
   const loginForm = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
-    mode: 'onBlur',
-    reValidateMode: 'onBlur', // ✅ Changed from 'onChange' to prevent console errors
+    mode: 'onTouched', // ✅ Validate only after user touches field
     defaultValues: {
       email: '',
       password: '',
@@ -51,8 +50,7 @@ export default function AuthPage() {
   // Register Form
   const registerForm = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
-    mode: 'onBlur',
-    reValidateMode: 'onBlur', // ✅ Changed from 'onChange' to prevent console errors
+    mode: 'onTouched', // ✅ Validate only after user touches field
     defaultValues: {
       username: '',
       email: '',
@@ -353,7 +351,7 @@ export default function AuthPage() {
                   checked={acceptTerms}
                   onCheckedChange={(checked) =>
                     registerForm.setValue('acceptTerms', checked as boolean, {
-                      shouldValidate: true,
+                      shouldValidate: registerForm.formState.isSubmitted,
                     })
                   }
                   disabled={loading}
@@ -363,21 +361,21 @@ export default function AuthPage() {
                   htmlFor='acceptTerms'
                   className='text-xs text-muted-foreground leading-relaxed cursor-pointer'>
                   I agree to the{' '}
-                  <a
-                    href='https://www.booking.com/content/terms.ar.html'
+                  <Link
+                    to={ROUTES.TERMS}
+                    className='text-primary hover:underline font-medium'
                     target='_blank'
-                    rel='noopener noreferrer'
-                    className='text-primary hover:underline font-medium'>
+                    rel='noopener noreferrer'>
                     Terms and Conditions
-                  </a>{' '}
+                  </Link>{' '}
                   and{' '}
-                  <a
-                    href='https://www.booking.com/content/privacy.ar.html'
+                  <Link
+                    to={ROUTES.PRIVACY}
+                    className='text-primary hover:underline font-medium'
                     target='_blank'
-                    rel='noopener noreferrer'
-                    className='text-primary hover:underline font-medium'>
+                    rel='noopener noreferrer'>
                     Privacy Policy
-                  </a>
+                  </Link>
                 </label>
               </div>
               {registerForm.formState.errors.acceptTerms && (

@@ -36,9 +36,8 @@ export const authService = {
    * @param password - User's password
    * @returns RegisterResponse with user data and tokens
    *
-   * @note Backend currently returns 500 Internal Server Error when username exists
-   *       instead of 409 Conflict. This should be fixed on the backend.
-   *       For now, we handle 500 errors in the UI with a generic message.
+   * @note Backend returns 500 when username/email exists.
+   *       These are expected errors and handled gracefully in UI.
    */
   register: async (
     name: string,
@@ -60,20 +59,22 @@ export const authService = {
       );
       return response.data || response;
     } catch (error: any) {
-      // ✅ Enhanced error handling for registration
-      // Backend may return 500 for various validation errors
-      // including username/email already exists
+      // ✅ Expected errors (username/email exists) - don't log to console
+      // These are handled by parseAuthError in UI with user-friendly messages
+      const isExpectedError =
+        error.statusCode === 500 ||
+        error.statusCode === 400 ||
+        error.statusCode === 409;
 
-      if (import.meta.env.DEV) {
-        console.error('Registration service error:', {
+      // Only log unexpected errors in DEV
+      if (import.meta.env.DEV && !isExpectedError) {
+        console.error('Unexpected registration error:', {
           message: error.message,
           statusCode: error.statusCode,
-          errors: error.errors,
         });
       }
 
-      // Re-throw error to be handled by UI
-      // UI will check error.statusCode and error.message
+      // Re-throw to be handled by UI layer
       throw error;
     }
   },

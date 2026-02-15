@@ -4,6 +4,8 @@ export const ROUTES = {
   ABOUT: '/about',
   CONTACT: '/contact',
   PRICING: '/pricing',
+  TERMS: '/terms',
+  PRIVACY: '/privacy',
 
   AUTH: {
     LOGIN: '/auth',

@@ -632,3 +632,28 @@
 .dark .auth-form__input {
   @apply bg-background/80;
 }
+/* ========================================
+   Error Messages for Auth Forms
+   ======================================== */
+
+.auth-form__error {
+  display: block;
+  margin-top: 0.375rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: hsl(var(--destructive));
+  font-weight: 500;
+}
+
+/* Make input box relative for absolute positioned button */
+.auth-form__input-box {
+  position: relative;
+  width: 100%;
+}
+
+/* Ensure input has padding for the eye icon */
+.auth-form__input-box input[type='password'],
+.auth-form__input-box input[type='text'] {
+  padding-right: 2.75rem;
+}

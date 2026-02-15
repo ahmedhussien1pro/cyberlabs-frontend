@@ -1,3 +1,4 @@
+// src/features/auth/pages/auth-page.tsx
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -33,7 +34,7 @@ const registerSchema = z
     username: z.string().min(3, 'Username must be at least 3 characters'),
     email: z.string().email('Invalid email address'),
     password: z.string().min(6, 'Password must be at least 6 characters'),
-    confirmPassword: z.string(),
+    confirmPassword: z.string().min(1, 'Please confirm your password'),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -52,6 +53,7 @@ export default function AuthPage() {
   // Login Form
   const loginForm = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
+    mode: 'onTouched', // ✅ Validate only after field is touched
     defaultValues: {
       email: '',
       password: '',
@@ -61,6 +63,7 @@ export default function AuthPage() {
   // Register Form
   const registerForm = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
+    mode: 'onTouched', // ✅ Validate only after field is touched
     defaultValues: {
       username: '',
       email: '',
@@ -80,32 +83,22 @@ export default function AuthPage() {
     try {
       const response = await authService.login(data.email, data.password);
 
-      console.log('Login response:', response);
-
       if (!response || !response.user) {
-        console.error('Invalid login response structure:', response);
         throw new Error('Invalid response from server');
       }
 
       const token = response.accessToken || (response as any).token;
-
       if (!token) {
-        console.error('No token in response:', response);
         throw new Error('Authentication token not received');
       }
 
-      // Store user and token
       login(response.user, token);
-
       toast.success('Welcome Back!', {
         description: `Hi ${response.user.name}!`,
       });
 
-      setTimeout(() => {
-        navigate(ROUTES.HOME);
-      }, 1000);
+      setTimeout(() => navigate(ROUTES.HOME), 1000);
     } catch (error: any) {
-      console.error('Login error:', error);
       toast.error('Login Failed', {
         description: error.message || 'Invalid email or password',
       });
@@ -123,23 +116,16 @@ export default function AuthPage() {
         data.password,
       );
 
-      console.log('Register response:', response);
-
       if (!response || !response.user) {
-        console.error('Invalid register response structure:', response);
         throw new Error('Invalid response from server');
       }
 
       const token = response.accessToken || (response as any).token;
-
       if (!token) {
-        console.error('No token in response:', response);
         throw new Error('Authentication token not received');
       }
 
-      // Store user and token
       login(response.user, token);
-
       toast.success('Registration Successful!', {
         description: `Welcome ${data.username}!`,
       });
@@ -150,15 +136,45 @@ export default function AuthPage() {
         );
       }, 1000);
     } catch (error: any) {
-      console.error('Registration error:', error);
-      console.error('Error details:', {
-        message: error.message,
-        response: error.response,
-        data: error.response?.data,
-      });
+      let errorMessage = 'Please try again';
+      let errorTitle = 'Registration Failed';
 
-      toast.error('Registration Failed', {
-        description: error.message || 'Please try again',
+      if (error.message) {
+        const message = error.message.toLowerCase();
+
+        if (
+          message.includes('username') &&
+          (message.includes('exists') ||
+            message.includes('taken') ||
+            message.includes('already') ||
+            message.includes('use'))
+        ) {
+          errorTitle = 'Username Already Taken';
+          errorMessage =
+            'This username is already in use. Please choose another one.';
+        } else if (
+          message.includes('email') &&
+          (message.includes('exists') ||
+            message.includes('registered') ||
+            message.includes('already'))
+        ) {
+          errorTitle = 'Email Already Registered';
+          errorMessage =
+            'This email is already registered. Please login instead.';
+        } else if (
+          error.statusCode === 500 ||
+          message.includes('internal server error')
+        ) {
+          errorTitle = 'Server Error';
+          errorMessage =
+            'Something went wrong on our end. Please try again later.';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+
+      toast.error(errorTitle, {
+        description: errorMessage,
       });
     } finally {
       setLoading(false);
@@ -181,7 +197,7 @@ export default function AuthPage() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3 }}>
-          {/* Login Form */}
+          {/* LOGIN FORM */}
           <div className='auth-form__form-box auth-form__form-box--login'>
             <form
               onSubmit={loginForm.handleSubmit(handleLogin)}
@@ -189,30 +205,39 @@ export default function AuthPage() {
               <h1 className='auth-form__heading'>Login</h1>
 
               {/* Email Field */}
-              <div className='auth-form__input-box'>
-                <Input
-                  type='email'
-                  placeholder='Email'
-                  className='auth-form__input'
-                  {...loginForm.register('email')}
-                  disabled={loading}
-                />
-                <Mail className='auth-form__input-icon' size={18} />
+              <div>
+                <div className='auth-form__input-box'>
+                  <Input
+                    type='email'
+                    placeholder='Email'
+                    className='auth-form__input'
+                    {...loginForm.register('email')}
+                    disabled={loading}
+                  />
+                  <Mail className='auth-form__input-icon' size={18} />
+                </div>
+                {loginForm.formState.errors.email && (
+                  <p className='text-xs text-red-600 dark:text-red-400 mt-1 font-medium'>
+                    {loginForm.formState.errors.email.message}
+                  </p>
+                )}
               </div>
-              {loginForm.formState.errors.email && (
-                <p className='auth-form__error'>
-                  {loginForm.formState.errors.email.message}
-                </p>
-              )}
 
-              {/* Password Field - Using PasswordInput Component */}
-              <div className='auth-form__input-box'>
-                <PasswordInput
-                  placeholder='Password'
-                  {...loginForm.register('password')}
-                  disabled={loading}
-                  error={loginForm.formState.errors.password?.message}
-                />
+              {/* Password Field */}
+              <div>
+                <div className='auth-form__input-box'>
+                  <PasswordInput
+                    placeholder='Password'
+                    className='auth-form__input'
+                    {...loginForm.register('password')}
+                    disabled={loading}
+                  />
+                </div>
+                {loginForm.formState.errors.password && (
+                  <p className='text-xs text-red-600 dark:text-red-400 mt-1 font-medium'>
+                    {loginForm.formState.errors.password.message}
+                  </p>
+                )}
               </div>
 
               {/* Forgot Password Link */}
@@ -247,7 +272,7 @@ export default function AuthPage() {
             </form>
           </div>
 
-          {/* Register Form */}
+          {/* REGISTER FORM */}
           <div className='auth-form__form-box auth-form__form-box--register'>
             <form
               onSubmit={registerForm.handleSubmit(handleRegister)}
@@ -255,57 +280,75 @@ export default function AuthPage() {
               <h1 className='auth-form__heading'>Register</h1>
 
               {/* Username Field */}
-              <div className='auth-form__input-box'>
-                <Input
-                  type='text'
-                  placeholder='Username'
-                  className='auth-form__input'
-                  {...registerForm.register('username')}
-                  disabled={loading}
-                />
-                <User className='auth-form__input-icon' size={18} />
+              <div>
+                <div className='auth-form__input-box'>
+                  <Input
+                    type='text'
+                    placeholder='Username'
+                    className='auth-form__input'
+                    {...registerForm.register('username')}
+                    disabled={loading}
+                  />
+                  <User className='auth-form__input-icon' size={18} />
+                </div>
+                {registerForm.formState.errors.username && (
+                  <p className='text-xs text-red-600 dark:text-red-400 mt-1 font-medium'>
+                    {registerForm.formState.errors.username.message}
+                  </p>
+                )}
               </div>
-              {registerForm.formState.errors.username && (
-                <p className='auth-form__error'>
-                  {registerForm.formState.errors.username.message}
-                </p>
-              )}
 
               {/* Email Field */}
-              <div className='auth-form__input-box'>
-                <Input
-                  type='email'
-                  placeholder='Email'
-                  className='auth-form__input'
-                  {...registerForm.register('email')}
-                  disabled={loading}
-                />
-                <Mail className='auth-form__input-icon' size={18} />
-              </div>
-              {registerForm.formState.errors.email && (
-                <p className='auth-form__error'>
-                  {registerForm.formState.errors.email.message}
-                </p>
-              )}
-
-              {/* Password Field - Using PasswordInput Component */}
-              <div className='auth-form__input-box'>
-                <PasswordInput
-                  placeholder='Password (min 6 characters)'
-                  {...registerForm.register('password')}
-                  disabled={loading}
-                  error={registerForm.formState.errors.password?.message}
-                />
+              <div>
+                <div className='auth-form__input-box'>
+                  <Input
+                    type='email'
+                    placeholder='Email'
+                    className='auth-form__input'
+                    {...registerForm.register('email')}
+                    disabled={loading}
+                  />
+                  <Mail className='auth-form__input-icon' size={18} />
+                </div>
+                {registerForm.formState.errors.email && (
+                  <p className='text-xs text-red-600 dark:text-red-400 mt-1 font-medium'>
+                    {registerForm.formState.errors.email.message}
+                  </p>
+                )}
               </div>
 
-              {/* Confirm Password Field - Using PasswordInput Component */}
-              <div className='auth-form__input-box'>
-                <PasswordInput
-                  placeholder='Confirm Password'
-                  {...registerForm.register('confirmPassword')}
-                  disabled={loading}
-                  error={registerForm.formState.errors.confirmPassword?.message}
-                />
+              {/* Password Field */}
+              <div>
+                <div className='auth-form__input-box'>
+                  <PasswordInput
+                    placeholder='Password (min 6 characters)'
+                    className='auth-form__input'
+                    {...registerForm.register('password')}
+                    disabled={loading}
+                  />
+                </div>
+                {registerForm.formState.errors.password && (
+                  <p className='text-xs text-red-600 dark:text-red-400 mt-1 font-medium'>
+                    {registerForm.formState.errors.password.message}
+                  </p>
+                )}
+              </div>
+
+              {/* Confirm Password Field */}
+              <div>
+                <div className='auth-form__input-box'>
+                  <PasswordInput
+                    placeholder='Confirm Password'
+                    className='auth-form__input'
+                    {...registerForm.register('confirmPassword')}
+                    disabled={loading}
+                  />
+                </div>
+                {registerForm.formState.errors.confirmPassword && (
+                  <p className='text-xs text-red-600 dark:text-red-400 mt-1 font-medium'>
+                    {registerForm.formState.errors.confirmPassword.message}
+                  </p>
+                )}
               </div>
 
               {/* Submit Button */}

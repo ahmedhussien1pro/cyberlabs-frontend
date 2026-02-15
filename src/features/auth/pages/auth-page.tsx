@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Mail, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -36,21 +35,18 @@ export default function AuthPage() {
   const { login } = useAuthStore();
   const [isActive, setIsActive] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Login Form
+  // Login Form - NO RESOLVER (manual validation)
   const loginForm = useForm<LoginForm>({
-    resolver: zodResolver(loginSchema),
-    mode: 'onTouched', // ✅ Validate only after user touches field
     defaultValues: {
       email: '',
       password: '',
     },
   });
 
-  // Register Form
+  // Register Form - NO RESOLVER (manual validation)
   const registerForm = useForm<RegisterForm>({
-    resolver: zodResolver(registerSchema),
-    mode: 'onTouched', // ✅ Validate only after user touches field
     defaultValues: {
       username: '',
       email: '',
@@ -69,19 +65,32 @@ export default function AuthPage() {
   const passwordsMatch =
     password && confirmPassword && password === confirmPassword;
   const showPasswordMismatch =
-    confirmPassword &&
-    confirmPassword.length > 0 &&
-    password !== confirmPassword &&
-    registerForm.formState.touchedFields.confirmPassword;
+    confirmPassword && confirmPassword.length > 0 && password !== confirmPassword;
 
   const togglePanel = () => {
     setIsActive(!isActive);
     loginForm.reset();
     registerForm.reset();
+    setErrors({});
   };
 
   const handleLogin = async (data: LoginForm) => {
+    // ✅ Manual validation (no console errors!)
+    const result = loginSchema.safeParse(data);
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      result.error.errors.forEach((err) => {
+        if (err.path[0]) {
+          fieldErrors[err.path[0] as string] = err.message;
+        }
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+
+    setErrors({});
     setLoading(true);
+
     try {
       const response = await authService.login(data.email, data.password);
 
@@ -111,16 +120,28 @@ export default function AuthPage() {
   };
 
   const handleRegister = async (data: RegisterForm) => {
-    // Additional password match validation
-    if (data.password !== data.confirmPassword) {
-      registerForm.setError('confirmPassword', {
-        type: 'manual',
-        message: "Passwords don't match",
+    // ✅ Manual validation (no console errors!)
+    const result = registerSchema.safeParse(data);
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      result.error.errors.forEach((err) => {
+        if (err.path[0]) {
+          fieldErrors[err.path[0] as string] = err.message;
+        }
       });
+      setErrors(fieldErrors);
       return;
     }
 
+    // Additional password match check
+    if (data.password !== data.confirmPassword) {
+      setErrors({ confirmPassword: "Passwords don't match" });
+      return;
+    }
+
+    setErrors({});
     setLoading(true);
+
     try {
       const response = await authService.register(
         data.username,
@@ -192,9 +213,9 @@ export default function AuthPage() {
                   />
                   <Mail className='auth-form__input-icon' size={18} />
                 </div>
-                {loginForm.formState.errors.email && (
+                {errors.email && (
                   <p className='text-xs text-red-600 dark:text-red-400 mt-1 font-medium'>
-                    {loginForm.formState.errors.email.message}
+                    {errors.email}
                   </p>
                 )}
               </div>
@@ -209,9 +230,9 @@ export default function AuthPage() {
                     disabled={loading}
                   />
                 </div>
-                {loginForm.formState.errors.password && (
+                {errors.password && (
                   <p className='text-xs text-red-600 dark:text-red-400 mt-1 font-medium'>
-                    {loginForm.formState.errors.password.message}
+                    {errors.password}
                   </p>
                 )}
               </div>
@@ -263,9 +284,9 @@ export default function AuthPage() {
                   />
                   <User className='auth-form__input-icon' size={18} />
                 </div>
-                {registerForm.formState.errors.username && (
+                {errors.username && (
                   <p className='text-xs text-red-600 dark:text-red-400 mt-1 font-medium'>
-                    {registerForm.formState.errors.username.message}
+                    {errors.username}
                   </p>
                 )}
               </div>
@@ -282,9 +303,9 @@ export default function AuthPage() {
                   />
                   <Mail className='auth-form__input-icon' size={18} />
                 </div>
-                {registerForm.formState.errors.email && (
+                {errors.email && (
                   <p className='text-xs text-red-600 dark:text-red-400 mt-1 font-medium'>
-                    {registerForm.formState.errors.email.message}
+                    {errors.email}
                   </p>
                 )}
               </div>
@@ -299,14 +320,14 @@ export default function AuthPage() {
                     disabled={loading}
                   />
                 </div>
-                {registerForm.formState.errors.password && (
+                {errors.password && (
                   <p className='text-xs text-red-600 dark:text-red-400 mt-1 font-medium'>
-                    {registerForm.formState.errors.password.message}
+                    {errors.password}
                   </p>
                 )}
 
                 {/* ✅ Password Strength Indicator */}
-                {password && !registerForm.formState.errors.password && (
+                {password && !errors.password && (
                   <PasswordStrengthIndicator
                     password={password}
                     className='mt-2'
@@ -336,12 +357,11 @@ export default function AuthPage() {
                     <span>✓</span> Passwords match
                   </p>
                 )}
-                {registerForm.formState.errors.confirmPassword &&
-                  !showPasswordMismatch && (
-                    <p className='text-xs text-red-600 dark:text-red-400 mt-1 font-medium'>
-                      {registerForm.formState.errors.confirmPassword.message}
-                    </p>
-                  )}
+                {errors.confirmPassword && !showPasswordMismatch && (
+                  <p className='text-xs text-red-600 dark:text-red-400 mt-1 font-medium'>
+                    {errors.confirmPassword}
+                  </p>
+                )}
               </div>
 
               {/* ✅ Terms & Conditions Checkbox */}
@@ -350,9 +370,7 @@ export default function AuthPage() {
                   id='acceptTerms'
                   checked={acceptTerms}
                   onCheckedChange={(checked) =>
-                    registerForm.setValue('acceptTerms', checked as boolean, {
-                      shouldValidate: registerForm.formState.isSubmitted,
-                    })
+                    registerForm.setValue('acceptTerms', checked as boolean)
                   }
                   disabled={loading}
                   className='mt-1'
@@ -378,9 +396,9 @@ export default function AuthPage() {
                   </Link>
                 </label>
               </div>
-              {registerForm.formState.errors.acceptTerms && (
+              {errors.acceptTerms && (
                 <p className='text-xs text-red-600 dark:text-red-400 -mt-2 mb-2 font-medium'>
-                  {registerForm.formState.errors.acceptTerms.message}
+                  {errors.acceptTerms}
                 </p>
               )}
 

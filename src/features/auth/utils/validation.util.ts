@@ -1,9 +1,3 @@
-// src/features/auth/utils/validation.util.ts
-
-/**
- * Password Strength Calculator
- * Used by password-strength-indicator component and forms
- */
 export interface PasswordStrength {
   score: number; // 0-5
   label: string;

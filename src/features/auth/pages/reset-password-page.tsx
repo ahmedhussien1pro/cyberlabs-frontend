@@ -26,6 +26,7 @@ import {
 import { usePasswordStrength } from '@/features/auth/hooks';
 
 import '../styles/auth.css';
+import { LanguageSwitcher } from '@/components/common/language-switcher';
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate();
@@ -91,6 +92,7 @@ export default function ResetPasswordPage() {
       <>
         <div className='fixed top-6 right-6 z-50'>
           <ThemeToggle />
+          <LanguageSwitcher />
         </div>
 
         <section className='auth-page'>
@@ -135,6 +137,7 @@ export default function ResetPasswordPage() {
 
       <div className='fixed top-6 right-6 z-50'>
         <ThemeToggle />
+        <LanguageSwitcher />
       </div>
 
       <section className='auth-page'>

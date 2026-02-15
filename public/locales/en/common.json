@@ -6,13 +6,28 @@
   },
   "navigation": {
     "home": "Home",
-    "courses": "Courses",
+    "learning": "Learning",
+    "labs": "Labs",
+    "labsDesc": "Hands-on cybersecurity labs",
+    "paths": "Learning Paths",
+    "pathsDesc": "Structured learning journeys",
+    "challenges": "Challenges",
+    "challengesDesc": "Test your skills",
+    "about": "About",
+    "pricing": "Pricing",
     "dashboard": "Dashboard",
     "profile": "Profile",
-    "about": "About",
-    "contact": "Contact",
-    "pricing": "Pricing",
-    "blog": "Blog"
+    "settings": "Settings",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout"
+  },
+  "search": {
+    "title": "Search",
+    "button": "Search...",
+    "placeholder": "Search for labs, courses, topics...",
+    "noResults": "No results found",
+    "suggestions": "Try searching for labs, courses, or topics"
   },
   "actions": {
     "submit": "Submit",

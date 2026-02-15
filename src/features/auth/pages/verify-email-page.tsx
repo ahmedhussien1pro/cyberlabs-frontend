@@ -14,6 +14,7 @@ import { authService } from '@/features/auth/services/auth.service';
 import { useAuthStore } from '@/features/auth/store/auth.store';
 import { ROUTES } from '@/shared/constants';
 import '../styles/auth.css';
+import LanguageSwitcher from '@/components/common/language-switcher';
 
 type VerificationStatus = 'verifying' | 'success' | 'error' | 'expired';
 
@@ -112,6 +113,7 @@ export default function VerifyEmailPage() {
       <>
         <div className='fixed top-6 right-6 z-50'>
           <ThemeToggle />
+          <LanguageSwitcher />
         </div>
 
         <section className='verify-email-page'>
@@ -148,6 +150,7 @@ export default function VerifyEmailPage() {
       <>
         <div className='fixed top-6 right-6 z-50'>
           <ThemeToggle />
+          <LanguageSwitcher />
         </div>
 
         <section className='verify-email-page'>
@@ -199,6 +202,7 @@ export default function VerifyEmailPage() {
 
         <div className='fixed top-6 right-6 z-50'>
           <ThemeToggle />
+          <LanguageSwitcher />
         </div>
 
         <section className='verify-email-page'>

@@ -5,6 +5,7 @@
 
 @layer base {
   :root {
+    --cyberlabs-logo-font: 'YourOldFont', 'AnotherFallback', sans-serif;
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
@@ -57,4 +58,23 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+:root {
+  --primary-text: hsl(var(--foreground));
+  --main-color: #3b82f6;
+  --black-alpha-20: rgba(0, 0, 0, 0.2);
+}
+
+.dark {
+  --main-color: #60a5fa;
+}
+
+.cyberlabs-logo-title {
+  font-family: 'Lobster', cursive;
+  color: var(--primary-text);
+  text-shadow: 1px 1px 2px var(--black-alpha-20);
+}
+
+.cyberlabs-logo-title span {
+  color: var(--main-color);
 }

@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { ThemeToggle } from '@/components/common/theme-toggle';
+import ThemeToggle from '@/components/common/theme-toggle';
 import { Preloader } from '@/components/common/preloader';
 import { BackToLogin } from '@/features/auth/components';
 import { authService } from '@/features/auth/services/auth.service';
@@ -22,6 +22,7 @@ import {
 
 // Import shared styles
 import '../styles/auth.css';
+import { LanguageSwitcher } from '@/components/common/language-switcher';
 
 export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
@@ -83,6 +84,7 @@ export default function ForgotPasswordPage() {
 
       <div className='fixed top-6 right-6 z-50'>
         <ThemeToggle />
+        <LanguageSwitcher />
       </div>
 
       <section className='auth-page'>

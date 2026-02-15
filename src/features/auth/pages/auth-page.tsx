@@ -29,6 +29,7 @@ import {
 } from '@/features/auth/schemas';
 
 import '../styles/auth.css';
+import LanguageSwitcher from '@/components/common/language-switcher';
 
 export default function AuthPage() {
   const navigate = useNavigate();
@@ -37,7 +38,6 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Login Form - NO RESOLVER (manual validation)
   const loginForm = useForm<LoginForm>({
     defaultValues: {
       email: '',
@@ -65,7 +65,9 @@ export default function AuthPage() {
   const passwordsMatch =
     password && confirmPassword && password === confirmPassword;
   const showPasswordMismatch =
-    confirmPassword && confirmPassword.length > 0 && password !== confirmPassword;
+    confirmPassword &&
+    confirmPassword.length > 0 &&
+    password !== confirmPassword;
 
   const togglePanel = () => {
     setIsActive(!isActive);
@@ -184,6 +186,7 @@ export default function AuthPage() {
 
       <div className='fixed top-4 right-4 z-50'>
         <ThemeToggle />
+        <LanguageSwitcher />
       </div>
 
       <section className='auth-form'>

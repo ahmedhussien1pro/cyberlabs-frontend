@@ -11,6 +11,7 @@ import { useAuthStore } from '@/features/auth/store/auth.store';
 import { ROUTES } from '@/shared/constants';
 import '../styles/auth.css';
 import { tokenUtils, roleUtils } from '@/features/auth/utils';
+import { LanguageSwitcher } from '@/components/common/language-switcher';
 type CallbackStatus = 'processing' | 'success' | 'error';
 
 export default function OAuthCallbackPage() {
@@ -102,6 +103,7 @@ export default function OAuthCallbackPage() {
     <>
       <div className='fixed top-6 right-6 z-50'>
         <ThemeToggle />
+        <LanguageSwitcher />
       </div>
 
       <section className='auth-page'>

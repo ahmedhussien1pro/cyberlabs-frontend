@@ -13,6 +13,7 @@ import { useResendTimer } from '@/features/auth/hooks';
 import { authService } from '@/features/auth/services/auth.service';
 import { ROUTES } from '@/shared/constants';
 import '../styles/auth.css';
+import { LanguageSwitcher } from '@/components/common/language-switcher';
 
 export default function OTPVerificationPage() {
   const navigate = useNavigate();
@@ -128,6 +129,7 @@ export default function OTPVerificationPage() {
     <>
       <div className='fixed top-6 right-6 z-50'>
         <ThemeToggle />
+        <LanguageSwitcher />
       </div>
 
       <section className='auth-page'>

@@ -1,16 +1,9 @@
-/**
- * Learn Landing Component
- * Hero section for learning/courses overview page
- * @module shared/components/landing
- */
-
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { LandingLayout } from './landing-layout';
 import { cn } from '@/lib/utils';
 import type { LearnLandingProps } from './types';
 
-// Default image - can be overridden via props
 const DEFAULT_IMAGE = '/images/learning.png';
 
 export function LearnLanding({ onStartLearning }: LearnLandingProps = {}) {

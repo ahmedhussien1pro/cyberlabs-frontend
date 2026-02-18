@@ -132,7 +132,6 @@ export default function ForgotPasswordPage() {
                   </Button>
                 </form>
 
-                {/* Back to Login Component */}
                 <BackToLogin />
               </>
             ) : (

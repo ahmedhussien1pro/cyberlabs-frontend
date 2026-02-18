@@ -1,4 +1,3 @@
-// src/features/auth/schemas/forgot-password.schema.ts
 import { z } from 'zod';
 
 export const forgotPasswordSchema = z.object({

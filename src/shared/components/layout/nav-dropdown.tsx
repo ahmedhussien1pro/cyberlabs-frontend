@@ -1,4 +1,3 @@
-// src/components/layout/nav-dropdown.tsx
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';

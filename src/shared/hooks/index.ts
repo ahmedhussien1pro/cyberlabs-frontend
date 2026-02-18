@@ -1,2 +1,2 @@
 export { usePageTitle } from './usePageTitle';
-export * from './use-count-up';
+export * from '../../features/landing/hooks/use-count-up';

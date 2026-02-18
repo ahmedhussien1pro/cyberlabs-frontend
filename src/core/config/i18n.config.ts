@@ -14,6 +14,7 @@ i18n
     ns: [
       'common',
       'auth',
+      'landing',
       'footer',
       'forgotPassword',
       'verifyEmail',

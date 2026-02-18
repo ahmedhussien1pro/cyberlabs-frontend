@@ -1,0 +1,49 @@
+{
+  "hero": {
+    "header": "Elevate Your Cybersecurity Skills",
+    "headline": "Comprehensive Cybersecurity Training for All Levels",
+    "description": "Join our academy to gain practical skills and knowledge to protect against cyber threats and secure your future in the digital world.",
+    "cta": "Discover Our Popular Courses",
+    "demo": "Watch Demo"
+  },
+  "stats": {
+    "title": "Our Stats",
+    "subtitle": "Our Current Statistics",
+    "students": "Students",
+    "courses": "Courses",
+    "events": "Events",
+    "trainers": "Trainers",
+    "updated": "Last updated"
+  },
+  "services": {
+    "title": "Learning Pathways",
+    "subtitle": "Our Learning Pathways",
+    "readMore": "Read More",
+    "items": {
+      "paths": {
+        "title": "Cybersecurity Learning Paths",
+        "description": "Structured beginner-to-advanced learning paths to build your cyber career."
+      },
+      "labs": {
+        "title": "Practical Cyber Labs",
+        "description": "Hands-on labs that simulate real-world cyber attack and defense scenarios."
+      },
+      "threat": {
+        "title": "Threat Detection Skills",
+        "description": "Practice SIEM, malware analysis, logs investigation, and threat hunting."
+      },
+      "hacking": {
+        "title": "Ethical Hacking Training",
+        "description": "Learn recon, exploitation, privilege escalation, and post-exploitation techniques."
+      },
+      "cert": {
+        "title": "Certification Preparation",
+        "description": "Prepare for top cybersecurity certifications like: CEH, Security+, CySA+."
+      },
+      "projects": {
+        "title": "Hands-On Projects & Challenges",
+        "description": "Realistic cyber challenges to strengthen your technical and analytical skills."
+      }
+    }
+  }
+}

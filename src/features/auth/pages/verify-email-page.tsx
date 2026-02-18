@@ -31,20 +31,16 @@ export default function VerifyEmailPage() {
   const [loading, setLoading] = useState(false);
   const [countdown, setCountdown] = useState(5);
 
-  // Use resend timer hook (60 seconds cooldown)
   const { timeLeft, canResend, startTimer } = useResendTimer(60);
 
-  // Verify email on mount if token exists
   useEffect(() => {
     if (token) {
       verifyEmail(token);
     } else {
-      // No token means user just registered and needs to check email
       setStatus('success');
     }
   }, [token]);
 
-  // Countdown for auto-redirect after success
   useEffect(() => {
     if (status === 'success' && token && countdown > 0) {
       const timer = setTimeout(() => {
@@ -110,7 +106,6 @@ export default function VerifyEmailPage() {
     navigate(ROUTES.HOME);
   };
 
-  // Verifying State
   if (status === 'verifying') {
     return (
       <>
@@ -142,7 +137,6 @@ export default function VerifyEmailPage() {
     );
   }
 
-  // Success State (with token - email verified)
   if (status === 'success' && token) {
     return (
       <>
@@ -194,7 +188,6 @@ export default function VerifyEmailPage() {
     );
   }
 
-  // Success State (no token - just registered, needs to check email)
   if (status === 'success' && !token) {
     return (
       <>
@@ -252,7 +245,6 @@ export default function VerifyEmailPage() {
                   {t('checkEmail.skipButton')}
                 </Button>
 
-                {/* Back to Login Component */}
                 <BackToLogin />
               </div>
             </Card>
@@ -262,7 +254,6 @@ export default function VerifyEmailPage() {
     );
   }
 
-  // Expired State
   if (status === 'expired') {
     return (
       <>
@@ -308,7 +299,6 @@ export default function VerifyEmailPage() {
                       : t('expired.requestButton')}
                 </Button>
 
-                {/* Back to Login Component */}
                 <BackToLogin />
               </div>
             </Card>
@@ -355,7 +345,6 @@ export default function VerifyEmailPage() {
                 {loading ? t('error.sendingButton') : t('error.requestButton')}
               </Button>
 
-              {/* Back to Login Component */}
               <BackToLogin />
             </div>
           </Card>

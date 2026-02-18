@@ -1,4 +1,3 @@
-// src/features/auth/utils/error-handler.ts
 export interface AuthError {
   title: string;
   message: string;
@@ -15,7 +14,6 @@ export function parseAuthError(error: any): AuthError {
   const errorMessage = error.message?.toLowerCase() || '';
   const statusCode = error.statusCode || error.status;
 
-  // Username errors
   if (
     errorMessage.includes('username') &&
     (errorMessage.includes('exists') ||
@@ -29,7 +27,6 @@ export function parseAuthError(error: any): AuthError {
     };
   }
 
-  // Email errors
   if (
     errorMessage.includes('email') &&
     (errorMessage.includes('exists') ||
@@ -44,7 +41,6 @@ export function parseAuthError(error: any): AuthError {
     };
   }
 
-  // Network errors
   if (
     errorMessage.includes('network') ||
     errorMessage.includes('timeout') ||
@@ -57,7 +53,6 @@ export function parseAuthError(error: any): AuthError {
     };
   }
 
-  // Server errors
   if (statusCode === 500 || errorMessage.includes('internal server')) {
     return {
       title: 'Server Error',
@@ -66,7 +61,6 @@ export function parseAuthError(error: any): AuthError {
     };
   }
 
-  // Rate limiting
   if (statusCode === 429 || errorMessage.includes('too many')) {
     return {
       title: 'Too Many Attempts',
@@ -75,7 +69,6 @@ export function parseAuthError(error: any): AuthError {
     };
   }
 
-  // Validation errors
   if (statusCode === 400 || errorMessage.includes('validation')) {
     return {
       title: 'Invalid Input',
@@ -83,7 +76,6 @@ export function parseAuthError(error: any): AuthError {
     };
   }
 
-  // Generic error with actual message if available
   if (error.message && error.message.length < 200) {
     return {
       title: defaultError.title,

@@ -47,13 +47,5 @@
     "change": "تغيير اللغة",
     "english": "English",
     "arabic": "العربية"
-  },
-  "stats": {
-    "title": "نشاطنا",
-    "subtitle": "إحصائياتنا الحالية",
-    "students": "الطلاب",
-    "courses": "الدورات",
-    "events": "الفعاليات",
-    "trainers": "المدربون"
   }
 }

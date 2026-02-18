@@ -1,4 +1,3 @@
-// src/shared/hooks/usePageTitle.ts
 import { useEffect } from 'react';
 
 /**
@@ -10,7 +9,6 @@ export function usePageTitle(title: string) {
     const prevTitle = document.title;
     document.title = title;
 
-    // Cleanup: restore previous title on unmount
     return () => {
       document.title = prevTitle;
     };

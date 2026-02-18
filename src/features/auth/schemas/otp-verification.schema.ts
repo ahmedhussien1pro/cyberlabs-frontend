@@ -1,4 +1,3 @@
-// src/features/auth/schemas/otp-verification.schema.ts
 import { z } from 'zod';
 
 export const otpVerificationSchema = z.object({

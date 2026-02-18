@@ -13,12 +13,10 @@ export function calculatePasswordStrength(password: string): PasswordStrength {
   let score = 0;
   const suggestions: string[] = [];
 
-  // Length check
   if (password.length >= 6) score++;
   if (password.length >= 10) score++;
   else if (password.length < 6) suggestions.push('Use at least 6 characters');
 
-  // Character variety
   if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++;
   else suggestions.push('Mix uppercase and lowercase letters');
 
@@ -28,7 +26,6 @@ export function calculatePasswordStrength(password: string): PasswordStrength {
   if (/[^A-Za-z0-9]/.test(password)) score++;
   else suggestions.push('Add special characters (!@#$%^&*)');
 
-  // Score mapping
   const strengthMap: Record<number, { label: string; color: string }> = {
     0: { label: 'Too weak', color: 'bg-red-500' },
     1: { label: 'Weak', color: 'bg-orange-500' },

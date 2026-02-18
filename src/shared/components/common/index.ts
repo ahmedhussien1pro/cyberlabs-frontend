@@ -1,3 +1,3 @@
 export * from './section-header';
-export * from './stats-section';
+export * from '../../../features/landing/components/stats-section';
 export * from './landing';

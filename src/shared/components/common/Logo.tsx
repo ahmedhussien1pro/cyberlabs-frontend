@@ -1,4 +1,3 @@
-// src/components/common/logo.tsx
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@/shared/constants';
 import { cn } from '@/shared/utils';
@@ -6,9 +5,10 @@ import { cn } from '@/shared/utils';
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg';
   className?: string;
+  showBadge?: boolean;
 }
 
-export function Logo({ size = 'md', className }: LogoProps) {
+export function Logo({ size = 'md', className, showBadge = true }: LogoProps) {
   const textSizes: Record<NonNullable<LogoProps['size']>, string> = {
     sm: 'text-[1.2rem]',
     md: 'text-[1.4rem]',
@@ -39,14 +39,19 @@ export function Logo({ size = 'md', className }: LogoProps) {
         Cyber <span>Labs</span>
       </h2>
 
-      <span
-        className={cn('rounded border font-medium underline', badgeSizes[size])}
-        style={{
-          borderColor: 'var(--main-color)',
-          color: 'var(--main-color)',
-        }}>
-        v1.0
-      </span>
+      {showBadge && (
+        <span
+          className={cn(
+            'rounded border font-medium underline',
+            badgeSizes[size],
+          )}
+          style={{
+            borderColor: 'var(--main-color)',
+            color: 'var(--main-color)',
+          }}>
+          v1.0
+        </span>
+      )}
     </Link>
   );
 }

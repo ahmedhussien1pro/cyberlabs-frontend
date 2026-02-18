@@ -9,7 +9,6 @@ interface I18nProviderProps {
 
 export function I18nProvider({ children }: I18nProviderProps) {
   useEffect(() => {
-    // Update document direction based on language
     const updateDirection = () => {
       const direction = i18n.dir();
       document.documentElement.dir = direction;

@@ -1,9 +1,3 @@
-/**
- * Landing Layout Component
- * Shared layout wrapper for all landing pages with Matrix background
- * @module shared/components/landing
- */
-
 import { MatrixRain } from './matrix-rain';
 import { LandingImage } from './components/landing-image';
 import { cn } from '@/lib/utils';

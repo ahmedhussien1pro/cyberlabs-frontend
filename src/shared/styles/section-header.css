@@ -1,0 +1,32 @@
+.section-header__title {
+  font-size: 14px;
+  font-weight: 500;
+  padding: 0;
+  line-height: 1px;
+  margin: 0;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--primary-text), transparent 50%);
+  position: relative;
+}
+
+.section-header__title::after {
+  content: '';
+  width: 120px;
+  height: 1px;
+  display: inline-block;
+  background: var(--main-color);
+  margin: 4px 10px;
+}
+
+[dir='rtl'] .section-header__title::after {
+  margin: 4px 10px 4px 0;
+}
+
+.section-header__subtitle {
+  color: var(--heading-color);
+  margin: 0;
+  font-size: 36px;
+  font-weight: 700;
+  text-transform: uppercase;
+}

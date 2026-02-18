@@ -1,4 +1,3 @@
-// src/components/layout/search-trigger.tsx
 import { Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/shared/utils';

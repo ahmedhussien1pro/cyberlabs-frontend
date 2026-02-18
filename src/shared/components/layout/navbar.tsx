@@ -1,4 +1,3 @@
-// src/components/layout/navbar.tsx (Updated)
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -28,7 +27,6 @@ export function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Define dropdown items
   const learningItems = [
     {
       label: t('navigation.labs'),

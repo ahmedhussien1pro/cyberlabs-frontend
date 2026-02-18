@@ -2,7 +2,6 @@
 export { CourseLanding } from './course-landing';
 export { LearnLanding } from './learn-landing';
 export { PracticeLanding } from './practice-landing';
-export { HomeLanding } from './home-landing';
 export { LandingLayout } from './landing-layout';
 export { MatrixRain } from './matrix-rain';
 
@@ -24,7 +23,6 @@ export type {
   CourseStats,
   CourseLandingProps,
   LearnLandingProps,
-  HomeLandingProps,
   PracticeLandingProps,
   LandingLayoutProps,
   MatrixRainProps,

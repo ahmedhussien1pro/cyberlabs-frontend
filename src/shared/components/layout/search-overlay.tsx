@@ -80,11 +80,11 @@ export function SearchOverlay({ open, onOpenChange }: SearchOverlayProps) {
           ) : !query ? (
             <div className='text-sm text-muted-foreground'>
               {t('search.suggestions')}
-              {/* TODO: أضف suggestions / recent search */}
+              {/* TODO:  */}
             </div>
           ) : (
             <div className='text-sm text-muted-foreground'>
-              {/* TODO: أضف نتائج البحث الفعلية */}
+              {/* TODO: */}
               {t('search.noResults')}
             </div>
           )}

@@ -1,16 +1,9 @@
-/**
- * Practice Landing Component
- * Hero section for labs/practice page
- * @module shared/components/landing
- */
-
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { LandingLayout } from './landing-layout';
 import { cn } from '@/lib/utils';
 import type { PracticeLandingProps } from './types';
 
-// Default image - can be overridden via props
 const DEFAULT_IMAGE = '/images/practice.png';
 
 export function PracticeLanding({ onTryLab }: PracticeLandingProps = {}) {

@@ -83,10 +83,7 @@ export const routes: RouteObject[] = [
     path: ROUTES.AUTH.GITHUB_CALLBACK,
     element: <LazyPage Component={Pages.OAuthCallbackPage} />,
   },
-  // {
-  //   path: ROUTES.DASHBOARD.DashboardPage,
-  //   element: <LazyPage Component={Pages.DashboardPage} />,
-  // },
+
   // {
   //   path: ROUTES.DASHBOARD.LabsPage,
   //   element: <LazyPage Component={Pages.LabsPage} />,

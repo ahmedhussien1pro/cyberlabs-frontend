@@ -33,7 +33,6 @@ class RequestQueue {
           config.headers.Authorization = `Bearer ${token}`;
         }
 
-        // Replay request
         const response = await axiosInstance(config);
         resolve(response);
       } catch (error) {

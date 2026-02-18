@@ -1,9 +1,3 @@
-/**
- * Action Buttons Component
- * Save and favorite buttons for course landing
- * @module shared/components/landing/components
- */
-
 import { Bookmark, Heart } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';

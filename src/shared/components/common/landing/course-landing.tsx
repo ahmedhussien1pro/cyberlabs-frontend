@@ -1,9 +1,3 @@
-/**
- * Course Landing Component
- * Hero section for course detail pages
- * @module shared/components/landing
- */
-
 import { UserCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';

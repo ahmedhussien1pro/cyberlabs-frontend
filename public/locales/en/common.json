@@ -48,13 +48,5 @@
     "change": "Change language",
     "english": "English",
     "arabic": "العربية"
-  },
-  "stats": {
-    "title": "Our Stats",
-    "subtitle": "Our Current Statistics",
-    "students": "Students",
-    "courses": "Courses",
-    "events": "Events",
-    "trainers": "Trainers"
   }
 }

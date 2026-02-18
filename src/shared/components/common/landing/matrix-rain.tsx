@@ -1,12 +1,6 @@
-/**
- * Matrix Rain Background Component
- * Animated falling characters effect for cybersecurity theme
- * @module shared/components/landing
- */
-
-import { useEffect, useRef, memo } from 'react'
-import { cn } from '@/lib/utils'
-import type { MatrixRainProps } from './types'
+import { useEffect, useRef, memo } from 'react';
+import { cn } from '@/lib/utils';
+import type { MatrixRainProps } from './types';
 
 export const MatrixRain = memo(function MatrixRain({
   opacity = 0.15,
@@ -14,89 +8,83 @@ export const MatrixRain = memo(function MatrixRain({
   speed = 4,
   className,
 }: MatrixRainProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
-    // Resize canvas to full viewport
     const resize = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
-    }
-    resize()
-    window.addEventListener('resize', resize)
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
 
-    // Matrix characters
-    const chars = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&*'
-    const fontSize = 16
-    const columns = Math.floor(canvas.width / fontSize)
-    const drops = Array.from({ length: columns }).fill(1) as number[]
+    const chars = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&*';
+    const fontSize = 16;
+    const columns = Math.floor(canvas.width / fontSize);
+    const drops = Array.from({ length: columns }).fill(1) as number[];
 
-    let frameCount = 0
-    let animationId: number
+    let frameCount = 0;
+    let animationId: number;
 
     // Draw function
     const draw = () => {
-      frameCount++
-      
-      // Throttle to improve performance (draw every nth frame)
+      frameCount++;
+
       if (frameCount % speed !== 0) {
-        animationId = requestAnimationFrame(draw)
-        return
+        animationId = requestAnimationFrame(draw);
+        return;
       }
 
       // Fade effect
-      ctx.fillStyle = `rgba(0, 0, 0, ${opacity})`
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      ctx.fillStyle = `rgba(0, 0, 0, ${opacity})`;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Draw characters
-      ctx.fillStyle = color
-      ctx.font = `${fontSize}px monospace`
+      ctx.fillStyle = color;
+      ctx.font = `${fontSize}px monospace`;
 
       drops.forEach((y, i) => {
-        const text = chars[Math.floor(Math.random() * chars.length)]
-        const x = i * fontSize
-        ctx.fillText(text, x, y * fontSize)
+        const text = chars[Math.floor(Math.random() * chars.length)];
+        const x = i * fontSize;
+        ctx.fillText(text, x, y * fontSize);
 
         // Reset drop randomly when it reaches bottom
         if (y * fontSize > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0
+          drops[i] = 0;
         }
-        drops[i]++
-      })
+        drops[i]++;
+      });
 
-      animationId = requestAnimationFrame(draw)
-    }
+      animationId = requestAnimationFrame(draw);
+    };
 
-    animationId = requestAnimationFrame(draw)
+    animationId = requestAnimationFrame(draw);
 
     // Cleanup
     return () => {
-      cancelAnimationFrame(animationId)
-      window.removeEventListener('resize', resize)
-    }
-  }, [opacity, color, speed])
+      cancelAnimationFrame(animationId);
+      window.removeEventListener('resize', resize);
+    };
+  }, [opacity, color, speed]);
 
   return (
     <>
       <canvas
         ref={canvasRef}
-        className={cn(
-          'absolute inset-0 z-0 pointer-events-none',
-          className
-        )}
-        aria-hidden="true"
+        className={cn('absolute inset-0 z-0 pointer-events-none', className)}
+        aria-hidden='true'
       />
       {/* Overlay gradient */}
       <div
-        className="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-br from-black/75 via-primary/20 to-black/75 backdrop-blur-[1px]"
-        aria-hidden="true"
+        className='absolute inset-0 z-[1] pointer-events-none bg-gradient-to-br from-black/75 via-primary/20 to-black/75 backdrop-blur-[1px]'
+        aria-hidden='true'
       />
     </>
-  )
-})
+  );
+});

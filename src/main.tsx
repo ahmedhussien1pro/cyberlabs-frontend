@@ -5,7 +5,6 @@ import App from './App';
 import './index.css';
 
 import '@/core/styles/globals.css';
-// Import i18n config to initialize
 import '@/core/config/i18n.config';
 
 createRoot(document.getElementById('root')!).render(

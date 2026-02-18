@@ -1,0 +1,112 @@
+.landing-text__header {
+  font-family: 'Dancing Script', serif;
+}
+
+.landing-text__header::before {
+  content: '';
+  position: absolute;
+  width: 25px;
+  height: 2px;
+  background: currentColor;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* LTR */
+[dir='ltr'] .landing-text__header::before {
+  left: 0;
+}
+
+/* RTL */
+[dir='rtl'] .landing-text__header::before {
+  right: 0;
+}
+
+/* Bounce animation */
+@keyframes bounce-slow {
+  0%,
+  20%,
+  60%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  80% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 3s infinite;
+}
+
+/* ------------------------------ */
+/* src/features/landing/styles/services.css */
+
+/* ── Before/After skew borders ── */
+.service-card::before {
+  content: '';
+  position: absolute;
+  inset: -10px 50px;
+  border-top: 4px solid var(--clr);
+  border-bottom: 4px solid var(--clr);
+  z-index: 0;
+  transform: skewY(15deg);
+  transition: 0.5s ease-in-out;
+}
+.service-card:hover::before {
+  transform: skewY(0deg);
+  inset: -10px 40px;
+}
+
+.service-card::after {
+  content: '';
+  position: absolute;
+  inset: 60px -10px;
+  border-left: 4px solid var(--clr);
+  border-right: 4px solid var(--clr);
+  z-index: 0;
+  transform: skew(15deg);
+  transition: 0.5s ease-in-out;
+}
+.service-card:hover::after {
+  transform: skew(0deg);
+  inset: 40px -10px;
+}
+
+/* ── Icon circle ── */
+.service-card__icon {
+  box-shadow:
+    0 0 0 4px var(--card),
+    0 0 0 6px var(--clr);
+}
+.service-card__icon-svg {
+  color: var(--clr);
+}
+.service-card:hover .service-card__icon {
+  box-shadow:
+    0 0 0 4px white,
+    0 0 0 300px var(--clr);
+  background-color: var(--clr);
+}
+.service-card:hover .service-card__icon-svg {
+  color: white;
+}
+
+/* ── Text on hover ── */
+.service-card:hover .service-card__title,
+.service-card:hover .service-card__desc {
+  color: white;
+}
+
+/* ── CTA button ── */
+.service-card__link {
+  background-color: var(--clr);
+  color: white;
+}
+.service-card:hover .service-card__link {
+  background-color: white;
+  color: var(--clr);
+}

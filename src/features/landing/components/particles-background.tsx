@@ -4,9 +4,9 @@
  * @module shared/components/landing
  */
 
-import { useEffect, useRef } from 'react'
-import { cn } from '@/lib/utils'
-import type { ParticlesBackgroundProps } from './types'
+import { useEffect, useRef } from 'react';
+import { cn } from '@/lib/utils';
+import type { ParticlesBackgroundProps } from '../../../shared/components/common/landing/types';
 
 export function ParticlesBackground({
   opacity = 0.5,
@@ -15,16 +15,16 @@ export function ParticlesBackground({
   particleCount = 90,
   className,
 }: ParticlesBackgroundProps = {}) {
-  const canvasRef = useRef<HTMLDivElement>(null)
+  const canvasRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (typeof window === 'undefined' || !canvasRef.current) return
+    if (typeof window === 'undefined' || !canvasRef.current) return;
 
     // Load particles.js from CDN
-    const script = document.createElement('script')
+    const script = document.createElement('script');
     script.src =
-      'https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js'
-    script.async = true
+      'https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js';
+    script.async = true;
 
     script.onload = () => {
       if (window.particlesJS && canvasRef.current) {
@@ -89,40 +89,40 @@ export function ParticlesBackground({
             },
           },
           retina_detect: true,
-        })
+        });
       }
-    }
+    };
 
-    document.body.appendChild(script)
+    document.body.appendChild(script);
 
     return () => {
       // Cleanup
       if (document.body.contains(script)) {
-        document.body.removeChild(script)
+        document.body.removeChild(script);
       }
       // Clear particles
-      const canvas = document.querySelector('#particles-js canvas')
+      const canvas = document.querySelector('#particles-js canvas');
       if (canvas) {
-        canvas.remove()
+        canvas.remove();
       }
-    }
-  }, [opacity, particleColor, lineColor, particleCount])
+    };
+  }, [opacity, particleColor, lineColor, particleCount]);
 
   return (
     <div
-      id="particles-js"
+      id='particles-js'
       ref={canvasRef}
       className={cn(
         'absolute inset-0 w-full h-full pointer-events-auto',
-        className
+        className,
       )}
     />
-  )
+  );
 }
 
 // Type declaration for particles.js
 declare global {
   interface Window {
-    particlesJS: (id: string, config: any) => void
+    particlesJS: (id: string, config: any) => void;
   }
 }

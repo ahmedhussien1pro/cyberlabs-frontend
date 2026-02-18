@@ -1,4 +1,3 @@
-// src/features/auth/services/auth.service.ts
 import { apiClient, API_ENDPOINTS } from '@/core/api';
 import type { ApiResponse } from '@/core/types';
 import type {
@@ -85,12 +84,6 @@ export const authService = {
     return response.data || response;
   },
 
-  /**
-   * Reset password using token from email
-   * @param token - Password reset token
-   * @param newPassword - New password
-   * @returns VerifyResponse with success message
-   */
   resetPassword: async (
     token: string,
     newPassword: string,
@@ -102,12 +95,6 @@ export const authService = {
     return response.data || response;
   },
 
-  /**
-   * Change password for authenticated user
-   * @param currentPassword - Current password
-   * @param newPassword - New password
-   * @returns VerifyResponse with success message
-   */
   changePassword: async (
     currentPassword: string,
     newPassword: string,
@@ -121,11 +108,6 @@ export const authService = {
 
   // ==================== Email Verification ====================
 
-  /**
-   * Verify email using token from email link
-   * @param token - Token from email verification link
-   * @returns VerifyResponse with success message
-   */
   verifyEmailWithToken: async (token: string): Promise<VerifyResponse> => {
     const response = await apiClient.post<ApiResponse<VerifyResponse>>(
       API_ENDPOINTS.AUTH.VERIFY_EMAIL,
@@ -134,12 +116,6 @@ export const authService = {
     return response.data || response;
   },
 
-  /**
-   * Verify email using OTP code (6 digits)
-   * @param email - User's email address
-   * @param otp - 6-digit OTP code
-   * @returns VerifyResponse with success message
-   */
   verifyEmailWithOTP: async (
     email: string,
     otp: string,
@@ -151,11 +127,6 @@ export const authService = {
     return response.data || response;
   },
 
-  /**
-   * Resend verification email/OTP
-   * @param email - User's email address
-   * @returns VerifyResponse with success message
-   */
   resendVerificationEmail: async (email: string): Promise<VerifyResponse> => {
     const response = await apiClient.post<ApiResponse<VerifyResponse>>(
       API_ENDPOINTS.AUTH.RESEND_VERIFICATION,
@@ -166,10 +137,6 @@ export const authService = {
 
   // ==================== Get Current User ====================
 
-  /**
-   * Get current authenticated user's data
-   * @returns User object
-   */
   getCurrentUser: async () => {
     const response = await apiClient.get<
       ApiResponse<{ user: LoginResponse['user'] }>

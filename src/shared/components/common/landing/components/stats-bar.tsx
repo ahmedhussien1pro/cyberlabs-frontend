@@ -1,9 +1,3 @@
-/**
- * Stats Bar Component
- * Displays course statistics (rating, difficulty, duration, students)
- * @module shared/components/landing/components
- */
-
 import { Star, Signal, Clock, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';

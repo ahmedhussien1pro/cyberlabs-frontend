@@ -1,7 +1,8 @@
+// src/features/auth/components/social-auth-buttons.tsx
 import { toast } from 'sonner';
 import { ENV } from '@/shared/constants';
 import { useTranslation } from 'react-i18next';
-import { Navigate } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 
 interface SocialAuthButtonsProps {
   mode?: 'login' | 'register';
@@ -47,25 +48,16 @@ export function SocialAuthButtons({
   ];
 
   const handleSocialAuth = (provider: SocialProvider) => {
-    if (disabled) return;
-
-    if (!provider.enabled) {
-      toast.info(t('social.comingSoon'), {
-        description: t('social.comingSoonDescription', {
-          provider: provider.name,
-          mode: mode === 'login' ? t('social.login') : t('social.register'),
-        }),
-      });
-      return;
-    }
+    if (disabled || !provider.enabled) return;
 
     try {
       if (provider.url) {
-        // <Navigate to={provider.url} />;
         window.location.href = provider.url;
       }
     } catch (error) {
-      console.error('OAuth error:', error);
+      if (import.meta.env.DEV) {
+        console.warn('[SocialAuth] redirect failed:', error);
+      }
       toast.error(t('social.authError'), {
         description: t('social.authErrorDescription', {
           provider: provider.name,
@@ -76,20 +68,40 @@ export function SocialAuthButtons({
 
   return (
     <div className='auth-form__social-icons'>
-      {socialProviders.map((provider) => (
-        <button
-          key={provider.name}
-          type='button'
-          onClick={() => handleSocialAuth(provider)}
-          disabled={!provider.enabled}
-          className='auth-form__social-link'
-          aria-label={t('social.ariaLabel', {
-            action: mode === 'login' ? t('social.login') : t('social.register'),
-            provider: provider.name,
-          })}>
-          <i className={`fa-brands ${provider.icon}`}></i>
-        </button>
-      ))}
+      {socialProviders.map((provider) => {
+        const isDisabled = disabled || !provider.enabled;
+
+        return (
+          <button
+            key={provider.name}
+            type='button'
+            onClick={() => handleSocialAuth(provider)}
+            disabled={isDisabled}
+            title={
+              !provider.enabled
+                ? t('social.comingSoon')
+                : t('social.ariaLabel', {
+                    action:
+                      mode === 'login'
+                        ? t('social.login')
+                        : t('social.register'),
+                    provider: provider.name,
+                  })
+            }
+            aria-label={t('social.ariaLabel', {
+              action:
+                mode === 'login' ? t('social.login') : t('social.register'),
+              provider: provider.name,
+            })}
+            aria-disabled={isDisabled}
+            className={cn(
+              'auth-form__social-link',
+              isDisabled && 'opacity-40 cursor-not-allowed pointer-events-none',
+            )}>
+            <i className={`fa-brands ${provider.icon}`}></i>
+          </button>
+        );
+      })}
     </div>
   );
 }

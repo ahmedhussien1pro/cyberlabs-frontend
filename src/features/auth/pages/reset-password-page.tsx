@@ -1,4 +1,3 @@
-// src/features/auth/pages/reset-password-page.tsx
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -14,8 +13,6 @@ import { ThemeToggle } from '@/components/common/theme-toggle';
 import { Preloader } from '@/components/common/preloader';
 import { authService } from '@/features/auth/services/auth.service';
 import { ROUTES } from '@/shared/constants';
-
-// Import reusable components, schemas, and hooks
 import {
   PasswordInput,
   PasswordStrengthIndicator,
@@ -24,7 +21,6 @@ import {
   resetPasswordSchema,
   type ResetPasswordForm,
 } from '@/features/auth/schemas';
-import { calculatePasswordStrength } from '@/features/auth/utils/validation.util';
 
 import '../styles/auth.css';
 import { LanguageSwitcher } from '@/components/common/language-switcher';
@@ -48,7 +44,9 @@ export default function ResetPasswordPage() {
   });
 
   const password = form.watch('password');
-  const strength = calculatePasswordStrength(password);
+
+  const isSubmitDisabled =
+    loading || !password || password !== form.watch('confirmPassword');
 
   useEffect(() => {
     if (!token) {
@@ -57,7 +55,7 @@ export default function ResetPasswordPage() {
         description: t('toast.invalidLinkDescription'),
       });
     }
-  }, [token]);
+  }, [token, t]);
 
   const handleSubmit = async (data: ResetPasswordForm) => {
     if (!token) {
@@ -68,16 +66,11 @@ export default function ResetPasswordPage() {
     setLoading(true);
     try {
       await authService.resetPassword(token, data.password);
-
       setResetSuccess(true);
-
       toast.success(t('toast.resetSuccess'), {
         description: t('toast.resetSuccessDescription'),
       });
-
-      setTimeout(() => {
-        navigate(ROUTES.AUTH.LOGIN);
-      }, 3000);
+      setTimeout(() => navigate(ROUTES.AUTH.LOGIN), 3000);
     } catch (error: any) {
       toast.error(t('toast.resetFailed'), {
         description: error.message || t('toast.resetFailedDescription'),
@@ -87,7 +80,6 @@ export default function ResetPasswordPage() {
     }
   };
 
-  // Invalid Token State
   if (!tokenValid) {
     return (
       <>
@@ -152,7 +144,6 @@ export default function ResetPasswordPage() {
           <Card className='auth-page__card'>
             {!resetSuccess ? (
               <>
-                {/* Header */}
                 <div className='auth-page__header'>
                   <div className='auth-page__icon-wrapper'>
                     <Lock className='auth-page__icon' size={48} />
@@ -161,79 +152,78 @@ export default function ResetPasswordPage() {
                   <p className='auth-page__subtitle'>{t('subtitle')}</p>
                 </div>
 
-                {/* Form */}
                 <form
                   onSubmit={form.handleSubmit(handleSubmit)}
                   className='auth-page__form'>
-                  {/* Password Input with Error */}
-                  <div className='auth-page__field'>
+                  <div className='auth-page__input-group'>
                     <PasswordInput
                       placeholder={t('passwordPlaceholder')}
-                      {...form.register('password')}
+                      className='auth-page__input'
                       disabled={loading}
-                      error={form.formState.errors.password?.message}
+                      {...form.register('password')}
                     />
+                    {form.formState.errors.password && (
+                      <p className='auth-page__error'>
+                        {form.formState.errors.password.message}
+                      </p>
+                    )}
                   </div>
 
-                  {/* Password Strength Indicator */}
                   {password && (
                     <PasswordStrengthIndicator password={password} />
                   )}
 
-                  {/* Confirm Password Input with Error */}
-                  <div className='auth-page__field'>
+                  <div className='auth-page__input-group'>
                     <PasswordInput
                       placeholder={t('confirmPasswordPlaceholder')}
-                      {...form.register('confirmPassword')}
+                      className='auth-page__input'
                       disabled={loading}
-                      error={form.formState.errors.confirmPassword?.message}
+                      {...form.register('confirmPassword')}
                     />
+                    {form.formState.errors.confirmPassword && (
+                      <p className='auth-page__error'>
+                        {form.formState.errors.confirmPassword.message}
+                      </p>
+                    )}
                   </div>
 
                   <Button
                     type='submit'
                     className='auth-page__submit'
-                    disabled={loading || !strength.isValid}>
+                    disabled={isSubmitDisabled}>
                     {loading ? t('resettingButton') : t('resetButton')}
                   </Button>
                 </form>
 
-                {/* Back to Login */}
                 <div className='auth-page__back'>
                   <Link to={ROUTES.AUTH.LOGIN}>{t('backToLogin')}</Link>
                 </div>
               </>
             ) : (
-              <>
-                {/* Success State */}
-                <motion.div
-                  className='auth-page__success'
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3 }}>
-                  <div className='auth-page__success-icon-wrapper'>
-                    <CheckCircle
-                      className='auth-page__success-icon'
-                      size={64}
-                    />
-                  </div>
-                  <h2 className='auth-page__success-title'>
-                    {t('success.title')}
-                  </h2>
-                  <p className='auth-page__success-text'>
-                    {t('success.description')}
-                  </p>
-                  <p className='auth-page__success-subtext'>
-                    {t('success.redirectMessage')}
-                  </p>
+              <motion.div
+                className='auth-page__success'
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}>
+                <div className='auth-page__success-icon-wrapper'>
+                  <CheckCircle className='auth-page__success-icon' size={64} />
+                </div>
+                <h2 className='auth-page__success-title'>
+                  {t('success.title')}
+                </h2>
+                <p className='auth-page__success-text'>
+                  {t('success.description')}
+                </p>
+                <p className='auth-page__success-subtext'>
+                  {t('success.redirectMessage')}
+                </p>
 
-                  <Button
-                    onClick={() => navigate(ROUTES.AUTH.LOGIN)}
-                    className='auth-page__submit'>
-                    {t('success.continueButton')}
-                  </Button>
-                </motion.div>
-              </>
+                <Button
+                  onClick={() => navigate(ROUTES.AUTH.LOGIN)}
+                  className='auth-page__submit'>
+                  {t('success.continueButton')}
+                </Button>
+              </motion.div>
             )}
           </Card>
         </motion.div>

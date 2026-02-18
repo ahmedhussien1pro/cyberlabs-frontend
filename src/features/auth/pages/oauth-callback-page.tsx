@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+// src/features/auth/pages/oauth-callback-page.tsx
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
@@ -25,12 +26,16 @@ export default function OAuthCallbackPage() {
   const [status, setStatus] = useState<CallbackStatus>('processing');
   const [errorMessage, setErrorMessage] = useState<string>('');
 
+  const hasProcessed = useRef(false);
+
   const accessToken = searchParams.get('access_token');
   const refreshToken = searchParams.get('refresh_token');
-  // const expiresIn = searchParams.get('expires_in');
   const error = searchParams.get('error');
 
   useEffect(() => {
+    if (hasProcessed.current) return;
+    hasProcessed.current = true;
+
     if (error) {
       setStatus('error');
       setErrorMessage(t('errors.oauthError', { error }));
@@ -49,48 +54,56 @@ export default function OAuthCallbackPage() {
       return;
     }
 
-    handleOAuthTokens(accessToken, refreshToken || '');
-  }, [accessToken, refreshToken, error]);
+    const handleOAuthTokens = async (token: string, refresh: string) => {
+      try {
+        const decoded = tokenUtils.decode(token);
+        const emailName = decoded.email.split('@')[0];
+        const userName = emailName.charAt(0).toUpperCase() + emailName.slice(1);
 
-  const handleOAuthTokens = async (token: string, refresh: string) => {
-    try {
-      const decoded = tokenUtils.decode(token);
-      const emailName = decoded.email.split('@')[0];
-      const userName = emailName.charAt(0).toUpperCase() + emailName.slice(1);
+        const user = {
+          id: decoded.sub,
+          email: decoded.email,
+          name: userName,
+          role: roleUtils.mapBackendRole(decoded.role),
+        };
 
-      const user = {
-        id: decoded.sub,
-        email: decoded.email,
-        name: userName,
-        role: roleUtils.mapBackendRole(decoded.role),
-      };
+        login(user, token);
 
-      login(user, token);
+        if (refresh) {
+          localStorage.setItem(
+            `${import.meta.env.VITE_STORAGE_PREFIX ?? 'cyberlabs_'}refreshToken`,
+            refresh,
+          );
+        }
 
-      if (refresh) {
-        const storagePrefix = 'cyberlabs_';
-        localStorage.setItem(`${storagePrefix}refreshToken`, refresh);
+        setStatus('success');
+
+        toast.success(t('toast.welcome'), {
+          description: t('toast.loggedInAs', { name: user.name }),
+        });
+
+        setTimeout(() => {
+          navigate(ROUTES.HOME);
+        }, 2000);
+      } catch (err: any) {
+        if (import.meta.env.DEV) {
+          console.warn(
+            '[OAuthCallback] token processing failed:',
+            err?.message,
+          );
+        }
+
+        setStatus('error');
+        setErrorMessage(err.message || t('errors.processingFailed'));
+
+        toast.error(t('toast.authFailed'), {
+          description: err.message || t('toast.unableToComplete'),
+        });
       }
+    };
 
-      setStatus('success');
-
-      toast.success(t('toast.welcome'), {
-        description: t('toast.loggedInAs', { name: user.name }),
-      });
-
-      setTimeout(() => {
-        navigate(ROUTES.HOME);
-      }, 2000);
-    } catch (err: any) {
-      console.error('OAuth token processing error:', err);
-      setStatus('error');
-      setErrorMessage(err.message || t('errors.processingFailed'));
-
-      toast.error(t('toast.authFailed'), {
-        description: err.message || t('toast.unableToComplete'),
-      });
-    }
-  };
+    handleOAuthTokens(accessToken, refreshToken ?? '');
+  }, [accessToken, refreshToken, error, login, navigate, t]);
 
   return (
     <>

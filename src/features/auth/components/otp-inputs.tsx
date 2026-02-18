@@ -20,6 +20,12 @@ export function OTPInputs({
   onComplete,
 }: OTPInputsProps) {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const hasCompleted = useRef(false);
+  const onCompleteRef = useRef(onComplete);
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  });
 
   useEffect(() => {
     inputRefs.current[0]?.focus();
@@ -27,10 +33,17 @@ export function OTPInputs({
 
   useEffect(() => {
     const otpCode = value.join('');
-    if (autoSubmit && otpCode.length === length && onComplete) {
-      onComplete(otpCode);
+    const isFull = otpCode.length === length && value.every((d) => d !== '');
+
+    if (autoSubmit && isFull && !hasCompleted.current) {
+      hasCompleted.current = true;
+      onCompleteRef.current?.(otpCode);
     }
-  }, [value, autoSubmit, length, onComplete]);
+
+    if (!isFull) {
+      hasCompleted.current = false;
+    }
+  }, [value, autoSubmit, length]);
 
   const handleChange = (index: number, val: string) => {
     if (val && !/^\d$/.test(val)) return;

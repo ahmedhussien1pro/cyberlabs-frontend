@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 export function useResendTimer(initialSeconds = 30) {
   const [countdown, setCountdown] = useState(initialSeconds);
   const [canResend, setCanResend] = useState(false);
-  const startTimer = initialSeconds;
+
   useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => {
@@ -15,10 +15,15 @@ export function useResendTimer(initialSeconds = 30) {
     }
   }, [countdown]);
 
-  const resetTimer = (seconds = startTimer) => {
+  // ✅ startTimer is a function — resets countdown and disables resend
+  const startTimer = (seconds = initialSeconds) => {
     setCountdown(seconds);
     setCanResend(false);
   };
+
+  // resetTimer kept as alias for backward compatibility
+  const resetTimer = startTimer;
+
   const timeLeft = countdown;
   return { countdown, canResend, resetTimer, startTimer, timeLeft };
 }

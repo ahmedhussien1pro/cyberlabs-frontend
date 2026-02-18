@@ -1,4 +1,3 @@
-// src/features/auth/pages/otp-verification-page.tsx
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -34,12 +33,13 @@ export default function OTPVerificationPage() {
       });
       navigate(ROUTES.AUTH.LOGIN);
     }
-  }, [email, navigate]);
+  }, [email, navigate, t]);
 
-  const handleVerify = async () => {
-    if (!email) return;
+  const handleVerify = async (otpCode?: string) => {
+    if (!email || isVerifying) return;
 
-    const otpValue = otp.join('');
+    const otpValue = otpCode ?? otp.join('');
+
     if (otpValue.length !== 6) {
       toast.error(t('toast.invalidOTP'), {
         description: t('toast.invalidOTPDescription'),
@@ -88,29 +88,6 @@ export default function OTPVerificationPage() {
 
   const isComplete = otp.every((digit) => digit !== '');
 
-  const handleComplete = async (otpCode: string) => {
-    if (!email) return;
-
-    setIsVerifying(true);
-
-    try {
-      await authService.verifyEmailWithOTP(email, otpCode);
-
-      toast.success(t('toast.verified'), {
-        description: t('toast.verifiedDescription'),
-      });
-
-      navigate(ROUTES.AUTH.LOGIN);
-    } catch (error: any) {
-      toast.error(t('toast.verificationFailed'), {
-        description: error.message || t('toast.invalidCode'),
-      });
-      setOtp(Array(6).fill(''));
-    } finally {
-      setIsVerifying(false);
-    }
-  };
-
   return (
     <>
       <div className='fixed top-6 right-6 z-50'>
@@ -155,12 +132,12 @@ export default function OTPVerificationPage() {
                   length={6}
                   disabled={isVerifying}
                   autoSubmit={true}
-                  onComplete={handleComplete}
+                  onComplete={handleVerify}
                 />
               </div>
 
               <Button
-                onClick={handleVerify}
+                onClick={() => handleVerify()}
                 disabled={isVerifying || !isComplete}
                 className='auth-page__submit'>
                 {isVerifying && (

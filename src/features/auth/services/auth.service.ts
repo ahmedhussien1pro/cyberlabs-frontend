@@ -49,7 +49,7 @@ export const authService = {
 
       // Only log unexpected errors in DEV
       if (import.meta.env.DEV && !isExpectedError) {
-        console.error('Unexpected registration error:', {
+        sanitize.error('Unexpected registration error:', {
           message: error.message,
           statusCode: error.statusCode,
         });

@@ -62,7 +62,6 @@ export const useAuthStore = create<AuthStore>()(
       name: `${ENV.STORAGE_PREFIX}auth`,
       partialize: (state) => ({
         user: state.user,
-        tokens: state.tokens,
         isAuthenticated: state.isAuthenticated,
       }),
     },

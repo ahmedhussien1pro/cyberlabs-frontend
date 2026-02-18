@@ -1,9 +1,12 @@
+// src/core/api/client.ts - FIXED VERSION
+
 import axios, { AxiosError } from 'axios';
 import type { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import { ENV } from '@/shared/constants';
 import type { ApiError, ApiResponse } from '@/core/types';
 import { tokenManager, requestQueue } from '@/features/auth/utils';
-// Create axios instance
+import { API_ENDPOINTS } from './endpoints';
+
 export const apiClient: AxiosInstance = axios.create({
   baseURL: ENV.API_URL,
   timeout: ENV.API_TIMEOUT,
@@ -16,10 +19,11 @@ export const apiClient: AxiosInstance = axios.create({
 
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.xsrfHeaderName = 'X-CSRF-Token';
-// Request interceptor
+
 apiClient.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    const token = tokenManager.getAccessToken();
+  async (config: InternalAxiosRequestConfig) => {
+    const token = await tokenManager.getAccessToken();
+
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -38,10 +42,8 @@ apiClient.interceptors.request.use(
   },
 );
 
-// Response interceptor
 apiClient.interceptors.response.use(
   (response) => {
-    // Transform response to ApiResponse format
     return response.data;
   },
   async (error: AxiosError) => {
@@ -49,14 +51,12 @@ apiClient.interceptors.response.use(
       _retry?: boolean;
     };
 
-    // Handle 401 Unauthorized - Token expired
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      // Check if refresh is already in progress
+
       const ongoingRefresh = tokenManager.getRefreshPromise();
 
       if (ongoingRefresh) {
-        // Wait for ongoing refresh and retry request
         try {
           const newToken = await ongoingRefresh;
 
@@ -69,40 +69,56 @@ apiClient.interceptors.response.use(
           return Promise.reject(refreshError);
         }
       }
+
       try {
         const refreshToken = await tokenManager.getRefreshToken();
-        if (refreshToken) {
-          const refreshPromise = axios
-            .post<ApiResponse<{ accessToken: string; refreshToken: string }>>()
-            .then((response) => {
-              const { accessToken, refreshToken: newRefreshToken } =
-                response.data.data;
-              tokenManager.setTokens(accessToken, newRefreshToken);
 
-              return accessToken;
-            });
-          tokenManager.setRefreshPromise(refreshPromise);
-          const newToken = await refreshPromise;
-          tokenManager.setRefreshPromise(null);
-
-          if (originalRequest.headers) {
-            originalRequest.headers.Authorization = `Bearer ${newToken}`;
-          }
-          if (!requestQueue.isEmpty()) {
-            await requestQueue.processQueue(newToken, apiClient);
-          }
-          return apiClient(originalRequest);
+        if (!refreshToken) {
+          throw new Error('No refresh token available');
         }
+
+        const refreshPromise = axios
+          .post<
+            ApiResponse<{ accessToken: string; refreshToken: string }>
+          >(`${ENV.API_URL}${API_ENDPOINTS.AUTH.REFRESH}`, { refreshToken }, { withCredentials: true })
+          .then(async (response) => {
+            const data = response.data.data || response.data;
+            const { accessToken, refreshToken: newRefreshToken } = data;
+
+            // Store new tokens
+            await tokenManager.setTokens(accessToken, newRefreshToken);
+
+            return accessToken;
+          });
+
+        tokenManager.setRefreshPromise(refreshPromise);
+
+        const newToken = await refreshPromise;
+
+        tokenManager.setRefreshPromise(null);
+
+        if (originalRequest.headers) {
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        }
+
+        if (!requestQueue.isEmpty()) {
+          await requestQueue.processQueue(newToken, apiClient);
+        }
+
+        return apiClient(originalRequest);
       } catch (refreshError) {
         tokenManager.setRefreshPromise(null);
         requestQueue.rejectQueue(refreshError);
         tokenManager.clearTokens();
-        // window.location.href = '/auth';
+
+        if (typeof window !== 'undefined') {
+          window.location.href = '/auth';
+        }
+
         return Promise.reject(refreshError);
       }
     }
 
-    // Transform error to ApiError format
     const apiError: ApiError = {
       message:
         error.response?.data?.message || error.message || 'An error occurred',

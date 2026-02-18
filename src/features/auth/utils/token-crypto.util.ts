@@ -8,20 +8,21 @@ interface DecryptionResult {
   error?: string;
 }
 
-async function getDeviceKey(): Promise<CryptoKey> {
-  const fingerprint = [
-    navigator.userAgent,
-    navigator.language,
-    screen.colorDepth,
-    screen.width,
-    screen.height,
-    new Date().getTimezoneOffset(),
-    'cyberlabs-auth-2026',
-  ].join('|');
+async function getEncryptionKey(): Promise<CryptoKey> {
+  const sessionKeyId = '__cyb_sk';
+  let keyMaterial = sessionStorage.getItem(sessionKeyId);
+
+  if (!keyMaterial) {
+    const randomBytes = crypto.getRandomValues(new Uint8Array(32));
+    keyMaterial = Array.from(randomBytes, (byte) =>
+      byte.toString(16).padStart(2, '0'),
+    ).join('');
+    sessionStorage.setItem(sessionKeyId, keyMaterial);
+  }
 
   const encoder = new TextEncoder();
-  const data = encoder.encode(fingerprint);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const keyData = encoder.encode(keyMaterial);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', keyData);
 
   return crypto.subtle.importKey(
     'raw',
@@ -35,13 +36,10 @@ async function getDeviceKey(): Promise<CryptoKey> {
 async function encrypt(plaintext: string): Promise<EncryptionResult> {
   try {
     if (!crypto.subtle) {
-      return {
-        encrypted: plaintext,
-        error: 'Crypto API not available',
-      };
+      throw new Error('Crypto API not available');
     }
 
-    const key = await getDeviceKey();
+    const key = await getEncryptionKey();
     const encoder = new TextEncoder();
     const data = encoder.encode(plaintext);
 
@@ -62,23 +60,17 @@ async function encrypt(plaintext: string): Promise<EncryptionResult> {
     return { encrypted };
   } catch (error) {
     console.error('Encryption error:', error);
-    return {
-      encrypted: plaintext,
-      error: 'Encryption failed',
-    };
+    throw new Error('Token encryption failed');
   }
 }
 
 async function decrypt(ciphertext: string): Promise<DecryptionResult> {
   try {
     if (!crypto.subtle) {
-      return {
-        decrypted: ciphertext,
-        error: 'Crypto API not available',
-      };
+      throw new Error('Crypto API not available');
     }
 
-    const key = await getDeviceKey();
+    const key = await getEncryptionKey();
 
     const combined = Uint8Array.from(atob(ciphertext), (c) => c.charCodeAt(0));
 
@@ -119,12 +111,14 @@ function isEncrypted(token: string): boolean {
 
 export const tokenCrypto = {
   async encryptToken(token: string): Promise<string> {
-    if (!token) return token;
+    if (!token) {
+      throw new Error('Token is required for encryption');
+    }
 
     const result = await encrypt(token);
 
     if (result.error) {
-      console.warn('Token encryption not available, storing plaintext');
+      throw new Error(result.error);
     }
 
     return result.encrypted;
@@ -140,7 +134,7 @@ export const tokenCrypto = {
     const result = await decrypt(encryptedToken);
 
     if (result.error) {
-      console.error('Token decryption failed');
+      console.error('Token decryption failed:', result.error);
       return null;
     }
 
@@ -153,5 +147,9 @@ export const tokenCrypto = {
 
   isEncrypted(token: string): boolean {
     return isEncrypted(token);
+  },
+
+  clearSessionKey(): void {
+    sessionStorage.removeItem('__cyb_sk');
   },
 };

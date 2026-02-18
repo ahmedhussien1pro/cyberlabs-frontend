@@ -1,24 +1,4 @@
 /* =====================================================
-   CYBERLABS - AUTH STYLES
-   Unified styles for all authentication pages
-   Version: 2.0
-   ===================================================== */
-
-/* =====================================================
-   TABLE OF CONTENTS
-   1. Shared Layout & Structure
-   2. Login/Register Page (auth-page)
-   3. OTP Verification Page
-   4. Forgot Password Page
-   5. Reset Password Page
-   6. Email Verification Page
-   7. OAuth Callback Page
-   8. Components (Form Elements, Icons, Buttons)
-   9. Animations & Transitions
-   10. Responsive & RTL Support
-   ===================================================== */
-
-/* =====================================================
    1. SHARED LAYOUT & STRUCTURE
    ===================================================== */
 
@@ -607,7 +587,7 @@
 /* RTL Support */
 [dir='rtl'] .auth-page__input,
 [dir='rtl'] .auth-form__input {
-  @apply pl-10 pr-3;
+  @apply pl-3 pr-3;
 }
 
 [dir='rtl'] .auth-page__input-icon,
@@ -650,10 +630,4 @@
 .auth-form__input-box {
   position: relative;
   width: 100%;
-}
-
-/* Ensure input has padding for the eye icon */
-.auth-form__input-box input[type='password'],
-.auth-form__input-box input[type='text'] {
-  padding-right: 2.75rem;
 }

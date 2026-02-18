@@ -1,3 +1,5 @@
+// src/features/auth/utils/token-manager.util.ts - UPDATED
+
 import { ENV } from '@/shared/constants';
 import { tokenUtils } from './token.util';
 import { tokenCrypto } from './token-crypto.util';
@@ -16,21 +18,24 @@ class TokenManager {
     }
     return TokenManager.instance;
   }
+
   async getAccessToken(): Promise<string | null> {
     try {
       const encryptedToken = localStorage.getItem(
         `${ENV.STORAGE_PREFIX}accessToken`,
       );
+
       if (!encryptedToken) return null;
+
       const token = await tokenCrypto.decryptToken(encryptedToken);
-      if (
-        token &&
-        tokenUtils.isValidFormat(token) &&
-        !tokenUtils.isExpired(token)
-      ) {
+
+      if (!token) return null;
+
+      if (tokenUtils.isValidFormat(token) && !tokenUtils.isExpired(token)) {
         return token;
       }
 
+      this.clearTokens();
       return null;
     } catch (error) {
       sanitize.error('TokenManager.getAccessToken', error);
@@ -45,9 +50,9 @@ class TokenManager {
       );
 
       if (!encryptedToken) return null;
+
       return await tokenCrypto.decryptToken(encryptedToken);
     } catch (error) {
-      console.error('Error reading refresh token:', error);
       sanitize.error('TokenManager.getRefreshToken', error);
       return null;
     }
@@ -55,8 +60,13 @@ class TokenManager {
 
   async setTokens(accessToken: string, refreshToken: string): Promise<void> {
     try {
+      if (!accessToken || !refreshToken) {
+        throw new Error('Access token and refresh token are required');
+      }
+
       const encryptedAccess = await tokenCrypto.encryptToken(accessToken);
       const encryptedRefresh = await tokenCrypto.encryptToken(refreshToken);
+
       localStorage.setItem(`${ENV.STORAGE_PREFIX}accessToken`, encryptedAccess);
       localStorage.setItem(
         `${ENV.STORAGE_PREFIX}refreshToken`,
@@ -72,8 +82,9 @@ class TokenManager {
     try {
       localStorage.removeItem(`${ENV.STORAGE_PREFIX}accessToken`);
       localStorage.removeItem(`${ENV.STORAGE_PREFIX}refreshToken`);
-
       localStorage.removeItem(`${ENV.STORAGE_PREFIX}auth`);
+
+      tokenCrypto.clearSessionKey();
 
       this.cancelRefresh();
     } catch (error) {

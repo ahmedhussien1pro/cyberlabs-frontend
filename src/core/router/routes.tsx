@@ -2,14 +2,15 @@ import { Suspense } from 'react';
 import type { RouteObject } from 'react-router-dom';
 import * as Pages from './lazy-routes';
 import { ROUTES } from '@/shared/constants';
-import { LoadingSpinner } from '@/shared/components/common/loading-spinner';
+// import { LoadingSpinner } from '@/shared/components/common/loading-spinner';
+import { Preloader } from '@/shared/components/common/preloader';
 
 const LazyPage = ({
   Component,
 }: {
   Component: React.LazyExoticComponent<() => JSX.Element>;
 }) => (
-  <Suspense fallback={<LoadingSpinner />}>
+  <Suspense fallback={<Preloader />}>
     <Component />
   </Suspense>
 );

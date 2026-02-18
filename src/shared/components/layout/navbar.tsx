@@ -113,7 +113,7 @@ export function Navbar() {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link to={ROUTES.DASHBOARD.HOME}>
+                    <Link to={ROUTES.UNAUTHORIZED}>
                       {t('navigation.dashboard')}
                     </Link>
                   </DropdownMenuItem>
@@ -123,7 +123,7 @@ export function Navbar() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to={ROUTES.DASHBOARD.HOME}>
+                    <Link to={ROUTES.UNAUTHORIZED}>
                       {t('navigation.settings')}
                     </Link>
                   </DropdownMenuItem>

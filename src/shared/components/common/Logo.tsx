@@ -1,4 +1,4 @@
-// src/components/common/logo.tsx (Tailwind version)
+// src/components/common/logo.tsx
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@/shared/constants';
 import { cn } from '@/shared/utils';

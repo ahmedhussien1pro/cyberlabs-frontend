@@ -7,13 +7,13 @@ import { useTranslation } from 'react-i18next';
 
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ThemeToggle } from '@/components/common/theme-toggle';
+import { ThemeToggle } from '@/shared/components/common/theme-toggle';
 import { OTPInputs, ResendButton } from '@/features/auth/components';
 import { useResendTimer } from '@/features/auth/hooks';
 import { authService } from '@/features/auth/services/auth.service';
 import { ROUTES } from '@/shared/constants';
 import '../styles/auth.css';
-import { LanguageSwitcher } from '@/components/common/language-switcher';
+import { LanguageSwitcher } from '@/shared/components/common/language-switcher';
 
 export default function OTPVerificationPage() {
   const { t } = useTranslation('otpVerification');

@@ -8,9 +8,9 @@ import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ThemeToggle } from '@/components/common/theme-toggle';
-import { LanguageSwitcher } from '@/components/common/language-switcher';
-import { Preloader } from '@/components/common/preloader';
+import { ThemeToggle } from '@/shared/components/common/theme-toggle';
+import { LanguageSwitcher } from '@/shared/components/common/language-switcher';
+import { Preloader } from '@/shared/components/common/preloader';
 import { BackToLogin, ResendButton } from '@/features/auth/components';
 import { useResendTimer } from '@/features/auth/hooks';
 import { authService } from '@/features/auth/services/auth.service';

@@ -10,7 +10,7 @@ import {
   Target,
   Award,
 } from 'lucide-react';
-import { Logo } from '@/components/common/Logo';
+import { Logo } from '@/shared/components/common/Logo';
 import { Separator } from '@/components/ui/separator';
 import { ROUTES } from '@/shared/constants';
 

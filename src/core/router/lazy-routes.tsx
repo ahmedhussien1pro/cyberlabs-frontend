@@ -50,35 +50,3 @@ export const NotFoundPage = lazy(
 export const UnauthorizedPage = lazy(
   () => import('@/features/errors/pages/unauthorized-page'),
 );
-
-// Dashboard
-export const DashboardPage = lazy(() =>
-  import('@/features/dashboard/pages/dashboard-page').then((m) => ({
-    default: m.DashboardPage,
-  })),
-);
-// export const LabsPage = lazy(() =>
-//   import('@/features/dashboard/pages/labs-page').then((m) => ({
-//     default: m.LabsPage,
-//   })),
-// );
-// export const ProgressPage = lazy(() =>
-//   import('@/features/dashboard/pages/progress-page').then((m) => ({
-//     default: m.ProgressPage,
-//   })),
-// );
-// export const GoalsPage = lazy(() =>
-//   import('@/features/dashboard/pages/goals-page').then((m) => ({
-//     default: m.GoalsPage,
-//   })),
-// );
-// export const CommunityPage = lazy(() =>
-//   import('@/features/dashboard/pages/community-page').then((m) => ({
-//     default: m.CommunityPage,
-//   })),
-// );
-// export const SettingsPage = lazy(() =>
-//   import('@/features/dashboard/pages/settings-page').then((m) => ({
-//     default: m.SettingsPage,
-//   })),
-// );

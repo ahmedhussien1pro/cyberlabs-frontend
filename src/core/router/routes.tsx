@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import type { RouteObject } from 'react-router-dom';
 import * as Pages from './lazy-routes';
 import { ROUTES } from '@/shared/constants';
-import { LoadingSpinner } from '@/components/common/loading-spinner';
+import { LoadingSpinner } from '@/shared/components/common/loading-spinner';
 
 const LazyPage = ({
   Component,
@@ -82,30 +82,30 @@ export const routes: RouteObject[] = [
     path: ROUTES.AUTH.GITHUB_CALLBACK,
     element: <LazyPage Component={Pages.OAuthCallbackPage} />,
   },
-  {
-    path: ROUTES.DASHBOARD.DashboardPage,
-    element: <LazyPage Component={Pages.DashboardPage} />,
-  },
-  {
-    path: ROUTES.DASHBOARD.LabsPage,
-    element: <LazyPage Component={Pages.LabsPage} />,
-  },
-  {
-    path: ROUTES.DASHBOARD.ProgressPage,
-    element: <LazyPage Component={Pages.ProgressPage} />,
-  },
-  {
-    path: ROUTES.DASHBOARD.GoalsPage,
-    element: <LazyPage Component={Pages.GoalsPage} />,
-  },
-  {
-    path: ROUTES.DASHBOARD.CommunityPage,
-    element: <LazyPage Component={Pages.CommunityPage} />,
-  },
-  {
-    path: ROUTES.DASHBOARD.SettingsPage,
-    element: <LazyPage Component={Pages.SettingsPage} />,
-  },
+  // {
+  //   path: ROUTES.DASHBOARD.DashboardPage,
+  //   element: <LazyPage Component={Pages.DashboardPage} />,
+  // },
+  // {
+  //   path: ROUTES.DASHBOARD.LabsPage,
+  //   element: <LazyPage Component={Pages.LabsPage} />,
+  // },
+  // {
+  //   path: ROUTES.DASHBOARD.ProgressPage,
+  //   element: <LazyPage Component={Pages.ProgressPage} />,
+  // },
+  // {
+  //   path: ROUTES.DASHBOARD.GoalsPage,
+  //   element: <LazyPage Component={Pages.GoalsPage} />,
+  // },
+  // {
+  //   path: ROUTES.DASHBOARD.CommunityPage,
+  //   element: <LazyPage Component={Pages.CommunityPage} />,
+  // },
+  // {
+  //   path: ROUTES.DASHBOARD.SettingsPage,
+  //   element: <LazyPage Component={Pages.SettingsPage} />,
+  // },
   // Error Routes
   {
     path: ROUTES.UNAUTHORIZED,

@@ -9,8 +9,8 @@ import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ThemeToggle } from '@/components/common/theme-toggle';
-import { Preloader } from '@/components/common/preloader';
+import { ThemeToggle } from '@/shared/components/common/theme-toggle';
+import { Preloader } from '@/shared/components/common/preloader';
 import { authService } from '@/features/auth/services/auth.service';
 import { ROUTES } from '@/shared/constants';
 import {
@@ -23,7 +23,7 @@ import {
 } from '@/features/auth/schemas';
 
 import '../styles/auth.css';
-import { LanguageSwitcher } from '@/components/common/language-switcher';
+import { LanguageSwitcher } from '@/shared/components/common/language-switcher';
 
 export default function ResetPasswordPage() {
   const { t } = useTranslation('resetPassword');

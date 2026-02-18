@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
-import { Preloader } from '@/components/common/preloader';
+import { Preloader } from '@/shared/components/common/preloader';
 import { useAuthStore } from '@/features/auth/store/auth.store';
 import { authService } from '@/features/auth/services/auth.service';
 import { ROUTES } from '@/shared/constants';

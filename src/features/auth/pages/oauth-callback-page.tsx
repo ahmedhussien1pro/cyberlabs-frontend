@@ -8,12 +8,12 @@ import { useTranslation } from 'react-i18next';
 
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ThemeToggle } from '@/components/common/theme-toggle';
+import { ThemeToggle } from '@/shared/components/common/theme-toggle';
 import { useAuthStore } from '@/features/auth/store/auth.store';
 import { ROUTES } from '@/shared/constants';
 import '../styles/auth.css';
 import { tokenUtils, roleUtils } from '@/features/auth/utils';
-import { LanguageSwitcher } from '@/components/common/language-switcher';
+import { LanguageSwitcher } from '@/shared/components/common/language-switcher';
 
 type CallbackStatus = 'processing' | 'success' | 'error';
 

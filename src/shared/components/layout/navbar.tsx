@@ -14,9 +14,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Logo } from '@/components/common/Logo';
-import { ThemeToggle } from '@/components/common/theme-toggle';
-import { LanguageSwitcher } from '@/components/common/language-switcher';
+import { Logo } from '@/shared/components/common/Logo';
+import { ThemeToggle } from '@/shared/components/common/theme-toggle';
+import { LanguageSwitcher } from '@/shared/components/common/language-switcher';
 import { SearchButton, SearchDialog } from './search-dialog';
 import { NavDropdown } from './nav-dropdown';
 import { useAuthStore } from '@/core/store';

@@ -6,7 +6,7 @@ import { sanitize } from './sanitize.util';
 class TokenManager {
   private static instance: TokenManager;
   private refreshPromise: Promise<string> | null = null;
-  private refreshTimer: NodeJS.Timeout | null = null;
+  private refreshTimer: ReturnType<typeof setTimeout> | null = null;
 
   private constructor() {}
 

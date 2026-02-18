@@ -67,7 +67,10 @@ export default function OAuthCallbackPage() {
           role: roleUtils.mapBackendRole(decoded.role),
         };
 
-        login(user, token);
+        login(user, {
+          accessToken: token,
+          refreshToken: refresh ?? '',
+        });
 
         if (refresh) {
           localStorage.setItem(

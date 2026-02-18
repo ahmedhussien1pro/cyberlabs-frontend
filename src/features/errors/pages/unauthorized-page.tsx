@@ -5,17 +5,15 @@ import { Button } from '@/components/ui/button';
 import { ROUTES } from '@/shared/constants';
 
 export default function UnauthorizedPage() {
-  const { t } = useTranslation();
+  const { t } = useTranslation('auth');
 
   return (
     <div className='flex min-h-screen flex-col items-center justify-center px-4'>
       <h1 className='text-9xl font-bold text-primary'>401</h1>
-      <h2 className='mt-4 text-3xl font-semibold'>Unauthorized Access</h2>
-      <p className='mt-4 text-muted-foreground'>
-        You do not have permission to access this page.
-      </p>
+      <h2 className='mt-4 text-3xl font-semibold'>{t('unAuth.noAccess')}</h2>
+      <p className='mt-4 text-muted-foreground'>{t('unAuth.desc')}</p>
       <Button asChild className='mt-6'>
-        <Link to={ROUTES.HOME}>Go Home</Link>
+        <Link to={ROUTES.HOME}>{t('unAuth.link')}</Link>
       </Button>
     </div>
   );

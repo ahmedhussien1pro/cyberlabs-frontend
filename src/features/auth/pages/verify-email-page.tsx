@@ -92,7 +92,7 @@ export default function VerifyEmailPage() {
         description: t('toast.emailSentDescription'),
       });
 
-      startTimer();
+      startTimer(60);
     } catch (error: any) {
       toast.error(t('toast.sendFailed'), {
         description: error.message || t('toast.tryAgain'),

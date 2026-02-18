@@ -46,7 +46,7 @@ apiClient.interceptors.response.use(
   (response) => {
     return response.data;
   },
-  async (error: AxiosError) => {
+  async (error: AxiosError<ApiResponse>) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & {
       _retry?: boolean;
     };

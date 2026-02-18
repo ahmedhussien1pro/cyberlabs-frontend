@@ -1,4 +1,4 @@
-import { ApiError } from '@/core/types';
+import type { ApiError } from '@/core/types';
 import { toast } from 'sonner';
 
 interface ErrorHandlerOptions {

@@ -1,7 +1,5 @@
 import type { UserRole } from '@/features/auth/types';
 
-type BackendRole = 'ADMIN' | 'STUDENT' | 'TRAINEE' | 'CONTENT_CREATOR';
-
 const ROLE_HIERARCHY: Record<UserRole, number> = {
   admin: 3,
   'content-creator': 2,

@@ -14,6 +14,7 @@ import {
 import { SectionHeader } from '@/shared/components/common';
 // import { cn } from '@/shared/utils';
 import { ROUTES } from '@/shared/constants';
+import type { Variants, Easing } from 'framer-motion';
 
 interface ServiceItem {
   key: string;
@@ -30,12 +31,16 @@ const services: ServiceItem[] = [
   { key: 'projects', icon: TerminalSquare, color: '#8b5cf6' },
 ];
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 24 },
+const cardVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, delay: i * 0.1, ease: 'easeOut' },
+    transition: {
+      duration: 0.6,
+      delay: i * 0.1,
+      ease: 'easeOut' as Easing,
+    },
   }),
 };
 

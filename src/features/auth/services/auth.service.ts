@@ -5,20 +5,24 @@ import type {
   RegisterResponse,
   VerifyResponse,
   RefreshTokenResponse,
+  User,
 } from '@/features/auth/types';
 import { sanitize } from '@/features/auth/utils';
 
+function unwrap<T>(res: unknown): T {
+  return (res as ApiResponse<T>).data;
+}
+
 export const authService = {
-  // ==================== Email/Password Auth ====================
   login: async (email: string, password: string): Promise<LoginResponse> => {
     if (import.meta.env.DEV) {
       sanitize.log('AuthService.login', { email, password: sanitize.REDACTED });
     }
-    const response = await apiClient.post<ApiResponse<LoginResponse>>(
-      API_ENDPOINTS.AUTH.LOGIN,
-      { email, password },
-    );
-    return response.data || response;
+    const res = await apiClient.post(API_ENDPOINTS.AUTH.LOGIN, {
+      email,
+      password,
+    });
+    return unwrap<LoginResponse>(res);
   },
 
   register: async (
@@ -33,27 +37,21 @@ export const authService = {
         password: sanitize.REDACTED,
       });
     }
-
     try {
-      const response = await apiClient.post<ApiResponse<RegisterResponse>>(
-        API_ENDPOINTS.AUTH.REGISTER,
-        { name, email, password },
-      );
-      return response.data || response;
+      const res = await apiClient.post(API_ENDPOINTS.AUTH.REGISTER, {
+        name,
+        email,
+        password,
+      });
+      return unwrap<RegisterResponse>(res);
     } catch (error: any) {
-      const isExpectedError =
-        error.statusCode === 500 ||
-        error.statusCode === 400 ||
-        error.statusCode === 409;
-
-      // Only log unexpected errors in DEV
+      const isExpectedError = [400, 409, 500].includes(error.statusCode);
       if (import.meta.env.DEV && !isExpectedError) {
         sanitize.error('Unexpected registration error:', {
           message: error.message,
           statusCode: error.statusCode,
         });
       }
-
       throw error;
     }
   },
@@ -63,84 +61,68 @@ export const authService = {
   },
 
   refreshToken: async (refreshToken: string): Promise<RefreshTokenResponse> => {
-    if (import.meta.env.DEV) {
-      sanitize.log('AuthService.refreshToken', {
-        refreshToken: sanitize.REDACTED,
-      });
-    }
-    const response = await apiClient.post(API_ENDPOINTS.AUTH.REFRESH, {
+    const res = await apiClient.post(API_ENDPOINTS.AUTH.REFRESH, {
       refreshToken,
     });
-    return response.data || response;
+    return unwrap<RefreshTokenResponse>(res);
   },
 
-  // ==================== Password Reset ====================
-
   forgotPassword: async (email: string): Promise<VerifyResponse> => {
-    const response = await apiClient.post<ApiResponse<VerifyResponse>>(
-      API_ENDPOINTS.AUTH.FORGOT_PASSWORD,
-      { email },
-    );
-    return response.data || response;
+    const res = await apiClient.post(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, {
+      email,
+    });
+    return unwrap<VerifyResponse>(res);
   },
 
   resetPassword: async (
     token: string,
     newPassword: string,
   ): Promise<VerifyResponse> => {
-    const response = await apiClient.post<ApiResponse<VerifyResponse>>(
-      API_ENDPOINTS.AUTH.RESET_PASSWORD,
-      { token, newPassword },
-    );
-    return response.data || response;
+    const res = await apiClient.post(API_ENDPOINTS.AUTH.RESET_PASSWORD, {
+      token,
+      newPassword,
+    });
+    return unwrap<VerifyResponse>(res);
   },
 
   changePassword: async (
     currentPassword: string,
     newPassword: string,
   ): Promise<VerifyResponse> => {
-    const response = await apiClient.post<ApiResponse<VerifyResponse>>(
-      API_ENDPOINTS.AUTH.CHANGE_PASSWORD,
-      { currentPassword, newPassword },
-    );
-    return response.data || response;
+    const res = await apiClient.post(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, {
+      currentPassword,
+      newPassword,
+    });
+    return unwrap<VerifyResponse>(res);
   },
 
-  // ==================== Email Verification ====================
-
   verifyEmailWithToken: async (token: string): Promise<VerifyResponse> => {
-    const response = await apiClient.post<ApiResponse<VerifyResponse>>(
-      API_ENDPOINTS.AUTH.VERIFY_EMAIL,
-      { token },
-    );
-    return response.data || response;
+    const res = await apiClient.post(API_ENDPOINTS.AUTH.VERIFY_EMAIL, {
+      token,
+    });
+    return unwrap<VerifyResponse>(res);
   },
 
   verifyEmailWithOTP: async (
     email: string,
     otp: string,
   ): Promise<VerifyResponse> => {
-    const response = await apiClient.post<ApiResponse<VerifyResponse>>(
-      API_ENDPOINTS.AUTH.VERIFY_EMAIL_OTP,
-      { email, otp },
-    );
-    return response.data || response;
+    const res = await apiClient.post(API_ENDPOINTS.AUTH.VERIFY_EMAIL_OTP, {
+      email,
+      otp,
+    });
+    return unwrap<VerifyResponse>(res);
   },
 
   resendVerificationEmail: async (email: string): Promise<VerifyResponse> => {
-    const response = await apiClient.post<ApiResponse<VerifyResponse>>(
-      API_ENDPOINTS.AUTH.RESEND_VERIFICATION,
-      { email },
-    );
-    return response.data || response;
+    const res = await apiClient.post(API_ENDPOINTS.AUTH.RESEND_VERIFICATION, {
+      email,
+    });
+    return unwrap<VerifyResponse>(res);
   },
 
-  // ==================== Get Current User ====================
-
-  getCurrentUser: async () => {
-    const response = await apiClient.get<
-      ApiResponse<{ user: LoginResponse['user'] }>
-    >(API_ENDPOINTS.AUTH.ME);
-    return response.data?.user || response.user;
+  getCurrentUser: async (): Promise<User | undefined> => {
+    const res = await apiClient.get(API_ENDPOINTS.AUTH.ME);
+    return unwrap<{ user: User }>(res)?.user;
   },
 };

@@ -8,7 +8,7 @@ import { Preloader } from '@/shared/components/common/preloader';
 const LazyPage = ({
   Component,
 }: {
-  Component: React.LazyExoticComponent<() => JSX.Element>;
+  Component: React.LazyExoticComponent<() => React.ReactElement>;
 }) => (
   <Suspense fallback={<Preloader />}>
     <Component />

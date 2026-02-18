@@ -4,6 +4,8 @@ export const ROUTES = {
   ABOUT: '/about',
   CONTACT: '/contact',
   PRICING: '/pricing',
+  TERMS: '/terms',
+  PRIVACY: '/privacy',
 
   AUTH: {
     LOGIN: '/auth',
@@ -19,10 +21,12 @@ export const ROUTES = {
   },
 
   DASHBOARD: {
-    HOME: '/dashboard',
-    ADMIN: '/dashboard/admin',
-    TRAINEE: '/dashboard/trainee',
-    CONTENT_CREATOR: '/dashboard/content-creator',
+    DashboardPage: '/dashboard',
+    LabsPage: '/dashboard/labs',
+    ProgressPage: '/dashboard/progress',
+    GoalsPage: '/dashboard/goals',
+    CommunityPage: '/dashboard/community',
+    SettingsPage: '/dashboard/settings',
   },
 
   COURSES: {

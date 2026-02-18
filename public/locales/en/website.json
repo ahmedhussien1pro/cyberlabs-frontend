@@ -1,0 +1,26 @@
+{
+  "landing": {
+    "home": {
+      "header": "Elevate Your Cybersecurity Skills",
+      "title": "Comprehensive Cybersecurity Training For All Levels",
+      "description": "Join our academy to gain practical skills and knowledge to protect against cyber threats and secure your future in the digital world.",
+      "cta": {
+        "discover": "Discover Our Popular Courses",
+        "watch": "Watch Demo"
+      }
+    },
+    "learn": {
+      "title": "Learn Cybersecurity",
+      "subtitle": "Hands-on Hacking",
+      "description": "Our content is guided by interactive exercises based on real-world scenarios—from hacking machines to investigating attacks, we've got you covered.",
+      "cta": "Start Learning"
+    },
+    "practice": {
+      "title": "Practice",
+      "subtitle": "Labs for Attack & Vulnerability",
+      "description": "Put your knowledge into action by solving hands-on lab challenges. Sharpen your skills against real vulnerabilities.",
+      "cta": "Try a Lab"
+    },
+    "by": "by"
+  }
+}

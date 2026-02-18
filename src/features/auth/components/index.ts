@@ -1,7 +1,3 @@
-// src/features/auth/components/index.ts
-
-// Layout & Structure
-
 // Form Components
 export { PasswordInput } from './password-input';
 export { OTPInputs } from './otp-inputs';

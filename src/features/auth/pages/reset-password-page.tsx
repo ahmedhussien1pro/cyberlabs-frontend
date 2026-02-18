@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Lock, CheckCircle, XCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -23,11 +24,13 @@ import {
   resetPasswordSchema,
   type ResetPasswordForm,
 } from '@/features/auth/schemas';
-import { usePasswordStrength } from '@/features/auth/hooks';
+import { calculatePasswordStrength } from '@/features/auth/utils/validation.util';
 
 import '../styles/auth.css';
+import { LanguageSwitcher } from '@/components/common/language-switcher';
 
 export default function ResetPasswordPage() {
+  const { t } = useTranslation('resetPassword');
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
@@ -45,20 +48,20 @@ export default function ResetPasswordPage() {
   });
 
   const password = form.watch('password');
-  const strength = usePasswordStrength(password);
+  const strength = calculatePasswordStrength(password);
 
   useEffect(() => {
     if (!token) {
       setTokenValid(false);
-      toast.error('Invalid Reset Link', {
-        description: 'The password reset link is invalid or expired',
+      toast.error(t('toast.invalidLink'), {
+        description: t('toast.invalidLinkDescription'),
       });
     }
   }, [token]);
 
   const handleSubmit = async (data: ResetPasswordForm) => {
     if (!token) {
-      toast.error('Invalid token');
+      toast.error(t('toast.invalidToken'));
       return;
     }
 
@@ -68,17 +71,16 @@ export default function ResetPasswordPage() {
 
       setResetSuccess(true);
 
-      toast.success('Password Reset Successfully!', {
-        description: 'You can now login with your new password',
+      toast.success(t('toast.resetSuccess'), {
+        description: t('toast.resetSuccessDescription'),
       });
 
       setTimeout(() => {
         navigate(ROUTES.AUTH.LOGIN);
       }, 3000);
     } catch (error: any) {
-      toast.error('Reset Failed', {
-        description:
-          error.message || 'Please try again or request a new reset link',
+      toast.error(t('toast.resetFailed'), {
+        description: error.message || t('toast.resetFailedDescription'),
       });
     } finally {
       setLoading(false);
@@ -91,6 +93,7 @@ export default function ResetPasswordPage() {
       <>
         <div className='fixed top-6 right-6 z-50'>
           <ThemeToggle />
+          <LanguageSwitcher />
         </div>
 
         <section className='auth-page'>
@@ -104,22 +107,24 @@ export default function ResetPasswordPage() {
                 <div className='auth-page__error-icon-wrapper'>
                   <XCircle className='auth-page__error-icon' size={64} />
                 </div>
-                <h2 className='auth-page__error-title'>Invalid Link</h2>
+                <h2 className='auth-page__error-title'>
+                  {t('invalidToken.title')}
+                </h2>
                 <p className='auth-page__error-text'>
-                  This password reset link is invalid or has expired.
+                  {t('invalidToken.description')}
                 </p>
                 <p className='auth-page__error-subtext'>
-                  Please request a new password reset link.
+                  {t('invalidToken.instruction')}
                 </p>
 
                 <Button
                   onClick={() => navigate(ROUTES.AUTH.FORGOT_PASSWORD)}
                   className='auth-page__submit'>
-                  Request New Link
+                  {t('invalidToken.requestButton')}
                 </Button>
 
                 <div className='auth-page__back'>
-                  <Link to={ROUTES.AUTH.LOGIN}>Back to Login</Link>
+                  <Link to={ROUTES.AUTH.LOGIN}>{t('backToLogin')}</Link>
                 </div>
               </div>
             </Card>
@@ -135,6 +140,7 @@ export default function ResetPasswordPage() {
 
       <div className='fixed top-6 right-6 z-50'>
         <ThemeToggle />
+        <LanguageSwitcher />
       </div>
 
       <section className='auth-page'>
@@ -151,11 +157,8 @@ export default function ResetPasswordPage() {
                   <div className='auth-page__icon-wrapper'>
                     <Lock className='auth-page__icon' size={48} />
                   </div>
-                  <h1 className='auth-page__title'>Set New Password</h1>
-                  <p className='auth-page__subtitle'>
-                    Your new password must be different from previously used
-                    passwords.
-                  </p>
+                  <h1 className='auth-page__title'>{t('title')}</h1>
+                  <p className='auth-page__subtitle'>{t('subtitle')}</p>
                 </div>
 
                 {/* Form */}
@@ -165,7 +168,7 @@ export default function ResetPasswordPage() {
                   {/* Password Input with Error */}
                   <div className='auth-page__field'>
                     <PasswordInput
-                      placeholder='New Password'
+                      placeholder={t('passwordPlaceholder')}
                       {...form.register('password')}
                       disabled={loading}
                       error={form.formState.errors.password?.message}
@@ -180,7 +183,7 @@ export default function ResetPasswordPage() {
                   {/* Confirm Password Input with Error */}
                   <div className='auth-page__field'>
                     <PasswordInput
-                      placeholder='Confirm New Password'
+                      placeholder={t('confirmPasswordPlaceholder')}
                       {...form.register('confirmPassword')}
                       disabled={loading}
                       error={form.formState.errors.confirmPassword?.message}
@@ -191,13 +194,13 @@ export default function ResetPasswordPage() {
                     type='submit'
                     className='auth-page__submit'
                     disabled={loading || !strength.isValid}>
-                    {loading ? 'Resetting...' : 'Reset Password'}
+                    {loading ? t('resettingButton') : t('resetButton')}
                   </Button>
                 </form>
 
                 {/* Back to Login */}
                 <div className='auth-page__back'>
-                  <Link to={ROUTES.AUTH.LOGIN}>Back to Login</Link>
+                  <Link to={ROUTES.AUTH.LOGIN}>{t('backToLogin')}</Link>
                 </div>
               </>
             ) : (
@@ -215,19 +218,19 @@ export default function ResetPasswordPage() {
                     />
                   </div>
                   <h2 className='auth-page__success-title'>
-                    Password Reset Successfully!
+                    {t('success.title')}
                   </h2>
                   <p className='auth-page__success-text'>
-                    Your password has been successfully reset.
+                    {t('success.description')}
                   </p>
                   <p className='auth-page__success-subtext'>
-                    You will be redirected to the login page in a moment...
+                    {t('success.redirectMessage')}
                   </p>
 
                   <Button
                     onClick={() => navigate(ROUTES.AUTH.LOGIN)}
                     className='auth-page__submit'>
-                    Continue to Login
+                    {t('success.continueButton')}
                   </Button>
                 </motion.div>
               </>

@@ -1,0 +1,22 @@
+{
+  "landing": {
+    "by": "by",
+    "startLearning": "Start Learning"
+  },
+  "stats": {
+    "rating": "Rating",
+    "level": "Level",
+    "duration": "Duration",
+    "students": "Students",
+    "enrolled": "enrolled"
+  },
+  "actions": {
+    "save": "Save",
+    "saved": "Saved",
+    "favorite": "Add to favorites",
+    "unfavorite": "Remove from favorites",
+    "favorited": "Added to favorites!",
+    "unfavorited": "Removed from favorites",
+    "error": "Something went wrong"
+  }
+}

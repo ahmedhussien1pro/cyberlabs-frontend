@@ -1,0 +1,25 @@
+{
+  "title": "Dashboard",
+  "welcome": "Welcome",
+  "subtitle": "Here's what's happening with your learning today",
+  "nav": {
+    "dashboard": "Dashboard",
+    "labs": "Labs",
+    "goals": "Goals",
+    "progress": "Progress",
+    "community": "Community",
+    "settings": "Settings"
+  },
+  "header": {
+    "search": "Search...",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "stats": {
+    "coursesCompleted": "Courses Completed",
+    "totalXp": "Total XP",
+    "streak": "Current Streak",
+    "studyTime": "Study Time"
+  }
+}

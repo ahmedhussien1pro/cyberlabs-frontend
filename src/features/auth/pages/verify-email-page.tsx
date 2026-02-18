@@ -1,12 +1,15 @@
+// src/pages/auth/verify-email.tsx
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ThemeToggle } from '@/components/common/theme-toggle';
+import { LanguageSwitcher } from '@/components/common/language-switcher';
 import { Preloader } from '@/components/common/preloader';
 import { BackToLogin, ResendButton } from '@/features/auth/components';
 import { useResendTimer } from '@/features/auth/hooks';
@@ -18,6 +21,7 @@ import '../styles/auth.css';
 type VerificationStatus = 'verifying' | 'success' | 'error' | 'expired';
 
 export default function VerifyEmailPage() {
+  const { t } = useTranslation('verifyEmail');
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
@@ -57,8 +61,8 @@ export default function VerifyEmailPage() {
     try {
       await authService.verifyEmailWithToken(verificationToken);
       setStatus('success');
-      toast.success('Email Verified!', {
-        description: 'Your email has been successfully verified',
+      toast.success(t('toast.verified'), {
+        description: t('toast.verifiedDescription'),
       });
     } catch (error: any) {
       if (error.message?.includes('expired')) {
@@ -66,8 +70,8 @@ export default function VerifyEmailPage() {
       } else {
         setStatus('error');
       }
-      toast.error('Verification Failed', {
-        description: error.message || 'Unable to verify email',
+      toast.error(t('toast.failed'), {
+        description: error.message || t('toast.failedDescription'),
       });
     }
   };
@@ -80,22 +84,22 @@ export default function VerifyEmailPage() {
     try {
       const email = user?.email || '';
       if (!email) {
-        toast.error('Email not found', {
-          description: 'Please login again',
+        toast.error(t('toast.emailNotFound'), {
+          description: t('toast.loginAgain'),
         });
         return;
       }
 
       await authService.resendVerificationEmail(email);
 
-      toast.success('Email Sent!', {
-        description: 'A new verification link has been sent to your email',
+      toast.success(t('toast.emailSent'), {
+        description: t('toast.emailSentDescription'),
       });
 
       startTimer();
     } catch (error: any) {
-      toast.error('Failed to Send', {
-        description: error.message || 'Please try again',
+      toast.error(t('toast.sendFailed'), {
+        description: error.message || t('toast.tryAgain'),
       });
     } finally {
       setLoading(false);
@@ -110,29 +114,25 @@ export default function VerifyEmailPage() {
   if (status === 'verifying') {
     return (
       <>
-        <div className='fixed top-6 right-6 z-50'>
+        <div className='fixed top-6 right-6 z-50 flex items-center gap-2'>
+          <LanguageSwitcher />
           <ThemeToggle />
         </div>
 
-        <section className='verify-email-page'>
+        <section className='auth-page'>
           <motion.div
-            className='verify-email-page__container'
+            className='auth-page__container'
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}>
-            <Card className='verify-email-page__card'>
-              <div className='verify-email-page__verifying'>
-                <div className='verify-email-page__verifying-icon-wrapper'>
-                  <Loader2
-                    className='verify-email-page__verifying-icon'
-                    size={64}
-                  />
+            <Card className='auth-page__card'>
+              <div className='auth-page__header'>
+                <div className='auth-page__icon-wrapper'>
+                  <Loader2 className='auth-page__icon animate-spin' size={48} />
                 </div>
-                <h2 className='verify-email-page__verifying-title'>
-                  Verifying your email...
-                </h2>
-                <p className='verify-email-page__verifying-text'>
-                  Please wait while we verify your email address
+                <h1 className='auth-page__title'>{t('verifying.title')}</h1>
+                <p className='auth-page__subtitle'>
+                  {t('verifying.description')}
                 </p>
               </div>
             </Card>
@@ -146,42 +146,45 @@ export default function VerifyEmailPage() {
   if (status === 'success' && token) {
     return (
       <>
-        <div className='fixed top-6 right-6 z-50'>
+        <div className='fixed top-6 right-6 z-50 flex items-center gap-2'>
+          <LanguageSwitcher />
           <ThemeToggle />
         </div>
 
-        <section className='verify-email-page'>
+        <section className='auth-page'>
           <motion.div
-            className='verify-email-page__container'
+            className='auth-page__container'
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4 }}>
-            <Card className='verify-email-page__card'>
-              <div className='verify-email-page__success'>
+            <Card className='auth-page__card'>
+              <div className='auth-page__header'>
                 <motion.div
-                  className='verify-email-page__success-icon-wrapper'
+                  className='auth-page__icon-wrapper'
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: 'spring', delay: 0.2 }}>
                   <CheckCircle
-                    className='verify-email-page__success-icon'
-                    size={64}
+                    className='auth-page__icon text-green-500'
+                    size={48}
                   />
                 </motion.div>
-                <h2 className='verify-email-page__success-title'>
-                  Email Verified Successfully!
-                </h2>
-                <p className='verify-email-page__success-text'>
-                  Your email has been verified. You can now access all features.
+                <h1 className='auth-page__title'>
+                  {t('successWithToken.title')}
+                </h1>
+                <p className='auth-page__subtitle'>
+                  {t('successWithToken.description')}
                 </p>
-                <p className='verify-email-page__success-countdown'>
-                  Redirecting in {countdown} seconds...
+                <p className='text-sm text-muted-foreground mt-2'>
+                  {t('successWithToken.countdown', { seconds: countdown })}
                 </p>
+              </div>
 
+              <div className='auth-page__form'>
                 <Button
                   onClick={() => navigate(ROUTES.HOME)}
-                  className='verify-email-page__submit'>
-                  Continue to Dashboard
+                  className='auth-page__submit'>
+                  {t('successWithToken.continueButton')}
                 </Button>
               </div>
             </Card>
@@ -197,40 +200,41 @@ export default function VerifyEmailPage() {
       <>
         {loading && <Preloader />}
 
-        <div className='fixed top-6 right-6 z-50'>
+        <div className='fixed top-6 right-6 z-50 flex items-center gap-2'>
+          <LanguageSwitcher />
           <ThemeToggle />
         </div>
 
-        <section className='verify-email-page'>
+        <section className='auth-page'>
           <motion.div
-            className='verify-email-page__container'
+            className='auth-page__container'
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}>
-            <Card className='verify-email-page__card'>
-              <div className='verify-email-page__check'>
-                <div className='verify-email-page__check-icon-wrapper'>
-                  <Mail className='verify-email-page__check-icon' size={64} />
+            <Card className='auth-page__card'>
+              <div className='auth-page__header'>
+                <div className='auth-page__icon-wrapper'>
+                  <Mail className='auth-page__icon' size={48} />
                 </div>
-                <h2 className='verify-email-page__check-title'>
-                  Check your email
-                </h2>
-                <p className='verify-email-page__check-text'>
-                  We've sent a verification link to
+                <h1 className='auth-page__title'>{t('checkEmail.title')}</h1>
+                <p className='auth-page__subtitle'>
+                  {t('checkEmail.description')}
                 </p>
-                <p className='verify-email-page__check-email'>
-                  {user?.email || 'your email address'}
+                <p className='text-sm font-medium text-foreground mt-2'>
+                  {user?.email || t('checkEmail.yourEmail')}
                 </p>
-                <p className='verify-email-page__check-subtext'>
-                  Click the link in the email to verify your account
+                <p className='text-sm text-muted-foreground mt-2'>
+                  {t('checkEmail.instruction')}
                 </p>
+              </div>
 
+              <div className='auth-page__form'>
                 <Button
                   onClick={() =>
                     window.open('https://mail.google.com', '_blank')
                   }
-                  className='verify-email-page__submit'>
-                  Open Email App
+                  className='auth-page__submit'>
+                  {t('checkEmail.openEmailButton')}
                 </Button>
 
                 {/* Resend Button Component */}
@@ -244,8 +248,8 @@ export default function VerifyEmailPage() {
                 <Button
                   variant='ghost'
                   onClick={handleSkipForNow}
-                  className='verify-email-page__skip'>
-                  Skip for now
+                  className='w-full'>
+                  {t('checkEmail.skipButton')}
                 </Button>
 
                 {/* Back to Login Component */}
@@ -264,43 +268,44 @@ export default function VerifyEmailPage() {
       <>
         {loading && <Preloader />}
 
-        <div className='fixed top-6 right-6 z-50'>
+        <div className='fixed top-6 right-6 z-50 flex items-center gap-2'>
+          <LanguageSwitcher />
           <ThemeToggle />
         </div>
 
-        <section className='verify-email-page'>
+        <section className='auth-page'>
           <motion.div
-            className='verify-email-page__container'
+            className='auth-page__container'
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}>
-            <Card className='verify-email-page__card'>
-              <div className='verify-email-page__expired'>
-                <div className='verify-email-page__expired-icon-wrapper'>
+            <Card className='auth-page__card'>
+              <div className='auth-page__header'>
+                <div className='auth-page__icon-wrapper'>
                   <XCircle
-                    className='verify-email-page__expired-icon'
-                    size={64}
+                    className='auth-page__icon text-orange-500'
+                    size={48}
                   />
                 </div>
-                <h2 className='verify-email-page__expired-title'>
-                  Verification Link Expired
-                </h2>
-                <p className='verify-email-page__expired-text'>
-                  This verification link has expired for security reasons.
+                <h1 className='auth-page__title'>{t('expired.title')}</h1>
+                <p className='auth-page__subtitle'>
+                  {t('expired.description')}
                 </p>
-                <p className='verify-email-page__expired-subtext'>
-                  Please request a new verification link.
+                <p className='text-sm text-muted-foreground mt-2'>
+                  {t('expired.instruction')}
                 </p>
+              </div>
 
+              <div className='auth-page__form'>
                 <Button
                   onClick={handleResendEmail}
                   disabled={!canResend || loading}
-                  className='verify-email-page__submit'>
+                  className='auth-page__submit'>
                   {!canResend
-                    ? `Resend in ${timeLeft}s`
+                    ? t('expired.resendCountdown', { seconds: timeLeft })
                     : loading
-                      ? 'Sending...'
-                      : 'Request New Link'}
+                      ? t('expired.sendingButton')
+                      : t('expired.requestButton')}
                 </Button>
 
                 {/* Back to Login Component */}
@@ -316,36 +321,38 @@ export default function VerifyEmailPage() {
   // Error State
   return (
     <>
-      <div className='fixed top-6 right-6 z-50'>
+      <div className='fixed top-6 right-6 z-50 flex items-center gap-2'>
+        <LanguageSwitcher />
         <ThemeToggle />
       </div>
 
-      <section className='verify-email-page'>
+      <section className='auth-page'>
         <motion.div
-          className='verify-email-page__container'
+          className='auth-page__container'
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}>
-          <Card className='verify-email-page__card'>
-            <div className='verify-email-page__error'>
-              <div className='verify-email-page__error-icon-wrapper'>
-                <XCircle className='verify-email-page__error-icon' size={64} />
+          <Card className='auth-page__card'>
+            <div className='auth-page__header'>
+              <div className='auth-page__icon-wrapper'>
+                <XCircle
+                  className='auth-page__icon text-destructive'
+                  size={48}
+                />
               </div>
-              <h2 className='verify-email-page__error-title'>
-                Verification Failed
-              </h2>
-              <p className='verify-email-page__error-text'>
-                We couldn't verify your email address.
+              <h1 className='auth-page__title'>{t('error.title')}</h1>
+              <p className='auth-page__subtitle'>{t('error.description')}</p>
+              <p className='text-sm text-muted-foreground mt-2'>
+                {t('error.instruction')}
               </p>
-              <p className='verify-email-page__error-subtext'>
-                The verification link may be invalid or already used.
-              </p>
+            </div>
 
+            <div className='auth-page__form'>
               <Button
                 onClick={handleResendEmail}
                 disabled={!canResend || loading}
-                className='verify-email-page__submit'>
-                {loading ? 'Sending...' : 'Request New Link'}
+                className='auth-page__submit'>
+                {loading ? t('error.sendingButton') : t('error.requestButton')}
               </Button>
 
               {/* Back to Login Component */}

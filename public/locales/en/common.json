@@ -1,76 +1,60 @@
 {
   "app": {
     "name": "CyberLabs",
-    "tagline": "Learn. Code. Excel.",
-    "description": "Master programming skills with interactive courses"
+    "description": "Security Platform"
   },
   "navigation": {
     "home": "Home",
-    "courses": "Courses",
+    "learning": "Learning",
+    "labs": "Labs",
+    "labsDesc": "Practice with hands-on cybersecurity labs",
+    "paths": "Paths",
+    "pathsDesc": "Follow structured learning paths",
+    "challenges": "Challenges",
+    "challengesDesc": "Test your skills with challenges",
+    "about": "About",
+    "pricing": "Pricing",
     "dashboard": "Dashboard",
     "profile": "Profile",
-    "about": "About",
-    "contact": "Contact",
-    "pricing": "Pricing",
-    "blog": "Blog"
+    "settings": "Settings",
+    "logout": "Logout",
+    "soon": "Soon",
+    "toggleMenu": "Toggle menu",
+    "login": "Login",
+    "signUp": "Sign Up"
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search labs, challenges, and more...",
+    "button": "Search",
+    "noResults": "No results found",
+    "suggestions": "Try searching for labs, challenges, or topics",
+    "close": "Close"
   },
   "actions": {
-    "submit": "Submit",
-    "cancel": "Cancel",
     "save": "Save",
+    "cancel": "Cancel",
     "delete": "Delete",
     "edit": "Edit",
-    "create": "Create",
-    "update": "Update",
-    "close": "Close",
-    "back": "Back",
-    "next": "Next",
-    "previous": "Previous",
-    "confirm": "Confirm",
-    "search": "Search",
-    "filter": "Filter",
-    "clear": "Clear",
-    "apply": "Apply",
-    "upload": "Upload",
-    "download": "Download",
-    "view": "View",
-    "viewAll": "View All",
-    "loadMore": "Load More"
+    "close": "Close"
   },
-  "status": {
+  "messages": {
     "loading": "Loading...",
-    "success": "Success!",
-    "error": "Error",
-    "warning": "Warning",
-    "info": "Information",
-    "noData": "No data available",
-    "comingSoon": "Coming Soon"
+    "error": "An error occurred",
+    "success": "Operation successful"
   },
-  "time": {
-    "now": "Now",
-    "today": "Today",
-    "yesterday": "Yesterday",
-    "tomorrow": "Tomorrow",
-    "thisWeek": "This Week",
-    "lastWeek": "Last Week",
-    "thisMonth": "This Month",
-    "lastMonth": "Last Month"
-  },
-  "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "theme": "Theme",
-    "notifications": "Notifications",
-    "privacy": "Privacy",
-    "security": "Security"
-  },
-  "theme": {
-    "light": "Light",
-    "dark": "Dark",
-    "system": "System"
-  },
+
   "language": {
-    "en": "English",
-    "ar": "???????"
+    "change": "Change language",
+    "english": "English",
+    "arabic": "العربية"
+  },
+  "stats": {
+    "title": "Our Stats",
+    "subtitle": "Our Current Statistics",
+    "students": "Students",
+    "courses": "Courses",
+    "events": "Events",
+    "trainers": "Trainers"
   }
 }

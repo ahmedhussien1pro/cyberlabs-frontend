@@ -1,0 +1,25 @@
+{
+  "title": "لوحة التحكم",
+  "welcome": "مرحباً",
+  "subtitle": "إليك ما يحدث مع تعلمك اليوم",
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "labs": "المعامل",
+    "goals": "الأهداف",
+    "progress": "التقدم",
+    "community": "المجتمع",
+    "settings": "الإعدادات"
+  },
+  "header": {
+    "search": "بحث...",
+    "profile": "الملف الشخصي",
+    "settings": "الإعدادات",
+    "logout": "تسجيل الخروج"
+  },
+  "stats": {
+    "coursesCompleted": "الدورات المكتملة",
+    "totalXp": "إجمالي النقاط",
+    "streak": "السلسلة الحالية",
+    "studyTime": "وقت الدراسة"
+  }
+}

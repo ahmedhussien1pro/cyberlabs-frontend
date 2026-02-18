@@ -1,4 +1,5 @@
-import { QueryClient, DefaultOptions } from "@tanstack/react-query"
+import { QueryClient } from '@tanstack/react-query';
+import type { DefaultOptions } from '@tanstack/react-query';
 
 const queryConfig: DefaultOptions = {
   queries: {
@@ -6,27 +7,27 @@ const queryConfig: DefaultOptions = {
     refetchOnWindowFocus: false,
     refetchOnReconnect: true,
     refetchOnMount: true,
-    
+
     // Retry settings
     retry: 1,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-    
+
     // Cache settings
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes (was cacheTime in v4)
-    
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+
     // Network mode
-    networkMode: "online",
+    networkMode: 'online',
   },
   mutations: {
     // Retry settings for mutations
     retry: 0,
-    networkMode: "online",
+    networkMode: 'online',
   },
-}
+};
 
 export const queryClient = new QueryClient({
   defaultOptions: queryConfig,
-})
+});
 
-export default queryClient
+export default queryClient;

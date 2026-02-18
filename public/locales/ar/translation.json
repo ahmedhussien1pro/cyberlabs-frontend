@@ -1,26 +1,67 @@
 ﻿{
   "auth": {
-    "login": "تسجيل الدخول",
-    "register": "إنشاء حساب",
-    "email": "البريد الإلكتروني",
-    "password": "كلمة المرور",
-    "username": "اسم المستخدم",
-    "confirmPassword": "تأكيد كلمة المرور",
-    "passwordMin6": "كلمة المرور (6 أحرف على الأقل)",
-    "forgotPassword": "نسيت كلمة المرور؟",
-    "loggingIn": "جاري تسجيل الدخول...",
-    "registering": "جاري إنشاء الحساب...",
-    "orLoginWith": "أو سجل الدخول عبر وسائل التواصل",
-    "orRegisterWith": "أو سجل عبر وسائل التواصل",
-    "dontHaveAccount": "ليس لديك حساب؟",
-    "alreadyHaveAccount": "لديك حساب بالفعل؟",
-    "helloWelcome": "مرحباً بك!",
-    "welcomeBack": "مرحباً بعودتك!",
-    "passwordTooShort": "كلمة المرور يجب أن تكون 6 أحرف على الأقل.",
-    "passwordMismatch": "كلمتا المرور غير متطابقتين."
-  },
-  "common": {
-    "title": "سايبر لابز",
-    "tagline": "تعلم. برمج. تميز."
+    "login": {
+      "title": "Sign in to your account",
+      "subtitle": "Enter your credentials to access your account",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "Enter your email",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot your password?",
+      "submitButton": "Sign in",
+      "submittingButton": "Signing in...",
+      "noAccount": "Don't have an account?",
+      "signUpLink": "Sign up",
+      "orContinueWith": "Or continue with"
+    },
+    "register": {
+      "title": "Create your account",
+      "subtitle": "Fill in the information below to get started",
+      "usernameLabel": "Username",
+      "usernamePlaceholder": "Choose a username",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "Enter your email",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Create a password",
+      "confirmPasswordLabel": "Confirm password",
+      "confirmPasswordPlaceholder": "Re-enter your password",
+      "termsPrefix": "I agree to the",
+      "termsLink": "Terms & Conditions",
+      "termsAnd": "and",
+      "privacyLink": "Privacy Policy",
+      "submitButton": "Create account",
+      "submittingButton": "Creating account...",
+      "haveAccount": "Already have an account?",
+      "signInLink": "Sign in",
+      "orContinueWith": "Or continue with"
+    },
+    "passwordStrength": {
+      "label": "Password strength",
+      "weak": "Weak",
+      "fair": "Fair",
+      "good": "Good",
+      "strong": "Strong",
+      "suggestions": {
+        "minLength": "Use at least 8 characters",
+        "uppercase": "Add uppercase letters",
+        "lowercase": "Add lowercase letters",
+        "number": "Include numbers",
+        "special": "Add special characters"
+      }
+    },
+    "social": {
+      "google": "Google",
+      "github": "GitHub",
+      "microsoft": "Microsoft"
+    },
+    "errors": {
+      "invalidEmail": "Please enter a valid email address",
+      "passwordTooShort": "Password must be at least 6 characters",
+      "passwordsDoNotMatch": "Passwords do not match",
+      "acceptTerms": "You must accept the terms and conditions",
+      "loginFailed": "Invalid email or password",
+      "registerFailed": "Registration failed. Please try again"
+    }
   }
 }

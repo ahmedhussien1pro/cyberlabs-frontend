@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,9 +12,12 @@ import { useAuthStore } from '@/features/auth/store/auth.store';
 import { ROUTES } from '@/shared/constants';
 import '../styles/auth.css';
 import { tokenUtils, roleUtils } from '@/features/auth/utils';
+import { LanguageSwitcher } from '@/components/common/language-switcher';
+
 type CallbackStatus = 'processing' | 'success' | 'error';
 
 export default function OAuthCallbackPage() {
+  const { t } = useTranslation('oauthCallback');
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { login } = useAuthStore();
@@ -21,46 +25,39 @@ export default function OAuthCallbackPage() {
   const [status, setStatus] = useState<CallbackStatus>('processing');
   const [errorMessage, setErrorMessage] = useState<string>('');
 
-  // Get parameters from URL
   const accessToken = searchParams.get('access_token');
   const refreshToken = searchParams.get('refresh_token');
-  const expiresIn = searchParams.get('expires_in');
+  // const expiresIn = searchParams.get('expires_in');
   const error = searchParams.get('error');
 
   useEffect(() => {
-    // Check if there's an error from OAuth provider
     if (error) {
       setStatus('error');
-      setErrorMessage(`OAuth error: ${error}`);
-      toast.error('Authentication Failed', {
-        description: `OAuth provider returned an error: ${error}`,
+      setErrorMessage(t('errors.oauthError', { error }));
+      toast.error(t('toast.authFailed'), {
+        description: t('toast.oauthProviderError', { error }),
       });
       return;
     }
 
-    // Check if we have tokens
     if (!accessToken) {
       setStatus('error');
-      setErrorMessage('Missing authentication token');
-      toast.error('Authentication Failed', {
-        description: 'No access token received from OAuth provider',
+      setErrorMessage(t('errors.missingToken'));
+      toast.error(t('toast.authFailed'), {
+        description: t('toast.noTokenReceived'),
       });
       return;
     }
 
-    // Process OAuth tokens
     handleOAuthTokens(accessToken, refreshToken || '');
   }, [accessToken, refreshToken, error]);
 
   const handleOAuthTokens = async (token: string, refresh: string) => {
     try {
-      // Decode JWT to get user info using centralized utility
       const decoded = tokenUtils.decode(token);
-      // Extract name from email (before @)
       const emailName = decoded.email.split('@')[0];
       const userName = emailName.charAt(0).toUpperCase() + emailName.slice(1);
 
-      // Create user object from decoded token
       const user = {
         id: decoded.sub,
         email: decoded.email,
@@ -68,10 +65,8 @@ export default function OAuthCallbackPage() {
         role: roleUtils.mapBackendRole(decoded.role),
       };
 
-      // Login user with token
       login(user, token);
 
-      // Store refresh token if provided
       if (refresh) {
         const storagePrefix = 'cyberlabs_';
         localStorage.setItem(`${storagePrefix}refreshToken`, refresh);
@@ -79,21 +74,20 @@ export default function OAuthCallbackPage() {
 
       setStatus('success');
 
-      toast.success('Welcome!', {
-        description: `Successfully logged in as ${user.name}`,
+      toast.success(t('toast.welcome'), {
+        description: t('toast.loggedInAs', { name: user.name }),
       });
 
-      // Redirect to home after 2 seconds
       setTimeout(() => {
         navigate(ROUTES.HOME);
       }, 2000);
     } catch (err: any) {
       console.error('OAuth token processing error:', err);
       setStatus('error');
-      setErrorMessage(err.message || 'Failed to process authentication token');
+      setErrorMessage(err.message || t('errors.processingFailed'));
 
-      toast.error('Authentication Failed', {
-        description: err.message || 'Unable to complete OAuth login',
+      toast.error(t('toast.authFailed'), {
+        description: err.message || t('toast.unableToComplete'),
       });
     }
   };
@@ -102,6 +96,7 @@ export default function OAuthCallbackPage() {
     <>
       <div className='fixed top-6 right-6 z-50'>
         <ThemeToggle />
+        <LanguageSwitcher />
       </div>
 
       <section className='auth-page'>
@@ -117,10 +112,10 @@ export default function OAuthCallbackPage() {
                   <Loader2 className='auth-page__verifying-icon' size={64} />
                 </div>
                 <h2 className='auth-page__verifying-title'>
-                  Authenticating...
+                  {t('processing.title')}
                 </h2>
                 <p className='auth-page__verifying-text'>
-                  Please wait while we complete your login
+                  {t('processing.description')}
                 </p>
               </div>
             )}
@@ -134,9 +129,11 @@ export default function OAuthCallbackPage() {
                 <div className='auth-page__success-icon-wrapper'>
                   <CheckCircle className='auth-page__success-icon' size={64} />
                 </div>
-                <h2 className='auth-page__success-title'>Login Successful!</h2>
+                <h2 className='auth-page__success-title'>
+                  {t('success.title')}
+                </h2>
                 <p className='auth-page__success-text'>
-                  Redirecting to your dashboard...
+                  {t('success.description')}
                 </p>
               </motion.div>
             )}
@@ -150,17 +147,15 @@ export default function OAuthCallbackPage() {
                 <div className='auth-page__error-icon-wrapper'>
                   <XCircle className='auth-page__error-icon' size={64} />
                 </div>
-                <h2 className='auth-page__error-title'>
-                  Authentication Failed
-                </h2>
+                <h2 className='auth-page__error-title'>{t('error.title')}</h2>
                 <p className='auth-page__error-text'>
-                  {errorMessage || 'Unable to complete OAuth login'}
+                  {errorMessage || t('error.defaultMessage')}
                 </p>
 
                 <Button
                   onClick={() => navigate(ROUTES.AUTH.LOGIN)}
                   className='auth-page__submit'>
-                  Back to Login
+                  {t('error.backButton')}
                 </Button>
               </motion.div>
             )}

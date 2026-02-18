@@ -1,0 +1,42 @@
+{
+  "title": "Terms and Conditions",
+  "lastUpdated": "Last updated: February 16, 2026",
+  "backToHome": "Back to Home",
+  "section1": {
+    "title": "1. Introduction",
+    "content": "Welcome to CyberLabs. By accessing and using our platform, you agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, please do not use our services."
+  },
+  "section2": {
+    "title": "2. Account Terms",
+    "intro": "When you create an account with us, you must provide accurate and complete information. You are responsible for:",
+    "point1": "Maintaining the security of your account and password",
+    "point2": "All activities that occur under your account",
+    "point3": "Notifying us immediately of any unauthorized use",
+    "point4": "Ensuring your account information is accurate and up-to-date"
+  },
+  "section3": {
+    "title": "3. Acceptable Use",
+    "intro": "You agree not to use our platform to:",
+    "point1": "Violate any applicable laws or regulations",
+    "point2": "Infringe on intellectual property rights",
+    "point3": "Transmit malicious code or harmful content",
+    "point4": "Attempt to gain unauthorized access to systems",
+    "point5": "Harass, abuse, or harm other users"
+  },
+  "section4": {
+    "title": "4. Intellectual Property",
+    "content": "All content, features, and functionality on CyberLabs are owned by us and are protected by international copyright, trademark, and other intellectual property laws. You may not reproduce, distribute, or create derivative works without our express written permission."
+  },
+  "section5": {
+    "title": "5. Limitation of Liability",
+    "content": "CyberLabs and its affiliates will not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use or inability to use the service. Our total liability shall not exceed the amount you paid us in the past 12 months."
+  },
+  "section6": {
+    "title": "6. Changes to Terms",
+    "content": "We reserve the right to modify these terms at any time. We will notify users of any material changes via email or through our platform. Continued use of our services after changes constitutes acceptance of the new terms."
+  },
+  "section7": {
+    "title": "7. Contact Us",
+    "content": "If you have any questions about these Terms and Conditions, please contact us:"
+  }
+}

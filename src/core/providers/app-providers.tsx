@@ -1,11 +1,11 @@
-import { ReactNode } from "react"
-import { QueryProvider } from "./query-provider"
-import { ThemeProvider } from "./theme-provider"
-import { I18nProvider } from "./i18n-provider"
-import { Toaster } from "sonner"
+import type { ReactNode } from 'react';
+import { QueryProvider } from './query-provider';
+import { ThemeProvider } from './theme-provider';
+import { I18nProvider } from './i18n-provider';
+import { Toaster } from 'sonner';
 
 interface AppProvidersProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 export function AppProviders({ children }: AppProvidersProps) {
@@ -15,7 +15,7 @@ export function AppProviders({ children }: AppProvidersProps) {
         <ThemeProvider>
           {children}
           <Toaster
-            position="top-center"
+            position='top-center'
             expand={false}
             richColors
             closeButton
@@ -24,7 +24,7 @@ export function AppProviders({ children }: AppProvidersProps) {
         </ThemeProvider>
       </QueryProvider>
     </I18nProvider>
-  )
+  );
 }
 
-export default AppProviders
+export default AppProviders;

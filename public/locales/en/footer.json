@@ -1,0 +1,34 @@
+{
+  "footer": {
+    "newsletterTitle": "Stay Updated",
+    "newsletterDesc": "Get the latest labs, tutorials, and cybersecurity news delivered to your inbox.",
+    "emailPlaceholder": "Enter your email",
+    "subscribe": "Subscribe",
+    "description": "Master cybersecurity through hands-on labs, structured learning paths, and real-world challenges. Join thousands of learners worldwide.",
+
+    "platform": "Platform",
+    "labs": "Labs",
+    "learningPaths": "Learning Paths",
+    "challenges": "Challenges",
+    "pricing": "Pricing",
+
+    "resources": "Resources",
+    "documentation": "Documentation",
+    "blog": "Blog",
+    "tutorials": "Tutorials",
+    "community": "Community",
+
+    "company": "Company",
+    "about": "About Us",
+    "careers": "Careers",
+    "contact": "Contact",
+    "partners": "Partners",
+
+    "legal": "Legal",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "security": "Security",
+
+    "copyright": "CyberLabs. All rights reserved."
+  }
+}

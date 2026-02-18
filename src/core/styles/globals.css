@@ -4,7 +4,6 @@
 
 @layer base {
   :root {
-    /* Colors */
     --primary-bg: #0f0f0f;
     --secondary-bg: #2e2e2e;
     --main-color: #0d6efd;
@@ -20,7 +19,6 @@
     --hover-main-color: #0a54c3;
     --main-transition: all 0.3s ease;
 
-    /* shadcn variables */
     --background: 240 10% 6%;
     --foreground: 0 0% 98%;
     --card: 240 10% 12%;

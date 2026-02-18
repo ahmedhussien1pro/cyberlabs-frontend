@@ -60,6 +60,12 @@ export const API_ENDPOINTS = {
     STATS: '/dashboard/stats',
     RECENT_ACTIVITY: '/dashboard/activity',
     ENROLLED_COURSES: '/dashboard/courses',
+    ACTIVE_LABS: '/dashboard/labs/active',
+    PROGRESS_WEEKLY: '/dashboard/progress/weekly',
+    PROGRESS_MONTHLY: '/dashboard/progress/monthly',
+    PROGRESS_CHART: '/dashboard/progress/chart',
+    LEADERBOARD: '/dashboard/leaderboard',
+    HEATMAP: '/dashboard/heatmap',
   },
 
   // Profile Endpoints
@@ -67,5 +73,26 @@ export const API_ENDPOINTS = {
     ACHIEVEMENTS: '/profile/achievements',
     CERTIFICATES: '/profile/certificates',
     ACTIVITY: '/profile/activity',
+  },
+  LABS: {
+    BASE: '/labs',
+    BY_ID: (id: string) => `/labs/${id}`,
+    ACTIVE: '/labs/active',
+    START: (id: string) => `/labs/${id}/start`,
+    COMPLETE: (id: string) => `/labs/${id}/complete`,
+    PROGRESS: (id: string) => `/labs/${id}/progress`,
+  },
+  PROGRESS: {
+    BASE: '/progress',
+    BY_COURSE: (courseId: string) => `/progress/course/${courseId}`,
+    DASHBOARD: '/progress/dashboard',
+    CHART_DATA: '/progress/chart',
+  },
+  GOALS: {
+    BASE: '/goals',
+    BY_ID: (id: string) => `/goals/${id}`,
+    CREATE: '/goals',
+    UPDATE: (id: string) => `/goals/${id}`,
+    DELETE: (id: string) => `/goals/${id}`,
   },
 } as const;

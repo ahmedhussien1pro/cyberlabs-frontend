@@ -1,0 +1,28 @@
+{
+  "processing": {
+    "title": "جاري المصادقة...",
+    "description": "يرجى الانتظار بينما نكمل تسجيل دخولك"
+  },
+  "success": {
+    "title": "تم تسجيل الدخول بنجاح!",
+    "description": "جاري التوجيه إلى لوحة التحكم..."
+  },
+  "error": {
+    "title": "فشلت المصادقة",
+    "defaultMessage": "تعذر إكمال تسجيل الدخول عبر OAuth",
+    "backButton": "العودة لتسجيل الدخول"
+  },
+  "errors": {
+    "oauthError": "خطأ OAuth: {{error}}",
+    "missingToken": "رمز المصادقة مفقود",
+    "processingFailed": "فشل معالجة رمز المصادقة"
+  },
+  "toast": {
+    "authFailed": "فشلت المصادقة",
+    "oauthProviderError": "أرجع موفر OAuth خطأ: {{error}}",
+    "noTokenReceived": "لم يتم استلام رمز الوصول من موفر OAuth",
+    "welcome": "مرحباً!",
+    "loggedInAs": "تم تسجيل الدخول بنجاح باسم {{name}}",
+    "unableToComplete": "تعذر إكمال تسجيل الدخول عبر OAuth"
+  }
+}

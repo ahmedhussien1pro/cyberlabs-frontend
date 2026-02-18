@@ -64,7 +64,6 @@ export const useAuthStore = create<AuthStore>()(
         user: state.user,
         tokens: state.tokens,
         isAuthenticated: state.isAuthenticated,
-        // Don't persist loading state
       }),
     },
   ),

@@ -1,0 +1,22 @@
+{
+  "title": "Verify Your Email",
+  "subtitle": "Enter the 6-digit code sent to",
+  "backToLogin": "Back to login",
+  "verifyButton": "Verify Email",
+  "verifyingButton": "Verifying...",
+  "resendButton": "Resend Code",
+  "toast": {
+    "emailRequired": "Email Required",
+    "emailRequiredDescription": "Please provide an email address",
+    "invalidOTP": "Invalid OTP",
+    "invalidOTPDescription": "Please enter all 6 digits",
+    "verified": "Email Verified!",
+    "verifiedDescription": "Your email has been successfully verified",
+    "verificationFailed": "Verification Failed",
+    "invalidCode": "Invalid OTP code",
+    "otpSent": "OTP Sent",
+    "otpSentDescription": "A new OTP has been sent to your email",
+    "resendFailed": "Failed to Resend",
+    "unableToSend": "Unable to send OTP"
+  }
+}

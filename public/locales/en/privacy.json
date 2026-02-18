@@ -1,0 +1,49 @@
+{
+  "title": "Privacy Policy",
+  "lastUpdated": "Last updated: February 16, 2026",
+  "backToHome": "Back to Home",
+  "section1": {
+    "title": "1. Introduction",
+    "content": "At CyberLabs, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our platform. Please read this policy carefully."
+  },
+  "section2": {
+    "title": "2. Information We Collect",
+    "intro": "We collect information that you provide directly to us, including:",
+    "point1": "Account information (name, email, username)",
+    "point2": "Profile information and preferences",
+    "point3": "Usage data and learning progress",
+    "point4": "Communication data when you contact us"
+  },
+  "section3": {
+    "title": "3. How We Use Your Information",
+    "intro": "We use the information we collect to:",
+    "point1": "Provide, maintain, and improve our services",
+    "point2": "Personalize your learning experience",
+    "point3": "Send you updates, newsletters, and promotional materials",
+    "point4": "Respond to your comments and questions"
+  },
+  "section4": {
+    "title": "4. Data Security",
+    "content": "We implement appropriate technical and organizational measures to protect your personal data against unauthorized access, alteration, disclosure, or destruction. However, no method of transmission over the Internet is 100% secure."
+  },
+  "section5": {
+    "title": "5. Cookies and Tracking",
+    "content": "We use cookies and similar tracking technologies to track activity on our platform and store certain information. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent."
+  },
+  "section6": {
+    "title": "6. Third-Party Services",
+    "content": "We may employ third-party companies and individuals to facilitate our service. These third parties have access to your personal data only to perform tasks on our behalf and are obligated not to disclose or use it for any other purpose."
+  },
+  "section7": {
+    "title": "7. Your Rights",
+    "intro": "You have the right to:",
+    "point1": "Access and receive a copy of your personal data",
+    "point2": "Request correction of inaccurate data",
+    "point3": "Request deletion of your data",
+    "point4": "Opt-out of marketing communications"
+  },
+  "section8": {
+    "title": "8. Contact Us",
+    "content": "If you have any questions about this Privacy Policy, please contact us:"
+  }
+}

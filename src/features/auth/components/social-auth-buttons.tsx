@@ -1,6 +1,7 @@
-// src/features/auth/components/social-auth-buttons.tsx
 import { toast } from 'sonner';
 import { ENV } from '@/shared/constants';
+import { useTranslation } from 'react-i18next';
+import { Navigate } from 'react-router-dom';
 
 interface SocialAuthButtonsProps {
   mode?: 'login' | 'register';
@@ -14,58 +15,61 @@ interface SocialProvider {
   url?: string;
 }
 
-const socialProviders: SocialProvider[] = [
-  {
-    name: 'Google',
-    icon: 'fa-google',
-    enabled: true,
-    url: `${ENV.API_URL}/auth/google`,
-  },
-  {
-    name: 'GitHub',
-    icon: 'fa-github',
-    enabled: true,
-    url: `${ENV.API_URL}/auth/github`,
-  },
-  {
-    name: 'Facebook',
-    icon: 'fa-facebook-f',
-    enabled: false, // Coming soon
-  },
-  {
-    name: 'LinkedIn',
-    icon: 'fa-linkedin-in',
-    enabled: false, // Coming soon
-  },
-];
-
-/**
- * Social Authentication Buttons
- * Supports Google and GitHub OAuth
- */
 export function SocialAuthButtons({
   mode = 'login',
   disabled = false,
 }: SocialAuthButtonsProps) {
+  const { t } = useTranslation('auth');
+
+  const socialProviders: SocialProvider[] = [
+    {
+      name: t('social.google'),
+      icon: 'fa-google',
+      enabled: true,
+      url: `${ENV.API_URL}/auth/google`,
+    },
+    {
+      name: t('social.github'),
+      icon: 'fa-github',
+      enabled: true,
+      url: `${ENV.API_URL}/auth/github`,
+    },
+    {
+      name: t('social.facebook'),
+      icon: 'fa-facebook-f',
+      enabled: false,
+    },
+    {
+      name: t('social.linkedin'),
+      icon: 'fa-linkedin-in',
+      enabled: false,
+    },
+  ];
+
   const handleSocialAuth = (provider: SocialProvider) => {
     if (disabled) return;
 
     if (!provider.enabled) {
-      toast.info('Coming Soon', {
-        description: `${provider.name} ${mode} will be available soon`,
+      toast.info(t('social.comingSoon'), {
+        description: t('social.comingSoonDescription', {
+          provider: provider.name,
+          mode: mode === 'login' ? t('social.login') : t('social.register'),
+        }),
       });
       return;
     }
 
     try {
       if (provider.url) {
-        // Redirect to OAuth provider
+        // <Navigate to={provider.url} />;
         window.location.href = provider.url;
       }
     } catch (error) {
       console.error('OAuth error:', error);
-      toast.error('Authentication Error', {
-        description: `Unable to connect to ${provider.name}`,
+      toast.error(t('social.authError'), {
+        description: t('social.authErrorDescription', {
+          provider: provider.name,
+        }),
       });
     }
   };
@@ -77,9 +81,12 @@ export function SocialAuthButtons({
           key={provider.name}
           type='button'
           onClick={() => handleSocialAuth(provider)}
-          disabled={disabled}
+          disabled={!provider.enabled}
           className='auth-form__social-link'
-          aria-label={`${mode === 'login' ? 'Login' : 'Register'} with ${provider.name}`}>
+          aria-label={t('social.ariaLabel', {
+            action: mode === 'login' ? t('social.login') : t('social.register'),
+            provider: provider.name,
+          })}>
           <i className={`fa-brands ${provider.icon}`}></i>
         </button>
       ))}

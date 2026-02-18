@@ -70,7 +70,7 @@ apiClient.interceptors.response.use(
         }
       }
       try {
-        const refreshToken = tokenManager.getRefreshToken();
+        const refreshToken = await tokenManager.getRefreshToken();
         if (refreshToken) {
           const refreshPromise = axios
             .post<ApiResponse<{ accessToken: string; refreshToken: string }>>()
@@ -97,7 +97,7 @@ apiClient.interceptors.response.use(
         tokenManager.setRefreshPromise(null);
         requestQueue.rejectQueue(refreshError);
         tokenManager.clearTokens();
-        window.location.href = '/login';
+        // window.location.href = '/auth';
         return Promise.reject(refreshError);
       }
     }

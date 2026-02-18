@@ -1,5 +1,5 @@
-// src/features/auth/components/otp-inputs.tsx
-import { useEffect, useRef, KeyboardEvent } from 'react';
+import { useEffect, useRef } from 'react';
+import type { KeyboardEvent } from 'react';
 import { Input } from '@/components/ui/input';
 
 interface OTPInputsProps {
@@ -11,15 +11,6 @@ interface OTPInputsProps {
   onComplete?: (otp: string) => void;
 }
 
-/**
- * Enhanced OTP Input Component
- * Features:
- * - Paste support
- * - Arrow key navigation
- * - Auto-focus management
- * - Auto-submit on completion
- * - Backspace navigation
- */
 export function OTPInputs({
   value,
   onChange,
@@ -30,12 +21,10 @@ export function OTPInputs({
 }: OTPInputsProps) {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  // Focus first input on mount
   useEffect(() => {
     inputRefs.current[0]?.focus();
   }, []);
 
-  // Auto-submit when complete
   useEffect(() => {
     const otpCode = value.join('');
     if (autoSubmit && otpCode.length === length && onComplete) {
@@ -44,14 +33,12 @@ export function OTPInputs({
   }, [value, autoSubmit, length, onComplete]);
 
   const handleChange = (index: number, val: string) => {
-    // Only allow numbers
     if (val && !/^\d$/.test(val)) return;
 
     const newValue = [...value];
     newValue[index] = val;
     onChange(newValue);
 
-    // Move to next input
     if (val && index < length - 1) {
       inputRefs.current[index + 1]?.focus();
     }
@@ -60,10 +47,8 @@ export function OTPInputs({
   const handleKeyDown = (index: number, e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Backspace') {
       if (!value[index] && index > 0) {
-        // Move to previous input if current is empty
         inputRefs.current[index - 1]?.focus();
       } else {
-        // Clear current input
         const newValue = [...value];
         newValue[index] = '';
         onChange(newValue);
@@ -79,7 +64,6 @@ export function OTPInputs({
     e.preventDefault();
     const pastedData = e.clipboardData.getData('text').trim();
 
-    // Only process if it's all digits
     if (/^\d+$/.test(pastedData)) {
       const digits = pastedData.slice(0, length).split('');
       const newValue = [...value];
@@ -92,7 +76,6 @@ export function OTPInputs({
 
       onChange(newValue);
 
-      // Focus last filled input
       const lastFilledIndex = Math.min(digits.length, length) - 1;
       inputRefs.current[lastFilledIndex]?.focus();
     }

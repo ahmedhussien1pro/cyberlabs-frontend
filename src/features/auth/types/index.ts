@@ -184,8 +184,8 @@ export type AuthFormField =
  * Auth page routes
  */
 export type AuthPageRoute =
-  | '/login'
-  | '/register'
+  | '/auth'
+  | '/auth'
   | '/forgot-password'
   | '/reset-password'
   | '/verify-email'

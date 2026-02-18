@@ -1,14 +1,9 @@
 import { useState, useEffect } from 'react';
 
-/**
- * Custom hook for managing resend cooldown timer
- * @param initialSeconds - Initial countdown duration in seconds (default: 30)
- * @returns Object containing countdown state and reset function
- */
 export function useResendTimer(initialSeconds = 30) {
   const [countdown, setCountdown] = useState(initialSeconds);
   const [canResend, setCanResend] = useState(false);
-
+  const startTimer = initialSeconds;
   useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => {
@@ -20,10 +15,10 @@ export function useResendTimer(initialSeconds = 30) {
     }
   }, [countdown]);
 
-  const resetTimer = (seconds = initialSeconds) => {
+  const resetTimer = (seconds = startTimer) => {
     setCountdown(seconds);
     setCanResend(false);
   };
-
-  return { countdown, canResend, resetTimer };
+  const timeLeft = countdown;
+  return { countdown, canResend, resetTimer, startTimer, timeLeft };
 }

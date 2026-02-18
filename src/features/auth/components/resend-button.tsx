@@ -1,4 +1,5 @@
 import { RefreshCw } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface ResendButtonProps {
   canResend: boolean;
@@ -9,27 +10,27 @@ interface ResendButtonProps {
   countdownText?: (seconds: number) => string;
 }
 
-/**
- * Reusable resend button component with countdown timer
- * Used in OTP, Email Verification, and other auth flows
- */
 export function ResendButton({
   canResend,
   countdown,
   onResend,
   loading = false,
-  text = 'Click to resend',
-  countdownText = (seconds) => `Resend in ${seconds}s`,
+  text,
+  countdownText,
 }: ResendButtonProps) {
+  const { t } = useTranslation('auth');
+
+  const displayText = text ?? t('resend.buttonText');
+  const displayCountdown = countdownText
+    ? countdownText(countdown)
+    : t('resend.countdown', { seconds: countdown });
+
   return (
     <div className='auth-page__resend'>
-      <p>Didn't receive the code?</p>
-      <button
-        type='button'
-        onClick={onResend}
-        disabled={!canResend || loading}>
+      <p>{t('resend.question')}</p>
+      <button type='button' onClick={onResend} disabled={!canResend || loading}>
         {loading && <RefreshCw className='inline w-4 h-4 mr-2 animate-spin' />}
-        {canResend ? text : countdownText(countdown)}
+        {canResend ? displayText : displayCountdown}
       </button>
     </div>
   );

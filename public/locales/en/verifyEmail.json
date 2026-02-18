@@ -1,0 +1,47 @@
+{
+  "verifying": {
+    "title": "Verifying your email...",
+    "description": "Please wait while we verify your email address"
+  },
+  "successWithToken": {
+    "title": "Email Verified Successfully!",
+    "description": "Your email has been verified. You can now access all features.",
+    "countdown": "Redirecting in {{seconds}} seconds...",
+    "continueButton": "Continue to Dashboard"
+  },
+  "checkEmail": {
+    "title": "Check your email",
+    "description": "We've sent a verification link to",
+    "yourEmail": "your email address",
+    "instruction": "Click the link in the email to verify your account",
+    "openEmailButton": "Open Email App",
+    "skipButton": "Skip for now"
+  },
+  "expired": {
+    "title": "Verification Link Expired",
+    "description": "This verification link has expired for security reasons.",
+    "instruction": "Please request a new verification link.",
+    "resendCountdown": "Resend in {{seconds}}s",
+    "sendingButton": "Sending...",
+    "requestButton": "Request New Link"
+  },
+  "error": {
+    "title": "Verification Failed",
+    "description": "We couldn't verify your email address.",
+    "instruction": "The verification link may be invalid or already used.",
+    "sendingButton": "Sending...",
+    "requestButton": "Request New Link"
+  },
+  "toast": {
+    "verified": "Email Verified!",
+    "verifiedDescription": "Your email has been successfully verified",
+    "failed": "Verification Failed",
+    "failedDescription": "Unable to verify email",
+    "emailNotFound": "Email not found",
+    "loginAgain": "Please login again",
+    "emailSent": "Email Sent!",
+    "emailSentDescription": "A new verification link has been sent to your email",
+    "sendFailed": "Failed to Send",
+    "tryAgain": "Please try again"
+  }
+}

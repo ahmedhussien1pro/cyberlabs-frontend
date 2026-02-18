@@ -2,10 +2,10 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Mail, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,29 +30,24 @@ import {
 } from '@/features/auth/schemas';
 
 import '../styles/auth.css';
+import LanguageSwitcher from '@/components/common/language-switcher';
 
 export default function AuthPage() {
+  const { t } = useTranslation('auth');
   const navigate = useNavigate();
   const { login } = useAuthStore();
   const [isActive, setIsActive] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Login Form
   const loginForm = useForm<LoginForm>({
-    resolver: zodResolver(loginSchema),
-    mode: 'onBlur',
-    reValidateMode: 'onBlur', // ✅ Changed from 'onChange' to prevent console errors
     defaultValues: {
       email: '',
       password: '',
     },
   });
 
-  // Register Form
   const registerForm = useForm<RegisterForm>({
-    resolver: zodResolver(registerSchema),
-    mode: 'onBlur',
-    reValidateMode: 'onBlur', // ✅ Changed from 'onChange' to prevent console errors
     defaultValues: {
       username: '',
       email: '',
@@ -62,28 +57,40 @@ export default function AuthPage() {
     },
   });
 
-  // Watch password for strength indicator
   const password = registerForm.watch('password');
   const confirmPassword = registerForm.watch('confirmPassword');
   const acceptTerms = registerForm.watch('acceptTerms');
 
-  // Custom password match validation
   const passwordsMatch =
     password && confirmPassword && password === confirmPassword;
   const showPasswordMismatch =
     confirmPassword &&
     confirmPassword.length > 0 &&
-    password !== confirmPassword &&
-    registerForm.formState.touchedFields.confirmPassword;
+    password !== confirmPassword;
 
   const togglePanel = () => {
     setIsActive(!isActive);
     loginForm.reset();
     registerForm.reset();
+    setErrors({});
   };
 
   const handleLogin = async (data: LoginForm) => {
+    const result = loginSchema.safeParse(data);
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      result.error.errors.forEach((err) => {
+        if (err.path[0]) {
+          fieldErrors[err.path[0] as string] = err.message;
+        }
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+
+    setErrors({});
     setLoading(true);
+
     try {
       const response = await authService.login(data.email, data.password);
 
@@ -97,8 +104,8 @@ export default function AuthPage() {
       }
 
       login(response.user, token);
-      toast.success('Welcome Back!', {
-        description: `Hi ${response.user.name}!`,
+      toast.success(t('messages.loginSuccess'), {
+        description: t('messages.loginWelcome', { name: response.user.name }),
       });
 
       setTimeout(() => navigate(ROUTES.HOME), 1000);
@@ -113,16 +120,26 @@ export default function AuthPage() {
   };
 
   const handleRegister = async (data: RegisterForm) => {
-    // Additional password match validation
-    if (data.password !== data.confirmPassword) {
-      registerForm.setError('confirmPassword', {
-        type: 'manual',
-        message: "Passwords don't match",
+    const result = registerSchema.safeParse(data);
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      result.error.errors.forEach((err) => {
+        if (err.path[0]) {
+          fieldErrors[err.path[0] as string] = err.message;
+        }
       });
+      setErrors(fieldErrors);
       return;
     }
 
+    if (data.password !== data.confirmPassword) {
+      setErrors({ confirmPassword: t('validation.passwordsDontMatch') });
+      return;
+    }
+
+    setErrors({});
     setLoading(true);
+
     try {
       const response = await authService.register(
         data.username,
@@ -140,8 +157,8 @@ export default function AuthPage() {
       }
 
       login(response.user, token);
-      toast.success('Registration Successful!', {
-        description: `Welcome ${data.username}! Please verify your email.`,
+      toast.success(t('messages.registerSuccess'), {
+        description: t('messages.registerWelcome', { username: data.username }),
       });
 
       setTimeout(() => {
@@ -165,6 +182,7 @@ export default function AuthPage() {
 
       <div className='fixed top-4 right-4 z-50'>
         <ThemeToggle />
+        <LanguageSwitcher />
       </div>
 
       <section className='auth-form'>
@@ -180,23 +198,23 @@ export default function AuthPage() {
             <form
               onSubmit={loginForm.handleSubmit(handleLogin)}
               className='auth-form__form'>
-              <h1 className='auth-form__heading'>Login</h1>
+              <h1 className='auth-form__heading'>{t('login.title')}</h1>
 
               {/* Email Field */}
               <div>
                 <div className='auth-form__input-box'>
                   <Input
                     type='email'
-                    placeholder='Email'
+                    placeholder={t('login.emailPlaceholder')}
                     className='auth-form__input'
                     {...loginForm.register('email')}
                     disabled={loading}
                   />
                   <Mail className='auth-form__input-icon' size={18} />
                 </div>
-                {loginForm.formState.errors.email && (
+                {errors.email && (
                   <p className='text-xs text-red-600 dark:text-red-400 mt-1 font-medium'>
-                    {loginForm.formState.errors.email.message}
+                    {errors.email}
                   </p>
                 )}
               </div>
@@ -205,22 +223,24 @@ export default function AuthPage() {
               <div>
                 <div className='auth-form__input-box'>
                   <PasswordInput
-                    placeholder='Password'
+                    placeholder={t('login.passwordPlaceholder')}
                     className='auth-form__input'
                     {...loginForm.register('password')}
                     disabled={loading}
                   />
                 </div>
-                {loginForm.formState.errors.password && (
+                {errors.password && (
                   <p className='text-xs text-red-600 dark:text-red-400 mt-1 font-medium'>
-                    {loginForm.formState.errors.password.message}
+                    {errors.password}
                   </p>
                 )}
               </div>
 
               {/* Forgot Password Link */}
               <div className='auth-form__forgot-link'>
-                <Link to={ROUTES.AUTH.FORGOT_PASSWORD}>Forgot password?</Link>
+                <Link to={ROUTES.AUTH.FORGOT_PASSWORD}>
+                  {t('login.forgotPassword')}
+                </Link>
               </div>
 
               {/* Submit Button */}
@@ -228,19 +248,21 @@ export default function AuthPage() {
                 type='submit'
                 className='auth-form__submit-btn'
                 disabled={loading}>
-                {loading ? 'Logging in...' : 'Login'}
+                {loading
+                  ? t('login.submittingButton')
+                  : t('login.submitButton')}
               </Button>
 
-              <AuthDivider text='or login with' />
+              <AuthDivider text={t('login.orContinueWith')} />
               <SocialAuthButtons mode='login' disabled={loading} />
 
               <div className='auth-form__switch-link md:hidden'>
-                Don't have an account?{' '}
+                {t('login.noAccount')}{' '}
                 <button
                   type='button'
                   onClick={togglePanel}
                   className='auth-form__switch-btn'>
-                  Register
+                  {t('login.signUpLink')}
                 </button>
               </div>
             </form>
@@ -251,23 +273,23 @@ export default function AuthPage() {
             <form
               onSubmit={registerForm.handleSubmit(handleRegister)}
               className='auth-form__form'>
-              <h1 className='auth-form__heading'>Register</h1>
+              <h1 className='auth-form__heading'>{t('register.title')}</h1>
 
               {/* Username Field */}
               <div>
                 <div className='auth-form__input-box'>
                   <Input
                     type='text'
-                    placeholder='Username'
+                    placeholder={t('register.usernamePlaceholder')}
                     className='auth-form__input'
                     {...registerForm.register('username')}
                     disabled={loading}
                   />
                   <User className='auth-form__input-icon' size={18} />
                 </div>
-                {registerForm.formState.errors.username && (
+                {errors.username && (
                   <p className='text-xs text-red-600 dark:text-red-400 mt-1 font-medium'>
-                    {registerForm.formState.errors.username.message}
+                    {errors.username}
                   </p>
                 )}
               </div>
@@ -277,16 +299,16 @@ export default function AuthPage() {
                 <div className='auth-form__input-box'>
                   <Input
                     type='email'
-                    placeholder='Email'
+                    placeholder={t('register.emailPlaceholder')}
                     className='auth-form__input'
                     {...registerForm.register('email')}
                     disabled={loading}
                   />
                   <Mail className='auth-form__input-icon' size={18} />
                 </div>
-                {registerForm.formState.errors.email && (
+                {errors.email && (
                   <p className='text-xs text-red-600 dark:text-red-400 mt-1 font-medium'>
-                    {registerForm.formState.errors.email.message}
+                    {errors.email}
                   </p>
                 )}
               </div>
@@ -295,20 +317,20 @@ export default function AuthPage() {
               <div>
                 <div className='auth-form__input-box'>
                   <PasswordInput
-                    placeholder='Password'
+                    placeholder={t('register.passwordPlaceholder')}
                     className='auth-form__input'
                     {...registerForm.register('password')}
                     disabled={loading}
                   />
                 </div>
-                {registerForm.formState.errors.password && (
+                {errors.password && (
                   <p className='text-xs text-red-600 dark:text-red-400 mt-1 font-medium'>
-                    {registerForm.formState.errors.password.message}
+                    {errors.password}
                   </p>
                 )}
 
                 {/* ✅ Password Strength Indicator */}
-                {password && !registerForm.formState.errors.password && (
+                {password && !errors.password && (
                   <PasswordStrengthIndicator
                     password={password}
                     className='mt-2'
@@ -320,7 +342,7 @@ export default function AuthPage() {
               <div>
                 <div className='auth-form__input-box'>
                   <PasswordInput
-                    placeholder='Confirm Password'
+                    placeholder={t('register.confirmPasswordPlaceholder')}
                     className='auth-form__input'
                     {...registerForm.register('confirmPassword')}
                     disabled={loading}
@@ -330,20 +352,19 @@ export default function AuthPage() {
                 {/* ✅ Real-time password match indicator */}
                 {showPasswordMismatch && (
                   <p className='text-xs text-red-600 dark:text-red-400 mt-1 font-medium'>
-                    Passwords don't match
+                    {t('validation.passwordsDontMatch')}
                   </p>
                 )}
                 {passwordsMatch && confirmPassword.length > 0 && (
                   <p className='text-xs text-green-600 dark:text-green-400 mt-1 font-medium flex items-center gap-1'>
-                    <span>✓</span> Passwords match
+                    <span>✓</span> {t('validation.passwordsMatch')}
                   </p>
                 )}
-                {registerForm.formState.errors.confirmPassword &&
-                  !showPasswordMismatch && (
-                    <p className='text-xs text-red-600 dark:text-red-400 mt-1 font-medium'>
-                      {registerForm.formState.errors.confirmPassword.message}
-                    </p>
-                  )}
+                {errors.confirmPassword && !showPasswordMismatch && (
+                  <p className='text-xs text-red-600 dark:text-red-400 mt-1 font-medium'>
+                    {errors.confirmPassword}
+                  </p>
+                )}
               </div>
 
               {/* ✅ Terms & Conditions Checkbox */}
@@ -352,9 +373,7 @@ export default function AuthPage() {
                   id='acceptTerms'
                   checked={acceptTerms}
                   onCheckedChange={(checked) =>
-                    registerForm.setValue('acceptTerms', checked as boolean, {
-                      shouldValidate: true,
-                    })
+                    registerForm.setValue('acceptTerms', checked as boolean)
                   }
                   disabled={loading}
                   className='mt-1'
@@ -362,27 +381,27 @@ export default function AuthPage() {
                 <label
                   htmlFor='acceptTerms'
                   className='text-xs text-muted-foreground leading-relaxed cursor-pointer'>
-                  I agree to the{' '}
-                  <a
-                    href='https://www.booking.com/content/terms.ar.html'
+                  {t('register.termsPrefix')}{' '}
+                  <Link
+                    to={ROUTES.TERMS}
+                    className='text-primary hover:underline font-medium'
                     target='_blank'
-                    rel='noopener noreferrer'
-                    className='text-primary hover:underline font-medium'>
-                    Terms and Conditions
-                  </a>{' '}
-                  and{' '}
-                  <a
-                    href='https://www.booking.com/content/privacy.ar.html'
+                    rel='noopener noreferrer'>
+                    {t('register.termsLink')}
+                  </Link>{' '}
+                  {t('register.termsAnd')}{' '}
+                  <Link
+                    to={ROUTES.PRIVACY}
+                    className='text-primary hover:underline font-medium'
                     target='_blank'
-                    rel='noopener noreferrer'
-                    className='text-primary hover:underline font-medium'>
-                    Privacy Policy
-                  </a>
+                    rel='noopener noreferrer'>
+                    {t('register.privacyLink')}
+                  </Link>
                 </label>
               </div>
-              {registerForm.formState.errors.acceptTerms && (
+              {errors.acceptTerms && (
                 <p className='text-xs text-red-600 dark:text-red-400 -mt-2 mb-2 font-medium'>
-                  {registerForm.formState.errors.acceptTerms.message}
+                  {errors.acceptTerms}
                 </p>
               )}
 
@@ -395,19 +414,21 @@ export default function AuthPage() {
                   (confirmPassword && !passwordsMatch) ||
                   !acceptTerms
                 }>
-                {loading ? 'Registering...' : 'Register'}
+                {loading
+                  ? t('register.submittingButton')
+                  : t('register.submitButton')}
               </Button>
 
-              <AuthDivider text='or register with' />
+              <AuthDivider text={t('register.orContinueWith')} />
               <SocialAuthButtons mode='register' disabled={loading} />
 
               <div className='auth-form__switch-link md:hidden'>
-                Already have an account?{' '}
+                {t('register.haveAccount')}{' '}
                 <button
                   type='button'
                   onClick={togglePanel}
                   className='auth-form__switch-btn'>
-                  Login
+                  {t('register.signInLink')}
                 </button>
               </div>
             </form>
@@ -420,14 +441,16 @@ export default function AuthPage() {
               initial={{ x: 0 }}
               animate={{ x: isActive ? '-100%' : 0 }}
               transition={{ duration: 0.6 }}>
-              <h1 className='auth-form__toggle-heading'>Hello, Welcome!</h1>
-              <p className='auth-form__toggle-text'>Don't have an account?</p>
+              <h1 className='auth-form__toggle-heading'>
+                {t('toggle.welcomeNew')}
+              </h1>
+              <p className='auth-form__toggle-text'>{t('toggle.noAccount')}</p>
               <Button
                 onClick={togglePanel}
                 variant='outline'
                 className='auth-form__toggle-btn'
                 type='button'>
-                Register
+                {t('register.title')}
               </Button>
             </motion.div>
 
@@ -436,14 +459,18 @@ export default function AuthPage() {
               initial={{ x: '100%' }}
               animate={{ x: isActive ? 0 : '100%' }}
               transition={{ duration: 0.6 }}>
-              <h1 className='auth-form__toggle-heading'>Welcome Back!</h1>
-              <p className='auth-form__toggle-text'>Already have an account?</p>
+              <h1 className='auth-form__toggle-heading'>
+                {t('toggle.welcomeBack')}
+              </h1>
+              <p className='auth-form__toggle-text'>
+                {t('toggle.haveAccount')}
+              </p>
               <Button
                 onClick={togglePanel}
                 variant='outline'
                 className='auth-form__toggle-btn'
                 type='button'>
-                Login
+                {t('login.title')}
               </Button>
             </motion.div>
           </div>

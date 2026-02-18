@@ -1,0 +1,22 @@
+{
+  "title": "تحقق من بريدك الإلكتروني",
+  "subtitle": "أدخل الرمز المكون من 6 أرقام المرسل إلى",
+  "backToLogin": "العودة لتسجيل الدخول",
+  "verifyButton": "تحقق من البريد",
+  "verifyingButton": "جاري التحقق...",
+  "resendButton": "إعادة إرسال الرمز",
+  "toast": {
+    "emailRequired": "البريد الإلكتروني مطلوب",
+    "emailRequiredDescription": "يرجى تقديم عنوان بريد إلكتروني",
+    "invalidOTP": "رمز OTP غير صالح",
+    "invalidOTPDescription": "يرجى إدخال جميع الأرقام الـ 6",
+    "verified": "تم التحقق من البريد!",
+    "verifiedDescription": "تم التحقق من بريدك الإلكتروني بنجاح",
+    "verificationFailed": "فشل التحقق",
+    "invalidCode": "رمز OTP غير صالح",
+    "otpSent": "تم إرسال OTP",
+    "otpSentDescription": "تم إرسال رمز OTP جديد إلى بريدك الإلكتروني",
+    "resendFailed": "فشلت إعادة الإرسال",
+    "unableToSend": "تعذر إرسال OTP"
+  }
+}

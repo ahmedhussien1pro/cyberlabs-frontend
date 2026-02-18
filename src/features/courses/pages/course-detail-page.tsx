@@ -1,13 +1,32 @@
-import { useParams } from "react-router-dom"
-
-export default function CourseDetailPage() {
-  const { id } = useParams()
+// src/features/courses/pages/course-details-page.tsx
+import { CourseLanding } from '@/shared/components/common/landing';
+export default function CourseDetailsPage() {
+  const courseData = {
+    title: {
+      en: 'Red Team Fundamentals',
+      ar: 'أساسيات الفريق الأحمر',
+    },
+    description: {
+      en: 'Learn offensive security tactics...',
+      ar: 'تعلم تكتيكات الأمن الهجومي...',
+    },
+    difficulty: { en: 'Intermediate', ar: 'متوسط' },
+    duration: { en: '30 min', ar: '30 دقيقة' },
+    courseImage: '/images/courses/red-team.png',
+    instructor: 'CyberLabs',
+    rating: 4.8,
+    students: 2543,
+  };
 
   return (
-    <div className="container mx-auto px-4 py-16">
-      <h1 className="text-4xl font-bold">Course Details</h1>
-      <p className="mt-4 text-muted-foreground">Course ID: {id}</p>
-      <p className="text-muted-foreground">Course detail page coming soon...</p>
+    <div>
+      <CourseLanding
+        {...courseData}
+        onStartLearning={() => navigate('/course/start')}
+        onSave={async () => await saveCourse(courseId)}
+        onFavorite={async () => await toggleFavorite(courseId)}
+      />
+      {/* Rest of course content */}
     </div>
-  )
+  );
 }

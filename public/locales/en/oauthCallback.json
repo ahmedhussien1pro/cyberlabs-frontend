@@ -1,0 +1,28 @@
+{
+  "processing": {
+    "title": "Authenticating...",
+    "description": "Please wait while we complete your login"
+  },
+  "success": {
+    "title": "Login Successful!",
+    "description": "Redirecting to your dashboard..."
+  },
+  "error": {
+    "title": "Authentication Failed",
+    "defaultMessage": "Unable to complete OAuth login",
+    "backButton": "Back to Login"
+  },
+  "errors": {
+    "oauthError": "OAuth error: {{error}}",
+    "missingToken": "Missing authentication token",
+    "processingFailed": "Failed to process authentication token"
+  },
+  "toast": {
+    "authFailed": "Authentication Failed",
+    "oauthProviderError": "OAuth provider returned an error: {{error}}",
+    "noTokenReceived": "No access token received from OAuth provider",
+    "welcome": "Welcome!",
+    "loggedInAs": "Successfully logged in as {{name}}",
+    "unableToComplete": "Unable to complete OAuth login"
+  }
+}

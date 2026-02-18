@@ -1,6 +1,5 @@
-// src/core/router/routes.tsx
 import { Suspense } from 'react';
-import { RouteObject } from 'react-router-dom';
+import type { RouteObject } from 'react-router-dom';
 import * as Pages from './lazy-routes';
 import { ROUTES } from '@/shared/constants';
 import { LoadingSpinner } from '@/components/common/loading-spinner';
@@ -33,7 +32,14 @@ export const routes: RouteObject[] = [
     path: ROUTES.PRICING,
     element: <LazyPage Component={Pages.PricingPage} />,
   },
-
+  {
+    path: ROUTES.TERMS,
+    element: <LazyPage Component={Pages.TermsPage} />,
+  },
+  {
+    path: ROUTES.PRIVACY,
+    element: <LazyPage Component={Pages.PrivacyPage} />,
+  },
   // Auth Routes
   {
     path: ROUTES.AUTH.LOGIN,
@@ -76,7 +82,30 @@ export const routes: RouteObject[] = [
     path: ROUTES.AUTH.GITHUB_CALLBACK,
     element: <LazyPage Component={Pages.OAuthCallbackPage} />,
   },
-
+  {
+    path: ROUTES.DASHBOARD.DashboardPage,
+    element: <LazyPage Component={Pages.DashboardPage} />,
+  },
+  {
+    path: ROUTES.DASHBOARD.LabsPage,
+    element: <LazyPage Component={Pages.LabsPage} />,
+  },
+  {
+    path: ROUTES.DASHBOARD.ProgressPage,
+    element: <LazyPage Component={Pages.ProgressPage} />,
+  },
+  {
+    path: ROUTES.DASHBOARD.GoalsPage,
+    element: <LazyPage Component={Pages.GoalsPage} />,
+  },
+  {
+    path: ROUTES.DASHBOARD.CommunityPage,
+    element: <LazyPage Component={Pages.CommunityPage} />,
+  },
+  {
+    path: ROUTES.DASHBOARD.SettingsPage,
+    element: <LazyPage Component={Pages.SettingsPage} />,
+  },
   // Error Routes
   {
     path: ROUTES.UNAUTHORIZED,

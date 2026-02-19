@@ -3,7 +3,6 @@ import { useState, useEffect, useCallback } from 'react';
 export function useResendTimer(initialSeconds = 30) {
   const [countdown, setCountdown] = useState(initialSeconds);
 
-  // ✅ Derived state — no separate useState or setCanResend inside effects
   const canResend = countdown === 0;
 
   useEffect(() => {
@@ -23,7 +22,6 @@ export function useResendTimer(initialSeconds = 30) {
     [initialSeconds],
   );
 
-  // resetTimer kept as alias for backward compatibility
   const resetTimer = startTimer;
 
   const timeLeft = countdown;

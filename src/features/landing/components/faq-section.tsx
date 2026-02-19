@@ -164,11 +164,7 @@ export function FaqSection() {
       </div>
 
       <div className='container'>
-        <SectionHeader
-          title={t('faq.label')}
-          subtitle={t('faq.title')}
-          //   label={t('faq.subtitle')}
-        />
+        <SectionHeader title={t('faq.label')} subtitle={t('faq.title')} />
 
         <div className='mt-2 grid items-center gap-10 lg:grid-cols-2 lg:gap-16'>
           {/* ── Left: Image Slider ── */}

@@ -1,0 +1,40 @@
+{
+  "hero": {
+    "label": "About CyberLabs",
+    "title": "Meet the Team Behind CyberLabs",
+    "subtitle": "We are the creators behind CyberLabs — a platform built with a strong vision: to provide real, practical, hands-on cybersecurity learning designed to prepare you for real-world challenges.",
+    "mission": "Our mission is to build practical labs, realistic scenarios, and a modern learning experience that helps learners enter the cybersecurity field through the right door — with real skills, not theory only.",
+    "stats": {
+      "members": { "value": "5+", "label": "Team Members" },
+      "labs": { "value": "50+", "label": "Hands-on Labs" },
+      "users": { "value": "1K+", "label": "Learners" }
+    }
+  },
+  "team": {
+    "label": "Our Team",
+    "title": "The People Powering CyberLabs",
+    "subtitle": "A dedicated team of cybersecurity professionals, developers, and educators working together to make security education accessible and practical."
+  },
+  "members": {
+    "nasar": {
+      "name": "Ebrahim Nasar",
+      "desig": "Founder & Penetration Tester",
+      "bio": "Penetration tester focused on offensive security, vulnerability assessment, and practical attack methods. Supports building CyberLabs' hands-on labs and ensuring strong technical accuracy."
+    },
+    "emad": {
+      "name": "Mohamed Emad",
+      "desig": "Co-Founder & SOC Analyst",
+      "bio": "SOC analyst with strong analytical skills and interest in security operations. Manages marketing direction, brand communication, and user engagement to grow CyberLabs' community."
+    },
+    "laila": {
+      "name": "Laila Mosbah",
+      "desig": "Frontend Developer",
+      "bio": "Frontend engineer skilled in React, Next.js, and TypeScript. Focused on performance, clean UI development, and building modern, user-friendly interface architectures."
+    },
+    "ahmed": {
+      "name": "Ahmed Hussien",
+      "desig": "Co-Founder, CEO & Full-Stack Developer",
+      "bio": "Tech-driven leader with solid full-stack experience, guiding product direction, system architecture, and platform strategy at CyberLabs."
+    }
+  }
+}

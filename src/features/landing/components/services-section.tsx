@@ -1,4 +1,3 @@
-// src/features/landing/components/services-section.tsx
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -12,7 +11,6 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { SectionHeader } from '@/shared/components/common';
-// import { cn } from '@/shared/utils';
 import { ROUTES } from '@/shared/constants';
 import type { Variants, Easing } from 'framer-motion';
 
@@ -48,7 +46,7 @@ export function ServicesSection() {
   const { t } = useTranslation('landing');
 
   return (
-    <section className='relative overflow-hidden py-20 md:py-28'>
+    <section className='relative overflow-hidden  py-6 md:py-10'>
       <div className='absolute inset-0 -z-10'>
         <div className='absolute left-0 top-0 h-px w-full bg-gradient-to-r from-transparent via-border/50 to-transparent' />
         <div className='absolute left-0 bottom-0 h-px w-full bg-gradient-to-r from-transparent via-border/50 to-transparent' />
@@ -60,7 +58,7 @@ export function ServicesSection() {
           subtitle={t('services.subtitle')}
         />
 
-        <div className='grid gap-6 sm:grid-cols-2 lg:grid-cols-4'>
+        <div className='flex flex-wrap justify-center gap-6'>
           {services.map((service, i) => {
             const Icon = service.icon;
             return (
@@ -70,7 +68,8 @@ export function ServicesSection() {
                 initial='hidden'
                 whileInView='visible'
                 viewport={{ once: false, amount: 0.15 }}
-                variants={cardVariants}>
+                variants={cardVariants}
+                className='w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)]'>
                 <div
                   className='service-card group relative flex h-[340px] flex-col items-center justify-center gap-5 overflow-hidden rounded-lg bg-card p-6 text-center shadow-md transition-transform duration-300 hover:-translate-y-1'
                   style={{ '--clr': service.color } as React.CSSProperties}>

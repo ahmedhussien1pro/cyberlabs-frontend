@@ -1,9 +1,3 @@
-/**
- * Particles Background Component
- * Interactive particle network background using particles.js
- * @module shared/components/landing
- */
-
 import { useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import type { ParticlesBackgroundProps } from '../../../shared/components/common/landing/types';
@@ -20,7 +14,6 @@ export function ParticlesBackground({
   useEffect(() => {
     if (typeof window === 'undefined' || !canvasRef.current) return;
 
-    // Load particles.js from CDN
     const script = document.createElement('script');
     script.src =
       'https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js';

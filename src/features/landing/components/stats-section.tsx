@@ -1,4 +1,3 @@
-// src/shared/components/stats-section.tsx
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -45,7 +44,7 @@ function StatCard({ stat, index }: StatCardProps) {
       )}
       style={{ transitionDelay: `${index * 120}ms` }}>
       {/* Card */}
-      <div className='group relative rounded-2xl border border-white/5 bg-card p-6 overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-primary/20 hover:shadow-[0_0_30px_-5px_hsl(var(--primary)/0.15)]'>
+      <div className='group relative rounded-2xl border  border-black/10  bg-card p-6 overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-primary/20 hover:shadow-[0_0_30px_-5px_hsl(var(--primary)/0.15)]'>
         {/* Subtle top glow line */}
         <div
           className={cn(

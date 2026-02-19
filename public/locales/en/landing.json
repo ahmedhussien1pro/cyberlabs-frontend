@@ -16,8 +16,8 @@
     "updated": "Last updated"
   },
   "services": {
-    "title": "Learning Pathways",
-    "subtitle": "Our Learning Pathways",
+    "title": "Our Services",
+    "subtitle": "What We Offer",
     "readMore": "Read More",
     "items": {
       "paths": {
@@ -45,5 +45,66 @@
         "description": "Realistic cyber challenges to strengthen your technical and analytical skills."
       }
     }
+  },
+  "testimonials": {
+    "title": "Testimonials",
+    "subtitle": "What Our Students Say",
+    "items": [
+      {
+        "name": "Ahmed Hassan",
+        "role": "Security Analyst",
+        "company": "Tech Corp",
+        "content": "CyberLabs transformed my career. The hands-on labs and real-world scenarios helped me land my dream job in cybersecurity.",
+        "rating": 5
+      },
+      {
+        "name": "Sarah Mohamed",
+        "role": "Penetration Tester",
+        "company": "SecureNet",
+        "content": "The best platform for learning ethical hacking. The structured paths and expert guidance made complex topics easy to understand.",
+        "rating": 5
+      },
+      {
+        "name": "Omar Ali",
+        "role": "SOC Engineer",
+        "company": "CyberDefense",
+        "content": "Excellent content and amazing support. The certification preparation courses helped me pass CEH on my first attempt.",
+        "rating": 5
+      },
+      {
+        "name": "Laila Khaled",
+        "role": "Cybersecurity Consultant",
+        "company": "InfoSec Solutions",
+        "content": "The practical labs are incredibly realistic. I gained skills that I use daily in my job. Highly recommended!",
+        "rating": 5
+      }
+    ]
+  },
+  "faq": {
+    "label": "Platform FAQ",
+    "title": "Questions Answered Clearly",
+    "subtitle": "Everything you need to know about CyberLabs",
+    "items": [
+      {
+        "question": "Do I need prior experience to start?",
+        "answer": "No experience is required. CyberLabs is designed for all levels — our learning paths start from absolute beginner and guide you step-by-step up to advanced penetration testing and threat analysis."
+      },
+      {
+        "question": "What certifications can I prepare for?",
+        "answer": "Our platform covers prep material for industry-recognized certifications including CompTIA Security+, CEH, CySA+, eJPT, and OSCP — with dedicated labs and mock exams for each."
+      },
+      {
+        "question": "Are the labs real environments or simulations?",
+        "answer": "All labs run in isolated, real-world environments hosted in the cloud. You practice on actual vulnerable machines and networks — not simulations — so your skills transfer directly to the job."
+      },
+      {
+        "question": "How is my progress tracked?",
+        "answer": "Your dashboard shows completed labs, skill scores, time spent, and certification readiness. You earn badges and points as you progress, making it easy to see exactly where you stand."
+      },
+      {
+        "question": "Is the platform legal and safe to use?",
+        "answer": "Absolutely. All hacking activities on CyberLabs are performed within our sandboxed, fully isolated lab environments. Nothing connects to live systems — your learning is 100% legal and safe."
+      }
+    ]
   }
 }

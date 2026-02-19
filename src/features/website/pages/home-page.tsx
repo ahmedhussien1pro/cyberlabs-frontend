@@ -3,7 +3,9 @@ import Footer from '@/shared/components/layout/footer';
 import {
   HeroSection,
   StatsSection,
+  FaqSection,
   ServicesSection,
+  TestimonialsSection,
 } from '@/features/landing/components';
 
 export default function HomePage() {
@@ -12,7 +14,9 @@ export default function HomePage() {
       <Navbar />
       <HeroSection />
       <StatsSection />
+      <FaqSection />
       <ServicesSection />
+      <TestimonialsSection />
       <Footer />
     </div>
   );

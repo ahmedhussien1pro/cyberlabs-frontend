@@ -12,7 +12,7 @@ export function HeroSection() {
   const { t } = useTranslation('landing');
 
   return (
-    <section className='relative overflow-hidden min-h-[65vh] flex items-center font-sans px-10'>
+    <section className='relative overflow-hidden  flex items-center font-sans px-10'>
       <ParticlesBackground />
 
       <div className='container relative z-10 py-5 mx-auto px-10'>

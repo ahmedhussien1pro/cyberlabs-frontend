@@ -3,14 +3,12 @@
   "notFoundDesc": "Oops! The page you're looking for has gone dark. It may have been moved, deleted, or never existed.",
   "notFoundBack": "Back to Home",
   "notFoundExplore": "Explore Platform",
-
+  "forbidden": "You don't have permission to access this page.",
+  "forbiddenBack": "Back to Home",
+  "forbiddenLogin": "Login Again",
   "serverError": "Server Error",
   "serverErrorDesc": "Something went wrong on our end. Please try again later.",
   "serverErrorBack": "Back to Home",
   "serverErrorRetry": "Try Again",
-
-  "forbidden": "Access Denied",
-  "forbiddenDesc": "You don't have permission to access this page.",
-  "forbiddenBack": "Back to Home",
   "goBack": "Go Back"
 }

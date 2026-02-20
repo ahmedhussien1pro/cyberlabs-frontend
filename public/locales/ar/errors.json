@@ -9,8 +9,8 @@
   "serverErrorBack": "العودة للرئيسية",
   "serverErrorRetry": "حاول مجدداً",
 
-  "forbidden": "وصول مرفوض",
-  "forbiddenDesc": "ليس لديك صلاحية للوصول إلى هذه الصفحة.",
   "forbiddenBack": "العودة للرئيسية",
-  "goBack": "العودة إللخلف"
+  "goBack": "العودة إللخلف",
+  "forbidden": "ليس لديك صلاحية للوصول إلى هذه الصفحة.",
+  "forbiddenLogin": "تسجيل الدخول"
 }

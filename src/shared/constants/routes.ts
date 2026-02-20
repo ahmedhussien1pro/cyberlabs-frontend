@@ -49,5 +49,5 @@ export const ROUTES = {
     DETAIL: (id: string) => `/labs/${id}`,
   },
 
-  UNAUTHORIZED: '/403',
+  UNAUTHORIZED: '/401',
 } as const;

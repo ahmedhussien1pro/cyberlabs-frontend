@@ -98,7 +98,7 @@ function TerminalBlock() {
       </div>
 
       {/* Body */}
-      <div className='min-h-[150px] space-y-1.5 p-4 font-mono text-xs md:text-sm'>
+      <div className='min-h-[150px] space-y-1.5 p-4 font-mono text-xs md:text-sm text-left'>
         <AnimatePresence mode='popLayout'>
           {lines.map((line, i) =>
             typeof line === 'string' ? (

@@ -1,0 +1,40 @@
+{
+  "editProfile": "Edit Profile",
+  "share": "Share",
+  "copied": "Copied!",
+  "linkCopied": "Profile link copied",
+  "joinedAt": "Joined",
+  "level": "Level",
+  "stats": {
+    "xp": "Total XP",
+    "points": "Points",
+    "labs": "Labs Done",
+    "courses": "Courses",
+    "streak": "Streak",
+    "hours": "Hours"
+  },
+  "badges": "Badges",
+  "skills": "Skills",
+  "labs": { "title": "Completed Labs" },
+  "activity": {
+    "title": "Activity",
+    "less": "Less",
+    "more": "More"
+  },
+  "edit": {
+    "desc": "Update your public profile information",
+    "name": "Username",
+    "bio": "Bio",
+    "address": "Location",
+    "phoneNumber": "Phone",
+    "socialLinks": "Social Links",
+    "addLink": "Add Link",
+    "changeAvatar": "Change Photo",
+    "save": "Save Changes",
+    "cancel": "Cancel",
+    "success": "Profile updated!",
+    "error": "Update failed",
+    "avatarSuccess": "Avatar updated!",
+    "avatarError": "Avatar upload failed"
+  }
+}

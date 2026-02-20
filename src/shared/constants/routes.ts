@@ -39,9 +39,7 @@ export const ROUTES = {
 
   PROFILE: {
     VIEW: '/profile',
-    EDIT: '/profile/edit',
-    ACHIEVEMENTS: '/profile/achievements',
-    CERTIFICATES: '/profile/certificates',
+    PUBLIC: (id: string) => `/profile/${id}`,
   },
 
   LABS: {

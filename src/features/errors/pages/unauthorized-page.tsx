@@ -84,7 +84,7 @@ function TerminalBlock() {
   return (
     <div
       dir='ltr'
-      className='w-full overflow-hidden rounded-xl border border-red-500/20 bg-black/60 shadow-xl shadow-red-500/5 backdrop-blur-sm'>
+      className='w-full overflow-hidden rounded-xl border border-border/40 bg-muted/60 backdrop-blur-sm dark:border-primary/20 dark:bg-black/60'>
       {/* Header */}
       <div className='flex items-center gap-2 border-b border-red-500/10 bg-muted/20 px-4 py-2.5'>
         <div className='h-3 w-3 rounded-full bg-red-500/70' />
@@ -97,7 +97,7 @@ function TerminalBlock() {
       </div>
 
       {/* Body */}
-      <div className='min-h-[150px] space-y-1.5 p-4 font-mono text-xs md:text-sm text-left'>
+      <div className='min-h-[150px] space-y-1.5 p-4 font-mono text-xs md:text-sm text-left text-foreground/70'>
         <AnimatePresence mode='popLayout'>
           {lines.map((line, i) =>
             typeof line === 'string' ? (

@@ -1,0 +1,28 @@
+{
+  "label": "Get In Touch",
+  "title": "Contact Us",
+  "subtitle": "Have a question or want to collaborate? We'd love to hear from you.",
+  "form": {
+    "name": "Full Name",
+    "namePlaceholder": "John Doe",
+    "email": "Email Address",
+    "emailPlaceholder": "john@example.com",
+    "subject": "Subject",
+    "subjectPlaceholder": "How can we help?",
+    "message": "Message",
+    "messagePlaceholder": "Tell us more about your inquiry...",
+    "submit": "Send Message",
+    "submitting": "Sending...",
+    "success": "Message sent successfully!",
+    "successDesc": "We'll get back to you within 24 hours.",
+    "error": "Something went wrong. Please try again."
+  },
+  "info": {
+    "emailLabel": "Email Us",
+    "emailValue": "contact@cyberlabs.io",
+    "locationLabel": "Location",
+    "locationValue": "Cairo, Egypt",
+    "responseLabel": "Response Time",
+    "responseValue": "Within 24 hours"
+  }
+}

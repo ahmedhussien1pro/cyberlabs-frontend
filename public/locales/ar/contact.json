@@ -1,0 +1,28 @@
+{
+  "label": "تواصل معنا",
+  "title": "اتصل بنا",
+  "subtitle": "هل لديك سؤال أو تريد التعاون؟ يسعدنا سماعك.",
+  "form": {
+    "name": "الاسم الكامل",
+    "namePlaceholder": "أحمد محمد",
+    "email": "البريد الإلكتروني",
+    "emailPlaceholder": "ahmed@example.com",
+    "subject": "الموضوع",
+    "subjectPlaceholder": "كيف يمكننا مساعدتك؟",
+    "message": "الرسالة",
+    "messagePlaceholder": "أخبرنا المزيد عن استفسارك...",
+    "submit": "إرسال الرسالة",
+    "submitting": "جاري الإرسال...",
+    "success": "تم إرسال رسالتك بنجاح!",
+    "successDesc": "سنرد عليك خلال 24 ساعة.",
+    "error": "حدث خطأ ما. يرجى المحاولة مرة أخرى."
+  },
+  "info": {
+    "emailLabel": "راسلنا",
+    "emailValue": "contact@cyberlabs.io",
+    "locationLabel": "الموقع",
+    "locationValue": "القاهرة، مصر",
+    "responseLabel": "وقت الرد",
+    "responseValue": "خلال 24 ساعة"
+  }
+}

@@ -27,6 +27,17 @@ import { useUpdateProfile } from '../../hooks/use-update-profile';
 import { EditAvatar } from './edit-avatar';
 import { EditSocialLinks } from './edit-social-links';
 
+const SOCIAL_PLATFORMS = [
+  'GITHUB',
+  'LINKEDIN',
+  'TWITTER',
+  'YOUTUBE',
+  'FACEBOOK',
+  'PORTFOLIO',
+  'EMAIL',
+  'OTHER',
+] as const;
+
 const schema = z.object({
   name: z.string().min(2).max(50),
   bio: z.string().max(300).optional(),
@@ -35,7 +46,7 @@ const schema = z.object({
   socialLinks: z
     .array(
       z.object({
-        type: z.string(),
+        type: z.enum(SOCIAL_PLATFORMS),
         url: z.string().url('Invalid URL'),
       }),
     )
@@ -62,13 +73,12 @@ export function EditProfileForm({ profile, open, onClose }: Props) {
       address: profile.address ?? '',
       phoneNumber: profile.phoneNumber ?? '',
       socialLinks: profile.socialLinks.map((l) => ({
-        type: l.type,
+        type: l.type as (typeof SOCIAL_PLATFORMS)[number],
         url: l.url,
       })),
     },
   });
 
-  // Reset when profile changes
   useEffect(() => {
     methods.reset({
       name: profile.name,
@@ -76,7 +86,7 @@ export function EditProfileForm({ profile, open, onClose }: Props) {
       address: profile.address ?? '',
       phoneNumber: profile.phoneNumber ?? '',
       socialLinks: profile.socialLinks.map((l) => ({
-        type: l.type,
+        type: l.type as (typeof SOCIAL_PLATFORMS)[number],
         url: l.url,
       })),
     });
@@ -94,7 +104,6 @@ export function EditProfileForm({ profile, open, onClose }: Props) {
           <SheetDescription>{t('edit.desc')}</SheetDescription>
         </SheetHeader>
 
-        {/* Avatar */}
         <div className='mb-4'>
           <EditAvatar name={profile.name} avatarUrl={profile.avatarUrl} />
         </div>
@@ -106,7 +115,6 @@ export function EditProfileForm({ profile, open, onClose }: Props) {
             <form
               onSubmit={methods.handleSubmit(onSubmit)}
               className='flex flex-1 flex-col gap-4'>
-              {/* Name */}
               <FormField
                 control={methods.control}
                 name='name'
@@ -126,7 +134,6 @@ export function EditProfileForm({ profile, open, onClose }: Props) {
                 )}
               />
 
-              {/* Bio */}
               <FormField
                 control={methods.control}
                 name='bio'
@@ -147,7 +154,6 @@ export function EditProfileForm({ profile, open, onClose }: Props) {
                 )}
               />
 
-              {/* Address + Phone */}
               <div className='grid grid-cols-2 gap-3'>
                 {(['address', 'phoneNumber'] as const).map((name) => (
                   <FormField
@@ -173,11 +179,8 @@ export function EditProfileForm({ profile, open, onClose }: Props) {
               </div>
 
               <Separator />
-
-              {/* Social Links */}
               <EditSocialLinks />
 
-              {/* Actions */}
               <div className='mt-auto flex gap-3 pt-2'>
                 <Button
                   type='button'

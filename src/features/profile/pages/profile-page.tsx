@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useProfile } from '../hooks/use-profile';
-import { useProfileStats } from '../hooks/use-profile-stats';
+import {
+  useProfileStats,
+  useProfileActivity,
+} from '../hooks/use-profile-stats';
 import { useProfilePoints } from '../hooks/use-profile-points';
-import { useProfileActivity } from '../hooks/use-profile-stats';
 import { ProfileHero } from '../components/profile-header/profile-hero';
 import { ProfileStatsGrid } from '../components/profile-stats/profile-stats-grid';
 import { XpProgressBar } from '../components/profile-activity/xp-progress-bar';
@@ -15,7 +17,7 @@ import { CareerPathCard } from '../components/profile-career/career-path-card';
 import { EditProfileForm } from '../components/profile-edit/edit-profile-form';
 import { ShareProfileButton } from '../components/profile-share/share-profile-button';
 
-export default function ProfilePage() {
+export default function ProfilePage(): React.ReactElement {
   const [editOpen, setEditOpen] = useState(false);
   const { data: profile, isLoading } = useProfile();
   const { data: stats } = useProfileStats();
@@ -23,23 +25,20 @@ export default function ProfilePage() {
   const { data: activity } = useProfileActivity();
 
   if (isLoading) return <ProfilePageSkeleton />;
-  if (!profile) return null;
+  if (!profile) return <></>;
 
   return (
     <div className='relative min-h-screen bg-background'>
-      {/* Background blobs */}
       <div className='pointer-events-none fixed inset-0 -z-10 overflow-hidden'>
         <div className='absolute -left-40 top-1/4 h-[500px] w-[500px] rounded-full bg-primary/[0.04] blur-3xl' />
         <div className='absolute -right-40 bottom-1/4 h-[400px] w-[400px] rounded-full bg-cyan-500/[0.03] blur-3xl' />
       </div>
 
       <div className='container max-w-4xl space-y-5 py-8'>
-        {/* Share button row */}
         <div className='flex justify-end'>
           <ShareProfileButton userId={profile.id} />
         </div>
 
-        {/* Hero */}
         <ProfileHero
           profile={profile}
           points={points}
@@ -47,25 +46,16 @@ export default function ProfilePage() {
           onEdit={() => setEditOpen(true)}
         />
 
-        {/* Stats grid */}
         <ProfileStatsGrid stats={stats} points={points} />
 
-        {/* XP progress */}
         {points && <XpProgressBar points={points} />}
 
-        {/* Activity heatmap */}
         <ActivityHeatmap activities={activity} />
 
-        {/* Badges */}
         <ProfileBadgesSection badges={profile.badges ?? []} />
-
-        {/* Skills */}
         <ProfileSkillsSection skills={profile.skills ?? []} />
-
-        {/* Recent labs */}
         <ProfileLabsSection />
 
-        {/* Career Paths */}
         {!!profile.careerPaths?.length && (
           <section className='space-y-3'>
             <h2 className='flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground'>
@@ -81,7 +71,6 @@ export default function ProfilePage() {
         )}
       </div>
 
-      {/* Edit Sheet */}
       <EditProfileForm
         profile={profile}
         open={editOpen}
@@ -91,7 +80,7 @@ export default function ProfilePage() {
   );
 }
 
-function ProfilePageSkeleton() {
+function ProfilePageSkeleton(): React.ReactElement {
   return (
     <div className='container max-w-4xl space-y-5 py-8'>
       <Skeleton className='ml-auto h-8 w-28 rounded-full' />

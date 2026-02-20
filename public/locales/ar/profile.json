@@ -32,9 +32,11 @@
     "changeAvatar": "تغيير الصورة",
     "save": "حفظ التغييرات",
     "cancel": "إلغاء",
-    "success": "تم تحديث الملف!",
-    "error": "فشل التحديث",
-    "avatarSuccess": "تم تحديث الصورة!",
-    "avatarError": "فشل رفع الصورة"
+    "success": "تم تحديث الملف الشخصي",
+    "error": "فشل تحديث الملف الشخصي",
+    "avatarSuccess": "تم تحديث الصورة الشخصية",
+    "avatarError": "فشل رفع الصورة",
+    "avatarInvalidType": "يُسمح فقط بصور JPEG وPNG وWebP",
+    "avatarTooLarge": "يجب أن يكون حجم الصورة أقل من 5 ميجابايت"
   }
 }

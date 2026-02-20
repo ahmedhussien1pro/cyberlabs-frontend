@@ -32,9 +32,11 @@
     "changeAvatar": "Change Photo",
     "save": "Save Changes",
     "cancel": "Cancel",
-    "success": "Profile updated!",
-    "error": "Update failed",
-    "avatarSuccess": "Avatar updated!",
-    "avatarError": "Avatar upload failed"
+    "success": "Profile updated successfully",
+    "error": "Failed to update profile",
+    "avatarSuccess": "Avatar updated successfully",
+    "avatarError": "Failed to upload avatar",
+    "avatarInvalidType": "Only JPEG, PNG and WebP images are allowed",
+    "avatarTooLarge": "Image must be less than 5 MB"
   }
 }

@@ -56,14 +56,14 @@ export default function ProfilePage(): React.ReactElement {
         <ProfileSkillsSection skills={profile.skills ?? []} />
         <ProfileLabsSection />
 
-        {!!profile.careerPaths?.length && (
+        {(profile.careerPaths ?? []).length > 0 && (
           <section className='space-y-3'>
             <h2 className='flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground'>
               <span className='h-1.5 w-1.5 rounded-full bg-primary' />
               Career Paths
             </h2>
             <div className='grid gap-2 sm:grid-cols-2'>
-              {profile.careerPaths.map((cp, i) => (
+              {(profile.careerPaths ?? []).map((cp, i) => (
                 <CareerPathCard key={cp.id} path={cp} delay={i * 0.06} />
               ))}
             </div>

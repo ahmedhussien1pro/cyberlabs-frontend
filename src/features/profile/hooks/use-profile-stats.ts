@@ -19,5 +19,7 @@ export function useProfileActivity() {
   return useQuery({
     queryKey: ['profile', 'activity'],
     queryFn: getMyActivity,
+    retry: false,
+    staleTime: 1000 * 60 * 5,
   });
 }

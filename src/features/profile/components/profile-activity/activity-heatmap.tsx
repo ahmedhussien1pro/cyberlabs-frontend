@@ -56,7 +56,12 @@ interface Props {
 export function ActivityHeatmap({ activities }: Props) {
   const { t } = useTranslation('profile');
   const data = useMemo(
-    () => buildGrid(activities ?? generateMockActivity()),
+    () =>
+      buildGrid(
+        Array.isArray(activities) && activities.length > 0
+          ? activities
+          : generateMockActivity(),
+      ),
     [activities],
   );
 

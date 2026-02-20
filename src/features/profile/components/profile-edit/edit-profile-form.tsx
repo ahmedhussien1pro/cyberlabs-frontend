@@ -72,7 +72,7 @@ export function EditProfileForm({ profile, open, onClose }: Props) {
       bio: profile.bio ?? '',
       address: profile.address ?? '',
       phoneNumber: profile.phoneNumber ?? '',
-      socialLinks: profile.socialLinks.map((l) => ({
+      socialLinks: (profile.socialLinks ?? []).map((l) => ({
         type: l.type as (typeof SOCIAL_PLATFORMS)[number],
         url: l.url,
       })),
@@ -85,7 +85,7 @@ export function EditProfileForm({ profile, open, onClose }: Props) {
       bio: profile.bio ?? '',
       address: profile.address ?? '',
       phoneNumber: profile.phoneNumber ?? '',
-      socialLinks: profile.socialLinks.map((l) => ({
+      socialLinks: (profile.socialLinks ?? []).map((l) => ({
         type: l.type as (typeof SOCIAL_PLATFORMS)[number],
         url: l.url,
       })),

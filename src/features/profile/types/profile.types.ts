@@ -30,13 +30,13 @@ export interface UserProfile {
   internalRole?: string;
   createdAt: string;
   isActive: boolean;
-  socialLinks: SocialLink[];
-  skills: UserSkill[];
-  education: Education[];
-  certifications: UserCertification[];
-  badges: UserBadge[];
-  achievements: UserAchievement[];
-  careerPaths: UserCareerPath[];
+  socialLinks?: SocialLink[];
+  skills?: UserSkill[];
+  education?: Education[];
+  certifications?: UserCertification[];
+  badges?: UserBadge[];
+  achievements?: UserAchievement[];
+  careerPaths?: UserCareerPath[];
 }
 
 export interface UserStats {

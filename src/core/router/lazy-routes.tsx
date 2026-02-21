@@ -50,3 +50,8 @@ export const NotFoundPage = lazy(
 export const UnauthorizedPage = lazy(
   () => import('@/features/errors/pages/unauthorized-page'),
 );
+
+// Dev (temporary) Pages
+export const TempPage = lazy(
+  () => import('@/features/dev/temp-page'),
+);

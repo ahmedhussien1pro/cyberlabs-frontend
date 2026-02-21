@@ -10,6 +10,8 @@
 @tailwind components;
 @tailwind utilities;
 
+
+
 /* ============================================
    CSS Variables (Old Frontend Compatibility)
    ============================================ */
@@ -39,10 +41,13 @@
 
     /* Old Frontend Variables */
     --primary-text: hsl(var(--foreground));
-    --main-color: #3b82f6; /* blue-600 */
-    --main-color-hover: #2563eb; /* blue-700 */
+    --main-color: #3b82f6;
+    /* blue-600 */
+    --main-color-hover: #2563eb;
+    /* blue-700 */
     --black-alpha-20: rgba(0, 0, 0, 0.2);
   }
+
 
   .dark {
     --background: 222.2 84% 4.9%;
@@ -66,8 +71,10 @@
     --ring: 224.3 76.3% 48%;
 
     /* Dark mode colors */
-    --main-color: #60a5fa; /* blue-400 */
-    --main-color-hover: #3b82f6; /* blue-500 */
+    --main-color: #60a5fa;
+    /* blue-400 */
+    --main-color-hover: #3b82f6;
+    /* blue-500 */
     --black-alpha-20: rgba(0, 0, 0, 0.4);
   }
 }
@@ -94,7 +101,8 @@
 }
 
 [dir='rtl'] .cyberlabs-logo-title {
-  text-align: left; /* Logo always LTR */
+  text-align: left;
+  /* Logo always LTR */
 }
 
 /* Flip margins/paddings for RTL */
@@ -102,14 +110,17 @@
   margin-right: 0;
   margin-left: 0.5rem;
 }
+
 [dir='rtl'] .ml-2 {
   margin-left: 0;
   margin-right: 0.5rem;
 }
+
 [dir='rtl'] .mr-4 {
   margin-right: 0;
   margin-left: 1rem;
 }
+
 [dir='rtl'] .ml-4 {
   margin-left: 0;
   margin-right: 1rem;
@@ -120,6 +131,7 @@
   .rtl\:mr-auto {
     margin-right: auto;
   }
+
   .rtl\:ml-auto {
     margin-left: auto;
   }
@@ -140,3 +152,7 @@
       'calt' 1;
   }
 }
+
+
+/* ====== */
+@import "./features/courses/curriculum-styles.css"

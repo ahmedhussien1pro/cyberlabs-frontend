@@ -113,6 +113,10 @@ export const routes: RouteObject[] = [
     path: '*',
     element: <LazyPage Component={Pages.NotFoundPage} />,
   },
+  {
+    path: "/temp",
+    element: <LazyPage Component={Pages.TempPage} />,
+  }
 ];
 
 export default routes;

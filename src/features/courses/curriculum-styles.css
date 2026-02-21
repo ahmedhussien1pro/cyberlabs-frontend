@@ -1,0 +1,162 @@
+/* ============================================
+   RTL Specific Improvements
+   ============================================ */
+[dir='rtl'] .ps-6 {
+    padding-inline-start: 1.5rem;
+}
+
+[dir='rtl'] .pe-4 {
+    padding-inline-end: 1rem;
+}
+
+[dir='rtl'] .border-l-4 {
+    border-left-width: 0;
+    border-right-width: 4px;
+}
+
+[dir='rtl'] .rotate-180 {
+    transform: rotate(180deg);
+}
+
+/* Smooth transitions for theme switching */
+* {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+/* Improve code block styling */
+pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* Better list styling */
+ul,
+ol {
+    padding-inline-start: 1.5rem;
+}
+
+/* Responsive improvements */
+@media (max-width: 640px) {
+    .text-2xl {
+        font-size: 1.5rem;
+    }
+
+    .text-xl {
+        font-size: 1.25rem;
+    }
+
+    .p-5 {
+        padding: 1rem;
+    }
+}
+
+
+
+/* ============================================
+   Accordion Animations
+   ============================================ */
+@keyframes accordion-down {
+    from {
+        height: 0;
+        opacity: 0;
+    }
+
+    to {
+        height: var(--radix-accordion-content-height);
+        opacity: 1;
+    }
+}
+
+@keyframes accordion-up {
+    from {
+        height: var(--radix-accordion-content-height);
+        opacity: 1;
+    }
+
+    to {
+        height: 0;
+        opacity: 0;
+    }
+}
+
+.animate-accordion-down {
+    animation: accordion-down 0.2s ease-out;
+}
+
+.animate-accordion-up {
+    animation: accordion-up 0.2s ease-out;
+}
+
+/* ============================================
+   RTL Specific Accordion Improvements
+   ============================================ */
+[dir='rtl'] .accordion-trigger {
+    text-align: right;
+}
+
+[dir='rtl'] .group-data-[state=open]:rotate-180 {
+    transform: rotate(-180deg);
+}
+
+/* Improve focus styles */
+[dir='rtl'] .focus-within\:ring-offset-2:focus-within {
+    --tw-ring-offset-width: 2px;
+}
+
+/* ============================================
+   Accordion Trigger Improvements
+   ============================================ */
+
+/* Topic number badge animation */
+.accordion-trigger-badge {
+    transition: all 0.2s ease;
+}
+
+.accordion-trigger-badge:hover {
+    transform: scale(1.05);
+}
+
+/* Chevron container hover effect */
+.accordion-chevron-container {
+    transition: all 0.2s ease;
+}
+
+.accordion-chevron-container:hover {
+    transform: scale(1.1);
+}
+
+/* Gradient badge for RTL support */
+[dir='rtl'] .bg-gradient-to-br {
+    --tw-gradient-direction: to-bottom-left;
+}
+
+/* Line clamp utility */
+.line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .accordion-trigger {
+        @apply px-4 py-3;
+    }
+
+    .accordion-trigger-badge {
+        @apply w-7 h-7 text-xs;
+    }
+
+    .accordion-chevron-container {
+        @apply p-1.5;
+    }
+}
+
+/* Dark mode adjustments */
+.dark .group-data-[state=open]:bg-primary {
+    background-color: rgba(59, 130, 246, 0.2);
+    /* blue with opacity */
+}

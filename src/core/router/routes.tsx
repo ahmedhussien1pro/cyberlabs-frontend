@@ -4,7 +4,7 @@ import * as Pages from './lazy-routes';
 import { ROUTES } from '@/shared/constants';
 // import { LoadingSpinner } from '@/shared/components/common/loading-spinner';
 import { Preloader } from '@/shared/components/common/preloader';
-
+import ProtectedRoute from './protected-route';
 const LazyPage = ({
   Component,
 }: {
@@ -83,11 +83,19 @@ export const routes: RouteObject[] = [
     path: ROUTES.AUTH.GITHUB_CALLBACK,
     element: <LazyPage Component={Pages.OAuthCallbackPage} />,
   },
-
-  // {
-  //   path: ROUTES.DASHBOARD.LabsPage,
-  //   element: <LazyPage Component={Pages.LabsPage} />,
-  // },
+  // Profile Routes
+  {
+    path: ROUTES.PROFILE.VIEW,
+    element: (
+      <ProtectedRoute>
+        <LazyPage Component={Pages.ProfilePage} />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/profile/:userId',
+    element: <LazyPage Component={Pages.PublicProfilePage} />,
+  },
   // {
   //   path: ROUTES.DASHBOARD.ProgressPage,
   //   element: <LazyPage Component={Pages.ProgressPage} />,

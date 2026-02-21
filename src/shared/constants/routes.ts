@@ -39,9 +39,7 @@ export const ROUTES = {
 
   PROFILE: {
     VIEW: '/profile',
-    EDIT: '/profile/edit',
-    ACHIEVEMENTS: '/profile/achievements',
-    CERTIFICATES: '/profile/certificates',
+    PUBLIC: (id: string) => `/profile/${id}`,
   },
 
   LABS: {
@@ -49,5 +47,5 @@ export const ROUTES = {
     DETAIL: (id: string) => `/labs/${id}`,
   },
 
-  UNAUTHORIZED: '/403',
+  UNAUTHORIZED: '/401',
 } as const;

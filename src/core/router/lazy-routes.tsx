@@ -51,7 +51,15 @@ export const UnauthorizedPage = lazy(
   () => import('@/features/errors/pages/unauthorized-page'),
 );
 
+// Profile Pages
+export const ProfilePage = lazy(
+  () => import('@/features/profile/pages/profile-page'),
+);
+export const PublicProfilePage = lazy(
+  () => import('@/features/profile/pages/public-profile-page'),
+);
+
 // Dev (temporary) Pages
 export const TempPage = lazy(
   () => import('@/features/dev/temp-page'),
-);
+)

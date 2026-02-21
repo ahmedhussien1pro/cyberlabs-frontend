@@ -118,9 +118,7 @@ export function Navbar() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to={`/profile/${user?.name}`}>
-                      {t('navigation.profile')}
-                    </Link>
+                    <Link to={`/profile`}>{t('navigation.profile')}</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link to={ROUTES.DASHBOARD.DashboardPage}>

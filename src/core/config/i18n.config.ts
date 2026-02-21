@@ -26,6 +26,7 @@ i18n
       'terms',
       'privacy',
       'dashboard',
+      'errors',
     ],
     defaultNS: 'common',
     debug: true,

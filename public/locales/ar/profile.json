@@ -1,0 +1,42 @@
+{
+  "editProfile": "تعديل الملف الشخصي",
+  "share": "مشاركة",
+  "copied": "تم النسخ!",
+  "linkCopied": "تم نسخ رابط الملف",
+  "joinedAt": "انضم في",
+  "level": "المستوى",
+  "stats": {
+    "xp": "إجمالي XP",
+    "points": "النقاط",
+    "labs": "لابات منجزة",
+    "courses": "الكورسات",
+    "streak": "السلسلة",
+    "hours": "الساعات"
+  },
+  "badges": "الشارات",
+  "skills": "المهارات",
+  "labs": { "title": "اللابات المنجزة" },
+  "activity": {
+    "title": "النشاط",
+    "less": "أقل",
+    "more": "أكثر"
+  },
+  "edit": {
+    "desc": "تحديث بيانات ملفك الشخصي",
+    "name": "اسم المستخدم",
+    "bio": "نبذة",
+    "address": "الموقع",
+    "phoneNumber": "الهاتف",
+    "socialLinks": "روابط التواصل",
+    "addLink": "إضافة رابط",
+    "changeAvatar": "تغيير الصورة",
+    "save": "حفظ التغييرات",
+    "cancel": "إلغاء",
+    "success": "تم تحديث الملف الشخصي",
+    "error": "فشل تحديث الملف الشخصي",
+    "avatarSuccess": "تم تحديث الصورة الشخصية",
+    "avatarError": "فشل رفع الصورة",
+    "avatarInvalidType": "يُسمح فقط بصور JPEG وPNG وWebP",
+    "avatarTooLarge": "يجب أن يكون حجم الصورة أقل من 5 ميجابايت"
+  }
+}

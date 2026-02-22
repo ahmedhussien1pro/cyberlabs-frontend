@@ -26,10 +26,13 @@ export const API_ENDPOINTS = {
     BASE: '/users',
     BY_ID: (id: string) => `/users/${id}`,
     BY_USERNAME: (username: string) => `/users/username/${username}`,
-    UPDATE_PROFILE: '/users/profile',
-    UPDATE_PASSWORD: '/users/password',
+    UPDATE_PROFILE: '/users/me',
+    UPDATE_PASSWORD: '/users/me/password',
     UPDATE_AVATAR: '/users/avatar',
     // ── Account Management (TODO: backend implementation) ──
+    AVATAR_PRESIGN: '/users/me/avatar/presign',
+    AVATAR_CONFIRM: '/users/me/avatar/confirm',
+
     DELETE_ACCOUNT: '/users/me',
     EXPORT_DATA: '/users/me/export',
     SESSIONS: '/users/me/sessions',
@@ -40,6 +43,7 @@ export const API_ENDPOINTS = {
     BASE: '/notifications',
     MARK_READ: (id: string) => `/notifications/${id}/read`,
     MARK_ALL_READ: '/notifications/read-all',
+    ARCHIVE: (id: string) => `/notifications/${id}/archive`,
     DELETE: (id: string) => `/notifications/${id}`,
   },
   COURSES: {

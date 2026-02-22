@@ -28,9 +28,110 @@
     "activeCourses": "الكورسات الجارية",
     "recentLabs": "آخر المختبرات",
     "viewAll": "عرض الكل",
-    "noActiveCourses": "لا توجد كورسات نشطة بعد",
+    "noActiveCourses": "لا توجد كورسات نشطة",
     "exploreCourses": "استكشف الكورسات",
     "noLabsYet": "لم تحل أي مختبرات بعد",
     "exploreLabs": "استكشف المختبرات"
+  },
+  "chart": { "weeklyXP": "XP الأسبوعي", "noData": "لا يوجد نشاط بعد" },
+  "leaderboard": {
+    "title": "المتصدرون",
+    "empty": "لا توجد بيانات",
+    "level": "المستوى"
+  },
+  "goals": {
+    "title": "أهدافي",
+    "subtitle": "تتبع أهدافك في التعلم",
+    "create": "هدف جديد",
+    "createFirst": "أنشئ هدفك الأول",
+    "createTitle": "إنشاء هدف",
+    "createDesc": "حدد هدفاً تعليمياً جديداً",
+    "empty": "لا توجد أهداف نشطة",
+    "emptyHint": "الأهداف تساعدك على البقاء في المسار",
+    "completedSection": "المنجزة",
+    "createSuccess": "تم إنشاء الهدف!",
+    "createError": "فشل إنشاء الهدف",
+    "deleteSuccess": "تم حذف الهدف",
+    "deleteError": "فشل حذف الهدف",
+    "completeSuccess": "تم إنجاز الهدف! 🎉",
+    "completeError": "فشل تحديث الهدف",
+    "category": {
+      "labs": "مختبرات",
+      "courses": "كورسات",
+      "xp": "XP",
+      "streak": "استمرارية",
+      "custom": "مخصص"
+    },
+    "form": {
+      "title": "عنوان الهدف",
+      "titlePlaceholder": "مثال: إكمال 10 مختبرات",
+      "category": "الفئة",
+      "target": "الهدف",
+      "unit": "الوحدة",
+      "dueDate": "تاريخ الانتهاء",
+      "optional": "اختياري",
+      "cancel": "إلغاء",
+      "create": "إنشاء الهدف"
+    },
+    "cs": {
+      "recurringTitle": "الأهداف المتكررة",
+      "recurringDesc": "حدد أهدافاً يومية أو أسبوعية أو شهرية متكررة",
+      "remindersTitle": "تذكيرات الأهداف",
+      "remindersDesc": "احصل على إشعار قبل موعد انتهاء هدفك"
+    }
+  },
+  "labs": {
+    "title": "مختبراتي",
+    "subtitle": "مختبراتك النشطة والمكتملة في الأمن السيبراني",
+    "exploreAll": "استكشف جميع المختبرات",
+    "searchPlaceholder": "ابحث عن مختبر...",
+    "start": "ابدأ",
+    "continue": "استمر",
+    "empty": "لا توجد مختبرات",
+    "emptyHint": "جرب تغيير الفلتر أو استكشف مختبرات جديدة",
+    "loadError": "تعذر تحميل المختبرات",
+    "status": {
+      "not_started": "لم يبدأ",
+      "active": "جارٍ",
+      "completed": "مكتمل"
+    },
+    "filter": {
+      "all": "الكل",
+      "active": "نشط",
+      "completed": "مكتمل",
+      "notStarted": "لم يبدأ"
+    },
+    "cs": {
+      "filterTitle": "فلاتر متقدمة",
+      "filterDesc": "تصفية حسب الفئة والوسوم والصعوبة والمزيد",
+      "challengeTitle": "تحديات يومية",
+      "challengeDesc": "تنافس في تحديات مختبرات موقوتة للحصول على XP إضافي"
+    }
+  },
+  "progress": {
+    "title": "التقدم",
+    "subtitle": "رحلتك في التعلم بنظرة واحدة",
+    "courseProgress": "تقدم الكورسات",
+    "noCourses": "لا توجد كورسات نشطة",
+    "cs": {
+      "monthlyTitle": "التفصيل الشهري",
+      "monthlyDesc": "مخططات تفصيلية للنشاط و XP شهراً بشهر",
+      "aiTitle": "رؤى بالذكاء الاصطناعي",
+      "aiDesc": "توصيات مخصصة بناءً على أنماط تعلمك"
+    }
+  },
+  "community": {
+    "title": "المجتمع",
+    "subtitle": "اعرف مكانك بين أقرانك",
+    "yourRank": "ترتيبك الحالي",
+    "you": "أنت",
+    "cs": {
+      "challengesTitle": "التحديات",
+      "challengesDesc": "تنافس مع أعضاء آخرين في المختبرات",
+      "forumTitle": "المنتدى",
+      "forumDesc": "اسأل، شارك، وساعد الآخرين",
+      "buddyTitle": "نظام الرفيق",
+      "buddyDesc": "تشارك مع عضو آخر لتحفيز بعضكما"
+    }
   }
 }

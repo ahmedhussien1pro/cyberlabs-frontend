@@ -1,4 +1,4 @@
-import { Menu, Bell } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ import { ThemeToggle } from '@/shared/components/common/theme-toggle';
 import { LanguageSwitcher } from '@/shared/components/common/language-switcher';
 import { ROUTES } from '@/shared/constants';
 import useAuthStore from '@/features/auth/store/auth.store';
+import { NotificationBell } from '@/features/notifications/components/notification-bell';
 
 interface Props {
   onMenuClick: () => void;
@@ -35,7 +36,7 @@ export function DashboardTopbar({ onMenuClick }: Props) {
   return (
     <header
       className='sticky top-0 z-40 flex h-14 shrink-0 items-center justify-between
-                       border-b border-border/40 bg-background/80 px-4 backdrop-blur-md'>
+                 border-b border-border/40 bg-background/80 px-4 backdrop-blur-md'>
       {/* Mobile hamburger */}
       <Button
         variant='ghost'
@@ -49,15 +50,14 @@ export function DashboardTopbar({ onMenuClick }: Props) {
       {/* Desktop spacer */}
       <div className='hidden md:block' />
 
-      {/* Right controls */}
+      {/* ── Right controls ───────────────────────── */}
       <div className='flex items-center gap-1'>
         <LanguageSwitcher />
         <ThemeToggle />
 
-        <Button variant='ghost' size='icon' className='text-muted-foreground'>
-          <Bell size={18} />
-        </Button>
+        <NotificationBell />
 
+        {/* User dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant='ghost' size='icon' className='rounded-full'>

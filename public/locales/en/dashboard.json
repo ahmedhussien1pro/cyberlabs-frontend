@@ -32,5 +32,106 @@
     "exploreCourses": "Explore Courses",
     "noLabsYet": "No labs solved yet",
     "exploreLabs": "Explore Labs"
+  },
+  "chart": { "weeklyXP": "Weekly XP", "noData": "No activity yet" },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "empty": "No data yet",
+    "level": "Level"
+  },
+  "goals": {
+    "title": "My Goals",
+    "subtitle": "Track your learning objectives",
+    "create": "New Goal",
+    "createFirst": "Create your first goal",
+    "createTitle": "Create Goal",
+    "createDesc": "Set a new learning objective",
+    "empty": "No active goals",
+    "emptyHint": "Goals help you stay on track",
+    "completedSection": "Completed",
+    "createSuccess": "Goal created!",
+    "createError": "Failed to create goal",
+    "deleteSuccess": "Goal deleted",
+    "deleteError": "Failed to delete goal",
+    "completeSuccess": "Goal completed! 🎉",
+    "completeError": "Failed to update goal",
+    "category": {
+      "labs": "Labs",
+      "courses": "Courses",
+      "xp": "XP",
+      "streak": "Streak",
+      "custom": "Custom"
+    },
+    "form": {
+      "title": "Goal Title",
+      "titlePlaceholder": "e.g. Complete 10 labs",
+      "category": "Category",
+      "target": "Target",
+      "unit": "Unit",
+      "dueDate": "Due Date",
+      "optional": "optional",
+      "cancel": "Cancel",
+      "create": "Create Goal"
+    },
+    "cs": {
+      "recurringTitle": "Recurring Goals",
+      "recurringDesc": "Set daily, weekly, or monthly repeating objectives",
+      "remindersTitle": "Goal Reminders",
+      "remindersDesc": "Get notified before your goal deadline"
+    }
+  },
+  "labs": {
+    "title": "My Labs",
+    "subtitle": "Your active and completed cybersecurity labs",
+    "exploreAll": "Explore All Labs",
+    "searchPlaceholder": "Search labs...",
+    "start": "Start",
+    "continue": "Continue",
+    "empty": "No labs found",
+    "emptyHint": "Try changing your filter or explore new labs",
+    "loadError": "Couldn't load labs",
+    "status": {
+      "not_started": "Not started",
+      "active": "In progress",
+      "completed": "Completed"
+    },
+    "filter": {
+      "all": "All",
+      "active": "Active",
+      "completed": "Completed",
+      "notStarted": "Not Started"
+    },
+    "cs": {
+      "filterTitle": "Advanced Filters",
+      "filterDesc": "Filter by category, tags, difficulty, and more",
+      "challengeTitle": "Daily Challenges",
+      "challengeDesc": "Compete in timed lab challenges for bonus XP"
+    }
+  },
+  "progress": {
+    "title": "Progress",
+    "subtitle": "Your learning journey at a glance",
+    "courseProgress": "Course Progress",
+    "noCourses": "No active courses",
+    "cs": {
+      "monthlyTitle": "Monthly Breakdown",
+      "monthlyDesc": "Detailed month-by-month activity and XP charts",
+      "aiTitle": "AI-Powered Insights",
+      "aiDesc": "Personalized recommendations based on your learning patterns"
+    }
+  },
+  "community": {
+    "title": "Community",
+    "subtitle": "See where you stand among your peers",
+    "yourRank": "Your Current Rank",
+    "you": "you",
+    "cs": {
+      "challengesTitle": "Challenges",
+      "challengesDesc": "Compete head-to-head with other members on labs",
+      "forumTitle": "Community Forum",
+      "forumDesc": "Ask questions, share write-ups, help others",
+      "buddyTitle": "Buddy System",
+      "buddyDesc": "Partner with another member for accountability"
+    }
   }
 }

@@ -56,6 +56,18 @@ export const DashboardLayout = lazy(
 export const DashboardPage = lazy(
   () => import('@/features/dashboard/pages/dashboard-page'),
 );
+export const LabsPage = lazy(
+  () => import('@/features/dashboard/pages/labs-page'),
+);
+export const ProgressPage = lazy(
+  () => import('@/features/dashboard/pages/progress-page'),
+);
+export const GoalsPage = lazy(
+  () => import('@/features/dashboard/pages/goals-page'),
+);
+export const CommunityPage = lazy(
+  () => import('@/features/dashboard/pages/community-page'),
+);
 
 // Settings
 export const SettingsPage = lazy(
@@ -70,8 +82,5 @@ export const UnauthorizedPage = lazy(
   () => import('@/features/errors/pages/unauthorized-page'),
 );
 
-
 // Dev (temporary) Pages
-export const TempPage = lazy(
-  () => import('@/features/dev/temp-page'),
-)
+export const TempPage = lazy(() => import('@/features/dev/temp-page'));

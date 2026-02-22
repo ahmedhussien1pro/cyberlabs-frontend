@@ -36,7 +36,12 @@ export const API_ENDPOINTS = {
     REVOKE_SESSION: (id: string) => `/users/me/sessions/${id}`,
     NOTIFICATION_PREFS: '/users/me/notifications/preferences',
   },
-
+  NOTIFICATIONS: {
+    BASE: '/notifications',
+    MARK_READ: (id: string) => `/notifications/${id}/read`,
+    MARK_ALL_READ: '/notifications/read-all',
+    DELETE: (id: string) => `/notifications/${id}`,
+  },
   COURSES: {
     BASE: '/courses',
     BY_ID: (id: string) => `/courses/${id}`,

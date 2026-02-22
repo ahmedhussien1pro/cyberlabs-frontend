@@ -1,0 +1,34 @@
+{
+  "bell": {
+    "ariaLabel": "Notifications"
+  },
+  "panel": {
+    "title": "Notifications",
+    "markAll": "Mark all read",
+    "tab": {
+      "all": "All",
+      "unread": "Unread",
+      "archived": "Archived"
+    },
+    "empty": {
+      "all": "No notifications yet",
+      "allHint": "Platform updates and achievements will appear here",
+      "unread": "All caught up! 🎉",
+      "archived": "No archived notifications"
+    },
+    "endOfList": "That's all"
+  },
+  "actions": {
+    "archive": "Archive",
+    "delete": "Delete"
+  },
+  "type": {
+    "SYSTEM": "System",
+    "ACHIEVEMENT": "Achievement",
+    "LEVEL_UP": "Level Up",
+    "LAB": "Lab",
+    "COURSE": "Course",
+    "CHALLENGE": "Challenge",
+    "MESSAGE": "Message"
+  }
+}

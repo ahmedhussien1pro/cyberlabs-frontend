@@ -4,6 +4,12 @@ export interface WeeklyProgressPoint {
   xp: number;
 }
 
+export interface MonthlyProgressPoint {
+  month: string;
+  labs: number;
+  xp: number;
+}
+
 export interface LeaderboardEntry {
   rank: number;
   id: string;
@@ -24,3 +30,21 @@ export interface Goal {
   dueDate?: string;
   isCompleted: boolean;
 }
+export type GoalCategory = Goal['category'];
+
+export interface UserLab {
+  id: string;
+  title: string;
+  ar_title?: string;
+  description: string;
+  ar_description?: string;
+  difficulty: 'EASY' | 'MEDIUM' | 'HARD';
+  xpReward: number;
+  category: string;
+  thumbnail?: string;
+  status: 'not_started' | 'active' | 'completed';
+  progress?: number;
+  completedAt?: string;
+  startedAt?: string;
+}
+export type LabStatus = UserLab['status'];

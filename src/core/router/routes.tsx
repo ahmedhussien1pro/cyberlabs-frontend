@@ -84,9 +84,16 @@ export const routes: RouteObject[] = [
       </ProtectedRoute>
     ),
     children: [
+      { index: true, element: <LazyPage Component={Pages.DashboardPage} /> },
+      { path: 'labs', element: <LazyPage Component={Pages.LabsPage} /> },
       {
-        index: true,
-        element: <LazyPage Component={Pages.DashboardPage} />,
+        path: 'progress',
+        element: <LazyPage Component={Pages.ProgressPage} />,
+      },
+      { path: 'goals', element: <LazyPage Component={Pages.GoalsPage} /> },
+      {
+        path: 'community',
+        element: <LazyPage Component={Pages.CommunityPage} />,
       },
       {
         path: 'settings',
@@ -105,7 +112,7 @@ export const routes: RouteObject[] = [
     element: <LazyPage Component={Pages.NotFoundPage} />,
   },
   {
-    path: "/temp",
+    path: '/temp',
     element: <LazyPage Component={Pages.TempPage} />,
   },
   { path: '*', element: <LazyPage Component={Pages.NotFoundPage} /> },

@@ -12,6 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { NotificationBell } from '@/features/notifications/components/notification-bell';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Logo } from '@/shared/components/common/Logo';
 import { ThemeToggle } from '@/shared/components/common/theme-toggle';
@@ -86,7 +87,7 @@ export function Navbar() {
             <div className='hidden lg:block'>
               <SearchButton onClick={() => setSearchOpen(true)} />
             </div>
-
+            {isAuthenticated && <NotificationBell />}
             <LanguageSwitcher />
             <ThemeToggle />
 

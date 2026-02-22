@@ -1,25 +1,36 @@
 {
-  "title": "لوحة التحكم",
-  "welcome": "مرحباً",
-  "subtitle": "إليك ما يحدث مع تعلمك اليوم",
-  "nav": {
-    "dashboard": "لوحة التحكم",
-    "labs": "المعامل",
-    "goals": "الأهداف",
-    "progress": "التقدم",
-    "community": "المجتمع",
-    "settings": "الإعدادات"
+  "greeting": {
+    "morning": "صباح الخير،",
+    "afternoon": "مساء الخير،",
+    "evening": "مساء النور،"
   },
-  "header": {
-    "search": "بحث...",
-    "profile": "الملف الشخصي",
+  "level": "المستوى",
+  "nav": {
+    "overview": "نظرة عامة",
+    "labs": "المختبرات",
+    "progress": "التقدم",
+    "goals": "الأهداف",
+    "community": "المجتمع",
     "settings": "الإعدادات",
+    "profile": "ملفي الشخصي",
     "logout": "تسجيل الخروج"
   },
   "stats": {
-    "coursesCompleted": "الدورات المكتملة",
-    "totalXp": "إجمالي النقاط",
-    "streak": "السلسلة الحالية",
-    "studyTime": "وقت الدراسة"
+    "xp": "XP",
+    "points": "النقاط",
+    "labs": "المختبرات",
+    "courses": "الكورسات",
+    "streak": "الاستمرارية",
+    "hours": "الساعات"
+  },
+  "overview": {
+    "startLab": "ابدأ مختبراً",
+    "activeCourses": "الكورسات الجارية",
+    "recentLabs": "آخر المختبرات",
+    "viewAll": "عرض الكل",
+    "noActiveCourses": "لا توجد كورسات نشطة بعد",
+    "exploreCourses": "استكشف الكورسات",
+    "noLabsYet": "لم تحل أي مختبرات بعد",
+    "exploreLabs": "استكشف المختبرات"
   }
 }

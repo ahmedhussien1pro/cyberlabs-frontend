@@ -1,5 +1,4 @@
-﻿// src/core/router/lazy-routes.tsx
-import { lazy } from 'react';
+﻿import { lazy } from 'react';
 
 // Website Pages
 export const HomePage = lazy(
@@ -13,6 +12,12 @@ export const ContactPage = lazy(
 );
 export const PricingPage = lazy(
   () => import('@/features/website/pages/pricing-page'),
+);
+export const TermsPage = lazy(
+  () => import('@/features/website/pages/legal/terms'),
+);
+export const PrivacyPage = lazy(
+  () => import('@/features/website/pages/legal/privacy'),
 );
 
 // Auth Pages
@@ -35,12 +40,26 @@ export const LogoutPage = lazy(
 export const OAuthCallbackPage = lazy(
   () => import('@/features/auth/pages/oauth-callback-page'),
 );
-// Legal Pages
-export const TermsPage = lazy(
-  () => import('@/features/website/pages/legal/terms'),
+
+// Profile Pages
+export const ProfilePage = lazy(
+  () => import('@/features/profile/pages/profile-page'),
 );
-export const PrivacyPage = lazy(
-  () => import('@/features/website/pages/legal/privacy'),
+export const PublicProfilePage = lazy(
+  () => import('@/features/profile/pages/public-profile-page'),
+);
+
+// Dashboard
+export const DashboardLayout = lazy(
+  () => import('@/features/dashboard/components/layout/dashboard-layout'),
+);
+export const DashboardPage = lazy(
+  () => import('@/features/dashboard/pages/dashboard-page'),
+);
+
+// Settings
+export const SettingsPage = lazy(
+  () => import('@/features/settings/pages/settings-page'),
 );
 
 // Error Pages
@@ -49,12 +68,4 @@ export const NotFoundPage = lazy(
 );
 export const UnauthorizedPage = lazy(
   () => import('@/features/errors/pages/unauthorized-page'),
-);
-
-// Profile Pages
-export const ProfilePage = lazy(
-  () => import('@/features/profile/pages/profile-page'),
-);
-export const PublicProfilePage = lazy(
-  () => import('@/features/profile/pages/public-profile-page'),
 );

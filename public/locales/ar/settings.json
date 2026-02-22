@@ -1,0 +1,37 @@
+{
+  "title": "الإعدادات",
+  "subtitle": "إدارة حسابك وتفضيلاتك",
+  "tabs": {
+    "account": "الحساب",
+    "security": "الأمان",
+    "appearance": "المظهر"
+  },
+  "account": {
+    "name": "الاسم",
+    "bio": "النبذة التعريفية",
+    "address": "العنوان",
+    "phone": "رقم الهاتف",
+    "save": "حفظ التغييرات"
+  },
+  "security": {
+    "changePassword": "تغيير كلمة المرور",
+    "currentPassword": "كلمة المرور الحالية",
+    "newPassword": "كلمة المرور الجديدة",
+    "confirmPassword": "تأكيد كلمة المرور الجديدة",
+    "updatePassword": "تحديث كلمة المرور",
+    "passwordSuccess": "تم تحديث كلمة المرور بنجاح",
+    "passwordError": "فشل تحديث كلمة المرور",
+    "twoFactor": "المصادقة الثنائية",
+    "twoFactorTitle": "حماية 2FA",
+    "twoFactorDesc": "تضيف طبقة حماية إضافية لحسابك",
+    "twoFactorHint": "تواصل مع الدعم لتفعيل أو تعطيل المصادقة الثنائية",
+    "enabled": "مفعّل",
+    "disabled": "معطّل"
+  },
+  "appearance": {
+    "theme": "المظهر",
+    "themeDesc": "التبديل بين الوضع الفاتح والداكن",
+    "language": "اللغة",
+    "languageDesc": "تغيير لغة الواجهة"
+  }
+}

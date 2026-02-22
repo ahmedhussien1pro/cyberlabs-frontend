@@ -1,11 +1,21 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '@/shared/components/common/theme-toggle';
+import { LanguageSwitcher } from '@/shared/components/common/language-switcher';
+import { ROUTES } from '@/shared/constants';
+
 import { useProfile } from '../hooks/use-profile';
 import {
   useProfileStats,
   useProfileActivity,
 } from '../hooks/use-profile-stats';
 import { useProfilePoints } from '../hooks/use-profile-points';
+
 import { ProfileHero } from '../components/profile-header/profile-hero';
 import { ProfileStatsGrid } from '../components/profile-stats/profile-stats-grid';
 import { XpProgressBar } from '../components/profile-activity/xp-progress-bar';
@@ -18,7 +28,10 @@ import { EditProfileForm } from '../components/profile-edit/edit-profile-form';
 import { ShareProfileButton } from '../components/profile-share/share-profile-button';
 
 export default function ProfilePage(): React.ReactElement {
+  const { t } = useTranslation('profile');
+  const navigate = useNavigate();
   const [editOpen, setEditOpen] = useState(false);
+
   const { data: profile, isLoading } = useProfile();
   const { data: stats } = useProfileStats();
   const { data: points } = useProfilePoints();
@@ -29,12 +42,38 @@ export default function ProfilePage(): React.ReactElement {
 
   return (
     <div className='relative min-h-screen bg-background'>
+      {/* Ambient bg */}
       <div className='pointer-events-none fixed inset-0 -z-10 overflow-hidden'>
         <div className='absolute -left-40 top-1/4 h-[500px] w-[500px] rounded-full bg-primary/[0.04] blur-3xl' />
         <div className='absolute -right-40 bottom-1/4 h-[400px] w-[400px] rounded-full bg-cyan-500/[0.03] blur-3xl' />
       </div>
 
-      <div className='container max-w-4xl space-y-5 py-8'>
+      {/* Top bar */}
+      <header
+        className='sticky top-0 z-40 flex items-center justify-between
+                         border-b border-border/40 bg-background/80
+                         px-4 py-2 backdrop-blur-md'>
+        <Button
+          variant='ghost'
+          size='sm'
+          className='gap-1.5 text-muted-foreground hover:text-foreground'
+          onClick={() => navigate(ROUTES.HOME)}>
+          <ArrowLeft size={16} />
+          <span className='text-xs font-medium'>{t('nav.back', 'Back')}</span>
+        </Button>
+
+        <span className='text-sm font-semibold tracking-tight'>
+          {t('nav.title', 'Profile')}
+        </span>
+
+        <div className='flex items-center gap-1'>
+          <LanguageSwitcher />
+          <ThemeToggle />
+        </div>
+      </header>
+
+      {/* Content */}
+      <div className='container max-w-4xl space-y-5 py-6'>
         <div className='flex justify-end'>
           <ShareProfileButton userId={profile.id} />
         </div>
@@ -60,7 +99,7 @@ export default function ProfilePage(): React.ReactElement {
           <section className='space-y-3'>
             <h2 className='flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground'>
               <span className='h-1.5 w-1.5 rounded-full bg-primary' />
-              Career Paths
+              {t('sections.careerPaths', 'Career Paths')}
             </h2>
             <div className='grid gap-2 sm:grid-cols-2'>
               {(profile.careerPaths ?? []).map((cp, i) => (
@@ -82,16 +121,29 @@ export default function ProfilePage(): React.ReactElement {
 
 function ProfilePageSkeleton(): React.ReactElement {
   return (
-    <div className='container max-w-4xl space-y-5 py-8'>
-      <Skeleton className='ml-auto h-8 w-28 rounded-full' />
-      <Skeleton className='h-64 w-full rounded-2xl' />
-      <div className='grid grid-cols-6 gap-3'>
-        {Array.from({ length: 6 }).map((_, i) => (
-          <Skeleton key={i} className='h-24 rounded-xl' />
-        ))}
+    <>
+      <header
+        className='sticky top-0 z-40 flex items-center justify-between
+                         border-b border-border/40 bg-background/80
+                         px-4 py-2 backdrop-blur-md'>
+        <Skeleton className='h-7 w-16 rounded-md' />
+        <Skeleton className='h-4 w-16 rounded' />
+        <div className='flex items-center gap-1'>
+          <Skeleton className='h-7 w-7 rounded-md' />
+          <Skeleton className='h-7 w-7 rounded-md' />
+        </div>
+      </header>
+      <div className='container max-w-4xl space-y-5 py-6'>
+        <Skeleton className='ml-auto h-8 w-28 rounded-full' />
+        <Skeleton className='h-64 w-full rounded-2xl' />
+        <div className='grid grid-cols-6 gap-3'>
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className='h-24 rounded-xl' />
+          ))}
+        </div>
+        <Skeleton className='h-16 w-full rounded-xl' />
+        <Skeleton className='h-40 w-full rounded-xl' />
       </div>
-      <Skeleton className='h-16 w-full rounded-xl' />
-      <Skeleton className='h-40 w-full rounded-xl' />
-    </div>
+    </>
   );
 }

@@ -2,9 +2,9 @@ import { Suspense } from 'react';
 import type { RouteObject } from 'react-router-dom';
 import * as Pages from './lazy-routes';
 import { ROUTES } from '@/shared/constants';
-// import { LoadingSpinner } from '@/shared/components/common/loading-spinner';
 import { Preloader } from '@/shared/components/common/preloader';
 import ProtectedRoute from './protected-route';
+
 const LazyPage = ({
   Component,
 }: {
@@ -16,40 +16,16 @@ const LazyPage = ({
 );
 
 export const routes: RouteObject[] = [
-  // Website Routes
-  {
-    path: ROUTES.HOME,
-    element: <LazyPage Component={Pages.HomePage} />,
-  },
-  {
-    path: ROUTES.ABOUT,
-    element: <LazyPage Component={Pages.AboutPage} />,
-  },
-  {
-    path: ROUTES.CONTACT,
-    element: <LazyPage Component={Pages.ContactPage} />,
-  },
-  {
-    path: ROUTES.PRICING,
-    element: <LazyPage Component={Pages.PricingPage} />,
-  },
-  {
-    path: ROUTES.TERMS,
-    element: <LazyPage Component={Pages.TermsPage} />,
-  },
-  {
-    path: ROUTES.PRIVACY,
-    element: <LazyPage Component={Pages.PrivacyPage} />,
-  },
-  // Auth Routes
-  {
-    path: ROUTES.AUTH.LOGIN,
-    element: <LazyPage Component={Pages.AuthPage} />,
-  },
-  {
-    path: ROUTES.AUTH.REGISTER,
-    element: <LazyPage Component={Pages.AuthPage} />,
-  },
+  // ── Website ────────────────────────────────────
+  { path: ROUTES.HOME, element: <LazyPage Component={Pages.HomePage} /> },
+  { path: ROUTES.ABOUT, element: <LazyPage Component={Pages.AboutPage} /> },
+  { path: ROUTES.CONTACT, element: <LazyPage Component={Pages.ContactPage} /> },
+  { path: ROUTES.PRICING, element: <LazyPage Component={Pages.PricingPage} /> },
+  { path: ROUTES.TERMS, element: <LazyPage Component={Pages.TermsPage} /> },
+  { path: ROUTES.PRIVACY, element: <LazyPage Component={Pages.PrivacyPage} /> },
+
+  // ── Auth ───────────────────────────────────────
+  { path: ROUTES.AUTH.LOGIN, element: <LazyPage Component={Pages.AuthPage} /> },
   {
     path: ROUTES.AUTH.FORGOT_PASSWORD,
     element: <LazyPage Component={Pages.ForgotPasswordPage} />,
@@ -71,7 +47,6 @@ export const routes: RouteObject[] = [
     element: <LazyPage Component={Pages.LogoutPage} />,
   },
   {
-    // Aouth callback route for handling OAuth responses
     path: ROUTES.AUTH.OAUTH_CALLBACK,
     element: <LazyPage Component={Pages.OAuthCallbackPage} />,
   },
@@ -83,7 +58,8 @@ export const routes: RouteObject[] = [
     path: ROUTES.AUTH.GITHUB_CALLBACK,
     element: <LazyPage Component={Pages.OAuthCallbackPage} />,
   },
-  // Profile Routes
+
+  // ── Profile ────────────────────────────────────
   {
     path: ROUTES.PROFILE.VIEW,
     element: (
@@ -96,31 +72,35 @@ export const routes: RouteObject[] = [
     path: '/profile/:userId',
     element: <LazyPage Component={Pages.PublicProfilePage} />,
   },
-  // {
-  //   path: ROUTES.DASHBOARD.ProgressPage,
-  //   element: <LazyPage Component={Pages.ProgressPage} />,
-  // },
-  // {
-  //   path: ROUTES.DASHBOARD.GoalsPage,
-  //   element: <LazyPage Component={Pages.GoalsPage} />,
-  // },
-  // {
-  //   path: ROUTES.DASHBOARD.CommunityPage,
-  //   element: <LazyPage Component={Pages.CommunityPage} />,
-  // },
-  // {
-  //   path: ROUTES.DASHBOARD.SettingsPage,
-  //   element: <LazyPage Component={Pages.SettingsPage} />,
-  // },
-  // Error Routes
+
+  // ── Dashboard (nested layout) ──────────────────
+  {
+    path: ROUTES.DASHBOARD.DashboardPage, // '/dashboard'
+    element: (
+      <ProtectedRoute>
+        <Suspense fallback={<Preloader />}>
+          <Pages.DashboardLayout />
+        </Suspense>
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <LazyPage Component={Pages.DashboardPage} />,
+      },
+      {
+        path: 'settings',
+        element: <LazyPage Component={Pages.SettingsPage} />,
+      },
+    ],
+  },
+
+  // ── Errors ─────────────────────────────────────
   {
     path: ROUTES.UNAUTHORIZED,
     element: <LazyPage Component={Pages.UnauthorizedPage} />,
   },
-  {
-    path: '*',
-    element: <LazyPage Component={Pages.NotFoundPage} />,
-  },
+  { path: '*', element: <LazyPage Component={Pages.NotFoundPage} /> },
 ];
 
 export default routes;

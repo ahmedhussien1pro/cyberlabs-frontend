@@ -1,25 +1,36 @@
 {
-  "title": "Dashboard",
-  "welcome": "Welcome",
-  "subtitle": "Here's what's happening with your learning today",
-  "nav": {
-    "dashboard": "Dashboard",
-    "labs": "Labs",
-    "goals": "Goals",
-    "progress": "Progress",
-    "community": "Community",
-    "settings": "Settings"
+  "greeting": {
+    "morning": "Good morning,",
+    "afternoon": "Good afternoon,",
+    "evening": "Good evening,"
   },
-  "header": {
-    "search": "Search...",
-    "profile": "Profile",
+  "level": "Level",
+  "nav": {
+    "overview": "Overview",
+    "labs": "Labs",
+    "progress": "Progress",
+    "goals": "Goals",
+    "community": "Community",
     "settings": "Settings",
-    "logout": "Logout"
+    "profile": "My Profile",
+    "logout": "Sign Out"
   },
   "stats": {
-    "coursesCompleted": "Courses Completed",
-    "totalXp": "Total XP",
-    "streak": "Current Streak",
-    "studyTime": "Study Time"
+    "xp": "XP",
+    "points": "Points",
+    "labs": "Labs",
+    "courses": "Courses",
+    "streak": "Streak",
+    "hours": "Hours"
+  },
+  "overview": {
+    "startLab": "Start a Lab",
+    "activeCourses": "Active Courses",
+    "recentLabs": "Recent Labs",
+    "viewAll": "View All",
+    "noActiveCourses": "No active courses yet",
+    "exploreCourses": "Explore Courses",
+    "noLabsYet": "No labs solved yet",
+    "exploreLabs": "Explore Labs"
   }
 }

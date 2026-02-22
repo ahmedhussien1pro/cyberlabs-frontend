@@ -1,5 +1,4 @@
 import { apiClient, API_ENDPOINTS } from '@/core/api';
-import type { ApiResponse } from '@/core/types';
 import type {
   LoginResponse,
   RegisterResponse,
@@ -9,9 +8,7 @@ import type {
 } from '@/features/auth/types';
 import { sanitize } from '@/features/auth/utils';
 
-function unwrap<T>(res: unknown): T {
-  return (res as ApiResponse<T>).data;
-}
+const cast = <T>(res: unknown) => res as unknown as T;
 
 export const authService = {
   login: async (email: string, password: string): Promise<LoginResponse> => {
@@ -22,7 +19,7 @@ export const authService = {
       email,
       password,
     });
-    return unwrap<LoginResponse>(res);
+    return cast<LoginResponse>(res);
   },
 
   register: async (
@@ -43,7 +40,7 @@ export const authService = {
         email,
         password,
       });
-      return unwrap<RegisterResponse>(res);
+      return cast<RegisterResponse>(res);
     } catch (error: any) {
       const isExpectedError = [400, 409, 500].includes(error.statusCode);
       if (import.meta.env.DEV && !isExpectedError) {
@@ -64,14 +61,14 @@ export const authService = {
     const res = await apiClient.post(API_ENDPOINTS.AUTH.REFRESH, {
       refreshToken,
     });
-    return unwrap<RefreshTokenResponse>(res);
+    return cast<RefreshTokenResponse>(res);
   },
 
   forgotPassword: async (email: string): Promise<VerifyResponse> => {
     const res = await apiClient.post(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, {
       email,
     });
-    return unwrap<VerifyResponse>(res);
+    return cast<VerifyResponse>(res);
   },
 
   resetPassword: async (
@@ -82,7 +79,7 @@ export const authService = {
       token,
       newPassword,
     });
-    return unwrap<VerifyResponse>(res);
+    return cast<VerifyResponse>(res);
   },
 
   changePassword: async (
@@ -93,14 +90,14 @@ export const authService = {
       currentPassword,
       newPassword,
     });
-    return unwrap<VerifyResponse>(res);
+    return cast<VerifyResponse>(res);
   },
 
   verifyEmailWithToken: async (token: string): Promise<VerifyResponse> => {
     const res = await apiClient.post(API_ENDPOINTS.AUTH.VERIFY_EMAIL, {
       token,
     });
-    return unwrap<VerifyResponse>(res);
+    return cast<VerifyResponse>(res);
   },
 
   verifyEmailWithOTP: async (
@@ -111,18 +108,18 @@ export const authService = {
       email,
       otp,
     });
-    return unwrap<VerifyResponse>(res);
+    return cast<VerifyResponse>(res);
   },
 
   resendVerificationEmail: async (email: string): Promise<VerifyResponse> => {
     const res = await apiClient.post(API_ENDPOINTS.AUTH.RESEND_VERIFICATION, {
       email,
     });
-    return unwrap<VerifyResponse>(res);
+    return cast<VerifyResponse>(res);
   },
 
   getCurrentUser: async (): Promise<User | undefined> => {
     const res = await apiClient.get(API_ENDPOINTS.AUTH.ME);
-    return unwrap<{ user: User }>(res)?.user;
+    return (res as unknown as { user: User })?.user;
   },
 };

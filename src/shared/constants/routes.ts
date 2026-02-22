@@ -9,7 +9,6 @@ export const ROUTES = {
 
   AUTH: {
     LOGIN: '/auth',
-    Hamada: '/sdd',
     REGISTER: '/auth',
     FORGOT_PASSWORD: '/forgot-password',
     RESET_PASSWORD: '/reset-password',
@@ -30,16 +29,16 @@ export const ROUTES = {
     SettingsPage: '/dashboard/settings',
   },
 
+  PROFILE: {
+    VIEW: '/profile',
+    PUBLIC: (id: string) => `/profile/${id}`,
+  },
+
   COURSES: {
     LIST: '/courses',
     DETAIL: (id: string) => `/courses/${id}`,
     LESSON: (courseId: string, lessonId: string) =>
       `/courses/${courseId}/lessons/${lessonId}`,
-  },
-
-  PROFILE: {
-    VIEW: '/profile',
-    PUBLIC: (id: string) => `/profile/${id}`,
   },
 
   LABS: {

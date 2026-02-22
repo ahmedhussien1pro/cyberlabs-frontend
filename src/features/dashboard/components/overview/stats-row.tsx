@@ -7,16 +7,24 @@ import {
   Star,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Skeleton } from '@/components/ui/skeleton';
 import { StatCard } from '@/shared/components/common/stat-card';
-import type { UserStats, UserPoints } from '@/shared/types/user.types';
+import { useUserStats, useUserPoints } from '@/shared/hooks/use-user-data';
 
-interface Props {
-  stats?: UserStats;
-  points?: UserPoints;
-}
+export function StatsRow() {
+  const { t } = useTranslation('dashboard');
+  const { data: stats, isLoading: sl } = useUserStats();
+  const { data: points, isLoading: pl } = useUserPoints();
 
-export function ProfileStatsGrid({ stats, points }: Props) {
-  const { t } = useTranslation('profile');
+  if (sl || pl) {
+    return (
+      <div className='grid grid-cols-3 gap-3 sm:grid-cols-6'>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <Skeleton key={i} className='h-24 rounded-xl' />
+        ))}
+      </div>
+    );
+  }
 
   const items = [
     {

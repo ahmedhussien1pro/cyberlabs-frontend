@@ -28,6 +28,7 @@ i18n
       'dashboard',
       'errors',
       'profile',
+      'settings',
     ],
     defaultNS: 'common',
     debug: true,

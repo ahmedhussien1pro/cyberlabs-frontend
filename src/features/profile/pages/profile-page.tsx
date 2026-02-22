@@ -17,6 +17,7 @@ import {
 import { useProfilePoints } from '../hooks/use-profile-points';
 
 import { ProfileHero } from '../components/profile-header/profile-hero';
+import { ProfileCompletionBar } from '../components/profile-header/profile-completion-bar';
 import { ProfileStatsGrid } from '../components/profile-stats/profile-stats-grid';
 import { XpProgressBar } from '../components/profile-activity/xp-progress-bar';
 import { ActivityHeatmap } from '../components/profile-activity/activity-heatmap';
@@ -26,6 +27,9 @@ import { ProfileLabsSection } from '../components/profile-labs/profile-labs-sect
 import { CareerPathCard } from '../components/profile-career/career-path-card';
 import { EditProfileForm } from '../components/profile-edit/edit-profile-form';
 import { ShareProfileButton } from '../components/profile-share/share-profile-button';
+import { ActiveCoursesCard } from '@/features/dashboard/components/overview/active-courses-card';
+
+import { calcProfileCompletion } from '../utils/profile-completion';
 
 export default function ProfilePage(): React.ReactElement {
   const { t } = useTranslation('profile');
@@ -40,6 +44,8 @@ export default function ProfilePage(): React.ReactElement {
   if (isLoading) return <ProfilePageSkeleton />;
   if (!profile) return <></>;
 
+  const { percentage, checks } = calcProfileCompletion(profile);
+
   return (
     <div className='relative min-h-screen bg-background'>
       {/* Ambient bg */}
@@ -48,24 +54,21 @@ export default function ProfilePage(): React.ReactElement {
         <div className='absolute -right-40 bottom-1/4 h-[400px] w-[400px] rounded-full bg-cyan-500/[0.03] blur-3xl' />
       </div>
 
-      {/* Top bar */}
+      {/* Topbar */}
       <header
         className='sticky top-0 z-40 flex items-center justify-between
-                         border-b border-border/40 bg-background/80
-                         px-4 py-2 backdrop-blur-md'>
+                         border-b border-border/40 bg-background/80 px-4 py-2 backdrop-blur-md'>
         <Button
           variant='ghost'
           size='sm'
           className='gap-1.5 text-muted-foreground hover:text-foreground'
-          onClick={() => navigate(ROUTES.HOME)}>
+          onClick={() => navigate(ROUTES.DASHBOARD.DashboardPage)}>
           <ArrowLeft size={16} />
           <span className='text-xs font-medium'>{t('nav.back', 'Back')}</span>
         </Button>
-
-        <span className='text-sm font-semibold tracking-tight'>
+        <span className='text-sm font-semibold'>
           {t('nav.title', 'Profile')}
         </span>
-
         <div className='flex items-center gap-1'>
           <LanguageSwitcher />
           <ThemeToggle />
@@ -85,6 +88,13 @@ export default function ProfilePage(): React.ReactElement {
           onEdit={() => setEditOpen(true)}
         />
 
+        {/* Profile completion bar (hidden if 100%) */}
+        <ProfileCompletionBar
+          percentage={percentage}
+          checks={checks}
+          onEdit={() => setEditOpen(true)}
+        />
+
         <ProfileStatsGrid stats={stats} points={points} />
 
         {points && <XpProgressBar points={points} />}
@@ -94,6 +104,9 @@ export default function ProfilePage(): React.ReactElement {
         <ProfileBadgesSection badges={profile.badges ?? []} />
         <ProfileSkillsSection skills={profile.skills ?? []} />
         <ProfileLabsSection />
+
+        {/* Active courses (reused from Dashboard) */}
+        <ActiveCoursesCard />
 
         {(profile.careerPaths ?? []).length > 0 && (
           <section className='space-y-3'>
@@ -124,18 +137,17 @@ function ProfilePageSkeleton(): React.ReactElement {
     <>
       <header
         className='sticky top-0 z-40 flex items-center justify-between
-                         border-b border-border/40 bg-background/80
-                         px-4 py-2 backdrop-blur-md'>
+                         border-b border-border/40 bg-background/80 px-4 py-2 backdrop-blur-md'>
         <Skeleton className='h-7 w-16 rounded-md' />
-        <Skeleton className='h-4 w-16 rounded' />
-        <div className='flex items-center gap-1'>
-          <Skeleton className='h-7 w-7 rounded-md' />
-          <Skeleton className='h-7 w-7 rounded-md' />
+        <Skeleton className='h-4 w-16' />
+        <div className='flex gap-1'>
+          <Skeleton className='h-7 w-7' />
+          <Skeleton className='h-7 w-7' />
         </div>
       </header>
       <div className='container max-w-4xl space-y-5 py-6'>
-        <Skeleton className='ml-auto h-8 w-28 rounded-full' />
         <Skeleton className='h-64 w-full rounded-2xl' />
+        <Skeleton className='h-20 w-full rounded-xl' />
         <div className='grid grid-cols-6 gap-3'>
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className='h-24 rounded-xl' />

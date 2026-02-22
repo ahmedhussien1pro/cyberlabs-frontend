@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -9,6 +10,8 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import useAuthStore from '@/features/auth/store/auth.store';
 import { useChangePassword } from '../hooks/use-change-password';
+import { Enable2FADialog } from '@/features/auth/components/two-factor/enable-2fa-dialog';
+import { Disable2FADialog } from '@/features/auth/components/two-factor/disable-2fa-dialog';
 
 const schema = z
   .object({
@@ -25,8 +28,11 @@ type FormData = z.infer<typeof schema>;
 export function SecurityTab() {
   const { t } = useTranslation('settings');
   const { user } = useAuthStore();
-  const { mutate, isPending } = useChangePassword();
 
+  const [enableOpen, setEnableOpen] = useState(false);
+  const [disableOpen, setDisableOpen] = useState(false);
+
+  const { mutate, isPending } = useChangePassword();
   const {
     register,
     handleSubmit,
@@ -40,7 +46,7 @@ export function SecurityTab() {
 
   return (
     <div className='space-y-8'>
-      {/* ── Change Password ─────────────────────────── */}
+      {/* ── Change Password ────────────────────────────── */}
       <section className='space-y-4'>
         <h3 className='text-sm font-semibold text-foreground'>
           {t('security.changePassword')}
@@ -48,14 +54,8 @@ export function SecurityTab() {
 
         <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
           <div className='space-y-1.5'>
-            <Label htmlFor='currentPassword'>
-              {t('security.currentPassword')}
-            </Label>
-            <Input
-              id='currentPassword'
-              type='password'
-              {...register('currentPassword')}
-            />
+            <Label htmlFor='cur'>{t('security.currentPassword')}</Label>
+            <Input id='cur' type='password' {...register('currentPassword')} />
             {errors.currentPassword && (
               <p className='text-xs text-destructive'>
                 {errors.currentPassword.message}
@@ -65,12 +65,8 @@ export function SecurityTab() {
 
           <div className='grid gap-4 sm:grid-cols-2'>
             <div className='space-y-1.5'>
-              <Label htmlFor='newPassword'>{t('security.newPassword')}</Label>
-              <Input
-                id='newPassword'
-                type='password'
-                {...register('newPassword')}
-              />
+              <Label htmlFor='new'>{t('security.newPassword')}</Label>
+              <Input id='new' type='password' {...register('newPassword')} />
               {errors.newPassword && (
                 <p className='text-xs text-destructive'>
                   {errors.newPassword.message}
@@ -78,11 +74,9 @@ export function SecurityTab() {
               )}
             </div>
             <div className='space-y-1.5'>
-              <Label htmlFor='confirmPassword'>
-                {t('security.confirmPassword')}
-              </Label>
+              <Label htmlFor='conf'>{t('security.confirmPassword')}</Label>
               <Input
-                id='confirmPassword'
+                id='conf'
                 type='password'
                 {...register('confirmPassword')}
               />
@@ -108,7 +102,7 @@ export function SecurityTab() {
 
       <div className='h-px bg-border/40' />
 
-      {/* ── 2FA ─────────────────────────────────────── */}
+      {/* ── Two-Factor Authentication ─────────────────── */}
       <section className='space-y-3'>
         <h3 className='text-sm font-semibold text-foreground'>
           {t('security.twoFactor')}
@@ -131,23 +125,48 @@ export function SecurityTab() {
             </div>
           </div>
 
-          <Badge
-            variant='outline'
-            className={
-              user?.twoFactorEnabled
-                ? 'border-green-500/30 bg-green-500/10 text-green-500'
-                : 'border-border text-muted-foreground'
-            }>
-            {user?.twoFactorEnabled
-              ? t('security.enabled')
-              : t('security.disabled')}
-          </Badge>
+          <div className='flex items-center gap-3'>
+            <Badge
+              variant='outline'
+              className={
+                user?.twoFactorEnabled
+                  ? 'border-green-500/30 bg-green-500/10 text-green-500'
+                  : 'text-muted-foreground'
+              }>
+              {user?.twoFactorEnabled
+                ? t('security.enabled')
+                : t('security.disabled')}
+            </Badge>
+
+            {user?.twoFactorEnabled ? (
+              <Button
+                variant='outline'
+                size='sm'
+                className='text-destructive hover:text-destructive'
+                onClick={() => setDisableOpen(true)}>
+                {t('security.disable2FA')}
+              </Button>
+            ) : (
+              <Button size='sm' onClick={() => setEnableOpen(true)}>
+                {t('security.enable2FA')}
+              </Button>
+            )}
+          </div>
         </div>
 
-        <p className='text-xs text-muted-foreground'>
-          {t('security.twoFactorHint')}
-        </p>
+        {!user?.twoFactorEnabled && (
+          <p className='text-xs text-muted-foreground'>
+            {t('security.twoFactorHint')}
+          </p>
+        )}
       </section>
+
+      {/* Dialogs */}
+      <Enable2FADialog open={enableOpen} onClose={() => setEnableOpen(false)} />
+      <Disable2FADialog
+        open={disableOpen}
+        onClose={() => setDisableOpen(false)}
+      />
     </div>
   );
 }

@@ -7,8 +7,8 @@ import {
   Star,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { StatCard } from './stat-card';
-import type { UserStats, UserPoints } from '../../types/profile.types';
+import { StatCard } from '@/shared/components/common/stat-card';
+import type { UserStats, UserPoints } from '@/shared/types/user.types';
 
 interface Props {
   stats?: UserStats;

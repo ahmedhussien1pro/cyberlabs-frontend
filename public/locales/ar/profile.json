@@ -38,5 +38,12 @@
     "avatarError": "فشل رفع الصورة",
     "avatarInvalidType": "يُسمح فقط بصور JPEG وPNG وWebP",
     "avatarTooLarge": "يجب أن يكون حجم الصورة أقل من 5 ميجابايت"
+  },
+  "nav": {
+    "back": "رجوع",
+    "title": "الملف الشخصي"
+  },
+  "sections": {
+    "careerPaths": "المسارات المهنية"
   }
 }

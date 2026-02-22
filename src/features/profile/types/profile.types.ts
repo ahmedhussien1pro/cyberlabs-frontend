@@ -1,3 +1,12 @@
+export type {
+  UserStats,
+  UserPoints,
+  UserActivity,
+  CompletedLab,
+  EnrolledCourse,
+} from '@/shared/types/user.types';
+
+// ─── Profile-specific enums ──────────────────────────────────────────────────
 export type SocialPlatform =
   | 'GITHUB'
   | 'LINKEDIN'
@@ -7,7 +16,9 @@ export type SocialPlatform =
   | 'PORTFOLIO'
   | 'EMAIL'
   | 'OTHER';
+
 export type SkillLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | 'EXPERT';
+
 export type BadgeType =
   | 'COURSE_COMPLETION'
   | 'LAB_SOLVED'
@@ -16,6 +27,7 @@ export type BadgeType =
   | 'CONTRIBUTION'
   | 'CUSTOM';
 
+// ─── Full user profile (private — owner only) ────────────────────────────────
 export interface UserProfile {
   id: string;
   name: string;
@@ -37,25 +49,6 @@ export interface UserProfile {
   badges?: UserBadge[];
   achievements?: UserAchievement[];
   careerPaths?: UserCareerPath[];
-}
-
-export interface UserStats {
-  totalHours: number;
-  activeDays: number;
-  completedLabs: number;
-  completedCourses: number;
-  badgesCount: number;
-  certificationsCount: number;
-  profileCompletion: number;
-  currentStreak: number;
-  longestStreak: number;
-  lastActivityDate?: string;
-}
-
-export interface UserPoints {
-  totalXP: number;
-  totalPoints: number;
-  level: number;
 }
 
 export interface SocialLink {
@@ -130,39 +123,6 @@ export interface UserCareerPath {
     description?: string;
     iconUrl?: string;
   };
-}
-
-export interface CompletedLab {
-  labId: string;
-  completedAt: string;
-  attempts: number;
-  lab: {
-    id: string;
-    title: string;
-    difficulty: string;
-    xpReward: number;
-  };
-}
-
-export interface EnrolledCourse {
-  courseId: string;
-  progress: number;
-  isCompleted: boolean;
-  enrolledAt: string;
-  completedAt?: string;
-  course: {
-    id: string;
-    title: string;
-    thumbnail?: string;
-    difficulty: string;
-  };
-}
-
-export interface UserActivity {
-  date: string;
-  activeMinutes: number;
-  completedTasks: number;
-  labsSolved: number;
 }
 
 export interface UpdateProfilePayload {

@@ -1,29 +1,20 @@
 export const API_ENDPOINTS = {
-  // Auth Endpoints
   AUTH: {
-    // Email/Password
     LOGIN: '/auth/login',
     REGISTER: '/auth/register',
     LOGOUT: '/auth/logout',
     REFRESH: '/auth/refresh',
     ME: '/auth/me',
-
-    // Password Reset
     FORGOT_PASSWORD: '/auth/forgot-password',
     RESET_PASSWORD: '/auth/reset-password',
     CHANGE_PASSWORD: '/auth/change-password',
-
-    // Email Verification (with OTP)
     VERIFY_EMAIL: '/auth/verify-email',
     VERIFY_EMAIL_OTP: '/auth/verify-email-otp',
     RESEND_VERIFICATION: '/auth/resend-verification',
-
-    // OAuth
     GOOGLE_LOGIN: '/auth/google',
     GOOGLE_CALLBACK: '/auth/google/callback',
     GITHUB_LOGIN: '/auth/github',
     GITHUB_CALLBACK: '/auth/github/callback',
-
     // 2FA
     TWO_FACTOR_GENERATE: '/auth/2fa/generate',
     TWO_FACTOR_ENABLE: '/auth/2fa/enable',
@@ -31,7 +22,6 @@ export const API_ENDPOINTS = {
     TWO_FACTOR_VERIFY: '/auth/2fa/verify',
   },
 
-  // User Endpoints
   USERS: {
     BASE: '/users',
     BY_ID: (id: string) => `/users/${id}`,
@@ -39,9 +29,14 @@ export const API_ENDPOINTS = {
     UPDATE_PROFILE: '/users/profile',
     UPDATE_PASSWORD: '/users/password',
     UPDATE_AVATAR: '/users/avatar',
+    // ── Account Management (TODO: backend implementation) ──
+    DELETE_ACCOUNT: '/users/me',
+    EXPORT_DATA: '/users/me/export',
+    SESSIONS: '/users/me/sessions',
+    REVOKE_SESSION: (id: string) => `/users/me/sessions/${id}`,
+    NOTIFICATION_PREFS: '/users/me/notifications/preferences',
   },
 
-  // Course Endpoints
   COURSES: {
     BASE: '/courses',
     BY_ID: (id: string) => `/courses/${id}`,
@@ -55,7 +50,6 @@ export const API_ENDPOINTS = {
       `/courses/${courseId}/lessons/${lessonId}/complete`,
   },
 
-  // Dashboard Endpoints
   DASHBOARD: {
     STATS: '/dashboard/stats',
     RECENT_ACTIVITY: '/dashboard/activity',
@@ -68,12 +62,6 @@ export const API_ENDPOINTS = {
     HEATMAP: '/dashboard/heatmap',
   },
 
-  // Profile Endpoints
-  PROFILE: {
-    ACHIEVEMENTS: '/profile/achievements',
-    CERTIFICATES: '/profile/certificates',
-    ACTIVITY: '/profile/activity',
-  },
   LABS: {
     BASE: '/labs',
     BY_ID: (id: string) => `/labs/${id}`,
@@ -82,17 +70,25 @@ export const API_ENDPOINTS = {
     COMPLETE: (id: string) => `/labs/${id}/complete`,
     PROGRESS: (id: string) => `/labs/${id}/progress`,
   },
-  PROGRESS: {
-    BASE: '/progress',
-    BY_COURSE: (courseId: string) => `/progress/course/${courseId}`,
-    DASHBOARD: '/progress/dashboard',
-    CHART_DATA: '/progress/chart',
-  },
+
   GOALS: {
     BASE: '/goals',
     BY_ID: (id: string) => `/goals/${id}`,
     CREATE: '/goals',
     UPDATE: (id: string) => `/goals/${id}`,
     DELETE: (id: string) => `/goals/${id}`,
+  },
+
+  PROGRESS: {
+    BASE: '/progress',
+    BY_COURSE: (courseId: string) => `/progress/course/${courseId}`,
+    DASHBOARD: '/progress/dashboard',
+    CHART_DATA: '/progress/chart',
+  },
+
+  PROFILE: {
+    ACHIEVEMENTS: '/profile/achievements',
+    CERTIFICATES: '/profile/certificates',
+    ACTIVITY: '/profile/activity',
   },
 } as const;

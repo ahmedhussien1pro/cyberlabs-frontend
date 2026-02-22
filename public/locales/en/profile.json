@@ -38,5 +38,12 @@
     "avatarError": "Failed to upload avatar",
     "avatarInvalidType": "Only JPEG, PNG and WebP images are allowed",
     "avatarTooLarge": "Image must be less than 5 MB"
+  },
+  "nav": {
+    "back": "Back",
+    "title": "Profile"
+  },
+  "sections": {
+    "careerPaths": "Career Paths"
   }
 }

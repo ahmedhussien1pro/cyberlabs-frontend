@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import type { UserActivity } from '../../types/profile.types';
+import type { UserActivity } from '@/shared/types/user.types';
 
 const WEEKS = 52;
 const DAYS = 7;
@@ -24,29 +24,12 @@ function buildGrid(activities: UserActivity[]) {
     d.setDate(today.getDate() - i);
     const key = d.toISOString().slice(0, 10);
     const act = map.get(key);
-    const count = act ? act.labsSolved + act.completedTasks : 0;
-    result.push({ date: key, count });
+    result.push({
+      date: key,
+      count: act ? act.labsSolved + act.completedTasks : 0,
+    });
   }
   return result;
-}
-
-// Mock data used until backend adds GET /users/me/activity
-function generateMockActivity(): UserActivity[] {
-  const activities: UserActivity[] = [];
-  const today = new Date();
-  for (let i = WEEKS * DAYS - 1; i >= 0; i--) {
-    const d = new Date(today);
-    d.setDate(today.getDate() - i);
-    if (Math.random() > 0.6) {
-      activities.push({
-        date: d.toISOString(),
-        activeMinutes: Math.floor(Math.random() * 90),
-        completedTasks: Math.floor(Math.random() * 3),
-        labsSolved: Math.floor(Math.random() * 3),
-      });
-    }
-  }
-  return activities;
 }
 
 interface Props {
@@ -55,12 +38,11 @@ interface Props {
 
 export function ActivityHeatmap({ activities }: Props) {
   const { t } = useTranslation('profile');
+
   const data = useMemo(
     () =>
       buildGrid(
-        Array.isArray(activities) && activities.length > 0
-          ? activities
-          : generateMockActivity(),
+        Array.isArray(activities) && activities.length > 0 ? activities : [],
       ),
     [activities],
   );
@@ -78,6 +60,7 @@ export function ActivityHeatmap({ activities }: Props) {
         <span className='h-1.5 w-1.5 rounded-full bg-primary' />
         {t('activity.title')}
       </h2>
+
       <div className='overflow-x-auto rounded-xl border border-border/40 bg-card p-4'>
         <div className='flex gap-1' dir='ltr'>
           {/* Day labels */}
@@ -102,8 +85,8 @@ export function ActivityHeatmap({ activities }: Props) {
                   animate={{ opacity: 1 }}
                   transition={{ delay: wi * 0.005 }}
                   title={`${cell.date}: ${cell.count} activities`}
-                  className={`h-3 w-3 cursor-pointer rounded-[2px] transition-transform hover:scale-125
-                              ${getColorClass(cell.count)}`}
+                  className={`h-3 w-3 cursor-pointer rounded-[2px] transition-transform
+                              hover:scale-125 ${getColorClass(cell.count)}`}
                 />
               ))}
             </div>

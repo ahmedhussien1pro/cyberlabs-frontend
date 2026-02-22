@@ -1,4 +1,3 @@
-// src/features/auth/pages/auth-page.tsx
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -75,14 +74,13 @@ export default function AuthPage() {
     setErrors({});
   };
 
+  // ─────────────────────────────────────────────────────────
   const handleLogin = async (data: LoginForm) => {
     const result = loginSchema.safeParse(data);
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
       result.error.issues.forEach((err) => {
-        if (err.path[0]) {
-          fieldErrors[err.path[0] as string] = err.message;
-        }
+        if (err.path[0]) fieldErrors[err.path[0] as string] = err.message;
       });
       setErrors(fieldErrors);
       return;
@@ -94,16 +92,18 @@ export default function AuthPage() {
     try {
       const response = await authService.login(data.email, data.password);
 
-      if (!response || !response.user) {
+      if (!response?.user) {
         throw new Error('Invalid response from server');
       }
-
-      const token = response.accessToken || (response as any).token;
-      if (!token) {
+      if (!response.accessToken || !response.refreshToken) {
         throw new Error('Authentication token not received');
       }
 
-      login(response.user, token);
+      await login(response.user, {
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+      });
+
       toast.success(t('messages.loginSuccess'), {
         description: t('messages.loginWelcome', { name: response.user.name }),
       });
@@ -111,22 +111,19 @@ export default function AuthPage() {
       setTimeout(() => navigate(ROUTES.HOME), 1000);
     } catch (error: any) {
       const parsedError = parseAuthError(error);
-      toast.error(parsedError.title, {
-        description: parsedError.message,
-      });
+      toast.error(parsedError.title, { description: parsedError.message });
     } finally {
       setLoading(false);
     }
   };
 
+  // ─────────────────────────────────────────────────────────
   const handleRegister = async (data: RegisterForm) => {
     const result = registerSchema.safeParse(data);
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
       result.error.issues.forEach((err) => {
-        if (err.path[0]) {
-          fieldErrors[err.path[0] as string] = err.message;
-        }
+        if (err.path[0]) fieldErrors[err.path[0] as string] = err.message;
       });
       setErrors(fieldErrors);
       return;
@@ -147,16 +144,18 @@ export default function AuthPage() {
         data.password,
       );
 
-      if (!response || !response.user) {
+      if (!response?.user) {
         throw new Error('Invalid response from server');
       }
-
-      const token = response.accessToken || (response as any).token;
-      if (!token) {
+      if (!response.accessToken || !response.refreshToken) {
         throw new Error('Authentication token not received');
       }
 
-      login(response.user, token);
+      await login(response.user, {
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+      });
+
       toast.success(t('messages.registerSuccess'), {
         description: t('messages.registerWelcome', { username: data.username }),
       });
@@ -168,14 +167,13 @@ export default function AuthPage() {
       }, 1000);
     } catch (error: any) {
       const parsedError = parseAuthError(error);
-      toast.error(parsedError.title, {
-        description: parsedError.message,
-      });
+      toast.error(parsedError.title, { description: parsedError.message });
     } finally {
       setLoading(false);
     }
   };
 
+  // ─────────────────────────────────────────────────────────
   return (
     <>
       {loading && <Preloader />}
@@ -329,7 +327,7 @@ export default function AuthPage() {
                   </p>
                 )}
 
-                {/* ✅ Password Strength Indicator */}
+                {/* Password Strength Indicator */}
                 {password && !errors.password && (
                   <PasswordStrengthIndicator
                     password={password}
@@ -349,7 +347,6 @@ export default function AuthPage() {
                   />
                 </div>
 
-                {/* ✅ Real-time password match indicator */}
                 {showPasswordMismatch && (
                   <p className='text-xs text-red-600 dark:text-red-400 mt-1 font-medium'>
                     {t('validation.passwordsDontMatch')}
@@ -367,7 +364,7 @@ export default function AuthPage() {
                 )}
               </div>
 
-              {/* ✅ Terms & Conditions Checkbox */}
+              {/* Terms & Conditions Checkbox */}
               <div className='flex items-start gap-2 my-3'>
                 <Checkbox
                   id='acceptTerms'

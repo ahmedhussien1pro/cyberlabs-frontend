@@ -1,0 +1,60 @@
+{
+  "hero": {
+    "eyebrow": "Learning Paths",
+    "title": "Choose Your Cybersecurity Path",
+    "subtitle": "Structured paths from zero to expert in cybersecurity.",
+    "description": "Each path combines hands-on courses, real labs, and progressive challenges — built to take you from absolute beginner to job-ready professional.",
+    "searchPlaceholder": "Search paths…",
+    "available": "paths available",
+    "zeroToExpert": "Zero to job-ready",
+    "imageAlt": "CyberLabs Learning Paths"
+  },
+  "filters": {
+    "all": "All Paths",
+    "Beginner": "Beginner",
+    "Intermediate": "Intermediate",
+    "Advanced": "Advanced"
+  },
+  "card": {
+    "courses": "courses",
+    "labs": "labs",
+    "hours": "h",
+    "continue": "Continue",
+    "startPath": "Start Path",
+    "includesPro": "Includes Pro",
+    "progress": "Progress",
+    "popular": "Popular",
+    "new": "New",
+    "comingSoon": "Coming Soon"
+  },
+  "detail": {
+    "breadcrumbPaths": "Paths",
+    "courses": "courses",
+    "labs": "labs",
+    "estTime": "est. time",
+    "learners": "learners",
+    "yourProgress": "Your progress",
+    "whatYouLearn": "What you'll learn",
+    "prerequisites": "Prerequisites",
+    "freeContent": "Free content",
+    "requiresPro": "Requires Pro",
+    "modules": "modules",
+    "continueLearning": "Continue Learning",
+    "startThisPath": "Start This Path",
+    "completedPath": "You completed this path!",
+    "pathRoadmap": "Path Roadmap",
+    "followOrderSuffix": "modules • follow the order for best results",
+    "notFound": "Path not found.",
+    "backToPaths": "Back to Paths",
+    "course": "Course",
+    "lab": "Lab",
+    "quiz": "Quiz",
+    "project": "Project",
+    "soon": "Soon"
+  },
+  "states": {
+    "failedLoad": "Failed to load paths. Please try again.",
+    "noResults": "No paths found",
+    "noResultsHint": "Try a different search or filter."
+  }
+}

@@ -10,8 +10,10 @@ export function LandingLayout({
   imageSide = 'right',
   showMobileImage = true,
   mobileImageSize = 80,
+  imageColSpan = 4,
   className,
 }: LandingLayoutProps) {
+  const contentSpan = 12 - imageColSpan;
   return (
     <div className='relative min-h-[40vh] flex items-center overflow-hidden py-6 md:py-8'>
       {/* Matrix Background */}
@@ -23,7 +25,7 @@ export function LandingLayout({
           {/* Left Side Content (or full width on mobile) */}
           <div
             className={cn(
-              'lg:col-span-8',
+              `lg:col-span-${contentSpan}`,
               imageSide === 'left' && 'lg:order-2',
             )}>
             {children}
@@ -33,7 +35,7 @@ export function LandingLayout({
           {imageUrl && (
             <div
               className={cn(
-                'hidden lg:block lg:col-span-4',
+                `hidden lg:block lg:col-span-${imageColSpan}`,
                 imageSide === 'left' && 'lg:order-1',
               )}>
               <LandingImage src={imageUrl} alt={imageAlt} />
@@ -41,11 +43,11 @@ export function LandingLayout({
           )}
         </div>
 
-        {/* Mobile Image (if enabled) */}
+        {/* Mobile image */}
         {imageUrl && showMobileImage && (
           <div className='flex justify-center mt-5 lg:hidden'>
             <div
-              className='relative rounded-full overflow-hidden border-3 border-primary shadow-lg shadow-primary/30'
+              className='relative rounded-full overflow-hidden border-2 border-primary shadow-lg shadow-primary/30'
               style={{
                 width: `${mobileImageSize}px`,
                 height: `${mobileImageSize}px`,

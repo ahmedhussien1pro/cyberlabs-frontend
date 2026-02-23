@@ -1,4 +1,3 @@
-// src/shared/constants/routes.ts
 export const ROUTES = {
   HOME: '/',
   ABOUT: '/about',
@@ -32,6 +31,11 @@ export const ROUTES = {
   PROFILE: {
     VIEW: '/profile',
     PUBLIC: (id: string) => `/profile/${id}`,
+  },
+
+  PATHS: {
+    LIST: '/paths',
+    DETAIL: (slug: string) => `/paths/${slug}`,
   },
 
   COURSES: {

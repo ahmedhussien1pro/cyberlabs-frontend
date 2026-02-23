@@ -13,6 +13,7 @@ i18n
 
     ns: [
       'common',
+      'translation',
       'auth',
       'landing',
       'footer',
@@ -29,6 +30,8 @@ i18n
       'errors',
       'profile',
       'settings',
+      'courses',
+      'paths',
     ],
     defaultNS: 'common',
     debug: true,

@@ -1,0 +1,60 @@
+{
+  "hero": {
+    "eyebrow": "مسارات التعلم",
+    "title": "اختر مسارك في الأمن السيبراني",
+    "subtitle": "مسارات منظمة من الصفر إلى الاحتراف.",
+    "description": "كل مسار يجمع بين كورسات عملية ولابات حقيقية وتحديات تدريجية — مصمم ليأخذك من المبتدئ إلى المحترف الجاهز لسوق العمل.",
+    "searchPlaceholder": "ابحث عن مسار…",
+    "available": "مسار متاح",
+    "zeroToExpert": "من الصفر للاحتراف",
+    "imageAlt": "مسارات تعلم CyberLabs"
+  },
+  "filters": {
+    "all": "كل المسارات",
+    "Beginner": "مبتدئ",
+    "Intermediate": "متوسط",
+    "Advanced": "متقدم"
+  },
+  "card": {
+    "courses": "كورس",
+    "labs": "لاب",
+    "hours": "س",
+    "continue": "متابعة",
+    "startPath": "ابدأ المسار",
+    "includesPro": "يشمل Pro",
+    "progress": "التقدم",
+    "popular": "شائع",
+    "new": "جديد",
+    "comingSoon": "قريباً"
+  },
+  "detail": {
+    "breadcrumbPaths": "المسارات",
+    "courses": "كورس",
+    "labs": "لاب",
+    "estTime": "وقت تقريبي",
+    "learners": "متعلم",
+    "yourProgress": "تقدمك في المسار",
+    "whatYouLearn": "ما ستتعلمه",
+    "prerequisites": "المتطلبات المسبقة",
+    "freeContent": "محتوى مجاني",
+    "requiresPro": "يتطلب Pro",
+    "modules": "وحدات",
+    "continueLearning": "متابعة التعلم",
+    "startThisPath": "ابدأ المسار الآن",
+    "completedPath": "أتممت هذا المسار!",
+    "pathRoadmap": "خريطة طريق المسار",
+    "followOrderSuffix": "وحدة • اتبع الترتيب لأفضل نتيجة",
+    "notFound": "لم يتم العثور على المسار.",
+    "backToPaths": "العودة للمسارات",
+    "course": "كورس",
+    "lab": "لاب",
+    "quiz": "اختبار",
+    "project": "مشروع",
+    "soon": "قريباً"
+  },
+  "states": {
+    "failedLoad": "فشل تحميل المسارات. حاول مرة أخرى.",
+    "noResults": "لا توجد نتائج",
+    "noResultsHint": "جرب كلمة بحث مختلفة أو فلتر آخر."
+  }
+}

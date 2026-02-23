@@ -1,16 +1,57 @@
-import Navbar from '@/shared/components/layout/navbar';
-import Footer from '@/shared/components/layout/footer';
-export default function PathDetailsPage() {
+// src/features/paths/pages/path-detail-page.tsx
+import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { ArrowLeft } from 'lucide-react';
+import { Navbar } from '@/shared/components/layout/navbar';
+import { Footer } from '@/shared/components/layout/footer';
+import { PathDetailHero } from '../components/path-detail-hero';
+import { PathRoadmap } from '../components/path-roadmap';
+import { PathCardSkeleton } from '../components/path-card-skeleton';
+import { usePath } from '../hooks/use-paths';
+import { ROUTES } from '@/shared/constants';
+
+export default function PathDetailPage() {
+  const { slug } = useParams<{ slug: string }>();
+  const { t } = useTranslation('paths');
+  const { data: path, isLoading, isError } = usePath(slug ?? '');
+
   return (
-    <div>
+    <>
       <Navbar />
-      <div className='container mx-auto px-4 py-16'>
-        <h1 className='text-4xl font-bold'>PathDetails Page</h1>
-        <p className='mt-4 text-muted-foreground'>
-          Path Details page coming soon...
-        </p>
+
+      <div className='min-h-screen bg-background'>
+        {/* Loading */}
+        {isLoading && (
+          <div className='container mx-auto grid grid-cols-1 gap-6 px-4 py-12 lg:grid-cols-3'>
+            {Array.from({ length: 7 }).map((_, i) => (
+              <PathCardSkeleton key={i} />
+            ))}
+          </div>
+        )}
+
+        {/* Error / Not found */}
+        {!isLoading && (isError || !path) && (
+          <div className='flex flex-col items-center justify-center gap-4 py-32'>
+            <p className='text-muted-foreground'>{t('detail.notFound')}</p>
+            <Link
+              to={ROUTES.PATHS.LIST}
+              className='flex items-center gap-1.5 text-sm text-primary hover:underline'>
+              <ArrowLeft className='h-3.5 w-3.5' />
+              {t('detail.backToPaths')}
+            </Link>
+          </div>
+        )}
+
+        {/* Content */}
+        {!isLoading && path && (
+          <>
+            <PathDetailHero path={path} />
+            <PathRoadmap modules={path.modules} />
+          </>
+        )}
       </div>
+
       <Footer />
-    </div>
+    </>
   );
 }

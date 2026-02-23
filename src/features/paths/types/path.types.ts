@@ -1,4 +1,30 @@
-import type { Course } from '@/features/courses/types/course.types';
+export type PathDifficulty =
+  | 'Beginner'
+  | 'Intermediate'
+  | 'Advanced'
+  | 'All Levels';
+export type PathColor =
+  | 'emerald'
+  | 'blue'
+  | 'violet'
+  | 'orange'
+  | 'rose'
+  | 'cyan';
+export type ModuleType = 'course' | 'lab' | 'quiz' | 'project';
+export type ModuleStatus = 'published' | 'coming_soon' | 'draft';
+
+export interface PathModule {
+  id: string;
+  order: number;
+  title: string;
+  ar_title: string;
+  description: string;
+  ar_description: string;
+  type: ModuleType;
+  status: ModuleStatus;
+  estimatedHours: number;
+  isLocked: boolean;
+}
 
 export interface LearningPath {
   id: string;
@@ -7,13 +33,35 @@ export interface LearningPath {
   ar_title: string;
   description: string;
   ar_description: string;
-  iconUrl?: string;
-  color?: string;
+  longDescription: string;
+  ar_longDescription: string;
+
+  iconName: string;
+  color: PathColor;
+  difficulty: PathDifficulty;
   order: number;
+  totalModules: number;
   totalCourses: number;
   totalLabs: number;
   estimatedHours: number;
-  courses: Course[];
+  tags: string[];
+  ar_tags: string[];
+  prerequisites: string[];
+  ar_prerequisites: string[];
+  skills: string[];
+  ar_skills: string[];
+  modules: PathModule[];
+  isNew?: boolean;
+  isFeatured?: boolean;
+  isComingSoon?: boolean;
   enrolled?: boolean;
-  progress?: number;
+  progress?: number; // 0-100
+  completedAt?: string | null;
 }
+
+export interface PathFilters {
+  difficulty?: PathDifficulty | 'all';
+  search?: string;
+}
+
+export type PathDifficultyCount = Record<string, number>;

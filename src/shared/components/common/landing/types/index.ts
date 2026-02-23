@@ -51,6 +51,7 @@ export interface LandingLayoutProps {
   showMobileImage?: boolean;
   mobileImageSize?: number;
   className?: string;
+  imageColSpan?: 4 | 5 | 6;
 }
 
 export interface MatrixRainProps {

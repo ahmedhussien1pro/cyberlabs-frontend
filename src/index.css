@@ -1,7 +1,8 @@
 /* ============================================
    CyberLabs V2 - Global Styles + RTL Support
    ============================================ */
-
+/* ====== */
+@import url('./features/courses/curriculum-styles.css');
 /* Import Lobster Font */
 @import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
 
@@ -9,8 +10,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-
 
 /* ============================================
    CSS Variables (Old Frontend Compatibility)
@@ -47,7 +46,6 @@
     /* blue-700 */
     --black-alpha-20: rgba(0, 0, 0, 0.2);
   }
-
 
   .dark {
     --background: 222.2 84% 4.9%;
@@ -152,7 +150,3 @@
       'calt' 1;
   }
 }
-
-
-/* ====== */
-@import "./features/courses/curriculum-styles.css"

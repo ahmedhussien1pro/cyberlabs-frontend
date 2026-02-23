@@ -50,9 +50,9 @@ export function useNotifications() {
 export function useMarkAsRead() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => {
-      if (!BACKEND_READY) return Promise.resolve();
-      return apiClient.patch(API_ENDPOINTS.NOTIFICATIONS.MARK_READ(id));
+    mutationFn: async (id: string): Promise<void> => {
+      if (!BACKEND_READY) return;
+      await apiClient.patch(API_ENDPOINTS.NOTIFICATIONS.MARK_READ(id));
     },
     ...patchCache(qc, (old) => {
       // id injected via closure trick — use onMutate directly
@@ -88,9 +88,9 @@ export function useMarkAsRead() {
 export function useMarkAllRead() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: () => {
-      if (!BACKEND_READY) return Promise.resolve();
-      return apiClient.patch(API_ENDPOINTS.NOTIFICATIONS.MARK_ALL_READ);
+    mutationFn: async (): Promise<void> => {
+      if (!BACKEND_READY) return;
+      await apiClient.patch(API_ENDPOINTS.NOTIFICATIONS.MARK_ALL_READ);
     },
     onMutate: async () => {
       await qc.cancelQueries({ queryKey: KEY });
@@ -115,9 +115,9 @@ export function useMarkAllRead() {
 export function useArchiveNotification() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => {
-      if (!BACKEND_READY) return Promise.resolve();
-      return apiClient.patch(API_ENDPOINTS.NOTIFICATIONS.ARCHIVE(id));
+    mutationFn: async (id: string): Promise<void> => {
+      if (!BACKEND_READY) return;
+      await apiClient.patch(API_ENDPOINTS.NOTIFICATIONS.ARCHIVE(id));
     },
     onMutate: async (id: string) => {
       await qc.cancelQueries({ queryKey: KEY });
@@ -148,9 +148,9 @@ export function useArchiveNotification() {
 export function useDeleteNotification() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => {
-      if (!BACKEND_READY) return Promise.resolve();
-      return apiClient.delete(API_ENDPOINTS.NOTIFICATIONS.DELETE(id));
+    mutationFn: async (id: string): Promise<void> => {
+      if (!BACKEND_READY) return;
+      await apiClient.delete(API_ENDPOINTS.NOTIFICATIONS.DELETE(id));
     },
     onMutate: async (id: string) => {
       await qc.cancelQueries({ queryKey: KEY });

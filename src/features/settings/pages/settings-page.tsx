@@ -17,11 +17,11 @@ import { NotificationsTab } from '../components/notifications-tab';
 import { DangerZoneTab } from '../components/danger-zone-tab';
 
 const TABS = [
-  { id: 'account', icon: User, key: 'tabs.account' },
-  { id: 'security', icon: Shield, key: 'tabs.security' },
-  { id: 'sessions', icon: Monitor, key: 'tabs.sessions' },
-  { id: 'notifications', icon: Bell, key: 'tabs.notifications' },
-  { id: 'appearance', icon: Palette, key: 'tabs.appearance' },
+  { id: 'account', icon: User, key: 'tabs.account', danger: false },
+  { id: 'security', icon: Shield, key: 'tabs.security', danger: false },
+  { id: 'sessions', icon: Monitor, key: 'tabs.sessions', danger: false },
+  { id: 'notifications', icon: Bell, key: 'tabs.notifications', danger: false },
+  { id: 'appearance', icon: Palette, key: 'tabs.appearance', danger: false },
   { id: 'danger', icon: AlertTriangle, key: 'tabs.danger', danger: true },
 ] as const;
 

@@ -2,7 +2,7 @@ import Navbar from '@/shared/components/layout/navbar';
 import { HeroSection } from '../landing/components';
 import { CourseCurriculumAccordion } from '@/features/courses/components/CourseCurriculumAccordion';
 import contentData from './../courses/data';
-
+import type { Topic } from '@/core/types/curriculumCourses.types';
 export default function TempPage() {
   return (
     <>
@@ -10,8 +10,7 @@ export default function TempPage() {
       <HeroSection />
       <div className='w-2/3 m-auto mt-2'>
         <CourseCurriculumAccordion
-          topics={contentData.topics}
-          lang='en'
+          topics={contentData.topics as Topic[]}
           imageMap={{}}
         />
       </div>

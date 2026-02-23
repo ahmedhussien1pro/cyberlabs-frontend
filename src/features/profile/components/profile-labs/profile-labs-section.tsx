@@ -30,7 +30,7 @@ export function ProfileLabsSection() {
       <div className='grid gap-2 sm:grid-cols-2 lg:grid-cols-3'>
         {recent.map((item, i) => (
           <motion.div
-            key={item.labId}
+            key={item.id}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}

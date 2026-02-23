@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { NotificationBell } from '@/features/notifications/components/notification-bell';
+import { NavbarNotifications } from '@/features/notifications/components/navbar-notifications';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Logo } from '@/shared/components/common/Logo';
 import { ThemeToggle } from '@/shared/components/common/theme-toggle';
@@ -88,6 +89,8 @@ export function Navbar() {
               <SearchButton onClick={() => setSearchOpen(true)} />
             </div>
             {isAuthenticated && <NotificationBell />}
+            {isAuthenticated && <NavbarNotifications />}
+
             <LanguageSwitcher />
             <ThemeToggle />
 

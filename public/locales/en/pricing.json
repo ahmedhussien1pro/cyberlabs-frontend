@@ -2,19 +2,42 @@
   "pricing": {
     "eyebrow": "Simple, transparent pricing",
     "heroTitle": "Invest in Your Security Career",
+    "heroSubtitle": "Real labs. Real skills. Recognized certs.",
     "heroDesc": "Full access to labs, paths, and real-world challenges. Cancel anytime.",
+    "heroImageAlt": "CyberLabs Platform",
     "perMonth": "mo",
     "currentPlan": "Current Plan",
     "comingSoon": "Coming Soon",
     "notifyMe": "Notify Me",
     "billedAnnually": "Billed ${{total}}/yr",
+    "plansLabel": "Choose your plan",
+    "plansTitle": "Simple Pricing, Serious Results",
     "compareTitle": "Compare Plans",
     "compareDesc": "Everything included — no hidden fees.",
-    "showTable": "Show full comparison",
-    "hideTable": "Hide comparison",
+    "showRows": "Show {{count}} more features",
+    "hideRows": "Show less",
 
     "cycle": { "monthly": "Monthly", "annual": "Annual" },
     "badge": { "popular": "Most Popular" },
+
+    "trust": {
+      "inline": "No credit card required · Cancel anytime · 7-day money back",
+      "noContract": "No long-term contract",
+      "cancelAnytime": "Cancel anytime",
+      "securePayment": "Secure payment",
+      "moneyBack": "7-day money back"
+    },
+
+    "stats": {
+      "users": "12K+",
+      "usersLabel": "Active learners",
+      "labs": "200+",
+      "labsLabel": "Hands-on labs",
+      "certs": "8K+",
+      "certsLabel": "Certs issued",
+      "uptime": "99.9%",
+      "uptimeLabel": "Platform uptime"
+    },
 
     "plans": {
       "free": {
@@ -56,8 +79,44 @@
       "support": "Support"
     },
 
-    "trust": {
-      "inline": "No credit card required · Cancel anytime · 7-day money back"
+    "faq": {
+      "eyebrow": "Platform FAQ",
+      "title": "Questions Answered Clearly",
+      "subtitle": "Everything you need to know before you start — no fluff, no jargon.",
+      "subLabel": "Everything you need to know about CyberLabs",
+      "platformCaption": "Trusted Cybersecurity Platform",
+      "stat1": { "value": "12K+", "label": "Learners worldwide" },
+      "stat2": { "value": "200+", "label": "Real-world labs" },
+      "stat3": { "value": "99.9%", "label": "Platform uptime" },
+      "stat4": { "value": "8K+", "label": "Certs issued" },
+      "q1": {
+        "q": "Do I need prior experience to start?",
+        "a": "No experience required. CyberLabs is designed for all levels — our learning paths guide you from absolute beginner up to advanced penetration testing and threat analysis."
+      },
+      "q2": {
+        "q": "What certifications can I prepare for?",
+        "a": "Our paths are aligned with CompTIA Security+, CEH, OSCP, and eJPT. Each path clearly maps to the relevant certification objectives."
+      },
+      "q3": {
+        "q": "Are the labs real environments or simulations?",
+        "a": "Real isolated environments — not simulations. Each lab runs in a dedicated sandbox so you practice on actual tools, real CVEs, and live network traffic."
+      },
+      "q4": {
+        "q": "How is my progress tracked?",
+        "a": "Your dashboard shows real-time progress across all labs, paths, and courses with a detailed activity heatmap and skill radar chart."
+      },
+      "q5": {
+        "q": "Is the platform legal and safe to use?",
+        "a": "Yes. All labs run in fully isolated sandboxes. No real-world systems are ever targeted. CyberLabs complies with international cybersecurity education standards."
+      }
+    },
+
+    "cta": {
+      "eyebrow": "START TODAY",
+      "title": "Ready to Level Up?",
+      "desc": "Join thousands of security professionals training on CyberLabs.",
+      "upgradeCta": "Upgrade to Pro",
+      "freeCta": "Start for Free"
     },
 
     "checkoutError": "Failed to start checkout. Please try again.",
@@ -72,77 +131,6 @@
       "annualNote": "Billed annually · Cancel anytime",
       "upgradeCta": "Upgrade to Pro",
       "viewPlans": "View all plans"
-    },
-    "heroSubtitle": "Real labs. Real skills. Recognized certs.",
-    "heroImageAlt": "CyberLabs Platform",
-    "plansLabel": "Choose your plan",
-    "hideRows": "Show less",
-    "showRows": "Show {{count}} more features",
-
-    "faq": {
-      "eyebrow": "PLATFORM FAQ",
-      "title": "Questions Answered Clearly",
-      "subLabel": "EVERYTHING YOU NEED TO KNOW ABOUT CYBERLABS",
-      "platformCaption": "Trusted Cybersecurity Platform",
-      "q4": {
-        "q": "How is my progress tracked?",
-        "a": "Your dashboard shows real-time progress across all labs, paths, and courses with a detailed activity heatmap."
-      },
-      "q5": {
-        "q": "Is the platform legal and safe to use?",
-        "a": "Yes. All labs run in isolated sandboxes. No real systems are ever affected. Fully compliant with international cybersecurity education laws."
-      }
-    },
-    "cta": {
-      "eyebrow": "START TODAY",
-      "title": "Ready to Level Up?",
-      "desc": "Join thousands of security professionals training on CyberLabs.",
-      "upgradeCta": "Upgrade to Pro",
-      "freeCta": "Start for Free"
-    }
-  },
-  "plansTitle": "Simple Pricing, Serious Results",
-
-  "stats": {
-    "users": "12K+",
-    "usersLabel": "Active learners",
-    "labs": "200+",
-    "labsLabel": "Hands-on labs",
-    "certs": "8K+",
-    "certsLabel": "Certs issued",
-    "uptime": "99.9%",
-    "uptimeLabel": "Platform uptime"
-  },
-
-  "faq": {
-    "eyebrow": "Platform FAQ",
-    "title": "Questions Answered Clearly",
-    "subtitle": "Everything you need to know before you start — no fluff, no jargon.",
-    "subLabel": "Everything you need to know about CyberLabs",
-    "platformCaption": "Trusted Cybersecurity Platform",
-    "stat1": { "value": "12K+", "label": "Learners worldwide" },
-    "stat2": { "value": "200+", "label": "Real-world labs" },
-    "stat3": { "value": "99.9%", "label": "Platform uptime" },
-    "stat4": { "value": "8K+", "label": "Certs issued" },
-    "q1": {
-      "q": "Do I need prior experience to start?",
-      "a": "No experience is required. CyberLabs is designed for all levels — our learning paths start from absolute beginner and guide you step-by-step up to advanced penetration testing and threat analysis."
-    },
-    "q2": {
-      "q": "What certifications can I prepare for?",
-      "a": "Our paths are aligned with CompTIA Security+, CEH, OSCP, and eJPT. Each path clearly maps to the relevant certification objectives."
-    },
-    "q3": {
-      "q": "Are the labs real environments or simulations?",
-      "a": "Real isolated environments — not simulations. Each lab runs in a dedicated sandbox so you practice on actual tools, real CVEs, and live network traffic."
-    },
-    "q4": {
-      "q": "How is my progress tracked?",
-      "a": "Your dashboard shows real-time progress across all labs, paths, and courses with a detailed activity heatmap and skill radar chart."
-    },
-    "q5": {
-      "q": "Is the platform legal and safe to use?",
-      "a": "Yes. All labs run in fully isolated sandboxes. No real-world systems are ever targeted. CyberLabs complies with international cybersecurity education standards."
     }
   }
 }

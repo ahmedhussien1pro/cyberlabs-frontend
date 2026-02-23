@@ -1,17 +1,14 @@
-import Navbar from '@/shared/components/layout/navbar';
-import Footer from '@/shared/components/layout/footer';
 import { HeroTeamSection } from '@/features/about/components/hero-team-section';
 import { TeamSection } from '@/features/about/components/team-section';
+import MainLayout from '@/shared/components/layout/main-layout';
 
 export default function AboutPage() {
   return (
-    <div>
-      <Navbar />
+    <MainLayout>
       <main>
         <HeroTeamSection />
         <TeamSection />
       </main>
-      <Footer />
-    </div>
+    </MainLayout>
   );
 }

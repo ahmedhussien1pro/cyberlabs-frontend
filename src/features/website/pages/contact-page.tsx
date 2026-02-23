@@ -1,13 +1,11 @@
 import ContactContainer from '@/features/contact/components/contact-container';
-import Navbar from '@/shared/components/layout/navbar';
-import Footer from '@/shared/components/layout/footer';
+
+import MainLayout from '@/shared/components/layout/main-layout';
 
 export default function ContactPage() {
   return (
-    <div>
-      <Navbar />
+    <MainLayout>
       <ContactContainer />
-      <Footer />
-    </div>
+    </MainLayout>
   );
 }

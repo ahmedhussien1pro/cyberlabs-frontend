@@ -1,5 +1,3 @@
-import Navbar from '@/shared/components/layout/navbar';
-import Footer from '@/shared/components/layout/footer';
 import {
   HeroSection,
   StatsSection,
@@ -7,17 +5,16 @@ import {
   ServicesSection,
   TestimonialsSection,
 } from '@/features/landing/components';
+import MainLayout from '@/shared/components/layout/main-layout';
 
 export default function HomePage() {
   return (
-    <div>
-      <Navbar />
+    <MainLayout>
       <HeroSection />
       <StatsSection />
       <FaqSection />
       <ServicesSection />
       <TestimonialsSection />
-      <Footer />
-    </div>
+    </MainLayout>
   );
 }

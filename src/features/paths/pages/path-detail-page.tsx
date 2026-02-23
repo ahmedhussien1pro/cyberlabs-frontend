@@ -2,13 +2,13 @@
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
-import { Navbar } from '@/shared/components/layout/navbar';
-import { Footer } from '@/shared/components/layout/footer';
+
 import { PathDetailHero } from '../components/path-detail-hero';
 import { PathRoadmap } from '../components/path-roadmap';
 import { PathCardSkeleton } from '../components/path-card-skeleton';
 import { usePath } from '../hooks/use-paths';
 import { ROUTES } from '@/shared/constants';
+import MainLayout from '@/shared/components/layout/main-layout';
 
 export default function PathDetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -16,9 +16,7 @@ export default function PathDetailPage() {
   const { data: path, isLoading, isError } = usePath(slug ?? '');
 
   return (
-    <>
-      <Navbar />
-
+    <MainLayout>
       <div className='min-h-screen bg-background'>
         {/* Loading */}
         {isLoading && (
@@ -50,8 +48,6 @@ export default function PathDetailPage() {
           </>
         )}
       </div>
-
-      <Footer />
-    </>
+    </MainLayout>
   );
 }

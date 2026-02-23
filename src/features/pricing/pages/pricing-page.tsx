@@ -1,49 +1,57 @@
 // src/features/pricing/pages/pricing-page.tsx
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Shield, Zap, Users, BookOpen, Award } from 'lucide-react';
+import { Zap } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { MainLayout } from '@/shared/components/layout/main-layout';
 import { PricingHero } from '../components/pricing-hero';
-import { PricingPlansSection } from '../components/pricing-plans-section';
 import { PlanCard } from '../components/plan-card';
 import { FeatureTable } from '../components/feature-table';
 import { PricingFaq } from '../components/pricing-faq';
+import { SectionHeader } from '@/shared/components/common/section-header';
 import { PLANS } from '../data/plans.data';
 import { usePlans, useMySubscription, useCheckout } from '../hooks/use-pricing';
 import type { BillingCycle } from '../types/pricing.types';
 
-// ── Trust strip items ─────────────────────────────────────────────────
-const TRUST = [
-  'pricing.trust.noContract',
-  'pricing.trust.cancelAnytime',
-  'pricing.trust.securePayment',
-  'pricing.trust.moneyBack',
-] as const;
-
-// ── Social proof logos (text-based, no images needed) ─────────────────
-const STAT_ITEMS = [
-  {
-    icon: Users,
-    valueKey: 'pricing.stats.users',
-    labelKey: 'pricing.stats.usersLabel',
-  },
-  {
-    icon: BookOpen,
-    valueKey: 'pricing.stats.labs',
-    labelKey: 'pricing.stats.labsLabel',
-  },
-  {
-    icon: Award,
-    valueKey: 'pricing.stats.certs',
-    labelKey: 'pricing.stats.certsLabel',
-  },
-  {
-    icon: Shield,
-    valueKey: 'pricing.stats.uptime',
-    labelKey: 'pricing.stats.uptimeLabel',
-  },
-] as const;
+// ── BillingToggle (standalone, above cards) ───────────────────────────
+function BillingToggle({
+  cycle,
+  onCycle,
+}: {
+  cycle: BillingCycle;
+  onCycle: (c: BillingCycle) => void;
+}) {
+  const { t } = useTranslation('pricing');
+  return (
+    <div className='inline-flex items-center gap-1 rounded-full border border-border/50 bg-muted/30 p-1'>
+      {(['monthly', 'annual'] as BillingCycle[]).map((c) => (
+        <button
+          key={c}
+          onClick={() => onCycle(c)}
+          className={cn(
+            'rounded-full px-5 py-2 text-xs font-bold transition-all duration-200',
+            cycle === c
+              ? 'bg-primary text-primary-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground',
+          )}>
+          {t(`pricing.cycle.${c}`)}
+          {c === 'annual' && (
+            <span
+              className={cn(
+                'ms-1.5 rounded-full px-1.5 py-px text-[9px] font-black transition-colors',
+                cycle === 'annual'
+                  ? 'bg-emerald-400/30 text-emerald-600 dark:text-emerald-200'
+                  : 'bg-muted text-muted-foreground',
+              )}>
+              -35%
+            </span>
+          )}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 export default function PricingPage() {
   const { t } = useTranslation('pricing');
@@ -55,54 +63,16 @@ export default function PricingPage() {
 
   return (
     <MainLayout>
-      {/* ① HERO */}
-      <PricingHero cycle={cycle} onCycle={setCycle} />
+      <PricingHero />
 
-      {/* ② TRUST STRIP */}
-      <div className='border-y border-border/40 bg-muted/20 py-3.5'>
+      <section className='border-t border-border/30 bg-muted/5 py-14'>
         <div className='container mx-auto px-4'>
-          <div className='flex flex-wrap items-center justify-center gap-x-7 gap-y-2'>
-            {TRUST.map((k) => (
-              <span
-                key={k}
-                className='flex items-center gap-1.5 text-xs text-muted-foreground'>
-                <Shield className='h-3 w-3 text-emerald-500' />
-                {t(k)}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ③ SOCIAL PROOF STATS */}
-      <div className='bg-background py-10'>
-        <div className='container mx-auto px-4'>
-          <div className='grid grid-cols-2 gap-4 sm:grid-cols-4'>
-            {STAT_ITEMS.map(({ icon: Icon, valueKey, labelKey }) => (
-              <div
-                key={valueKey}
-                className='flex flex-col items-center gap-1.5 rounded-2xl border border-border/30 bg-muted/10 py-5 text-center'>
-                <Icon className='h-5 w-5 text-primary' />
-                <p className='text-2xl font-black text-foreground'>
-                  {t(valueKey)}
-                </p>
-                <p className='text-xs text-muted-foreground'>{t(labelKey)}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ④ PLAN CARDS */}
-      <div className='border-t border-border/30 bg-muted/5 py-14'>
-        <div className='container mx-auto px-4'>
-          <div className='mb-8 text-center'>
-            <p className='text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground'>
-              {t('pricing.plansLabel')}
-            </p>
-            <h2 className='mt-2 text-2xl font-black tracking-tight sm:text-3xl'>
-              {t('pricing.plansTitle')}
-            </h2>
+          <SectionHeader
+            title={t('pricing.plansTitle')}
+            subtitle={t('pricing.plansLabel')}
+          />
+          <div className='mb-8 flex justify-center'>
+            <BillingToggle cycle={cycle} onCycle={setCycle} />
           </div>
           <div className='grid gap-5 sm:grid-cols-2 lg:grid-cols-3'>
             {plans.map((plan, i) => (
@@ -116,19 +86,19 @@ export default function PricingPage() {
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* ⑤ FEATURE TABLE */}
+      {/* ③ FEATURE TABLE */}
       <div className='border-t border-border/30'>
         <FeatureTable />
       </div>
 
-      {/* ⑥ FAQ */}
+      {/* ④ FAQ */}
       <div className='border-t border-border/30'>
         <PricingFaq />
       </div>
 
-      {/* ⑦ BOTTOM CTA */}
+      {/* ⑤ BOTTOM CTA */}
       <section className='border-t border-border/30 py-20'>
         <div className='container mx-auto max-w-2xl px-4 text-center'>
           <p className='mb-2 text-[11px] font-black uppercase tracking-[0.2em] text-primary'>

@@ -2,14 +2,13 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AlertCircle } from 'lucide-react';
-import { Navbar } from '@/shared/components/layout/navbar';
-import { Footer } from '@/shared/components/layout/footer';
 import { PathCard } from '../components/path-card';
 import { PathCardSkeleton } from '../components/path-card-skeleton';
 import { PathsHero } from '../components/paths-hero';
 import { PathsFilterTabs } from '../components/paths-filter-tabs';
 import { usePaths } from '../hooks/use-paths';
 import type { PathDifficulty } from '../types/path.types';
+import MainLayout from '@/shared/components/layout/main-layout';
 
 export default function PathsPage() {
   const { t } = useTranslation('paths');
@@ -37,9 +36,7 @@ export default function PathsPage() {
   }, [allPaths]);
 
   return (
-    <>
-      <Navbar />
-
+    <MainLayout>
       <div className='min-h-screen bg-background'>
         {/* Hero */}
         <PathsHero
@@ -100,8 +97,6 @@ export default function PathsPage() {
           </div>
         </div>
       </div>
-
-      <Footer />
-    </>
+    </MainLayout>
   );
 }

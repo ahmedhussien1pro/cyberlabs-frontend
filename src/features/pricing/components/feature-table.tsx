@@ -1,8 +1,10 @@
+// src/features/pricing/components/feature-table.tsx
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Check, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
+import { SectionHeader } from '@/shared/components/common/section-header';
 import { FEATURE_ROWS } from '../data/plans.data';
 
 const ALWAYS_VISIBLE = 2;
@@ -10,23 +12,16 @@ const ALWAYS_VISIBLE = 2;
 export function FeatureTable() {
   const { t } = useTranslation('pricing');
   const [open, setOpen] = useState(false);
-
   const visible = open ? FEATURE_ROWS : FEATURE_ROWS.slice(0, ALWAYS_VISIBLE);
   const hidden = FEATURE_ROWS.length - ALWAYS_VISIBLE;
 
   return (
     <section className='container mx-auto px-4 py-14'>
-      {/* Header */}
-      <div className='mb-6 text-center'>
-        <h2 className='text-2xl font-black tracking-tight sm:text-3xl'>
-          {t('pricing.compareTitle')}
-        </h2>
-        <p className='mt-2 text-sm text-muted-foreground'>
-          {t('pricing.compareDesc')}
-        </p>
-      </div>
+      <SectionHeader
+        title={t('pricing.compareTitle')}
+        subtitle={t('pricing.compareDesc')}
+      />
 
-      {/* Table */}
       <div className='overflow-x-auto rounded-2xl border border-border/50'>
         <table className='w-full min-w-[480px] text-sm'>
           <thead>
@@ -74,7 +69,6 @@ export function FeatureTable() {
         </table>
       </div>
 
-      {/* Expand/Collapse toggle */}
       <div className='mt-4 flex justify-center'>
         <button
           onClick={() => setOpen((v) => !v)}
@@ -96,7 +90,6 @@ export function FeatureTable() {
   );
 }
 
-// ── Helper cell ───────────────────────────────────────────────────────
 function TableCell({
   value,
   isHighlight,
@@ -108,7 +101,7 @@ function TableCell({
     return value ? (
       <Check className='mx-auto h-4 w-4 text-emerald-500' />
     ) : (
-      <X className='mx-auto h-4 w-4 text-border/50' />
+      <X className='mx-auto h-4 w-4 text-muted-foreground/40' />
     );
   }
   return (

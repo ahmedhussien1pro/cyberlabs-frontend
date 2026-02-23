@@ -64,6 +64,14 @@
         "h2": "Up to 10 seats",
         "h3": "Team analytics",
         "h4": "Custom paths"
+      },
+      "enterprise": {
+        "name": "EnterPrise",
+        "desc": "For EnterPrise & Startup",
+        "h1": "Everything in Pro",
+        "h2": "Up to 10 seats",
+        "h3": "Team analytics",
+        "h4": "Custom paths"
       }
     },
 

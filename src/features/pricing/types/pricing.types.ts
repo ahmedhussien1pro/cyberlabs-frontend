@@ -1,5 +1,5 @@
 export type BillingCycle = 'monthly' | 'annual';
-export type PlanId = 'free' | 'pro' | 'team';
+export type PlanId = 'free' | 'pro' | 'team' | 'enterprise';
 
 export interface Plan {
   id: PlanId;
@@ -7,7 +7,7 @@ export interface Plan {
   descKey: string;
   monthlyPrice: number;
   annualPrice: number;
-  color: 'zinc' | 'blue' | 'violet';
+  color: 'zinc' | 'blue' | 'violet' | 'cyan';
   badge?: string;
   ctaKey: string;
   comingSoon?: boolean;

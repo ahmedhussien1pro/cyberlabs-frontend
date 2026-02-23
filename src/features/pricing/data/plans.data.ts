@@ -49,6 +49,22 @@ export const PLANS: Plan[] = [
       'pricing.plans.team.h4',
     ],
   },
+  {
+    id: 'enterprise',
+    nameKey: 'pricing.plans.enterprise.name',
+    descKey: 'pricing.plans.enterprise.desc',
+    monthlyPrice: 49,
+    annualPrice: 35,
+    color: 'violet',
+    ctaKey: 'pricing.cta.enterprise',
+    comingSoon: true,
+    highlights: [
+      'pricing.plans.enterprise.h1',
+      'pricing.plans.enterprise.h2',
+      'pricing.plans.enterprise.h3',
+      'pricing.plans.enterprise.h4',
+    ],
+  },
 ];
 
 export const FEATURE_ROWS: PlanFeatureRow[] = [

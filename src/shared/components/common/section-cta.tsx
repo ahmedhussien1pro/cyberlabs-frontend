@@ -2,6 +2,7 @@ import { Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { SectionHeader } from '@/shared/components/common';
 
 export interface SectionCtaProps {
   eyebrow?: string;
@@ -31,28 +32,32 @@ export function SectionCta({
   return (
     <section
       className={cn(
-        'relative overflow-hidden border-t border-border/30 py-24',
+        'relative overflow-hidden border-t border-border/30  py-6 md:py-10',
         className,
       )}>
       {/* Dark overlay */}
       <div className='absolute inset-0 z-[1] bg-gradient-to-b from-background/80 via-background/60 to-background/80' />
 
-      <div className='container relative z-[2] mx-auto max-w-2xl px-4 text-center'>
+      <div className='container relative z-[2] mx-auto  px-4 '>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}>
-          {eyebrow && (
+          {/* {eyebrow && (
             <p className='mb-3 inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-4 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-primary'>
               <Zap className='h-3 w-3' />
               {eyebrow}
             </p>
-          )}
-
-          <h2 className='mb-4 text-3xl font-black tracking-tight sm:text-4xl md:text-5xl'>
+          )} */}
+          <SectionHeader
+            title={eyebrow || ' '}
+            subtitle={title}
+            className='pb-0'
+          />
+          {/* <h2 className='mb-4 text-3xl font-black tracking-tight sm:text-4xl md:text-5xl'>
             {title}
-          </h2>
+          </h2> */}
 
           {desc && (
             <p className='mb-8 text-base text-muted-foreground'>{desc}</p>
@@ -76,7 +81,9 @@ export function SectionCta({
           </div>
 
           {trustNote && (
-            <p className='mt-6 text-xs text-muted-foreground/50'>{trustNote}</p>
+            <p className='mt-6 text-xs text-center text-muted-foreground/50'>
+              {trustNote}
+            </p>
           )}
         </motion.div>
       </div>

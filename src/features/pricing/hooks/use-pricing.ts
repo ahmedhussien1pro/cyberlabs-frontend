@@ -97,5 +97,9 @@ export function useCancelSubscription() {
 // ── Helper: is user Pro or above? ─────────────────────────────────────
 export function useIsPro(): boolean {
   const { data } = useMySubscription();
-  return data?.planId === 'pro' || data?.planId === 'team';
+  return (
+    data?.planId === 'pro' ||
+    data?.planId === 'team' ||
+    data?.planId === 'enterprise'
+  );
 }

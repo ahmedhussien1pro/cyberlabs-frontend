@@ -1,78 +1,123 @@
-import { Check, X } from 'lucide-react';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Check, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
-import { FEATURE_TABLE } from '../data/plans.data';
+import { FEATURE_ROWS } from '../data/plans.data';
 
-function Cell({
+const ALWAYS_VISIBLE = 2;
+
+export function FeatureTable() {
+  const { t } = useTranslation('pricing');
+  const [open, setOpen] = useState(false);
+
+  const visible = open ? FEATURE_ROWS : FEATURE_ROWS.slice(0, ALWAYS_VISIBLE);
+  const hidden = FEATURE_ROWS.length - ALWAYS_VISIBLE;
+
+  return (
+    <section className='container mx-auto px-4 py-14'>
+      {/* Header */}
+      <div className='mb-6 text-center'>
+        <h2 className='text-2xl font-black tracking-tight sm:text-3xl'>
+          {t('pricing.compareTitle')}
+        </h2>
+        <p className='mt-2 text-sm text-muted-foreground'>
+          {t('pricing.compareDesc')}
+        </p>
+      </div>
+
+      {/* Table */}
+      <div className='overflow-x-auto rounded-2xl border border-border/50'>
+        <table className='w-full min-w-[480px] text-sm'>
+          <thead>
+            <tr className='border-b border-border/50 bg-muted/30'>
+              <th className='w-[45%] px-5 py-3.5 text-start text-[11px] font-bold uppercase tracking-widest text-muted-foreground'>
+                {t('pricing.table.header')}
+              </th>
+              <th className='px-4 py-3.5 text-center text-[11px] font-bold uppercase tracking-widest text-muted-foreground'>
+                {t('pricing.plans.free.name')}
+              </th>
+              <th className='px-4 py-3.5 text-center text-[11px] font-bold uppercase tracking-widest text-primary'>
+                {t('pricing.plans.pro.name')}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {visible.map((row, i) => (
+              <motion.tr
+                key={row.key}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.18, delay: i * 0.04 }}
+                className={cn(
+                  'border-b border-border/30 transition-colors hover:bg-muted/20',
+                  i % 2 === 0 && 'bg-muted/5',
+                )}>
+                <td
+                  className={cn(
+                    'px-5 py-3',
+                    row.highlight
+                      ? 'font-semibold text-foreground'
+                      : 'text-muted-foreground',
+                  )}>
+                  {t(row.key)}
+                </td>
+                <td className='px-4 py-3 text-center'>
+                  <TableCell value={row.free} />
+                </td>
+                <td className='px-4 py-3 text-center'>
+                  <TableCell value={row.pro} isHighlight />
+                </td>
+              </motion.tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Expand/Collapse toggle */}
+      <div className='mt-4 flex justify-center'>
+        <button
+          onClick={() => setOpen((v) => !v)}
+          className='inline-flex items-center gap-1.5 rounded-full border border-border/50 bg-muted/30 px-5 py-2 text-xs font-semibold text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary'>
+          {open ? (
+            <>
+              <ChevronUp className='h-3.5 w-3.5' />
+              {t('pricing.hideRows')}
+            </>
+          ) : (
+            <>
+              <ChevronDown className='h-3.5 w-3.5' />
+              {t('pricing.showRows', { count: hidden })}
+            </>
+          )}
+        </button>
+      </div>
+    </section>
+  );
+}
+
+// ── Helper cell ───────────────────────────────────────────────────────
+function TableCell({
   value,
-  highlight,
+  isHighlight,
 }: {
-  value: boolean | string | number;
-  highlight?: boolean;
+  value: boolean | string;
+  isHighlight?: boolean;
 }) {
   if (typeof value === 'boolean') {
     return value ? (
       <Check className='mx-auto h-4 w-4 text-emerald-500' />
     ) : (
-      <X className='mx-auto h-4 w-4 text-muted-foreground/40' />
+      <X className='mx-auto h-4 w-4 text-border/50' />
     );
   }
   return (
     <span
       className={cn(
         'text-xs font-semibold',
-        highlight ? 'text-foreground' : 'text-muted-foreground',
+        isHighlight ? 'text-primary' : 'text-muted-foreground',
       )}>
       {value}
     </span>
-  );
-}
-
-export function FeatureTable() {
-  const { t } = useTranslation('pricing');
-
-  return (
-    <div className='overflow-x-auto rounded-2xl border border-border/50'>
-      <table className='w-full min-w-[560px] text-sm'>
-        <thead>
-          <tr className='border-b border-border/50 bg-muted/30'>
-            <th className='px-5 py-3 text-start text-xs font-semibold uppercase tracking-wide text-muted-foreground w-[40%]'>
-              {t('pricing.features.header')}
-            </th>
-            {(['free', 'pro', 'team'] as const).map((p) => (
-              <th
-                key={p}
-                className='px-4 py-3 text-center text-xs font-bold uppercase tracking-wide text-foreground'>
-                {t(`pricing.plans.${p}.name`)}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {FEATURE_TABLE.map((row, i) => (
-            <tr
-              key={row.key}
-              className={cn(
-                'border-b border-border/30 transition-colors hover:bg-muted/20',
-                i % 2 === 0 && 'bg-muted/5',
-                row.highlight && 'bg-primary/3',
-              )}>
-              <td className='px-5 py-3 font-medium text-foreground/80'>
-                {t(row.key)}
-              </td>
-              <td className='px-4 py-3 text-center'>
-                <Cell value={row.free} highlight={row.highlight} />
-              </td>
-              <td className='px-4 py-3 text-center'>
-                <Cell value={row.pro} highlight={row.highlight} />
-              </td>
-              <td className='px-4 py-3 text-center'>
-                <Cell value={row.team} highlight={row.highlight} />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
   );
 }

@@ -15,11 +15,6 @@
 
     "cycle": { "monthly": "Monthly", "annual": "Annual" },
     "badge": { "popular": "Most Popular" },
-    "cta": {
-      "free": "Get Started Free",
-      "pro": "Upgrade to Pro",
-      "team": "Notify Me"
-    },
 
     "plans": {
       "free": {
@@ -62,26 +57,7 @@
     },
 
     "trust": {
-      "noContract": "No long-term contract",
-      "cancelAnytime": "Cancel anytime",
-      "securePayment": "Secure payment",
-      "moneyBack": "7-day money back"
-    },
-
-    "faq": {
-      "title": "Frequently Asked Questions",
-      "q1": {
-        "q": "Can I cancel anytime?",
-        "a": "Yes. Cancel with one click — no fees, no hassle. Your access continues until the end of your billing period."
-      },
-      "q2": {
-        "q": "Is there a free trial for Pro?",
-        "a": "Every new account starts with the Free plan. You can upgrade to Pro at any time and get instant access."
-      },
-      "q3": {
-        "q": "What payment methods do you accept?",
-        "a": "We accept all major credit cards, PayPal, and bank transfers via Stripe."
-      }
+      "inline": "No credit card required · Cancel anytime · 7-day money back"
     },
 
     "checkoutError": "Failed to start checkout. Please try again.",
@@ -96,6 +72,33 @@
       "annualNote": "Billed annually · Cancel anytime",
       "upgradeCta": "Upgrade to Pro",
       "viewPlans": "View all plans"
+    },
+    "heroSubtitle": "Real labs. Real skills. Recognized certs.",
+    "heroImageAlt": "CyberLabs Platform",
+    "plansLabel": "Choose your plan",
+    "hideRows": "Show less",
+    "showRows": "Show {{count}} more features",
+
+    "faq": {
+      "eyebrow": "PLATFORM FAQ",
+      "title": "Questions Answered Clearly",
+      "subLabel": "EVERYTHING YOU NEED TO KNOW ABOUT CYBERLABS",
+      "platformCaption": "Trusted Cybersecurity Platform",
+      "q4": {
+        "q": "How is my progress tracked?",
+        "a": "Your dashboard shows real-time progress across all labs, paths, and courses with a detailed activity heatmap."
+      },
+      "q5": {
+        "q": "Is the platform legal and safe to use?",
+        "a": "Yes. All labs run in isolated sandboxes. No real systems are ever affected. Fully compliant with international cybersecurity education laws."
+      }
+    },
+    "cta": {
+      "eyebrow": "START TODAY",
+      "title": "Ready to Level Up?",
+      "desc": "Join thousands of security professionals training on CyberLabs.",
+      "upgradeCta": "Upgrade to Pro",
+      "freeCta": "Start for Free"
     }
   }
 }

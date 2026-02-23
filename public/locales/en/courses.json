@@ -18,5 +18,31 @@
     "favorited": "Added to favorites!",
     "unfavorited": "Removed from favorites",
     "error": "Something went wrong"
+  },
+  "detail": {
+    "backToCourses": "All Courses",
+    "students": "students",
+    "lessons": "lessons",
+    "sections": "sections",
+    "by": "By",
+    "curriculum": "Course Curriculum",
+    "preview": "Preview",
+    "whatYouLearn": "What You'll Learn",
+    "prerequisites": "Prerequisites",
+    "curriculumSoon": "Curriculum coming soon.",
+    "free": "Free",
+    "enroll": "Enroll for Free",
+    "unlock": "Unlock Course",
+    "continueLearning": "Continue Learning",
+    "certificate": "Certificate of completion",
+    "totalContent": "of content",
+    "handsOnLabs": "Hands-on labs",
+    "yourProgress": "Your Progress",
+    "notFound": "Course not found."
+  },
+  "access": {
+    "free": "Free",
+    "pro": "Pro",
+    "premium": "Premium"
   }
 }

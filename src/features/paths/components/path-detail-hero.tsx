@@ -1,4 +1,3 @@
-// src/features/paths/components/path-detail-hero.tsx
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -10,15 +9,27 @@ import {
   ChevronLeft,
   Sparkles,
   Clock3,
+  Lock,
+  Trophy,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ROUTES } from '@/shared/constants';
+import { MatrixRain } from '@/shared/components/common/landing/matrix-rain';
 import { resolvePathIcon } from '../utils/path-icon';
 import { getPathColors } from '../utils/path-color';
-import { PathCtaCard } from './path-cta-card';
-import type { LearningPath } from '../types/path.types';
+import type { LearningPath, PathColor } from '../types/path.types';
+
+const MATRIX_COLOR: Record<PathColor, string> = {
+  emerald: '#10b981',
+  blue: '#3b82f6',
+  violet: '#8b5cf6',
+  rose: '#f43f5e',
+  orange: '#f97316',
+  cyan: '#06b6d4',
+};
 
 interface PathDetailHeroProps {
   path: LearningPath;
@@ -31,17 +42,15 @@ export function PathDetailHero({ path }: PathDetailHeroProps) {
 
   const title = isAr ? path.ar_title : path.title;
   const desc = isAr ? path.ar_description : path.description;
-  const longDesc = isAr ? path.ar_longDescription : path.longDescription;
   const tags = isAr ? path.ar_tags : path.tags;
 
-  // Breadcrumb chevron — flips in RTL
   const BreadcrumbChevron = isAr ? ChevronLeft : ChevronRight;
 
-  // Exclusive badge: comingSoon > new > featured (same as PathCard)
+  // Exclusive badge
   const badge = path.isComingSoon
     ? {
         label: t('card.comingSoon'),
-        cls: 'bg-zinc-600 text-white',
+        cls: 'bg-zinc-600/80 border border-white/10 text-white',
         icon: <Clock3 className='h-2.5 w-2.5' />,
       }
     : path.isNew
@@ -58,199 +67,231 @@ export function PathDetailHero({ path }: PathDetailHeroProps) {
           }
         : null;
 
-  // Stats — omit learners until backend is ready
-  const stats = [
-    {
-      icon: <BookOpen className='h-4 w-4' />,
-      value: path.totalCourses,
-      label: t('detail.courses'),
-    },
-    {
-      icon: <FlaskConical className='h-4 w-4' />,
-      value: path.totalLabs,
-      label: t('detail.labs'),
-    },
-    {
-      icon: <Clock className='h-4 w-4' />,
-      value: `${path.estimatedHours}h`,
-      label: t('detail.estTime'),
-    },
-  ];
+  const freeCount = path.modules.filter((m) => !m.isLocked).length;
+  const lockedCount = path.modules.filter((m) => m.isLocked).length;
 
   return (
-    <section
-      className={cn(
-        'relative overflow-hidden border-b border-border/40',
-        'bg-gradient-to-br from-background via-background to-background',
-      )}>
-      {/* ── Color stripe (matches PathCard top border) ───────────── */}
-      <div className={cn('h-1 w-full', c.stripe)} />
+    <section className='relative overflow-hidden border-b border-white/8 bg-zinc-950'>
+      {/* ── Color stripe ──────────────────────────────────────────── */}
+      <div className={cn('absolute inset-x-0 top-0 z-[3] h-[3px]', c.stripe)} />
 
-      {/* ── Subtle dot pattern ───────────────────────────────────── */}
-      <div
-        aria-hidden='true'
-        className='pointer-events-none absolute inset-0 opacity-[0.03] dark:opacity-[0.05]'
-        style={{
-          backgroundImage: `radial-gradient(${colorToHex(path.color)} 1px, transparent 1px)`,
-          backgroundSize: '28px 28px',
-        }}
+      {/* ── Matrix Rain ───────────────────────────────────────────── */}
+      <MatrixRain
+        color={MATRIX_COLOR[path.color] ?? '#22c55e'}
+        opacity={0.07}
+        speed={6}
       />
 
-      {/* ── Soft color bloom ─────────────────────────────────────── */}
+      {/* ── Bloom ─────────────────────────────────────────────────── */}
       <div
         aria-hidden='true'
         className={cn(
-          'pointer-events-none absolute -start-32 top-0 h-72 w-72 rounded-full blur-3xl opacity-10',
-          bloomColor(path.color),
+          'pointer-events-none absolute -start-20 -top-10 z-[1]',
+          'h-56 w-56 rounded-full blur-3xl opacity-[0.12]',
+          bloomBg(path.color),
         )}
       />
 
-      <div className='container relative mx-auto px-4 py-10'>
-        {/* ── Breadcrumb ───────────────────────────────────────────── */}
-        <nav className='mb-6 flex items-center gap-1.5 text-xs text-muted-foreground'>
-          <Link
-            to={ROUTES.PATHS.LIST}
-            className='transition-colors hover:text-foreground'>
-            {t('detail.breadcrumbPaths')}
-          </Link>
-          <BreadcrumbChevron className='h-3 w-3 shrink-0' />
-          <span className='truncate text-foreground'>{title}</span>
-        </nav>
+      {/* ── Content ───────────────────────────────────────────────── */}
+      <div className='container relative z-[2] mx-auto px-4'>
+        {/* ── Top block: breadcrumb + main row ──────────────────── */}
+        <div className='py-6'>
+          {/* Breadcrumb */}
+          <nav className='mb-4 flex items-center gap-1 text-[11px] text-white/35'>
+            <Link
+              to={ROUTES.PATHS.LIST}
+              className='transition-colors hover:text-white/70'>
+              {t('detail.breadcrumbPaths')}
+            </Link>
+            <BreadcrumbChevron className='h-3 w-3 shrink-0' />
+            <span className='truncate text-white/65'>{title}</span>
+          </nav>
 
-        {/* ── Main layout ─────────────────────────────────────────── */}
-        <div className='flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-12'>
-          {/* ── Left / Content ──────────────────────────────────── */}
-          <div className='min-w-0 flex-1'>
-            {/* Icon + Title block */}
-            <motion.div
-              initial={{ opacity: 0, x: isAr ? 16 : -16 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.45 }}
-              className='flex items-start gap-4'>
-              {/* Colored icon box */}
-              <div
-                className={cn(
-                  'flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl',
-                  c.icon,
-                )}>
-                {resolvePathIcon(path.iconName, 'h-8 w-8')}
-              </div>
-
-              <div className='min-w-0'>
-                <h1 className='text-3xl font-black tracking-tight leading-tight sm:text-4xl'>
-                  {title}
-                </h1>
-
-                {/* Badges row */}
-                <div className='mt-2.5 flex flex-wrap items-center gap-2'>
-                  {/* Difficulty */}
-                  <Badge variant='outline' className='rounded-full text-xs'>
-                    {path.difficulty}
-                  </Badge>
-
-                  {/* Exclusive status badge */}
-                  {badge && (
-                    <span
-                      className={cn(
-                        'inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold',
-                        badge.cls,
-                      )}>
-                      {badge.icon}
-                      {badge.label}
-                    </span>
-                  )}
-
-                  {/* Top 2 tags */}
-                  {tags.slice(0, 2).map((tag) => (
-                    <span
-                      key={tag}
-                      className={cn(
-                        'rounded-full border px-2.5 py-0.5 text-[11px] font-medium',
-                        c.badge,
-                      )}>
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Short description — subtitle */}
-            <motion.p
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.12 }}
-              className='mt-4 text-base font-medium text-foreground/80'>
-              {desc}
-            </motion.p>
-
-            {/* Long description — body */}
-            <motion.p
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.18 }}
-              className='mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground'>
-              {longDesc}
-            </motion.p>
-
-            {/* Stats strip */}
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.24 }}
-              className='mt-6 flex flex-wrap items-center gap-x-6 gap-y-2'>
-              {stats.map(({ icon, value, label }) => (
-                <div
-                  key={label}
-                  className='flex items-center gap-2 text-sm text-muted-foreground'>
-                  <span className={c.text}>{icon}</span>
-                  <span className='font-bold text-foreground'>{value}</span>
-                  <span>{label}</span>
-                </div>
-              ))}
-            </motion.div>
-
-            {/* Progress bar — enrolled users only */}
-            {path.enrolled && typeof path.progress === 'number' && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.32 }}
-                className='mt-5 max-w-sm space-y-1.5'>
-                <div className='flex justify-between text-xs'>
-                  <span className='text-muted-foreground'>
-                    {t('detail.yourProgress')}
-                  </span>
-                  <span className={cn('font-bold', c.text)}>
-                    {path.progress}%
-                  </span>
-                </div>
-                <Progress
-                  value={path.progress}
-                  className={cn('h-2 bg-muted/50', c.bar)}
-                />
-              </motion.div>
-            )}
-          </div>
-
-          {/* ── Right: CTA Card — sticky on desktop ─────────────── */}
+          {/* ── Main row: icon / text / right-actions ─────────── */}
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: 0.1 }}
-            className='w-full shrink-0 lg:sticky lg:top-20 lg:w-72'>
-            <PathCtaCard path={path} />
+            transition={{ duration: 0.4 }}
+            className='flex items-start gap-4'>
+            {/* Icon box */}
+            <div
+              className={cn(
+                'hidden sm:flex h-14 w-14 shrink-0 items-center',
+                'justify-center rounded-2xl ring-1 ring-white/10',
+                c.icon,
+              )}>
+              {resolvePathIcon(path.iconName, 'h-7 w-7')}
+            </div>
+
+            {/* Text block — grows */}
+            <div className='min-w-0 flex-1'>
+              {/* Title */}
+              <h1 className='text-xl font-black leading-tight tracking-tight text-white sm:text-2xl lg:text-3xl'>
+                {title}
+              </h1>
+
+              {/* Badges */}
+              <div className='mt-2 flex flex-wrap items-center gap-1.5'>
+                <Badge
+                  variant='outline'
+                  className='rounded-full border-white/20 text-[11px] text-white/65'>
+                  {path.difficulty}
+                </Badge>
+
+                {badge && (
+                  <span
+                    className={cn(
+                      'inline-flex items-center gap-1 rounded-full px-2 py-0.5',
+                      'text-[10px] font-bold',
+                      badge.cls,
+                    )}>
+                    {badge.icon}
+                    {badge.label}
+                  </span>
+                )}
+
+                {tags.slice(0, 3).map((tag) => (
+                  <span
+                    key={tag}
+                    className={cn(
+                      'rounded-full border px-2 py-0.5 text-[10px] font-medium',
+                      c.badge,
+                    )}>
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              {/* Description */}
+              <p className='mt-2 max-w-2xl text-sm leading-relaxed text-white/60'>
+                {desc}
+              </p>
+            </div>
           </motion.div>
         </div>
+
+        {/* ── Bottom bar: stats + progress + CTA — all in one line ─ */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.35, delay: 0.2 }}
+          className={cn(
+            'flex flex-wrap items-center justify-between gap-x-6 gap-y-3',
+            'border-t border-white/10 py-3',
+          )}>
+          {/* Left: stats */}
+          <div className='flex flex-wrap items-center gap-x-5 gap-y-1.5'>
+            {/* Courses */}
+            <Stat
+              icon={<BookOpen className='h-3.5 w-3.5' />}
+              value={path.totalCourses}
+              label={t('detail.courses')}
+              textClass={c.text}
+            />
+            {/* Labs */}
+            <Stat
+              icon={<FlaskConical className='h-3.5 w-3.5' />}
+              value={path.totalLabs}
+              label={t('detail.labs')}
+              textClass={c.text}
+            />
+            {/* Time */}
+            <Stat
+              icon={<Clock className='h-3.5 w-3.5' />}
+              value={`${path.estimatedHours}h`}
+              label={t('detail.estTime')}
+              textClass={c.text}
+            />
+
+            {/* Free / Pro breakdown */}
+            <div className='hidden sm:flex items-center gap-1.5 text-[11px] text-white/40'>
+              <span className='text-white/60 font-medium'>{freeCount}</span>
+              <span>{t('detail.freeContent')}</span>
+              {lockedCount > 0 && (
+                <>
+                  <span className='opacity-30'>·</span>
+                  <Lock className='h-2.5 w-2.5' />
+                  <span className='text-white/60 font-medium'>
+                    {lockedCount}
+                  </span>
+                  <span>{t('detail.requiresPro')}</span>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Center: progress (enrolled only) */}
+          {path.enrolled && typeof path.progress === 'number' && (
+            <div className='flex items-center gap-2.5 min-w-[160px]'>
+              <Progress
+                value={path.progress}
+                className={cn('h-1.5 flex-1 bg-white/10', c.bar)}
+              />
+              <span className={cn('text-xs font-bold shrink-0', c.text)}>
+                {path.progress}%
+              </span>
+            </div>
+          )}
+
+          {/* Right: CTA */}
+          <div className='flex items-center gap-2'>
+            {path.completedAt && (
+              <span
+                className={cn(
+                  'hidden sm:flex items-center gap-1 text-[11px] font-semibold',
+                  c.text,
+                )}>
+                <Trophy className='h-3.5 w-3.5' />
+                {t('detail.completedPath')}
+              </span>
+            )}
+
+            {path.isComingSoon ? (
+              <div
+                className={cn(
+                  'flex items-center gap-1.5 rounded-lg border border-white/15',
+                  'bg-white/5 px-4 py-1.5 text-xs text-white/50',
+                )}>
+                <Clock3 className='h-3.5 w-3.5' />
+                {t('card.comingSoon')}
+              </div>
+            ) : (
+              <Button
+                size='sm'
+                className='h-8 gap-1.5 px-5 text-xs font-semibold'>
+                {path.enrolled
+                  ? t('detail.continueLearning')
+                  : t('detail.startThisPath')}
+                <BreadcrumbChevron className='h-3.5 w-3.5' />
+              </Button>
+            )}
+          </div>
+        </motion.div>
       </div>
     </section>
   );
 }
 
-// ── Helpers (file-private) ─────────────────────────────────────────────
+// ── File-private helpers ──────────────────────────────────────────────
 
-/** Maps PathColor → Tailwind bg for the bloom blob */
-function bloomColor(color: string): string {
+interface StatProps {
+  icon: React.ReactNode;
+  value: number | string;
+  label: string;
+  textClass: string;
+}
+
+function Stat({ icon, value, label, textClass }: StatProps) {
+  return (
+    <div className='flex items-center gap-1.5 text-xs'>
+      <span className={textClass}>{icon}</span>
+      <span className='font-bold text-white'>{value}</span>
+      <span className='text-white/45'>{label}</span>
+    </div>
+  );
+}
+
+function bloomBg(color: PathColor | string): string {
   const map: Record<string, string> = {
     emerald: 'bg-emerald-500',
     blue: 'bg-blue-500',
@@ -260,17 +301,4 @@ function bloomColor(color: string): string {
     cyan: 'bg-cyan-500',
   };
   return map[color] ?? 'bg-primary';
-}
-
-/** Approximate CSS color value for radial-gradient dot pattern */
-function colorToHex(color: string): string {
-  const map: Record<string, string> = {
-    emerald: '#10b981',
-    blue: '#3b82f6',
-    violet: '#8b5cf6',
-    rose: '#f43f5e',
-    orange: '#f97316',
-    cyan: '#06b6d4',
-  };
-  return map[color] ?? 'hsl(var(--primary))';
 }

@@ -11,7 +11,7 @@ export const ContactPage = lazy(
   () => import('@/features/website/pages/contact-page'),
 );
 export const PricingPage = lazy(
-  () => import('@/features/website/pages/pricing-page'),
+  () => import('@/features/pricing/pages/pricing-page'),
 );
 export const TermsPage = lazy(
   () => import('@/features/website/pages/legal/terms'),

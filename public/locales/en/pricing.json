@@ -1,0 +1,101 @@
+{
+  "pricing": {
+    "eyebrow": "Simple, transparent pricing",
+    "heroTitle": "Invest in Your Security Career",
+    "heroDesc": "Full access to labs, paths, and real-world challenges. Cancel anytime.",
+    "perMonth": "mo",
+    "currentPlan": "Current Plan",
+    "comingSoon": "Coming Soon",
+    "notifyMe": "Notify Me",
+    "billedAnnually": "Billed ${{total}}/yr",
+    "compareTitle": "Compare Plans",
+    "compareDesc": "Everything included — no hidden fees.",
+    "showTable": "Show full comparison",
+    "hideTable": "Hide comparison",
+
+    "cycle": { "monthly": "Monthly", "annual": "Annual" },
+    "badge": { "popular": "Most Popular" },
+    "cta": {
+      "free": "Get Started Free",
+      "pro": "Upgrade to Pro",
+      "team": "Notify Me"
+    },
+
+    "plans": {
+      "free": {
+        "name": "Free",
+        "desc": "Perfect for getting started",
+        "h1": "5 hands-on labs",
+        "h2": "2 learning paths",
+        "h3": "3 courses",
+        "h4": "Community Discord"
+      },
+      "pro": {
+        "name": "Pro",
+        "desc": "For serious learners",
+        "h1": "Unlimited labs & paths",
+        "h2": "Completion certificates",
+        "h3": "VPN lab access",
+        "h4": "CTF challenges",
+        "h5": "Priority email support"
+      },
+      "team": {
+        "name": "Team",
+        "desc": "For security teams & organizations",
+        "h1": "Everything in Pro",
+        "h2": "Up to 10 seats",
+        "h3": "Team analytics",
+        "h4": "Custom paths"
+      }
+    },
+
+    "table": {
+      "header": "Feature",
+      "labs": "Hands-on Labs",
+      "paths": "Learning Paths",
+      "courses": "Courses",
+      "certs": "Certificates",
+      "vpn": "VPN Lab Access",
+      "ctf": "CTF Challenges",
+      "discord": "Discord Community",
+      "support": "Support"
+    },
+
+    "trust": {
+      "noContract": "No long-term contract",
+      "cancelAnytime": "Cancel anytime",
+      "securePayment": "Secure payment",
+      "moneyBack": "7-day money back"
+    },
+
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "q1": {
+        "q": "Can I cancel anytime?",
+        "a": "Yes. Cancel with one click — no fees, no hassle. Your access continues until the end of your billing period."
+      },
+      "q2": {
+        "q": "Is there a free trial for Pro?",
+        "a": "Every new account starts with the Free plan. You can upgrade to Pro at any time and get instant access."
+      },
+      "q3": {
+        "q": "What payment methods do you accept?",
+        "a": "We accept all major credit cards, PayPal, and bank transfers via Stripe."
+      }
+    },
+
+    "checkoutError": "Failed to start checkout. Please try again.",
+    "portalError": "Failed to open billing portal.",
+    "cancelSuccess": "Subscription cancelled successfully.",
+    "cancelError": "Failed to cancel subscription.",
+
+    "paywall": {
+      "title": "Pro Content",
+      "generic": "This content requires a Pro subscription.",
+      "proFrom": "Pro starts from",
+      "annualNote": "Billed annually · Cancel anytime",
+      "upgradeCta": "Upgrade to Pro",
+      "viewPlans": "View all plans"
+    }
+  }
+}

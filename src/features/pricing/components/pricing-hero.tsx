@@ -1,7 +1,7 @@
-// src/features/pricing/components/pricing-hero.tsx
 import { useTranslation } from 'react-i18next';
+import { motion } from 'framer-motion';
 import { CreditCard, Users, BookOpen, Award, Shield } from 'lucide-react';
-import { LandingLayout } from '@/shared/components/common/landing/landing-layout';
+import { MatrixRain } from '@/shared/components/common/landing/matrix-rain';
 
 const STAT_ITEMS = [
   {
@@ -30,98 +30,93 @@ export function PricingHero() {
   const { t } = useTranslation('pricing');
 
   return (
-    <LandingLayout
-      //   showMobileImage={false}
-      className='[&_.landing-image-wrapper]:lg:col-span-5 [&_.landing-content-wrapper]:lg:col-span-6'>
-      {/* ── Desktop ────────────────────────────────────────── */}
-      <div className='hidden lg:block'>
-        <HeroContent t={t} />
-      </div>
+    <div className='relative min-h-[42vh] overflow-hidden'>
+      {/* ── Background ─────────────────────────────────────── */}
+      <MatrixRain opacity={0.13} speed={5} />
+      <div className='absolute inset-0 z-[1] bg-gradient-to-br from-black/80 via-primary/10 to-black/80' />
 
-      {/* ── Mobile ─────────────────────────────────────────── */}
-      <div className='lg:hidden'>
-        <EyebrowBadge label={t('pricing.eyebrow')} />
-        <h1 className='mt-2 text-xl font-extrabold leading-tight text-primary'>
-          {t('pricing.heroTitle')}
-        </h1>
-        <h2 className='mt-0.5 text-sm font-semibold leading-tight text-white/80'>
-          {t('pricing.heroSubtitle')}
-        </h2>
-        <div className='mt-4 grid grid-cols-2 gap-2'>
-          {STAT_ITEMS.map(({ icon: Icon, vKey, lKey }) => (
-            <StatBox
-              key={vKey}
-              icon={<Icon className='h-4 w-4' />}
-              value={t(vKey)}
-              label={t(lKey)}
-            />
-          ))}
+      {/* ── Content ────────────────────────────────────────── */}
+      <div className='container relative z-[2] mx-auto px-4 py-12 md:py-16'>
+        <div className='grid grid-cols-1 items-center gap-10 lg:grid-cols-12'>
+          {/* LEFT: Text block */}
+          <motion.div
+            className='lg:col-span-7'
+            initial={{ opacity: 0, x: -24 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.55, ease: [0.22, 0.68, 0, 1.1] }}>
+            {/* Eyebrow badge */}
+            <div className='mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-xs font-semibold text-primary'>
+              <CreditCard className='h-3 w-3' />
+              {t('pricing.eyebrow')}
+            </div>
+
+            <h1 className='mb-2 text-3xl font-extrabold leading-tight tracking-tight text-primary md:text-4xl lg:text-5xl'>
+              {t('pricing.heroTitle')}
+            </h1>
+
+            <h2 className='mb-4 text-base font-semibold text-white/75 md:text-lg'>
+              {t('pricing.heroSubtitle')}
+            </h2>
+
+            <p className='max-w-lg text-sm leading-relaxed text-white/50 md:text-base'>
+              {t('pricing.heroDesc')}
+            </p>
+
+            {/* ── Mobile stat strip (horizontal) ─────────────── */}
+            <div className='mt-7 grid grid-cols-4 gap-2 lg:hidden'>
+              {STAT_ITEMS.map(({ icon: Icon, vKey, lKey }, i) => (
+                <motion.div
+                  key={vKey}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.3 + i * 0.06 }}
+                  className='flex flex-col items-center gap-1 rounded-xl border border-white/10 bg-white/5 py-3 text-center backdrop-blur-sm'>
+                  <Icon className='h-4 w-4 text-primary' />
+                  <p className='text-sm font-black text-white'>{t(vKey)}</p>
+                  <p className='text-[9px] leading-tight text-white/45'>
+                    {t(lKey)}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Mobile trust note */}
+            <p className='mt-3 text-center text-[10px] text-white/30 lg:hidden'>
+              {t('pricing.trust.inline')}
+            </p>
+          </motion.div>
+
+          {/* RIGHT: 2×2 Stat boxes (desktop only) */}
+          <motion.div
+            className='hidden lg:col-span-5 lg:grid lg:grid-cols-2 lg:gap-3'
+            initial={{ opacity: 0, x: 24 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: 0.55,
+              delay: 0.15,
+              ease: [0.22, 0.68, 0, 1.1],
+            }}>
+            {STAT_ITEMS.map(({ icon: Icon, vKey, lKey }, i) => (
+              <motion.div
+                key={vKey}
+                initial={{ opacity: 0, scale: 0.92 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.35, delay: 0.25 + i * 0.07 }}
+                className='group flex flex-col items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-6 text-center backdrop-blur-md transition-all duration-300 hover:border-primary/30 hover:bg-primary/8'>
+                <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-primary/15 text-primary transition-colors group-hover:bg-primary/25'>
+                  <Icon className='h-5 w-5' />
+                </div>
+                <p className='text-2xl font-black text-white'>{t(vKey)}</p>
+                <p className='text-[11px] text-white/50'>{t(lKey)}</p>
+              </motion.div>
+            ))}
+
+            {/* Trust inline text */}
+            <p className='col-span-2 mt-1 text-center text-[11px] text-white/30'>
+              {t('pricing.trust.inline')}
+            </p>
+          </motion.div>
         </div>
-      </div>
-
-      {/* ── Right column: Stat Boxes (Desktop replaces image) ── */}
-      <div className='hidden lg:grid grid-cols-4 gap-3'>
-        {STAT_ITEMS.map(({ icon: Icon, vKey, lKey }) => (
-          <StatBox
-            key={vKey}
-            icon={<Icon className='h-6 w-6' />}
-            value={t(vKey)}
-            label={t(lKey)}
-          />
-        ))}
-        <div className='col-span-2 mt-1 text-center text-[11px] text-white/35'>
-          {t('pricing.trust.inline')}
-        </div>
-      </div>
-    </LandingLayout>
-  );
-}
-
-function HeroContent({
-  t,
-}: {
-  t: ReturnType<typeof useTranslation<'pricing'>>['t'];
-}) {
-  return (
-    <>
-      <EyebrowBadge label={t('pricing.eyebrow')} />
-      <h1 className='mt-3 text-2xl font-extrabold leading-tight text-primary md:text-3xl lg:text-4xl'>
-        {t('pricing.heroTitle')}
-      </h1>
-      <h2 className='mb-3 mt-1 text-base font-semibold leading-tight text-white/80 md:text-lg'>
-        {t('pricing.heroSubtitle')}
-      </h2>
-      <p className='mb-4 max-w-lg text-sm leading-relaxed text-white/60 md:text-base'>
-        {t('pricing.heroDesc')}
-      </p>
-    </>
-  );
-}
-
-function EyebrowBadge({ label }: { label: string }) {
-  return (
-    <div className='inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1 text-xs font-semibold text-primary'>
-      <CreditCard className='h-3 w-3' />
-      {label}
-    </div>
-  );
-}
-
-function StatBox({
-  icon,
-  value,
-  label,
-}: {
-  icon: React.ReactNode;
-  value: string;
-  label: string;
-}) {
-  return (
-    <div className='flex flex-row items-center justify-around rounded-2xl  border border-white/10 bg-white/5 py-4  backdrop-blur-sm'>
-      <div className='text-primary'>{icon}</div>
-      <div>
-        <p className='text-xl font-black text-white'>{value}</p>
-        <p className='text-[11px] text-white/50'>{label}</p>
       </div>
     </div>
   );

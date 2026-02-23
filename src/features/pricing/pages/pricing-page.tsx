@@ -1,20 +1,19 @@
 // src/features/pricing/pages/pricing-page.tsx
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { MainLayout } from '@/shared/components/layout/main-layout';
+import { SectionHeader } from '@/shared/components/common/section-header';
+import { SectionCta } from '@/shared/components/common/section-cta';
 import { PricingHero } from '../components/pricing-hero';
 import { PlanCard } from '../components/plan-card';
 import { FeatureTable } from '../components/feature-table';
 import { PricingFaq } from '../components/pricing-faq';
-import { SectionHeader } from '@/shared/components/common/section-header';
 import { PLANS } from '../data/plans.data';
 import { usePlans, useMySubscription, useCheckout } from '../hooks/use-pricing';
 import type { BillingCycle } from '../types/pricing.types';
 
-// ── BillingToggle (standalone, above cards) ───────────────────────────
+// ── BillingToggle ────────────────────────────────────────────────────
 function BillingToggle({
   cycle,
   onCycle,
@@ -63,18 +62,21 @@ export default function PricingPage() {
 
   return (
     <MainLayout>
+      {/* ① HERO */}
       <PricingHero />
 
-      <section className='border-t border-border/30 bg-muted/5 py-14'>
+      {/* ② PLAN CARDS */}
+      <section className='border-t border-border/30 bg-muted/5 py-6 md:py-10'>
         <div className='container mx-auto px-4'>
           <SectionHeader
             title={t('pricing.plansTitle')}
             subtitle={t('pricing.plansLabel')}
+            className='pb-0'
           />
           <div className='mb-8 flex justify-center'>
             <BillingToggle cycle={cycle} onCycle={setCycle} />
           </div>
-          <div className='grid gap-5 sm:grid-cols-2 lg:grid-cols-3'>
+          <div className='grid gap-6 sm:grid-cols-2 lg:grid-cols-3'>
             {plans.map((plan, i) => (
               <PlanCard
                 key={plan.id}
@@ -98,34 +100,18 @@ export default function PricingPage() {
         <PricingFaq />
       </div>
 
-      {/* ⑤ BOTTOM CTA */}
-      <section className='border-t border-border/30 py-20'>
-        <div className='container mx-auto max-w-2xl px-4 text-center'>
-          <p className='mb-2 text-[11px] font-black uppercase tracking-[0.2em] text-primary'>
-            {t('pricing.cta.eyebrow')}
-          </p>
-          <h2 className='mb-3 text-3xl font-black tracking-tight sm:text-4xl'>
-            {t('pricing.cta.title')}
-          </h2>
-          <p className='mb-8 text-muted-foreground'>{t('pricing.cta.desc')}</p>
-          <div className='flex flex-wrap items-center justify-center gap-3'>
-            <Button
-              size='lg'
-              className='gap-2 px-8 font-bold shadow-lg shadow-primary/20'
-              disabled={checkout.isPending}
-              onClick={() => checkout.mutate({ planId: 'pro', cycle })}>
-              <Zap className='h-4 w-4' />
-              {t('pricing.cta.upgradeCta')}
-            </Button>
-            <Button variant='outline' size='lg' className='px-8' asChild>
-              <a href='/auth'>{t('pricing.cta.freeCta')}</a>
-            </Button>
-          </div>
-          <p className='mt-5 text-xs text-muted-foreground/60'>
-            {t('pricing.trust.inline')}
-          </p>
-        </div>
-      </section>
+      {/* ⑤ BOTTOM CTA — shared component */}
+      <SectionCta
+        eyebrow={t('pricing.cta.eyebrow')}
+        title={t('pricing.cta.title')}
+        desc={t('pricing.cta.desc')}
+        trustNote={t('pricing.trust.inline')}
+        primaryLabel={t('pricing.cta.upgradeCta')}
+        secondaryLabel={t('pricing.cta.freeCta')}
+        secondaryHref='/auth'
+        onPrimary={() => checkout.mutate({ planId: 'pro', cycle })}
+        primaryLoading={checkout.isPending}
+      />
     </MainLayout>
   );
 }

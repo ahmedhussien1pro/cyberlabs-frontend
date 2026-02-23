@@ -9,11 +9,10 @@ import {
   Award,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { SectionHeader } from '@/shared/components/common';
 
-// Icon per FAQ item — adds personality
 const FAQ_ICONS = [Terminal, BookOpen, ShieldCheck, Award, ShieldCheck];
 
-// Keys must match JSON exactly
 const FAQ_KEYS = ['q1', 'q2', 'q3', 'q4', 'q5'] as const;
 type FaqKey = (typeof FAQ_KEYS)[number];
 
@@ -22,22 +21,18 @@ export function PricingFaq() {
   const [open, setOpen] = useState<FaqKey | null>('q1');
 
   return (
-    <section className='bg-background py-20'>
-      <div className='container mx-auto max-w-6xl px-4'>
+    <section className='bg-background overflow-hidden py-6 md:py-10'>
+      <div className='container mx-auto px-4'>
         {/* ── Two-col layout ──────────────────────────────────────── */}
+        <SectionHeader
+          title={t('pricing.faq.eyebrow')}
+          subtitle={t('pricing.faq.title')}
+          className='pb-0'
+        />
         <div className='grid gap-14 lg:grid-cols-[1fr_1.3fr] lg:items-start'>
           {/* LEFT col */}
           <div>
-            {/* Eyebrow */}
-            <p className='mb-3 inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/8 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-primary'>
-              {t('pricing.faq.eyebrow')}
-            </p>
-
-            <h2 className='mb-5 text-3xl font-black leading-tight tracking-tight text-foreground sm:text-4xl'>
-              {t('pricing.faq.title')}
-            </h2>
-
-            <p className='mb-8 text-sm leading-relaxed text-muted-foreground'>
+            <p className='my-5 text-2xl font-black leading-tight tracking-tight text-muted-foreground/90 sm:text-2xl'>
               {t('pricing.faq.subtitle')}
             </p>
 
@@ -69,12 +64,13 @@ export function PricingFaq() {
           {/* RIGHT col — numbered accordion */}
           <div>
             {/* Sub label */}
-            <div className='mb-5 flex items-center gap-3'>
-              <div className='h-px flex-1 bg-border/30' />
-              <p className='text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60'>
+
+            <div className='mb-6 flex items-center gap-3'>
+              <div className='h-px flex-1 bg-primary/50' />
+              <h5 className='text-sm font-semibold uppercase tracking-widest text-primary/80'>
                 {t('pricing.faq.subLabel')}
-              </p>
-              <div className='h-px flex-1 bg-border/30' />
+              </h5>
+              <div className='h-px flex-1 bg-primary/50' />
             </div>
 
             <div className='space-y-2'>

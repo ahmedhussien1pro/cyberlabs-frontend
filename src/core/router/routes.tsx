@@ -75,7 +75,7 @@ export const routes: RouteObject[] = [
 
   // ── Dashboard (nested layout) ──────────────────
   {
-    path: ROUTES.DASHBOARD.DashboardPage, // '/dashboard'
+    path: ROUTES.DASHBOARD.DashboardPage,
     element: (
       <ProtectedRoute>
         <Suspense fallback={<Preloader />}>
@@ -100,6 +100,41 @@ export const routes: RouteObject[] = [
         element: <LazyPage Component={Pages.SettingsPage} />,
       },
     ],
+  },
+  // ── Courses (public protected) ──────────────
+  {
+    path: '/courses',
+    element: <LazyPage Component={Pages.CoursesListPage} />,
+  },
+  {
+    path: '/courses/:slug',
+    element: <LazyPage Component={Pages.CourseDetailPage} />,
+  },
+  {
+    path: '/courses/:slug/lessons/:lessonId',
+    element: (
+      <ProtectedRoute>
+        <LazyPage Component={Pages.LessonPage} />
+      </ProtectedRoute>
+    ),
+  },
+  // ── Labs (public protected) ──────────────────
+  {
+    path: '/labs',
+    element: <LazyPage Component={Pages.LabsListPage} />,
+  },
+  {
+    path: '/labs/:slug',
+    element: <LazyPage Component={Pages.LabDetailPage} />,
+  },
+  // ── Learning Paths ─────────────────────────────
+  {
+    path: '/paths',
+    element: <LazyPage Component={Pages.PathsPage} />,
+  },
+  {
+    path: '/paths/:slug',
+    element: <LazyPage Component={Pages.PathDetailPage} />,
   },
 
   // ── Errors ─────────────────────────────────────

@@ -29,7 +29,6 @@ export const API_ENDPOINTS = {
     UPDATE_PROFILE: '/users/me',
     UPDATE_PASSWORD: '/users/me/password',
     UPDATE_AVATAR: '/users/avatar',
-    // ── Account Management (TODO: backend implementation) ──
     AVATAR_PRESIGN: '/users/me/avatar/presign',
     AVATAR_CONFIRM: '/users/me/avatar/confirm',
 
@@ -46,9 +45,16 @@ export const API_ENDPOINTS = {
     ARCHIVE: (id: string) => `/notifications/${id}/archive`,
     DELETE: (id: string) => `/notifications/${id}`,
   },
+  PATHS: {
+    BASE: '/paths',
+    BY_SLUG: (slug: string) => `/paths/${slug}`,
+  },
   COURSES: {
     BASE: '/courses',
     BY_ID: (id: string) => `/courses/${id}`,
+    BY_SLUG: (slug: string) => `/courses/${slug}`,
+    ALL: '/courses',
+    MY_COURSES: '/courses/me',
     ENROLL: (id: string) => `/courses/${id}/enroll`,
     UNENROLL: (id: string) => `/courses/${id}/unenroll`,
     PROGRESS: (id: string) => `/courses/${id}/progress`,
@@ -58,7 +64,6 @@ export const API_ENDPOINTS = {
     COMPLETE_LESSON: (courseId: string, lessonId: string) =>
       `/courses/${courseId}/lessons/${lessonId}/complete`,
   },
-
   DASHBOARD: {
     STATS: '/dashboard/stats',
     RECENT_ACTIVITY: '/dashboard/activity',
@@ -74,10 +79,14 @@ export const API_ENDPOINTS = {
   LABS: {
     BASE: '/labs',
     BY_ID: (id: string) => `/labs/${id}`,
+    BY_SLUG: (slug: string) => `/labs/${slug}`,
+    ALL: '/labs',
+    MY_LABS: '/labs/me',
     ACTIVE: '/labs/active',
     START: (id: string) => `/labs/${id}/start`,
     COMPLETE: (id: string) => `/labs/${id}/complete`,
     PROGRESS: (id: string) => `/labs/${id}/progress`,
+    SUBMIT: (id: string) => `/labs/${id}/submit`,
   },
 
   GOALS: {

@@ -82,5 +82,29 @@ export const UnauthorizedPage = lazy(
   () => import('@/features/errors/pages/unauthorized-page'),
 );
 
+// ── Courses ──────────────
+export const CoursesListPage = lazy(
+  () => import('@/features/courses/pages/courses-list-page'),
+);
+export const CourseDetailPage = lazy(
+  () => import('@/features/courses/pages/course-detail-page'),
+);
+export const LessonPage = lazy(
+  () => import('@/features/courses/pages/lesson-page'),
+);
+// ── Labs──────────────────
+export const LabsListPage = lazy(
+  () => import('@/features/labs/pages/labs-list-page'),
+);
+export const LabDetailPage = lazy(
+  () => import('@/features/labs/pages/lab-detail-page'),
+);
+// ── Learning Paths ─────────────────────────────
+export const PathsPage = lazy(
+  () => import('@/features/paths/pages/paths-page'),
+);
+export const PathDetailPage = lazy(
+  () => import('@/features/paths/pages/path-detail-page'),
+);
 // Dev (temporary) Pages
 export const TempPage = lazy(() => import('@/features/dev/temp-page'));

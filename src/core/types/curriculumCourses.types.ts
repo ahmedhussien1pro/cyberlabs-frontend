@@ -1,25 +1,25 @@
 // types.ts
 
-import type { TranslatedText } from "./common.types";
+import type { TranslatedText } from './common.types';
 
 /* ---------------------------------- */
 /* Base */
 /* ---------------------------------- */
 
 export type ElementType =
-  | "title"
-  | "subtitle"
-  | "text"
-  | "image"
-  | "video"
-  | "list"
-  | "orderedList"
-  | "code"
-  | "terminal"
-  | "note"
-  | "table"
-  | "hr"
-  | "button";
+  | 'title'
+  | 'subtitle'
+  | 'text'
+  | 'image'
+  | 'video'
+  | 'list'
+  | 'orderedList'
+  | 'code'
+  | 'terminal'
+  | 'note'
+  | 'table'
+  | 'hr'
+  | 'button';
 
 export interface BaseElement {
   type: ElementType;
@@ -30,17 +30,17 @@ export interface BaseElement {
 /* ---------------------------------- */
 
 export interface TitleElement extends BaseElement {
-  type: "title";
+  type: 'title';
   value: TranslatedText;
 }
 
 export interface SubtitleElement extends BaseElement {
-  type: "subtitle";
+  type: 'subtitle';
   value: TranslatedText;
 }
 
 export interface TextElement extends BaseElement {
-  type: "text";
+  type: 'text';
   value: TranslatedText;
 }
 
@@ -49,13 +49,13 @@ export interface TextElement extends BaseElement {
 /* ---------------------------------- */
 
 export interface ImageElement extends BaseElement {
-  type: "image";
+  type: 'image';
   srcKey: string;
-  size?: "small" | "medium" | "large";
+  size?: 'small' | 'medium' | 'large';
 }
 
 export interface VideoElement extends BaseElement {
-  type: "video";
+  type: 'video';
   url: string;
   title?: TranslatedText;
   autoPlay?: boolean;
@@ -65,13 +65,8 @@ export interface VideoElement extends BaseElement {
 /* Lists */
 /* ---------------------------------- */
 
-/**
- * يدعم الشكلين:
- * 1) Array of TranslatedText
- * 2) Object فيه en[] و ar[]
- */
 export interface ListElement extends BaseElement {
-  type: "list";
+  type: 'list';
   items:
     | TranslatedText[]
     | {
@@ -90,12 +85,12 @@ export interface OrderedListItem {
   example?: TranslatedText;
   image?: {
     srcKey: string;
-    size?: "small" | "medium" | "large";
+    size?: 'small' | 'medium' | 'large';
   };
 }
 
 export interface OrderedListElement extends BaseElement {
-  type: "orderedList";
+  type: 'orderedList';
   items: OrderedListItem[];
 }
 
@@ -104,13 +99,13 @@ export interface OrderedListElement extends BaseElement {
 /* ---------------------------------- */
 
 export interface CodeElement extends BaseElement {
-  type: "code";
+  type: 'code';
   code: string;
   language?: string;
 }
 
 export interface TerminalElement extends BaseElement {
-  type: "terminal";
+  type: 'terminal';
   value: string;
   label?: TranslatedText;
 }
@@ -120,7 +115,7 @@ export interface TerminalElement extends BaseElement {
 /* ---------------------------------- */
 
 export interface NoteElement extends BaseElement {
-  type: "note";
+  type: 'note';
   value: TranslatedText;
   link?: string;
   isLab?: boolean;
@@ -131,7 +126,7 @@ export interface NoteElement extends BaseElement {
 /* ---------------------------------- */
 
 export interface TableElement extends BaseElement {
-  type: "table";
+  type: 'table';
   headers: TranslatedText[];
   rows: TranslatedText[][];
 }
@@ -141,7 +136,7 @@ export interface TableElement extends BaseElement {
 /* ---------------------------------- */
 
 export interface HrElement extends BaseElement {
-  type: "hr";
+  type: 'hr';
 }
 
 /* ---------------------------------- */
@@ -149,7 +144,7 @@ export interface HrElement extends BaseElement {
 /* ---------------------------------- */
 
 export interface ButtonElement extends BaseElement {
-  type: "button";
+  type: 'button';
   label: TranslatedText;
   href: string;
   newTab?: boolean;

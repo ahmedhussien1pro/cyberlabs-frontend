@@ -40,7 +40,9 @@ export const ROUTES = {
 
   COURSES: {
     LIST: '/courses',
-    DETAIL: (id: string) => `/courses/${id}`,
+    DETAIL: (slug: string) => `/courses/${slug}`,
+    TOPIC: (slug: string, topicId: string) =>
+      `/courses/${slug}/topics/${topicId}`,
     LESSON: (courseId: string, lessonId: string) =>
       `/courses/${courseId}/lessons/${lessonId}`,
   },

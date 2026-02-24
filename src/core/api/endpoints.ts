@@ -51,18 +51,12 @@ export const API_ENDPOINTS = {
   },
   COURSES: {
     BASE: '/courses',
-    BY_ID: (id: string) => `/courses/${id}`,
     BY_SLUG: (slug: string) => `/courses/${slug}`,
-    ALL: '/courses',
-    MY_COURSES: '/courses/me',
+    TOPIC: (slug: string, topicId: string) =>
+      `/courses/${slug}/topics/${topicId}`,
     ENROLL: (id: string) => `/courses/${id}/enroll`,
-    UNENROLL: (id: string) => `/courses/${id}/unenroll`,
-    PROGRESS: (id: string) => `/courses/${id}/progress`,
-    LESSONS: (id: string) => `/courses/${id}/lessons`,
-    LESSON_BY_ID: (courseId: string, lessonId: string) =>
-      `/courses/${courseId}/lessons/${lessonId}`,
-    COMPLETE_LESSON: (courseId: string, lessonId: string) =>
-      `/courses/${courseId}/lessons/${lessonId}/complete`,
+    MARK_COMPLETE: (id: string, topicId: string) =>
+      `/courses/${id}/topics/${topicId}/complete`,
   },
   DASHBOARD: {
     STATS: '/dashboard/stats',

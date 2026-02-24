@@ -1,10 +1,4 @@
-// types.ts
-
 import type { TranslatedText } from './common.types';
-
-/* ---------------------------------- */
-/* Base */
-/* ---------------------------------- */
 
 export type ElementType =
   | 'title'
@@ -22,36 +16,32 @@ export type ElementType =
   | 'button';
 
 export interface BaseElement {
+  id?: string | number;
   type: ElementType;
 }
 
-/* ---------------------------------- */
-/* Simple Text Elements */
-/* ---------------------------------- */
-
+// ── Text ────────────────────────────────────────────────────
 export interface TitleElement extends BaseElement {
   type: 'title';
   value: TranslatedText;
 }
-
 export interface SubtitleElement extends BaseElement {
   type: 'subtitle';
   value: TranslatedText;
 }
-
 export interface TextElement extends BaseElement {
   type: 'text';
   value: TranslatedText;
 }
 
-/* ---------------------------------- */
-/* Media */
-/* ---------------------------------- */
-
+// ── Media ───────────────────────────────────────────────────
 export interface ImageElement extends BaseElement {
   type: 'image';
-  srcKey: string;
-  size?: 'small' | 'medium' | 'large';
+  imageUrl?: string; // JSON from R2 uses this
+  srcKey?: string; // legacy key-based
+  imageMode?: 'url' | 'key';
+  size?: 'small' | 'medium' | 'large' | 'full';
+  alt?: TranslatedText;
 }
 
 export interface VideoElement extends BaseElement {
@@ -61,46 +51,37 @@ export interface VideoElement extends BaseElement {
   autoPlay?: boolean;
 }
 
-/* ---------------------------------- */
-/* Lists */
-/* ---------------------------------- */
+// ── Lists ───────────────────────────────────────────────────
+export type I18nArray = { en: string[]; ar: string[] };
 
 export interface ListElement extends BaseElement {
   type: 'list';
-  items:
-    | TranslatedText[]
-    | {
-        en: string[];
-        ar: string[];
-      };
+  title?: TranslatedText;
+  items: TranslatedText[] | I18nArray;
 }
-
-/* ---------------------------------- */
-/* Ordered List (Advanced) */
-/* ---------------------------------- */
 
 export interface OrderedListItem {
   subtitle: TranslatedText;
   text: TranslatedText;
   example?: TranslatedText;
   image?: {
-    srcKey: string;
+    srcKey?: string;
+    imageUrl?: string;
     size?: 'small' | 'medium' | 'large';
   };
 }
 
 export interface OrderedListElement extends BaseElement {
   type: 'orderedList';
+  title?: TranslatedText;
   items: OrderedListItem[];
 }
 
-/* ---------------------------------- */
-/* Code / Terminal */
-/* ---------------------------------- */
-
+// ── Code / Terminal ─────────────────────────────────────────
 export interface CodeElement extends BaseElement {
   type: 'code';
-  code: string;
+  value?: string; // JSON uses this
+  code?: string; // legacy
   language?: string;
 }
 
@@ -110,39 +91,29 @@ export interface TerminalElement extends BaseElement {
   label?: TranslatedText;
 }
 
-/* ---------------------------------- */
-/* Notes */
-/* ---------------------------------- */
+// ── Notes ───────────────────────────────────────────────────
+export type NoteVariant = 'info' | 'warning' | 'danger' | 'success';
 
 export interface NoteElement extends BaseElement {
   type: 'note';
+  noteType?: NoteVariant;
   value: TranslatedText;
   link?: string;
   isLab?: boolean;
 }
 
-/* ---------------------------------- */
-/* Table */
-/* ---------------------------------- */
-
+// ── Table ───────────────────────────────────────────────────
 export interface TableElement extends BaseElement {
   type: 'table';
-  headers: TranslatedText[];
-  rows: TranslatedText[][];
+  title?: TranslatedText;
+  headers: TranslatedText[] | I18nArray;
+  rows: (TranslatedText[] | I18nArray)[];
 }
 
-/* ---------------------------------- */
-/* HR */
-/* ---------------------------------- */
-
+// ── Misc ────────────────────────────────────────────────────
 export interface HrElement extends BaseElement {
   type: 'hr';
 }
-
-/* ---------------------------------- */
-/* Button */
-/* ---------------------------------- */
-
 export interface ButtonElement extends BaseElement {
   type: 'button';
   label: TranslatedText;
@@ -150,10 +121,7 @@ export interface ButtonElement extends BaseElement {
   newTab?: boolean;
 }
 
-/* ---------------------------------- */
-/* Union */
-/* ---------------------------------- */
-
+// ── Union ───────────────────────────────────────────────────
 export type CourseElement =
   | TitleElement
   | SubtitleElement
@@ -169,22 +137,9 @@ export type CourseElement =
   | HrElement
   | ButtonElement;
 
-/* ---------------------------------- */
-/* Topic */
-/* ---------------------------------- */
-
+// ── Topic ───────────────────────────────────────────────────
 export interface Topic {
   id: string;
   title: TranslatedText;
   elements: CourseElement[];
-}
-
-/* ---------------------------------- */
-/* Course */
-/* ---------------------------------- */
-
-export interface CourseCurriculumProps {
-  topics: Topic[];
-  imageMap: Record<string, string>;
-  labsLink?: string;
 }

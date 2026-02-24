@@ -1,48 +1,50 @@
 {
-  "landing": {
-    "by": "by",
-    "startLearning": "Start Learning"
+  "list": {
+    "eyebrow": "All Courses",
+    "title": "Master Cybersecurity",
+    "subtitle": "Theory-first courses packed with visuals, code, and hands-on labs.",
+    "results": "{{count}} courses found",
+    "empty": "No courses match your filters",
+    "emptyHint": "Try resetting the filters",
+    "error": "Failed to load courses. Please try again."
   },
-  "stats": {
-    "rating": "Rating",
-    "level": "Level",
-    "duration": "Duration",
-    "students": "Students",
-    "enrolled": "enrolled"
-  },
-  "actions": {
-    "save": "Save",
-    "saved": "Saved",
-    "favorite": "Add to favorites",
-    "unfavorite": "Remove from favorites",
-    "favorited": "Added to favorites!",
-    "unfavorited": "Removed from favorites",
-    "error": "Something went wrong"
+  "filters": {
+    "search": "Search courses...",
+    "allLevels": "All Levels",
+    "allAccess": "All Access",
+    "reset": "Reset"
   },
   "detail": {
-    "backToCourses": "All Courses",
-    "students": "students",
-    "lessons": "lessons",
-    "sections": "sections",
-    "by": "By",
+    "backToList": "All Courses",
+    "notFound": "Course not found",
+    "topics": "Topics",
+    "done": "done",
     "curriculum": "Course Curriculum",
-    "preview": "Preview",
-    "whatYouLearn": "What You'll Learn",
-    "prerequisites": "Prerequisites",
-    "curriculumSoon": "Curriculum coming soon.",
-    "free": "Free",
-    "enroll": "Enroll for Free",
-    "unlock": "Unlock Course",
+    "startFree": "Start for Free",
+    "enrolling": "Enrolling...",
+    "upgrade": "Upgrade to {{plan}}",
+    "preview": "Preview First Topic",
     "continueLearning": "Continue Learning",
-    "certificate": "Certificate of completion",
-    "totalContent": "of content",
-    "handsOnLabs": "Hands-on labs",
-    "yourProgress": "Your Progress",
-    "notFound": "Course not found."
+    "labsIncluded": "Labs included",
+    "skillsLabel": "Skills you'll gain",
+    "prereqLabel": "Prerequisites"
   },
-  "access": {
-    "free": "Free",
-    "pro": "Pro",
-    "premium": "Premium"
+  "topic": {
+    "completed": "completed",
+    "notFound": "Topic content not found",
+    "markComplete": "Mark as Complete"
+  },
+  "topbar": { "courses": "Courses" },
+  "nav": { "prev": "Previous", "next": "Next" },
+  "enrollment": {
+    "success": "Enrolled! Start learning now 🚀",
+    "error": "Enrollment failed. Try again."
+  },
+  "paywall": {
+    "required": "Required",
+    "title": "Content Locked",
+    "desc": "Upgrade to {{plan}} to unlock \"{{course}}\" and all premium content.",
+    "cta": "Upgrade to {{plan}}",
+    "hint": "Cancel anytime · Instant access"
   }
 }

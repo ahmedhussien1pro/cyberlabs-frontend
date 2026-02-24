@@ -1,15 +1,27 @@
+// src/features/courses/components/course-filters.tsx
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Search,
   X,
   Heart,
   BookOpen,
-  CheckCircle2,
+  // CheckCircle2,
   Clock3,
   FlaskConical,
   BookMarked,
   RotateCcw,
+  ChevronDown,
+  Globe,
+  TrendingUp,
+  Gauge,
+  Flame,
+  Unlock,
+  Crown,
+  Gem,
+  BookCheck,
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -20,76 +32,98 @@ import type {
   CourseAccess,
 } from '../types/course.types';
 
-interface CourseFilterSidebarProps {
-  filters: CourseFilters;
-  onChange: (f: CourseFilters) => void;
-  onReset: () => void;
-  totalCount?: number;
-}
-
-// ── Section wrapper ───────────────────────────────────────────────────
+// ── Collapsible section ───────────────────────────────────────────────
 function FilterSection({
   title,
   children,
+  defaultOpen = true,
 }: {
   title: string;
   children: React.ReactNode;
+  defaultOpen?: boolean;
 }) {
+  const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className='space-y-2'>
-      <p className='text-[11px] font-bold uppercase tracking-wider text-muted-foreground/70 px-1'>
-        {title}
-      </p>
-      {children}
+    <div>
+      <button
+        type='button'
+        onClick={() => setOpen((v) => !v)}
+        className='w-full flex items-center justify-between px-1 py-1.5 group rounded-md
+                   hover:bg-muted/50 transition-colors'>
+        <p
+          className='text-[11px] font-bold uppercase tracking-wider
+                      text-muted-foreground/60 group-hover:text-muted-foreground transition-colors'>
+          {title}
+        </p>
+        <ChevronDown
+          className={cn(
+            'h-3.5 w-3.5 text-muted-foreground/40 transition-transform duration-200',
+            open && 'rotate-180',
+          )}
+        />
+      </button>
+
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: 'easeInOut' }}
+            className='overflow-hidden'>
+            <div className='space-y-0.5 pt-1 pb-2'>{children}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
 
-// ── Generic chip toggle ───────────────────────────────────────────────
+// ── Chip button ───────────────────────────────────────────────────────
 function Chip({
   active,
   onClick,
   children,
-  className,
 }: {
   active: boolean;
   onClick: () => void;
   children: React.ReactNode;
-  className?: string;
 }) {
   return (
     <button
+      type='button'
       onClick={onClick}
       className={cn(
         'w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all text-start',
         active
-          ? 'bg-primary/15 text-primary border border-primary/30 font-semibold'
+          ? 'bg-primary/10 text-primary border border-primary/25 font-semibold'
           : 'text-muted-foreground hover:bg-muted hover:text-foreground border border-transparent',
-        className,
       )}>
       {children}
     </button>
   );
 }
 
+// ── Main Sidebar ─────────────────────────────────────────────────────
 export function CourseFilterSidebar({
   filters,
   onChange,
   onReset,
-  totalCount,
-}: CourseFilterSidebarProps) {
+}: {
+  filters: CourseFilters;
+  onChange: (f: CourseFilters) => void;
+  onReset: () => void;
+  totalCount?: number;
+}) {
   const { t } = useTranslation('courses');
   const { favoriteCourses, enrolledCourses } = useCourseProgressStore();
-
   const set = (patch: Partial<CourseFilters>) =>
     onChange({ ...filters, ...patch });
 
-  // Count active filters (for reset badge)
   const activeCount = [
     filters.difficulty && filters.difficulty !== 'all',
     filters.access && filters.access !== 'all',
     filters.contentType && filters.contentType !== 'all',
-    filters.category && filters.category !== 'all',
     filters.status && filters.status !== 'all',
     filters.onlyFavorites,
     filters.onlyEnrolled,
@@ -97,41 +131,44 @@ export function CourseFilterSidebar({
   ].filter(Boolean).length;
 
   return (
-    <aside className='w-full space-y-5'>
-      {/* ── Search ─────────────────────────────────────── */}
-      <div className='relative'>
-        <Search className='absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none' />
+    <aside className='w-full space-y-1.5'>
+      {/* Search */}
+      <div className='relative mb-3'>
+        <Search
+          className='absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4
+                           text-muted-foreground pointer-events-none'
+        />
         <input
           type='text'
           value={filters.search ?? ''}
           onChange={(e) => set({ search: e.target.value })}
           placeholder={t('filters.search', 'Search courses...')}
-          className={cn(
-            'w-full rounded-lg border border-border/60 bg-muted/40',
-            'ps-9 pe-3 py-2 text-sm text-foreground placeholder:text-muted-foreground',
-            'focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50',
-            'transition-all',
-          )}
+          className='w-full rounded-lg border border-border/60 bg-muted/40
+                     ps-9 pe-3 py-2 text-sm text-foreground placeholder:text-muted-foreground
+                     focus:outline-none focus:ring-2 focus:ring-primary/30
+                     focus:border-primary/50 transition-all'
         />
         {filters.search && (
           <button
+            type='button'
             onClick={() => set({ search: '' })}
-            className='absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground'>
+            className='absolute end-3 top-1/2 -translate-y-1/2
+                       text-muted-foreground hover:text-foreground'>
             <X className='h-3.5 w-3.5' />
           </button>
         )}
       </div>
 
-      {/* ── Reset bar ──────────────────────────────────── */}
+      {/* Reset */}
       {activeCount > 0 && (
-        <div className='flex items-center justify-between'>
+        <div className='flex items-center justify-between px-1 mb-2'>
           <span className='text-xs text-muted-foreground'>
-            {activeCount} {t('filters.active', 'filter(s) active')}
+            {activeCount} {t('filters.active', 'active')}
           </span>
           <Button
             variant='ghost'
             size='sm'
-            className='h-7 text-xs gap-1 text-muted-foreground'
+            className='h-7 text-xs gap-1 text-muted-foreground px-2'
             onClick={onReset}>
             <RotateCcw className='h-3 w-3' />
             {t('filters.reset', 'Reset')}
@@ -139,8 +176,11 @@ export function CourseFilterSidebar({
         </div>
       )}
 
-      {/* ── My Library ─────────────────────────────────── */}
-      <FilterSection title={t('filters.myLibrary', 'My Library')}>
+      {/* Divider */}
+      <div className='h-px bg-border/40 my-2' />
+
+      {/* MY LIBRARY */}
+      <FilterSection title={t('filters.myLibrary', 'My Library')} defaultOpen>
         <Chip
           active={!!filters.onlyFavorites}
           onClick={() => set({ onlyFavorites: !filters.onlyFavorites })}>
@@ -154,106 +194,123 @@ export function CourseFilterSidebar({
           />
           <span className='flex-1'>{t('filters.favorites', 'Favorites')}</span>
           {favoriteCourses.length > 0 && (
-            <Badge variant='secondary' className='text-[10px] h-4 px-1.5'>
+            <Badge
+              variant='secondary'
+              className='text-[10px] h-4 px-1.5 shrink-0'>
               {favoriteCourses.length}
             </Badge>
           )}
         </Chip>
-
         <Chip
           active={!!filters.onlyEnrolled}
           onClick={() => set({ onlyEnrolled: !filters.onlyEnrolled })}>
           <BookOpen className='h-4 w-4 shrink-0 text-blue-400' />
           <span className='flex-1'>{t('filters.enrolled', 'Enrolled')}</span>
           {enrolledCourses.length > 0 && (
-            <Badge variant='secondary' className='text-[10px] h-4 px-1.5'>
+            <Badge
+              variant='secondary'
+              className='text-[10px] h-4 px-1.5 shrink-0'>
               {enrolledCourses.length}
             </Badge>
           )}
         </Chip>
-
         <Chip
           active={!!filters.onlyCompleted}
           onClick={() => set({ onlyCompleted: !filters.onlyCompleted })}>
-          <CheckCircle2 className='h-4 w-4 shrink-0 text-emerald-400' />
-          {t('filters.completed', 'Completed')}
+          <BookCheck className='h-4 w-4 shrink-0 text-emerald-400' />
+          <span className='flex-1'>{t('filters.completed', 'Completed')}</span>
         </Chip>
       </FilterSection>
 
-      {/* ── Level ──────────────────────────────────────── */}
-      <FilterSection title={t('filters.level', 'Level')}>
-        {(['all', 'Beginner', 'Intermediate', 'Advanced'] as const).map((d) => (
-          <Chip
-            key={d}
-            active={
-              (!filters.difficulty && d === 'all') || filters.difficulty === d
-            }
-            onClick={() =>
-              set({ difficulty: d === 'all' ? 'all' : (d as CourseDifficulty) })
-            }>
-            <span className='text-base leading-none'>
-              {d === 'all'
-                ? '🌐'
-                : d === 'Beginner'
-                  ? '🟢'
-                  : d === 'Intermediate'
-                    ? '🟡'
-                    : '🔴'}
-            </span>
-            <span>
-              {d === 'all' ? t('filters.allLevels', 'All Levels') : d}
-            </span>
-          </Chip>
-        ))}
-      </FilterSection>
+      <div className='h-px bg-border/40' />
 
-      {/* ── Access ─────────────────────────────────────── */}
-      <FilterSection title={t('filters.access', 'Access')}>
-        {(['all', 'free', 'pro', 'premium'] as const).map((a) => (
-          <Chip
-            key={a}
-            active={(!filters.access && a === 'all') || filters.access === a}
-            onClick={() => set({ access: a as CourseAccess | 'all' })}>
-            <span className='text-base leading-none'>
-              {a === 'all'
-                ? '🌐'
-                : a === 'free'
-                  ? '🎁'
-                  : a === 'pro'
-                    ? '👑'
-                    : '💎'}
-            </span>
-            <span className='capitalize'>
-              {a === 'all' ? t('filters.allAccess', 'All Access') : a}
-            </span>
-          </Chip>
-        ))}
-      </FilterSection>
-
-      {/* ── Content type ───────────────────────────────── */}
-      <FilterSection title={t('filters.contentType', 'Type')}>
+      {/* LEVEL */}
+      <FilterSection title={t('filters.level', 'Level')} defaultOpen>
         {[
           {
             v: 'all',
-            icon: <BookOpen className='h-4 w-4' />,
-            label: t('filters.all', 'All Types'),
+            Icon: Globe,
+            label: t('filters.allLevels', 'All Levels'),
+            cls: 'text-muted-foreground',
           },
           {
+            v: 'Beginner',
+            Icon: TrendingUp,
+            label: 'Beginner',
+            cls: 'text-emerald-500',
+          },
+          {
+            v: 'Intermediate',
+            Icon: Gauge,
+            label: 'Intermediate',
+            cls: 'text-yellow-500',
+          },
+          {
+            v: 'Advanced',
+            Icon: Flame,
+            label: 'Advanced',
+            cls: 'text-red-500',
+          },
+        ].map(({ v, Icon, label, cls }) => (
+          <Chip
+            key={v}
+            active={
+              (!filters.difficulty && v === 'all') || filters.difficulty === v
+            }
+            onClick={() =>
+              set({ difficulty: v === 'all' ? 'all' : (v as CourseDifficulty) })
+            }>
+            <Icon className={cn('h-4 w-4 shrink-0', cls)} />
+            {label}
+          </Chip>
+        ))}
+      </FilterSection>
+
+      <div className='h-px bg-border/40' />
+
+      {/* ACCESS */}
+      <FilterSection title={t('filters.access', 'Access')} defaultOpen>
+        {[
+          {
+            v: 'all',
+            Icon: Globe,
+            label: t('filters.allAccess', 'All Access'),
+            cls: 'text-muted-foreground',
+          },
+          { v: 'free', Icon: Unlock, label: 'Free', cls: 'text-emerald-500' },
+          { v: 'pro', Icon: Crown, label: 'Pro', cls: 'text-blue-500' },
+          { v: 'premium', Icon: Gem, label: 'Premium', cls: 'text-violet-500' },
+        ].map(({ v, Icon, label, cls }) => (
+          <Chip
+            key={v}
+            active={(!filters.access && v === 'all') || filters.access === v}
+            onClick={() => set({ access: v as CourseAccess | 'all' })}>
+            <Icon className={cn('h-4 w-4 shrink-0', cls)} />
+            {label}
+          </Chip>
+        ))}
+      </FilterSection>
+
+      <div className='h-px bg-border/40' />
+
+      {/* TYPE — collapsed by default */}
+      <FilterSection
+        title={t('filters.contentType', 'Type')}
+        defaultOpen={false}>
+        {[
+          { v: 'all', Icon: BookOpen, label: t('filters.all', 'All Types') },
+          {
             v: 'practical',
-            icon: <FlaskConical className='h-4 w-4' />,
+            Icon: FlaskConical,
             label: t('filters.practical', 'Practical'),
           },
           {
             v: 'theoretical',
-            icon: <BookMarked className='h-4 w-4' />,
+            Icon: BookMarked,
             label: t('filters.theoretical', 'Theoretical'),
           },
-          {
-            v: 'mixed',
-            icon: <BookOpen className='h-4 w-4' />,
-            label: t('filters.mixed', 'Mixed'),
-          },
-        ].map(({ v, icon, label }) => (
+          { v: 'mixed', Icon: BookOpen, label: t('filters.mixed', 'Mixed') },
+        ].map(({ v, Icon, label }) => (
           <Chip
             key={v}
             active={
@@ -262,14 +319,16 @@ export function CourseFilterSidebar({
             onClick={() =>
               set({ contentType: v as CourseFilters['contentType'] })
             }>
-            <span className='text-muted-foreground'>{icon}</span>
+            <Icon className='h-4 w-4 shrink-0 text-muted-foreground' />
             {label}
           </Chip>
         ))}
       </FilterSection>
 
-      {/* ── Status ─────────────────────────────────────── */}
-      <FilterSection title={t('filters.status', 'Status')}>
+      <div className='h-px bg-border/40' />
+
+      {/* STATUS — collapsed by default */}
+      <FilterSection title={t('filters.status', 'Status')} defaultOpen={false}>
         <Chip
           active={filters.status === 'coming_soon'}
           onClick={() =>
@@ -277,7 +336,7 @@ export function CourseFilterSidebar({
               status: filters.status === 'coming_soon' ? 'all' : 'coming_soon',
             })
           }>
-          <Clock3 className='h-4 w-4 text-zinc-400' />
+          <Clock3 className='h-4 w-4 shrink-0 text-zinc-400' />
           {t('filters.comingSoon', 'Coming Soon')}
         </Chip>
       </FilterSection>

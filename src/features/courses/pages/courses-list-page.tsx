@@ -131,8 +131,8 @@ export default function CoursesListPage() {
                   <p className='text-sm text-muted-foreground'>
                     <span className='font-bold text-foreground'>
                       {filteredData.length}
-                    </span>{' '}
-                    {t('list.results', 'courses found')}
+                    </span>
+                    {' courses found'}
                   </p>
                 )}
 

@@ -1,38 +1,30 @@
 import { useMutation } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import { useTranslation } from 'react-i18next';
-import { apiClient } from '@/core/api/client';
 import { useCourseProgressStore } from '../store/course-progress.store';
-import type { CourseAccess } from '../types/course.types';
+import { toast } from 'sonner';
 
-const BACKEND_READY = import.meta.env.VITE_COURSES_ENABLED === 'true';
+interface EnrollParams {
+  courseId: string;
+}
+
+async function mockEnroll(_p: EnrollParams): Promise<{ success: boolean }> {
+  return new Promise((res) => setTimeout(() => res({ success: true }), 500));
+}
 
 export function useEnrollment() {
-  const enrollCourse = useCourseProgressStore((s) => s.enrollCourse);
-  const { t } = useTranslation('courses');
+  const { enrollCourse } = useCourseProgressStore();
 
   return useMutation({
-    mutationFn: async ({
-      courseId,
-      access,
-    }: {
-      courseId: string;
-      access: CourseAccess;
-    }) => {
-      if (access !== 'free') throw new Error('PAYWALL');
-      if (!BACKEND_READY) {
-        await new Promise((r) => setTimeout(r, 500));
-        enrollCourse(courseId);
-        return;
-      }
-      await apiClient.post(`/courses/${courseId}/enroll`);
+    mutationFn: mockEnroll,
+    // Optimistic: update store immediately
+    onMutate: ({ courseId }) => {
       enrollCourse(courseId);
     },
-    onSuccess: () =>
-      toast.success(t('enrollment.success', 'Enrolled! Start learning now 🚀')),
-    onError: (err: Error) => {
-      if (err.message !== 'PAYWALL')
-        toast.error(t('enrollment.error', 'Enrollment failed. Try again.'));
+    onSuccess: (_d, { courseId }) => {
+      enrollCourse(courseId); // idempotent — ensures store is in sync
+      toast.success('Enrolled! Start learning now.', { duration: 2000 });
+    },
+    onError: () => {
+      toast.error('Enrollment failed. Please try again.');
     },
   });
 }

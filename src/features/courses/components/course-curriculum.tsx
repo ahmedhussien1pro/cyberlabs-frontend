@@ -9,10 +9,8 @@ import {
   Clock3,
   Sparkles,
   Clock,
-  // Play,
   FlaskConical,
   ExternalLink,
-  // GraduationCap,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -345,7 +343,8 @@ export function CourseCurriculum({
   const toggle = (id: string) => setOpenId((p) => (p === id ? null : id));
 
   const total = course.sections.length;
-  const done = getCompletedCount(course.id);
+  // `done` was previously defined but unused. It represents the count of completed items.
+  const doneCount = getCompletedCount(course.id);
   const pct = getProgress(course.id, total);
   const totalHours = course.estimatedHours;
 
@@ -367,7 +366,7 @@ export function CourseCurriculum({
         <div className='flex shrink-0 items-center gap-4 rounded-xl border border-border/50 bg-muted/30 px-4 py-2.5'>
           <div className='text-right'>
             <p className='text-[11px] text-muted-foreground'>
-              {t('detail.yourProgress', 'Your progress')}
+              {t('detail.yourProgress', 'Your progress')} ({doneCount}/{total})
             </p>
             <p className='text-lg font-black leading-none'>{pct}%</p>
           </div>

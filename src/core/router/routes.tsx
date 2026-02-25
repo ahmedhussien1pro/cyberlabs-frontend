@@ -16,7 +16,7 @@ const LazyPage = ({
 );
 
 export const routes: RouteObject[] = [
-  // ── Website ────────────────────────────────────
+  // ── Website (Public) ───────────────────────────
   { path: ROUTES.HOME, element: <LazyPage Component={Pages.HomePage} /> },
   { path: ROUTES.ABOUT, element: <LazyPage Component={Pages.AboutPage} /> },
   { path: ROUTES.CONTACT, element: <LazyPage Component={Pages.ContactPage} /> },
@@ -24,7 +24,7 @@ export const routes: RouteObject[] = [
   { path: ROUTES.TERMS, element: <LazyPage Component={Pages.TermsPage} /> },
   { path: ROUTES.PRIVACY, element: <LazyPage Component={Pages.PrivacyPage} /> },
 
-  // ── Auth ───────────────────────────────────────
+  // ── Auth (Public) ──────────────────────────────
   { path: ROUTES.AUTH.LOGIN, element: <LazyPage Component={Pages.AuthPage} /> },
   {
     path: ROUTES.AUTH.FORGOT_PASSWORD,
@@ -73,7 +73,7 @@ export const routes: RouteObject[] = [
     element: <LazyPage Component={Pages.PublicProfilePage} />,
   },
 
-  // ── Dashboard (nested layout) ──────────────────
+  // ── Dashboard (Protected) ──────────────────────
   {
     path: ROUTES.DASHBOARD.DashboardPage,
     element: (
@@ -101,14 +101,23 @@ export const routes: RouteObject[] = [
       },
     ],
   },
-  // ── Courses (public protected) ──────────────
+  
+  // ── Courses (Protected) ──────────────────────
   {
     path: '/courses',
-    element: <LazyPage Component={Pages.CoursesListPage} />,
+    element: (
+      <ProtectedRoute>
+        <LazyPage Component={Pages.CoursesListPage} />
+      </ProtectedRoute>
+    ),
   },
   {
     path: '/courses/:slug',
-    element: <LazyPage Component={Pages.CourseDetailPage} />,
+    element: (
+      <ProtectedRoute>
+        <LazyPage Component={Pages.CourseDetailPage} />
+      </ProtectedRoute>
+    ),
   },
   {
     path: '/courses/:slug/lessons/:lessonId',
@@ -118,23 +127,41 @@ export const routes: RouteObject[] = [
       </ProtectedRoute>
     ),
   },
-  // ── Labs (public protected) ──────────────────
+  
+  // ── Labs (Protected) ─────────────────────────
   {
     path: '/labs',
-    element: <LazyPage Component={Pages.LabsListPage} />,
+    element: (
+      <ProtectedRoute>
+        <LazyPage Component={Pages.LabsListPage} />
+      </ProtectedRoute>
+    ),
   },
   {
     path: '/labs/:slug',
-    element: <LazyPage Component={Pages.LabDetailPage} />,
+    element: (
+      <ProtectedRoute>
+        <LazyPage Component={Pages.LabDetailPage} />
+      </ProtectedRoute>
+    ),
   },
-  // ── Learning Paths ─────────────────────────────
+  
+  // ── Learning Paths (Protected) ───────────────
   {
     path: '/paths',
-    element: <LazyPage Component={Pages.PathsPage} />,
+    element: (
+      <ProtectedRoute>
+        <LazyPage Component={Pages.PathsPage} />
+      </ProtectedRoute>
+    ),
   },
   {
     path: '/paths/:slug',
-    element: <LazyPage Component={Pages.PathDetailPage} />,
+    element: (
+      <ProtectedRoute>
+        <LazyPage Component={Pages.PathDetailPage} />
+      </ProtectedRoute>
+    ),
   },
 
   // ── Errors ─────────────────────────────────────
@@ -143,14 +170,13 @@ export const routes: RouteObject[] = [
     element: <LazyPage Component={Pages.UnauthorizedPage} />,
   },
   {
-    path: '*',
-    element: <LazyPage Component={Pages.NotFoundPage} />,
-  },
-  {
     path: '/temp',
     element: <LazyPage Component={Pages.TempPage} />,
   },
-  { path: '*', element: <LazyPage Component={Pages.NotFoundPage} /> },
+  {
+    path: '*',
+    element: <LazyPage Component={Pages.NotFoundPage} />,
+  },
 ];
 
 export default routes;

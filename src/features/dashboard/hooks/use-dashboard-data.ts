@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { format, parseISO } from 'date-fns';
 import { apiClient } from '@/core/api/client';
 import { API_ENDPOINTS } from '@/core/api/endpoints';
 import type {
@@ -18,8 +19,17 @@ export const useWeeklyProgress = () =>
     queryKey: ['dashboard', 'weekly'],
     queryFn: () =>
       apiClient
-        .get(API_ENDPOINTS.DASHBOARD.PROGRESS_WEEKLY)
-        .then(extractData<WeeklyProgressPoint[]>),
+        .get(API_ENDPOINTS.DASHBOARD.PROGRESS_CHART)
+        .then((res) => {
+          const data = extractData<any[]>(res);
+          // Take the last 7 days of the 30-day chart data to display in the weekly bar chart
+          if (!Array.isArray(data)) return [];
+          return data.slice(-7).map((d) => ({
+            day: format(parseISO(d.date), 'EEE'), // 'Mon', 'Tue'
+            labs: 0,
+            xp: d.xp,
+          })) as WeeklyProgressPoint[];
+        }),
     retry: false,
     staleTime: 1000 * 60 * 5,
   });

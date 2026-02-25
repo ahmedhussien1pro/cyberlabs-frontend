@@ -21,6 +21,7 @@ import CourseElementRenderer from './CourseElementRenderer';
 import { useTopic, useMarkTopicComplete } from '../hooks/use-topic';
 import { useCourseProgressStore } from '../store/course-progress.store';
 import type { Course } from '../types/course.types';
+import { useEntitlement } from '@/features/pricing/hooks/use-entitlement';
 
 // ── Types ────────────────────────────────────────────────────────────
 type TopicState = 'done' | 'active' | 'locked' | 'soon';
@@ -339,6 +340,7 @@ export function CourseCurriculum({
   const { t } = useTranslation('courses');
   const [openId, setOpenId] = useState<string | null>(null);
   const { getProgress, getCompletedCount } = useCourseProgressStore();
+  const { withEntitlement } = useEntitlement();
 
   const toggle = (id: string) => setOpenId((p) => (p === id ? null : id));
 
@@ -347,6 +349,20 @@ export function CourseCurriculum({
   const doneCount = getCompletedCount(course.id);
   const pct = getProgress(course.id, total);
   const totalHours = course.estimatedHours;
+  
+  // Create an entitlement-checked lab opening function
+  const handleOpenLabs = withEntitlement(
+    () => {
+      if (course.labsLink) {
+        window.open(course.labsLink, '_blank', 'noopener,noreferrer');
+      }
+    },
+    { 
+      requiredPlan: course.access === 'free' ? 'free' : 'pro',
+      featureKey: 'pricing.paywall.generic',
+      returnTo: `/courses/${course.slug}`
+    }
+  );
 
   return (
     <section className='space-y-6'>
@@ -412,17 +428,16 @@ export function CourseCurriculum({
           <Button
             variant='outline'
             size='lg'
+            onClick={handleOpenLabs}
             className={cn(
               'gap-2.5 min-w-[220px] rounded-xl border-primary/40',
               'hover:bg-primary/10 hover:border-primary/60 hover:text-primary',
-              'transition-all font-semibold',
+              'transition-all font-semibold cursor-pointer',
             )}
-            asChild>
-            <a href={course.labsLink} target='_blank' rel='noopener noreferrer'>
+            >
               <FlaskConical className='h-5 w-5' />
               {t('curriculum.goToLabs', 'Go To Labs')}
               <ExternalLink className='h-3.5 w-3.5 opacity-70' />
-            </a>
           </Button>
         </div>
       )}

@@ -9,35 +9,38 @@ import type {
   UserActivity,
 } from '@/shared/types/user.types';
 
-const unwrap = <T>(res: unknown) => (res as { data: T }).data;
+// Depending on backend structure, sometimes it wraps arrays in { data: [...] }
+const extractData = <T>(res: any): T => {
+  return (res?.data !== undefined ? res.data : res) as T;
+};
 
 // ─── GET ─────────────────────────────────────────────────────────────────────
 export const getMyProfile = () =>
-  apiClient.get('/users/me').then(unwrap<UserProfile>);
+  apiClient.get('/users/me').then(extractData<UserProfile>);
 export const getMyStats = () =>
-  apiClient.get('/users/me/stats').then(unwrap<UserStats>);
+  apiClient.get('/users/me/stats').then(extractData<UserStats>);
 export const getMyPoints = () =>
-  apiClient.get('/users/me/points').then(unwrap<UserPoints>);
+  apiClient.get('/users/me/points').then(extractData<UserPoints>);
 export const getMyLabs = () =>
-  apiClient.get('/users/me/labs').then(unwrap<CompletedLab[]>);
+  apiClient.get('/users/me/labs').then(extractData<CompletedLab[]>);
 export const getMyCourses = () =>
-  apiClient.get('/users/me/courses').then(unwrap<EnrolledCourse[]>);
+  apiClient.get('/users/me/courses').then(extractData<EnrolledCourse[]>);
 export const getMyActivity = () =>
-  apiClient.get('/users/me/activity').then(unwrap<UserActivity[]>);
+  apiClient.get('/users/me/activity').then(extractData<UserActivity[]>);
 
 // ─── Public ──────────────────────────────────────────────────────────────────
 export const getPublicProfile = (id: string) =>
-  apiClient.get(`/users/${id}`).then(unwrap<UserProfile>);
+  apiClient.get(`/users/${id}`).then(extractData<UserProfile>);
 
 // ─── Mutations ───────────────────────────────────────────────────────────────
 export const updateMyProfile = (payload: UpdateProfilePayload) =>
-  apiClient.put('/users/me', payload).then(unwrap<UserProfile>);
+  apiClient.put('/users/me', payload).then(extractData<UserProfile>);
 
 // ─── Avatar upload (R2 presign flow) ─────────────────────────────────────────
 const presignAvatar = (contentType: string) =>
   apiClient
     .post('/users/me/avatar/presign', { contentType })
-    .then(unwrap<{ uploadUrl: string; key: string; publicUrl: string }>);
+    .then(extractData<{ uploadUrl: string; key: string; publicUrl: string }>);
 
 const uploadToR2 = (uploadUrl: string, file: File) => {
   if (!uploadUrl?.startsWith('http')) {
@@ -53,7 +56,7 @@ const uploadToR2 = (uploadUrl: string, file: File) => {
 const confirmAvatar = (key: string) =>
   apiClient
     .post('/users/me/avatar/confirm', { key })
-    .then(unwrap<{ avatarUrl: string }>);
+    .then(extractData<{ avatarUrl: string }>);
 
 export const uploadAvatar = async (
   file: File,

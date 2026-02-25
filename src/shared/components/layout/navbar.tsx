@@ -111,6 +111,9 @@ export function Navbar() {
     },
   ];
 
+  // Safely access avatar using either avatarUrl or avatar
+  const userAvatar = (user as any)?.avatarUrl || user?.avatar;
+
   return (
     <>
       <nav className='sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
@@ -159,7 +162,7 @@ export function Navbar() {
                 <DropdownMenuTrigger asChild>
                   <Button variant='ghost' size='icon' className='rounded-full relative'>
                     <Avatar className='h-8 w-8'>
-                      <AvatarImage src={user?.avatar} alt={user?.name} />
+                      <AvatarImage src={userAvatar} alt={user?.name} />
                       <AvatarFallback>
                         {user?.name?.charAt(0).toUpperCase() || 'U'}
                       </AvatarFallback>

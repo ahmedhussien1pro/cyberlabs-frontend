@@ -73,6 +73,16 @@ export const routes: RouteObject[] = [
     element: <LazyPage Component={Pages.PublicProfilePage} />,
   },
 
+  // ── Notifications ──────────────────────────────
+  {
+    path: '/notifications',
+    element: (
+      <ProtectedRoute>
+        <LazyPage Component={Pages.NotificationsPage} />
+      </ProtectedRoute>
+    ),
+  },
+
   // ── Dashboard (Protected) ──────────────────────
   {
     path: ROUTES.DASHBOARD.DashboardPage,

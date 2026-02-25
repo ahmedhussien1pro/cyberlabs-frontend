@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { 
   Bell, Check, Trash2, Settings, 
   ChevronLeft, LayoutDashboard

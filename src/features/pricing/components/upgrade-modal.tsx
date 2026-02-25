@@ -6,7 +6,11 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ROUTES } from '@/shared/constants';
 import { useCheckout } from '../hooks/use-pricing';
-import type { PaywallContext } from '../types/pricing.types';
+
+export interface PaywallContext {
+  featureKey: string;
+  returnTo?: string;
+}
 
 // ── Global store for modal state ──────────────────────────────────────
 interface UpgradeModalStore {

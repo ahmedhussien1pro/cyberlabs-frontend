@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
+import { QueryProvider } from './query-provider';
 import { ThemeProvider } from './theme-provider';
 import { I18nProvider } from './i18n-provider';
-import { QueryProvider } from './query-provider';
-import { SocketProvider } from './socket-provider';
+import { Toaster } from 'sonner';
 
 interface AppProvidersProps {
   children: ReactNode;
@@ -10,14 +10,21 @@ interface AppProvidersProps {
 
 export function AppProviders({ children }: AppProvidersProps) {
   return (
-    <ThemeProvider>
-      <I18nProvider>
-        <QueryProvider>
-          <SocketProvider>
-            {children}
-          </SocketProvider>
-        </QueryProvider>
-      </I18nProvider>
-    </ThemeProvider>
+    <I18nProvider>
+      <QueryProvider>
+        <ThemeProvider>
+          {children}
+          <Toaster
+            position='top-center'
+            expand={false}
+            richColors
+            closeButton
+            duration={4000}
+          />
+        </ThemeProvider>
+      </QueryProvider>
+    </I18nProvider>
   );
 }
+
+export default AppProviders;

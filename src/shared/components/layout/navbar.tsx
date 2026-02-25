@@ -1,10 +1,21 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { 
-  Menu, Code, GraduationCap, Trophy, Crown, Star, Building2, 
-  LayoutDashboard, Info, Mail, ShieldAlert, FileText 
+import {
+  Menu,
+  Code,
+  GraduationCap,
+  Trophy,
+  Crown,
+  Star,
+  Building2,
+  LayoutDashboard,
+  Info,
+  Mail,
+  ShieldAlert,
+  FileText,
 } from 'lucide-react';
+import { useProfile } from '../../../features/profile/hooks/use-profile';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -50,10 +61,13 @@ export function Navbar() {
 
   // Fetch subscription if authenticated
   const { data: sub } = useMySubscription();
-  
+
   // Resolve plan identifier and visual token
   const currentPlan = sub?.planId || 'free';
-  const badgeToken = currentPlan !== 'free' ? PLAN_BADGES[currentPlan as keyof typeof PLAN_BADGES] : null;
+  const badgeToken =
+    currentPlan !== 'free'
+      ? PLAN_BADGES[currentPlan as keyof typeof PLAN_BADGES]
+      : null;
   const BadgeIcon = badgeToken?.icon;
 
   const learningItems = [
@@ -61,13 +75,19 @@ export function Navbar() {
       label: t('navigation.courses', 'Courses'),
       href: '/courses',
       icon: <GraduationCap className='w-4 h-4' />,
-      description: t('navigation.coursesDesc', 'Learn cybersecurity fundamentals'),
+      description: t(
+        'navigation.coursesDesc',
+        'Learn cybersecurity fundamentals',
+      ),
     },
     {
       label: t('navigation.labs', 'Labs'),
       href: '/labs',
       icon: <Code className='w-4 h-4' />,
-      description: t('navigation.labsDesc', 'Practice in real-world environments'),
+      description: t(
+        'navigation.labsDesc',
+        'Practice in real-world environments',
+      ),
     },
     {
       label: t('navigation.paths', 'Career Paths'),
@@ -79,7 +99,10 @@ export function Navbar() {
       label: t('navigation.challenges', 'CTF Challenges'),
       href: '/challenges',
       icon: <Trophy className='w-4 h-4' />,
-      description: t('navigation.challengesDesc', 'Compete and test your skills'),
+      description: t(
+        'navigation.challengesDesc',
+        'Compete and test your skills',
+      ),
       badge: 'Soon',
     },
   ];
@@ -89,7 +112,10 @@ export function Navbar() {
       label: t('navigation.about', 'About Us'),
       href: ROUTES.ABOUT,
       icon: <Info className='w-4 h-4' />,
-      description: t('navigation.aboutDesc', 'Learn about our mission and team'),
+      description: t(
+        'navigation.aboutDesc',
+        'Learn about our mission and team',
+      ),
     },
     {
       label: t('navigation.contact', 'Contact'),
@@ -111,9 +137,8 @@ export function Navbar() {
     },
   ];
 
-  // Safely access avatar using either avatarUrl or avatar
-  const userAvatar = (user as any)?.avatarUrl || user?.avatar;
-
+  const { data: profile } = useProfile();
+  const userAvatar = profile?.avatarUrl;
   return (
     <>
       <nav className='sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
@@ -128,17 +153,17 @@ export function Navbar() {
               className='text-sm font-medium text-muted-foreground hover:text-foreground transition-colors'>
               {t('navigation.home')}
             </Link>
-            
+
             <NavDropdown
               label={t('navigation.learning', 'Learning')}
               items={learningItems}
             />
-            
+
             <NavDropdown
               label={t('navigation.company', 'Company')}
               items={companyItems}
             />
-            
+
             <Link
               to={ROUTES.PRICING}
               className='text-sm font-medium text-muted-foreground hover:text-foreground transition-colors'>
@@ -160,20 +185,26 @@ export function Navbar() {
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant='ghost' size='icon' className='rounded-full relative'>
-                    <Avatar className='h-8 w-8'>
-                      <AvatarImage src={userAvatar} alt={user?.name} />
+                  <Button
+                    variant='ghost'
+                    size='icon'
+                    className='rounded-full relative'>
+                    <Avatar className='h-[7.5vh] w-[7.5vh]  overflow-hidden'>
+                      <AvatarImage
+                        src={userAvatar}
+                        alt={user?.name}
+                        className='object-cover scale-130'
+                      />
                       <AvatarFallback>
                         {user?.name?.charAt(0).toUpperCase() || 'U'}
                       </AvatarFallback>
                     </Avatar>
-                    
+
                     {/* Subscription Badge Indicator */}
                     {BadgeIcon && (
-                      <span 
+                      <span
                         className={`absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full border-2 border-background shadow-sm ${badgeToken?.classes}`}
-                        title={`Plan: ${currentPlan.toUpperCase()}`}
-                      >
+                        title={`Plan: ${currentPlan.toUpperCase()}`}>
                         <BadgeIcon className='h-2.5 w-2.5' />
                       </span>
                     )}
@@ -182,13 +213,14 @@ export function Navbar() {
                 <DropdownMenuContent align='end' className='w-56'>
                   <DropdownMenuLabel>
                     <div className='flex flex-col space-y-1'>
-                      <div className="flex items-center justify-between">
+                      <div className='flex items-center justify-between'>
                         <p className='text-sm font-medium'>{user?.name}</p>
                         {/* Status tag in dropdown */}
                         {currentPlan !== 'free' && (
-                           <span className={`text-[9px] uppercase font-bold px-1.5 py-0.5 rounded-sm ${badgeToken?.classes}`}>
-                             {currentPlan}
-                           </span>
+                          <span
+                            className={`text-[9px] uppercase font-bold px-1.5 py-0.5 rounded-sm ${badgeToken?.classes}`}>
+                            {currentPlan}
+                          </span>
                         )}
                       </div>
                       <p className='text-xs text-muted-foreground'>
@@ -203,7 +235,9 @@ export function Navbar() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to={`/profile`}>{t('navigation.profile', 'Profile')}</Link>
+                    <Link to={`/profile`}>
+                      {t('navigation.profile', 'Profile')}
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link to={`${ROUTES.DASHBOARD.DashboardPage}/settings`}>

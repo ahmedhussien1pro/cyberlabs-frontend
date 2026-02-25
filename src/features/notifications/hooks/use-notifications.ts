@@ -36,16 +36,21 @@ export function useNotifications() {
   return useQuery({
     queryKey: KEY,
     queryFn: async (): Promise<NotificationsResponse> => {
-      return apiClient
-        .get(API_ENDPOINTS.NOTIFICATIONS.BASE)
-        .then(extractData<NotificationsResponse>);
+      try {
+        const response = await apiClient.get(API_ENDPOINTS.NOTIFICATIONS.BASE);
+        return extractData<NotificationsResponse>(response);
+      } catch (error) {
+        // Return empty notifications to prevent query from failing constantly
+        return {
+          notifications: [],
+          total: 0,
+          unreadCount: 0
+        };
+      }
     },
     staleTime: 1000 * 30,
     refetchInterval: 1000 * 60,
     retry: false,
-    // Add fallback for 400 errors (similar to pricing) to prevent query crashes
-    throwOnError: false,
-    initialData: undefined,
   });
 }
 

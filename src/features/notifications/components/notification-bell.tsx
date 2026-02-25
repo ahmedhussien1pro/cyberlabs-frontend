@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Archive, Bell, BellOff, CheckCheck, RefreshCw } from 'lucide-react';
+import { Archive, Bell, BellOff, CheckCheck, RefreshCw, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import {
   Popover,
   PopoverContent,
@@ -107,11 +108,11 @@ export function NotificationBell() {
       <PopoverContent
         align='end'
         sideOffset={10}
-        className='w-[360px] max-w-[calc(100vw-1rem)] p-0 shadow-2xl'>
+        className='w-[360px] max-w-[calc(100vw-1rem)] p-0 shadow-2xl flex flex-col'>
         {/* Panel Header */}
         <div className='flex items-center justify-between px-4 py-3'>
           <div className='flex items-center gap-2'>
-            <h2 className='text-sm font-semibold'>{t('panel.title')}</h2>
+            <h2 className='text-sm font-semibold'>{t('panel.title', 'Notifications')}</h2>
             {hasNew && (
               <Badge
                 className='h-4 min-w-4 rounded-full bg-red-500 px-1.5
@@ -144,7 +145,7 @@ export function NotificationBell() {
                 onClick={() => markAll.mutate()}
                 disabled={markAll.isPending}>
                 <CheckCheck size={12} />
-                {t('panel.markAll')}
+                {t('panel.markAll', 'Mark all read')}
               </Button>
             )}
           </div>
@@ -174,7 +175,7 @@ export function NotificationBell() {
                     : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground',
                 )}>
                 {tb === 'archived' ? <Archive size={11} /> : null}
-                {t(`panel.tab.${tb}`)}
+                {t(`panel.tab.${tb}`, tb.charAt(0).toUpperCase() + tb.slice(1))}
                 {count > 0 && (
                   <span
                     className={cn(
@@ -218,14 +219,14 @@ export function NotificationBell() {
               )}
               <p className='text-xs font-medium'>
                 {tab === 'unread'
-                  ? t('panel.empty.unread')
+                  ? t('panel.empty.unread', 'No unread notifications')
                   : tab === 'archived'
-                    ? t('panel.empty.archived')
-                    : t('panel.empty.all')}
+                    ? t('panel.empty.archived', 'No archived notifications')
+                    : t('panel.empty.all', 'No notifications')}
               </p>
               {tab === 'all' && (
                 <p className='text-[11px] text-muted-foreground/50'>
-                  {t('panel.empty.allHint')}
+                  {t('panel.empty.allHint', 'You will see notifications here')}
                 </p>
               )}
             </motion.div>
@@ -247,14 +248,19 @@ export function NotificationBell() {
         </div>
 
         {/* ── Footer ───────────────────────────────── */}
-        {current.length > 0 && (
-          <>
-            <Separator />
-            <p className='px-4 py-2 text-center text-[11px] text-muted-foreground/50'>
-              {t('panel.endOfList')}
-            </p>
-          </>
-        )}
+        <div className="mt-auto border-t bg-muted/20">
+          <Button 
+            variant="ghost" 
+            className="w-full rounded-none h-10 text-xs font-medium text-muted-foreground hover:text-primary"
+            asChild
+            onClick={() => setOpen(false)}
+          >
+            <Link to="/notifications" className="flex items-center justify-center">
+              {t('panel.viewAll', 'View Notification Center')}
+              <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+            </Link>
+          </Button>
+        </div>
       </PopoverContent>
     </Popover>
   );

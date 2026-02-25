@@ -66,6 +66,12 @@ const SheetContent = React.forwardRef<
         <X className="h-4 w-4" />
         <span className="sr-only">Close</span>
       </SheetPrimitive.Close>
+      
+      {/* Required for Radix UI Dialog accessibility when a title isn't explicitly provided */}
+      <SheetPrimitive.Title className="sr-only">
+        Navigation Menu
+      </SheetPrimitive.Title>
+
       {children}
     </SheetPrimitive.Content>
   </SheetPortal>

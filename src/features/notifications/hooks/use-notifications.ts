@@ -1,14 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/core/api/client';
 import { API_ENDPOINTS } from '@/core/api/endpoints';
-import { MOCK_NOTIFICATIONS_RESPONSE } from '../data/mock-notifications';
 import type { NotificationsResponse } from '../types/notification.types';
 
 const extractData = <T>(res: any): T => {
   return (res?.data !== undefined ? res.data : res) as T;
 };
 
-const BACKEND_READY = import.meta.env.VITE_NOTIFICATIONS_ENABLED === 'true';
 const KEY = ['notifications'] as const;
 
 // ─── helpers ──────────────────────────────────────────────────────────
@@ -38,7 +36,6 @@ export function useNotifications() {
   return useQuery({
     queryKey: KEY,
     queryFn: async (): Promise<NotificationsResponse> => {
-      if (!BACKEND_READY) return MOCK_NOTIFICATIONS_RESPONSE;
       return apiClient
         .get(API_ENDPOINTS.NOTIFICATIONS.BASE)
         .then(extractData<NotificationsResponse>);
@@ -54,7 +51,6 @@ export function useMarkAsRead() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {
-      if (!BACKEND_READY) return;
       await apiClient.patch(API_ENDPOINTS.NOTIFICATIONS.MARK_READ(id));
     },
     ...patchCache(qc, (old) => {
@@ -92,7 +88,6 @@ export function useMarkAllRead() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (): Promise<void> => {
-      if (!BACKEND_READY) return;
       await apiClient.patch(API_ENDPOINTS.NOTIFICATIONS.MARK_ALL_READ);
     },
     onMutate: async () => {
@@ -119,7 +114,6 @@ export function useArchiveNotification() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {
-      if (!BACKEND_READY) return;
       await apiClient.patch(API_ENDPOINTS.NOTIFICATIONS.ARCHIVE(id));
     },
     onMutate: async (id: string) => {
@@ -152,7 +146,6 @@ export function useDeleteNotification() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {
-      if (!BACKEND_READY) return;
       await apiClient.delete(API_ENDPOINTS.NOTIFICATIONS.DELETE(id));
     },
     onMutate: async (id: string) => {

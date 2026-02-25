@@ -22,7 +22,6 @@ export async function fetchMySubscription(): Promise<UserSubscription> {
     // Ensure we always return an object even if API returns null/undefined
     return (
       data || {
-        id: '',
         userId: '',
         planId: 'free',
         status: 'active',
@@ -33,7 +32,6 @@ export async function fetchMySubscription(): Promise<UserSubscription> {
     );
   } catch (error) {
     return {
-      id: 'fallback-free',
       userId: 'guest',
       planId: 'free',
       status: 'active',

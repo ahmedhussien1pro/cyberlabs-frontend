@@ -5,14 +5,17 @@ import { apiClient } from '@/core/api/client';
 import { API_ENDPOINTS } from '@/core/api/endpoints';
 import type { Goal, GoalCategory } from '../types/dashboard.types';
 
-const cast = <T>(r: unknown) => r as T;
+const extractData = <T>(res: any): T => {
+  return (res?.data !== undefined ? res.data : res) as T;
+};
+
 const GOALS_KEY = ['goals', 'my'] as const;
 
 /** ── Read ─────────────────────────── */
 export const useMyGoals = () =>
   useQuery({
     queryKey: GOALS_KEY,
-    queryFn: () => apiClient.get(API_ENDPOINTS.GOALS.BASE).then(cast<Goal[]>),
+    queryFn: () => apiClient.get(API_ENDPOINTS.GOALS.BASE).then(extractData<Goal[]>),
     retry: false,
   });
 
@@ -30,7 +33,7 @@ export function useCreateGoal() {
   const { t } = useTranslation('dashboard');
   return useMutation({
     mutationFn: (input: CreateGoalInput) =>
-      apiClient.post(API_ENDPOINTS.GOALS.CREATE, input).then(cast<Goal>),
+      apiClient.post(API_ENDPOINTS.GOALS.CREATE, input).then(extractData<Goal>),
     onSuccess: (newGoal) => {
       qc.setQueryData<Goal[]>(GOALS_KEY, (prev) => [newGoal, ...(prev ?? [])]);
       toast.success(t('goals.createSuccess'));
@@ -47,7 +50,7 @@ export function useCompleteGoal() {
     mutationFn: (id: string) =>
       apiClient
         .patch(API_ENDPOINTS.GOALS.UPDATE(id), { isCompleted: true })
-        .then(cast<Goal>),
+        .then(extractData<Goal>),
     onSuccess: (updated) => {
       qc.setQueryData<Goal[]>(
         GOALS_KEY,

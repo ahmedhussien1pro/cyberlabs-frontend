@@ -27,7 +27,7 @@ export function usePaths(filters: PathFilters = {}) {
           data = data.filter(
             (p) =>
               p.title.toLowerCase().includes(q) ||
-              p.ar_title.includes(q) ||
+              p.ar_title?.includes(q) ||
               p.tags.some((t) => t.toLowerCase().includes(q)),
           );
         }
@@ -37,8 +37,11 @@ export function usePaths(filters: PathFilters = {}) {
       if (filters.difficulty && filters.difficulty !== 'all')
         params.difficulty = filters.difficulty;
       if (filters.search) params.search = filters.search;
+      
       const res = await apiClient.get(API_ENDPOINTS.PATHS.BASE, { params });
-      return res.data;
+      // The backend returns a paginated structure: { data, meta }
+      // For now, we return the data array to match the existing hook signature
+      return res.data.data || res.data;
     },
     staleTime: 1000 * 60 * 10,
   });

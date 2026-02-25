@@ -49,6 +49,11 @@ export const PublicProfilePage = lazy(
   () => import('@/features/profile/pages/public-profile-page'),
 );
 
+// Notifications
+export const NotificationsPage = lazy(
+  () => import('@/features/notifications/pages/notifications-page'),
+);
+
 // Dashboard
 export const DashboardLayout = lazy(
   () => import('@/features/dashboard/components/layout/dashboard-layout'),

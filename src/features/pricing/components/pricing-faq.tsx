@@ -4,14 +4,10 @@ import { useTranslation } from 'react-i18next';
 import {
   ChevronDown,
   ShieldCheck,
-  Terminal,
-  BookOpen,
-  Award,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SectionHeader } from '@/shared/components/common';
 
-const FAQ_ICONS = [Terminal, BookOpen, ShieldCheck, Award, ShieldCheck];
 
 const FAQ_KEYS = ['q1', 'q2', 'q3', 'q4', 'q5'] as const;
 type FaqKey = (typeof FAQ_KEYS)[number];
@@ -76,7 +72,6 @@ export function PricingFaq() {
             <div className='space-y-2'>
               {FAQ_KEYS.map((k, i) => {
                 const isOpen = open === k;
-                const Icon = FAQ_ICONS[i];
 
                 return (
                   <div

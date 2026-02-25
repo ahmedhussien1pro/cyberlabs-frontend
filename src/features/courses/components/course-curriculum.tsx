@@ -338,7 +338,7 @@ export function CourseCurriculum({
   course,
   isEnrolled,
 }: CourseCurriculumProps) {
-  const { i18n, t } = useTranslation('courses');
+  const { t } = useTranslation('courses');
   const [openId, setOpenId] = useState<string | null>(null);
   const { getProgress, getCompletedCount } = useCourseProgressStore();
 

@@ -4,6 +4,10 @@ import { getTopicById } from '../data/mock-topics';
 import { useCourseProgressStore } from '../store/course-progress.store';
 import type { Topic } from '@/core/types/curriculumCourses.types';
 
+const extractData = <T>(res: any): T => {
+  return (res?.data !== undefined ? res.data : res) as T;
+};
+
 const BACKEND_READY = import.meta.env.VITE_COURSES_ENABLED === 'true';
 
 export const topicQueryKeys = {
@@ -19,10 +23,9 @@ export function useTopic(courseSlug: string, topicId: string) {
         await new Promise((r) => setTimeout(r, 250));
         return getTopicById(courseSlug, topicId);
       }
-      const res = await apiClient.get(
-        `/courses/${courseSlug}/topics/${topicId}`,
-      );
-      return res.data;
+      return apiClient
+        .get(`/courses/${courseSlug}/topics/${topicId}`)
+        .then(extractData<Topic>);
     },
     enabled: !!courseSlug && !!topicId,
     staleTime: 1000 * 60 * 30,

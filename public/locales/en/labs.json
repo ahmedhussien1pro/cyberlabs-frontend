@@ -1,16 +1,15 @@
 {
-  "workspace": {
-    "start": "تشغيل اللاب",
-    "stop": "إيقاف اللاب",
-    "loading": "جاري التحميل...",
-    "machineStatus": "حالة الجهاز:",
-    "machineNotStarted": "قم بتشغيل اللاب لعرض بيئة العمل هنا.",
-    "submitFlag": "تسليم الـ Flag",
-    "submit": "إرسال",
-    "flagCorrect": "إجابة صحيحة! أحسنت."
+  "tabs": {
+    "instructions": "التعليمات",
+    "hints": "التلميحات",
+    "terminal": "الطرفية (Terminal)"
   },
   "xss_basic": {
     "title": "أساسيات XSS",
-    "description": "في هذا اللاب، يحتوي التطبيق على ثغرة Reflected XSS في حقل البحث. استغل الثغرة لاستخراج الـ Cookie وإيجاد الـ Flag."
+    "description": "في هذا اللاب، يحتوي التطبيق على ثغرة Reflected XSS. ابحث عن طريقة لحقن كود JavaScript يقرأ قيمة document.cookie.",
+    "hints": {
+      "1": "حاول إدخال وسوم HTML عادية في حقل البحث لترى إن كانت تنعكس في الصفحة.",
+      "2": "استخدم وسم <script> مع دالة alert() للتأكد من تنفيذ الكود."
+    }
   }
 }

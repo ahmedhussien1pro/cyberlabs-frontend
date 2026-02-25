@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react';
-import { QueryProvider } from './query-provider';
 import { ThemeProvider } from './theme-provider';
 import { I18nProvider } from './i18n-provider';
-import { Toaster } from 'sonner';
+import { QueryProvider } from './query-provider';
+import { Toaster } from '@/components/ui/sonner';
+import { SocketProvider } from './socket-provider';
 
 interface AppProvidersProps {
   children: ReactNode;
@@ -10,21 +11,15 @@ interface AppProvidersProps {
 
 export function AppProviders({ children }: AppProvidersProps) {
   return (
-    <I18nProvider>
-      <QueryProvider>
-        <ThemeProvider>
-          {children}
-          <Toaster
-            position='top-center'
-            expand={false}
-            richColors
-            closeButton
-            duration={4000}
-          />
-        </ThemeProvider>
-      </QueryProvider>
-    </I18nProvider>
+    <ThemeProvider defaultTheme='dark' storageKey='cyberlabs-ui-theme'>
+      <I18nProvider>
+        <QueryProvider>
+          <SocketProvider>
+            {children}
+            <Toaster richColors closeButton position='top-right' />
+          </SocketProvider>
+        </QueryProvider>
+      </I18nProvider>
+    </ThemeProvider>
   );
 }
-
-export default AppProviders;

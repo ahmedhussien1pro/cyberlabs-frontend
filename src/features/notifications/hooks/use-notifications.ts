@@ -4,8 +4,11 @@ import { API_ENDPOINTS } from '@/core/api/endpoints';
 import { MOCK_NOTIFICATIONS_RESPONSE } from '../data/mock-notifications';
 import type { NotificationsResponse } from '../types/notification.types';
 
+const extractData = <T>(res: any): T => {
+  return (res?.data !== undefined ? res.data : res) as T;
+};
+
 const BACKEND_READY = import.meta.env.VITE_NOTIFICATIONS_ENABLED === 'true';
-const cast = <T>(r: unknown) => r as T;
 const KEY = ['notifications'] as const;
 
 // ─── helpers ──────────────────────────────────────────────────────────
@@ -38,7 +41,7 @@ export function useNotifications() {
       if (!BACKEND_READY) return MOCK_NOTIFICATIONS_RESPONSE;
       return apiClient
         .get(API_ENDPOINTS.NOTIFICATIONS.BASE)
-        .then(cast<NotificationsResponse>);
+        .then(extractData<NotificationsResponse>);
     },
     staleTime: 1000 * 30,
     refetchInterval: 1000 * 60,

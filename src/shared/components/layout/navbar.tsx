@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Menu, Code, GraduationCap, Trophy } from 'lucide-react';
+import { Menu, Code, GraduationCap, Trophy, Crown, Star, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -21,12 +21,37 @@ import { SearchButton, SearchDialog } from './search-dialog';
 import { NavDropdown } from './nav-dropdown';
 import { useAuthStore } from '@/core/store';
 import { ROUTES } from '@/shared/constants';
+import { useMySubscription } from '@/features/pricing/hooks/use-pricing';
+
+// Plan badges
+const PLAN_BADGES = {
+  pro: {
+    icon: Star,
+    classes: 'bg-primary text-primary-foreground border-primary',
+  },
+  team: {
+    icon: Crown,
+    classes: 'bg-violet-500 text-white border-violet-500',
+  },
+  enterprise: {
+    icon: Building2,
+    classes: 'bg-cyan-500 text-white border-cyan-500',
+  },
+};
 
 export function Navbar() {
   const { t } = useTranslation('common');
   const { isAuthenticated, user, logout } = useAuthStore();
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Fetch subscription if authenticated
+  const { data: sub } = useMySubscription();
+  
+  // Resolve plan identifier and visual token
+  const currentPlan = sub?.planId || 'free';
+  const badgeToken = currentPlan !== 'free' ? PLAN_BADGES[currentPlan as keyof typeof PLAN_BADGES] : null;
+  const BadgeIcon = badgeToken?.icon;
 
   const learningItems = [
     {
@@ -95,19 +120,37 @@ export function Navbar() {
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant='ghost' size='icon' className='rounded-full'>
+                  <Button variant='ghost' size='icon' className='rounded-full relative'>
                     <Avatar className='h-8 w-8'>
                       <AvatarImage src={user?.avatar} alt={user?.name} />
                       <AvatarFallback>
                         {user?.name?.charAt(0).toUpperCase() || 'U'}
                       </AvatarFallback>
                     </Avatar>
+                    
+                    {/* Subscription Badge Indicator */}
+                    {BadgeIcon && (
+                      <span 
+                        className={`absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full border-2 border-background shadow-sm ${badgeToken?.classes}`}
+                        title={`Plan: ${currentPlan.toUpperCase()}`}
+                      >
+                        <BadgeIcon className='h-2.5 w-2.5' />
+                      </span>
+                    )}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align='end' className='w-56'>
                   <DropdownMenuLabel>
                     <div className='flex flex-col space-y-1'>
-                      <p className='text-sm font-medium'>{user?.name}</p>
+                      <div className="flex items-center justify-between">
+                        <p className='text-sm font-medium'>{user?.name}</p>
+                        {/* Status tag in dropdown */}
+                        {currentPlan !== 'free' && (
+                           <span className={`text-[9px] uppercase font-bold px-1.5 py-0.5 rounded-sm ${badgeToken?.classes}`}>
+                             {currentPlan}
+                           </span>
+                        )}
+                      </div>
                       <p className='text-xs text-muted-foreground'>
                         {user?.email}
                       </p>

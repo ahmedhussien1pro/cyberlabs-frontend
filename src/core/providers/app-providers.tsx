@@ -11,7 +11,7 @@ interface AppProvidersProps {
 
 export function AppProviders({ children }: AppProvidersProps) {
   return (
-    <ThemeProvider defaultTheme='dark' storageKey='cyberlabs-ui-theme'>
+    <ThemeProvider>
       <I18nProvider>
         <QueryProvider>
           <SocketProvider>

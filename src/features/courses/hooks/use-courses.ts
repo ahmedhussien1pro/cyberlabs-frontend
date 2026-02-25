@@ -4,6 +4,10 @@ import { API_ENDPOINTS } from '@/core/api/endpoints';
 import { MOCK_COURSES_RESPONSE } from '../data/mock-courses';
 import type { CourseFilters, PaginatedCourses } from '../types/course.types';
 
+const extractData = <T>(res: any): T => {
+  return (res?.data !== undefined && res?.meta !== undefined ? res : res?.data !== undefined ? res.data : res) as T;
+};
+
 const BACKEND_READY = import.meta.env.VITE_COURSES_ENABLED === 'true';
 
 export const coursesQueryKeys = {
@@ -50,10 +54,9 @@ export function useCourses(filters: CourseFilters = {}) {
       if (filters.category) params.set('category', filters.category);
       if (filters.page) params.set('page', String(filters.page));
 
-      const res = await apiClient.get(
+      return apiClient.get(
         `${API_ENDPOINTS.COURSES.BASE}?${params.toString()}`,
-      );
-      return res.data;
+      ).then(extractData<PaginatedCourses>);
     },
     staleTime: 1000 * 60 * 5,
   });

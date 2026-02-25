@@ -2,10 +2,12 @@ import { apiClient } from '@/core/api/client';
 import { API_ENDPOINTS } from '@/core/api/endpoints';
 import type { Session, NotificationPrefs } from '../types/settings.types';
 
-const cast = <T>(res: unknown) => res as T;
+const extractData = <T>(res: any): T => {
+  return (res?.data !== undefined ? res.data : res) as T;
+};
 
 export const getSessions = () =>
-  apiClient.get(API_ENDPOINTS.USERS.SESSIONS).then(cast<Session[]>);
+  apiClient.get(API_ENDPOINTS.USERS.SESSIONS).then(extractData<Session[]>);
 
 export const revokeSession = (id: string) =>
   apiClient.delete(API_ENDPOINTS.USERS.REVOKE_SESSION(id));
@@ -16,17 +18,17 @@ export const revokeAllSessions = () =>
 export const getNotificationPrefs = () =>
   apiClient
     .get(API_ENDPOINTS.USERS.NOTIFICATION_PREFS)
-    .then(cast<NotificationPrefs>);
+    .then(extractData<NotificationPrefs>);
 
 export const updateNotificationPrefs = (prefs: Partial<NotificationPrefs>) =>
   apiClient
     .put(API_ENDPOINTS.USERS.NOTIFICATION_PREFS, prefs)
-    .then(cast<NotificationPrefs>);
+    .then(extractData<NotificationPrefs>);
 
 export const exportMyData = () =>
   apiClient
     .post(API_ENDPOINTS.USERS.EXPORT_DATA)
-    .then(cast<{ downloadUrl: string }>);
+    .then(extractData<{ downloadUrl: string }>);
 
 export const deleteAccount = (password: string) =>
   apiClient.delete(API_ENDPOINTS.USERS.DELETE_ACCOUNT, { data: { password } });

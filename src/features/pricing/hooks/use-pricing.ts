@@ -10,7 +10,7 @@ import {
   cancelSubscription,
 } from '../api/pricing.api';
 import type { BillingCycle, PlanId } from '../types/pricing.types';
-
+import { useAuthStore } from '@/core/store';
 const KEYS = {
   plans: ['pricing', 'plans'] as const,
   subscription: ['pricing', 'subscription'] as const,
@@ -29,12 +29,14 @@ export function usePlans() {
 
 // ── Current user subscription ─────────────────────────────────────────
 export function useMySubscription() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   return useQuery({
     queryKey: KEYS.subscription,
     queryFn: fetchMySubscription,
     retry: 1,
-    // If API 401/404 → treat as free plan (guest/unsubscribed)
+
     throwOnError: false,
+    enabled: isAuthenticated,
   });
 }
 

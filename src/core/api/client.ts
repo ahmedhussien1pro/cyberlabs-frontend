@@ -74,7 +74,8 @@ apiClient.interceptors.response.use(
         const refreshToken = await tokenManager.getRefreshToken();
 
         if (!refreshToken) {
-          throw new Error('No refresh token available');
+          // throw new Error('No refresh token available');
+          return Promise.reject({ message: 'Unauthorized', statusCode: 401 });
         }
 
         const refreshPromise = axios

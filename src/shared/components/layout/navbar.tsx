@@ -58,10 +58,9 @@ export function Navbar() {
   const { isAuthenticated, user, logout } = useAuthStore();
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  // Fetch subscription if authenticated
   const { data: sub } = useMySubscription();
-
+  const { data: profile } = useProfile();
+  const userAvatar = profile?.avatarUrl;
   // Resolve plan identifier and visual token
   const currentPlan = sub?.planId || 'free';
   const badgeToken =
@@ -137,8 +136,6 @@ export function Navbar() {
     },
   ];
 
-  const { data: profile } = useProfile();
-  const userAvatar = profile?.avatarUrl;
   return (
     <>
       <nav className='sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
@@ -189,7 +186,7 @@ export function Navbar() {
                     variant='ghost'
                     size='icon'
                     className='rounded-full relative'>
-                    <Avatar className='h-[7.5vh] w-[7.5vh]  overflow-hidden'>
+                    <Avatar className='h-10 w-10  overflow-hidden'>
                       <AvatarImage
                         src={userAvatar}
                         alt={user?.name}

@@ -112,4 +112,3 @@ export const PathDetailPage = lazy(
   () => import('@/features/paths/pages/path-detail-page'),
 );
 // Dev (temporary) Pages
-export const TempPage = lazy(() => import('@/features/dev/temp-page'));

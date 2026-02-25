@@ -3,9 +3,13 @@ import { Outlet } from 'react-router-dom';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { DashboardSidebar } from './dashboard-sidebar';
 import { DashboardTopbar } from './dashboard-topbar';
+import { useNotificationListener } from '@/features/notifications/hooks/use-notification-listener';
 
 export default function DashboardLayout(): React.ReactElement {
   const [mobileOpen, setMobileOpen] = useState(false);
+  
+  // Activate global notification listener
+  useNotificationListener();
 
   return (
     <div className='flex h-screen overflow-hidden bg-background'>

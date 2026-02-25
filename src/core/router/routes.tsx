@@ -111,7 +111,7 @@ export const routes: RouteObject[] = [
       },
     ],
   },
-  
+
   // ── Courses (Protected) ──────────────────────
   {
     path: '/courses',
@@ -137,7 +137,7 @@ export const routes: RouteObject[] = [
       </ProtectedRoute>
     ),
   },
-  
+
   // ── Labs (Protected) ─────────────────────────
   {
     path: '/labs',
@@ -155,7 +155,7 @@ export const routes: RouteObject[] = [
       </ProtectedRoute>
     ),
   },
-  
+
   // ── Learning Paths (Protected) ───────────────
   {
     path: '/paths',
@@ -179,10 +179,7 @@ export const routes: RouteObject[] = [
     path: ROUTES.UNAUTHORIZED,
     element: <LazyPage Component={Pages.UnauthorizedPage} />,
   },
-  {
-    path: '/temp',
-    element: <LazyPage Component={Pages.TempPage} />,
-  },
+
   {
     path: '*',
     element: <LazyPage Component={Pages.NotFoundPage} />,

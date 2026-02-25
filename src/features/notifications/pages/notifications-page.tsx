@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
-  Bell, Check, Trash2, Filter, Settings, 
+  Bell, Check, Trash2, Settings, 
   ChevronLeft, LayoutDashboard
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -15,19 +15,29 @@ import {
   TabsContent, 
   TabsList, 
   TabsTrigger 
-} from '@/components/ui/Tabs';
+} from '@/components/ui/tabs';
 
-import { useNotifications, useMarkAllRead, useClearAll } from '../hooks/use-notifications';
+import { 
+  useNotifications, 
+  useMarkAllRead, 
+  useClearAll,
+  useMarkAsRead,
+  useArchiveNotification,
+  useDeleteNotification
+} from '../hooks/use-notifications';
 import { NotificationItem } from '../components/notification-item';
 import { ROUTES } from '@/shared/constants';
 
 export default function NotificationsPage() {
-  const { t } = useTranslation('common');
   const [filter, setFilter] = useState<string>('all');
   
   const { data, isLoading } = useNotifications();
   const { mutate: markAllRead, isPending: isMarking } = useMarkAllRead();
   const { mutate: clearAll, isPending: isClearing } = useClearAll();
+  
+  const markOne = useMarkAsRead();
+  const archive = useArchiveNotification();
+  const del = useDeleteNotification();
 
   const notifications = data?.notifications || [];
   
@@ -112,11 +122,14 @@ export default function NotificationsPage() {
             <EmptyState />
           ) : (
             <div className="grid gap-3">
-              {filteredNotifications.map(notification => (
+              {filteredNotifications.map((notification, index) => (
                 <NotificationItem 
                   key={notification.id} 
                   notification={notification} 
-                  isDropdown={false}
+                  index={index}
+                  onRead={(id) => markOne.mutate(id)}
+                  onArchive={(id) => archive.mutate(id)}
+                  onDelete={(id) => del.mutate(id)}
                 />
               ))}
             </div>
@@ -134,11 +147,14 @@ export default function NotificationsPage() {
             <EmptyState message="You're all caught up! No unread notifications." />
           ) : (
             <div className="grid gap-3">
-              {filteredNotifications.map(notification => (
+              {filteredNotifications.map((notification, index) => (
                 <NotificationItem 
                   key={notification.id} 
                   notification={notification} 
-                  isDropdown={false}
+                  index={index}
+                  onRead={(id) => markOne.mutate(id)}
+                  onArchive={(id) => archive.mutate(id)}
+                  onDelete={(id) => del.mutate(id)}
                 />
               ))}
             </div>

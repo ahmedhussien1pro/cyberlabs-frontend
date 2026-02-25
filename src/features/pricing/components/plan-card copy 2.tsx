@@ -1,7 +1,7 @@
 // src/features/pricing/components/plan-card.tsx
 // Style: pricing-06 → icon top-right circle, CTA before features, "For X:" label
 import { motion } from 'framer-motion';
-import { Check, Clock3, ArrowRight, Shield, Star, Crown } from 'lucide-react';
+import { Check, Clock3, ArrowRight, Shield, Star, Crown, Building2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,20 @@ import { useCheckout } from '../hooks/use-pricing';
 import type { Plan, BillingCycle, PlanId } from '../types/pricing.types';
 
 // ── Per-plan visual tokens ────────────────────────────────────────────
-const CFG = {
+const CFG: Record<
+  PlanId,
+  {
+    card: string;
+    glow: string;
+    nameColor: string;
+    priceColor: string;
+    checkColor: string;
+    iconBg: string;
+    divider: string;
+    btnVariant: 'outline' | 'default';
+    btnClass: string;
+  }
+> = {
   free: {
     card: 'border-border/40 bg-card',
     glow: '',
@@ -49,22 +62,20 @@ const CFG = {
     btnVariant: 'outline' as const,
     btnClass: 'border-violet-500/35 text-violet-400 hover:bg-violet-500/10',
   },
-} satisfies Record<
-  string,
-  {
-    card: string;
-    glow: string;
-    nameColor: string;
-    priceColor: string;
-    checkColor: string;
-    iconBg: string;
-    divider: string;
-    btnVariant: 'outline' | 'default';
-    btnClass: string;
+  enterprise: {
+    card: 'border-cyan-500/30 bg-card opacity-85',
+    glow: '',
+    nameColor: 'text-cyan-400',
+    priceColor: 'text-cyan-400',
+    checkColor: 'text-cyan-400',
+    iconBg: 'bg-cyan-500/15 text-cyan-400',
+    divider: 'bg-cyan-500/20',
+    btnVariant: 'outline' as const,
+    btnClass: 'border-cyan-500/35 text-cyan-400 hover:bg-cyan-500/10',
   }
->;
+};
 
-const PLAN_ICON = { free: Shield, pro: Star, team: Crown };
+const PLAN_ICON = { free: Shield, pro: Star, team: Crown, enterprise: Building2 };
 
 interface PlanCardProps {
   plan: Plan;

@@ -7,43 +7,31 @@ import type {
   PlanId,
 } from '../types/pricing.types';
 
-// ── GET /api/plans ─────────────────────────────────────────────────────
+const FREE_FALLBACK: UserSubscription = {
+  planId: 'free',
+  status: 'active',
+  billingCycle: 'monthly',
+  currentPeriodEnd: new Date(Date.now() + 31536000000).toISOString(),
+  cancelAtPeriodEnd: false,
+};
 
+// ── GET /api/plans ──────────────────────────────────────────────
 export async function fetchPlans(): Promise<Plan[]> {
   const { data } = await apiClient.get<Plan[]>('/plans');
   return data;
 }
 
-// ── GET /api/subscriptions/me ──────────────────────────────────────────
-
+// ── GET /api/subscriptions/me ───────────────────────────────────────
 export async function fetchMySubscription(): Promise<UserSubscription> {
   try {
     const { data } = await apiClient.get<UserSubscription>('/subscriptions/me');
-    // Ensure we always return an object even if API returns null/undefined
-    return (
-      data || {
-        userId: '',
-        planId: 'free',
-        status: 'active',
-        currentPeriodStart: new Date().toISOString(),
-        currentPeriodEnd: new Date(Date.now() + 31536000000).toISOString(),
-        cancelAtPeriodEnd: false,
-      }
-    );
-  } catch (error) {
-    return {
-      userId: 'guest',
-      planId: 'free',
-      status: 'active',
-      currentPeriodStart: new Date().toISOString(),
-      currentPeriodEnd: new Date(Date.now() + 31536000000).toISOString(),
-      cancelAtPeriodEnd: false,
-    };
+    return data || FREE_FALLBACK;
+  } catch {
+    return FREE_FALLBACK;
   }
 }
 
-// ── POST /api/subscriptions/checkout ──────────────────────────────────
-
+// ── POST /api/subscriptions/checkout ──────────────────────────────
 export async function createCheckoutSession(
   planId: PlanId,
   cycle: BillingCycle,
@@ -56,7 +44,7 @@ export async function createCheckoutSession(
   return data;
 }
 
-// ── POST /api/subscriptions/portal ────────────────────────────────────
+// ── POST /api/subscriptions/portal ────────────────────────────────
 export async function createPortalSession(): Promise<{ portalUrl: string }> {
   const { data } = await apiClient.post<{ portalUrl: string }>(
     '/subscriptions/portal',
@@ -64,10 +52,8 @@ export async function createPortalSession(): Promise<{ portalUrl: string }> {
   return data;
 }
 
-// ── POST /api/subscriptions/cancel ────────────────────────────────────
+// ── POST /api/subscriptions/cancel ────────────────────────────────
 export async function cancelSubscription(): Promise<UserSubscription> {
-  const { data } = await apiClient.post<UserSubscription>(
-    '/subscriptions/cancel',
-  );
+  const { data } = await apiClient.post<UserSubscription>('/subscriptions/cancel');
   return data;
 }

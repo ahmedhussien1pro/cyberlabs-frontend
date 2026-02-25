@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Menu, Code, GraduationCap, Trophy, Crown, Star, Building2 } from 'lucide-react';
+import { 
+  Menu, Code, GraduationCap, Trophy, Crown, Star, Building2, 
+  LayoutDashboard, Info, Mail, ShieldAlert, FileText 
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -55,24 +58,56 @@ export function Navbar() {
 
   const learningItems = [
     {
-      label: t('navigation.labs'),
-      href: ROUTES.COURSES.LIST,
-      icon: <Code className='w-4 h-4' />,
-      description: t('navigation.labsDesc'),
-    },
-    {
-      label: t('navigation.paths'),
-      href: '/paths',
+      label: t('navigation.courses', 'Courses'),
+      href: '/courses',
       icon: <GraduationCap className='w-4 h-4' />,
-      description: t('navigation.pathsDesc'),
-      badge: 'Soon',
+      description: t('navigation.coursesDesc', 'Learn cybersecurity fundamentals'),
     },
     {
-      label: t('navigation.challenges'),
+      label: t('navigation.labs', 'Labs'),
+      href: '/labs',
+      icon: <Code className='w-4 h-4' />,
+      description: t('navigation.labsDesc', 'Practice in real-world environments'),
+    },
+    {
+      label: t('navigation.paths', 'Career Paths'),
+      href: '/paths',
+      icon: <LayoutDashboard className='w-4 h-4' />,
+      description: t('navigation.pathsDesc', 'Guided roadmaps for your career'),
+    },
+    {
+      label: t('navigation.challenges', 'CTF Challenges'),
       href: '/challenges',
       icon: <Trophy className='w-4 h-4' />,
-      description: t('navigation.challengesDesc'),
+      description: t('navigation.challengesDesc', 'Compete and test your skills'),
       badge: 'Soon',
+    },
+  ];
+
+  const companyItems = [
+    {
+      label: t('navigation.about', 'About Us'),
+      href: ROUTES.ABOUT,
+      icon: <Info className='w-4 h-4' />,
+      description: t('navigation.aboutDesc', 'Learn about our mission and team'),
+    },
+    {
+      label: t('navigation.contact', 'Contact'),
+      href: ROUTES.CONTACT,
+      icon: <Mail className='w-4 h-4' />,
+      description: t('navigation.contactDesc', 'Get in touch with support'),
+    },
+    {
+      label: t('navigation.privacy', 'Privacy Policy'),
+      href: ROUTES.PRIVACY,
+      icon: <ShieldAlert className='w-4 h-4' />,
+      description: t('navigation.privacyDesc', 'How we protect your data'),
+    },
+    {
+      label: t('navigation.terms', 'Terms of Service'),
+      href: ROUTES.TERMS,
+      icon: <FileText className='w-4 h-4' />,
+      description: t('navigation.termsDesc', 'Rules and guidelines for usage'),
     },
   ];
 
@@ -90,15 +125,17 @@ export function Navbar() {
               className='text-sm font-medium text-muted-foreground hover:text-foreground transition-colors'>
               {t('navigation.home')}
             </Link>
+            
             <NavDropdown
-              label={t('navigation.learning')}
+              label={t('navigation.learning', 'Learning')}
               items={learningItems}
             />
-            <Link
-              to={ROUTES.ABOUT}
-              className='text-sm font-medium text-muted-foreground hover:text-foreground transition-colors'>
-              {t('navigation.about')}
-            </Link>
+            
+            <NavDropdown
+              label={t('navigation.company', 'Company')}
+              items={companyItems}
+            />
+            
             <Link
               to={ROUTES.PRICING}
               className='text-sm font-medium text-muted-foreground hover:text-foreground transition-colors'>
@@ -159,15 +196,15 @@ export function Navbar() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link to={ROUTES.DASHBOARD.DashboardPage}>
-                      {t('navigation.dashboard')}
+                      {t('navigation.dashboard', 'Dashboard')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to={`/profile`}>{t('navigation.profile')}</Link>
+                    <Link to={`/profile`}>{t('navigation.profile', 'Profile')}</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to={ROUTES.DASHBOARD.DashboardPage}>
-                      {t('navigation.settings')}
+                    <Link to={`${ROUTES.DASHBOARD.DashboardPage}/settings`}>
+                      {t('navigation.settings', 'Settings')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
@@ -197,7 +234,7 @@ export function Navbar() {
                   <span className='sr-only'>Toggle menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side='right' className='w-80'>
+              <SheetContent side='right' className='w-80 overflow-y-auto'>
                 <nav className='flex flex-col gap-4 mt-8'>
                   <Link
                     to={ROUTES.HOME}
@@ -208,7 +245,7 @@ export function Navbar() {
 
                   <div className='space-y-2'>
                     <p className='text-sm font-semibold text-muted-foreground px-2'>
-                      {t('navigation.learning')}
+                      {t('navigation.learning', 'Learning')}
                     </p>
                     {learningItems.map((item) => (
                       <Link
@@ -227,16 +264,26 @@ export function Navbar() {
                     ))}
                   </div>
 
-                  <Link
-                    to={ROUTES.ABOUT}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className='text-base font-medium hover:text-foreground transition-colors'>
-                    {t('navigation.about')}
-                  </Link>
+                  <div className='space-y-2'>
+                    <p className='text-sm font-semibold text-muted-foreground px-2 pt-2 border-t'>
+                      {t('navigation.company', 'Company')}
+                    </p>
+                    {companyItems.map((item) => (
+                      <Link
+                        key={item.href}
+                        to={item.href}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className='flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-accent rounded-md transition-colors'>
+                        {item.icon}
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+
                   <Link
                     to={ROUTES.PRICING}
                     onClick={() => setMobileMenuOpen(false)}
-                    className='text-base font-medium hover:text-foreground transition-colors'>
+                    className='text-base font-medium hover:text-foreground transition-colors pt-2 border-t'>
                     {t('navigation.pricing')}
                   </Link>
 

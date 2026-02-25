@@ -43,6 +43,9 @@ export function useNotifications() {
     staleTime: 1000 * 30,
     refetchInterval: 1000 * 60,
     retry: false,
+    // Add fallback for 400 errors (similar to pricing) to prevent query crashes
+    throwOnError: false,
+    initialData: undefined,
   });
 }
 
@@ -99,6 +102,34 @@ export function useMarkAllRead() {
           ...old,
           unreadCount: 0,
           notifications: old.notifications.map((n) => ({ ...n, isRead: true })),
+        };
+      });
+      return { prev };
+    },
+    onError: (_e, _v, ctx) => {
+      if (ctx?.prev) qc.setQueryData(KEY, ctx.prev);
+    },
+  });
+}
+
+// ── Clear/Delete All ───────────────────────────────────────────────────
+export function useClearAll() {
+  const qc = useQueryClient();
+  return useMutation({
+    // Replace with correct backend endpoint for clearing all notifications if available
+    mutationFn: async (): Promise<void> => {
+      await apiClient.delete(`${API_ENDPOINTS.NOTIFICATIONS.BASE}/all`);
+    },
+    onMutate: async () => {
+      await qc.cancelQueries({ queryKey: KEY });
+      const prev = qc.getQueryData<NotificationsResponse>(KEY);
+      qc.setQueryData<NotificationsResponse>(KEY, (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          unreadCount: 0,
+          total: 0,
+          notifications: [],
         };
       });
       return { prev };

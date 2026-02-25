@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Check, Clock3, ArrowRight, Shield, Star, Crown } from 'lucide-react';
+import { Check, Clock3, ArrowRight, Shield, Star, Crown, Building2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -7,7 +7,23 @@ import { useCheckout } from '../hooks/use-pricing';
 import type { Plan, BillingCycle, PlanId } from '../types/pricing.types';
 
 // ── Visual config per plan ────────────────────────────────────────────
-const CFG = {
+const CFG: Record<
+  PlanId,
+  {
+    card: string;
+    glow: string;
+    badge: string;
+    nameColor: string;
+    priceColor: string;
+    checkBg: string;
+    checkIcon: string;
+    divider: string;
+    btnVariant: 'outline' | 'default';
+    btnClass: string;
+    iconBg: string;
+    iconColor: string;
+  }
+> = {
   free: {
     card: 'border-border/40 bg-card',
     glow: '',
@@ -57,28 +73,27 @@ const CFG = {
     iconBg: 'bg-violet-500/15',
     iconColor: 'text-violet-400',
   },
-} satisfies Record<
-  string,
-  {
-    card: string;
-    glow: string;
-    badge: string;
-    nameColor: string;
-    priceColor: string;
-    checkBg: string;
-    checkIcon: string;
-    divider: string;
-    btnVariant: 'outline' | 'default';
-    btnClass: string;
-    iconBg: string;
-    iconColor: string;
+  enterprise: {
+    card: 'border-cyan-500/30 bg-card opacity-85',
+    glow: '',
+    badge: 'bg-muted text-muted-foreground',
+    nameColor: 'text-cyan-400',
+    priceColor: 'text-cyan-400',
+    checkBg: 'bg-cyan-500/15',
+    checkIcon: 'text-cyan-400',
+    divider: 'bg-cyan-500/20',
+    btnVariant: 'outline' as const,
+    btnClass: 'border-cyan-500/35 text-cyan-400 hover:bg-cyan-500/10',
+    iconBg: 'bg-cyan-500/15',
+    iconColor: 'text-cyan-400',
   }
->;
+};
 
 const PLAN_ICON = {
   free: Shield,
   pro: Star,
   team: Crown,
+  enterprise: Building2
 };
 
 interface PlanCardProps {

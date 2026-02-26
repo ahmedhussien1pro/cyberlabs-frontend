@@ -13,6 +13,7 @@ import { useStartLabMutation, useStopLabMutation } from '../api/labQueries';
 import { FlagSubmissionForm } from './FlagSubmissionForm';
 import { LabTerminal } from './LabTerminal';
 import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export const LabSidebar: React.FC<{ labId: string }> = ({ labId }) => {
   const { t } = useTranslation();

@@ -43,6 +43,7 @@ export const LabWorkspace: React.FC<{ labId: string }> = ({ labId }) => {
                 <span className='font-semibold text-sm'>
                   {t('labs.workspace.machineStatus')}
                 </span>
+
                 <span
                   className={`text-xs ${isLabRunning ? 'text-emerald-500' : 'text-muted-foreground'}`}>
                   {isLabRunning

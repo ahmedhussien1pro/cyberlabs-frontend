@@ -6,8 +6,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 export const LabTerminal: React.FC<{ labId: string }> = ({ labId }) => {
   const { t } = useTranslation();
   const [history, setHistory] = useState<string[]>([
-    'Welcome to CyberLabs Terminal v1.0',
-    'Type "help" to see available commands.',
+    t('labs.terminal.welcome', 'Welcome to CyberLabs Terminal v1.0'),
+    t('labs.terminal.help_hint', 'Type "help" to see available commands.') + ` (Lab: ${labId})`,
   ]);
   const [input, setInput] = useState('');
 

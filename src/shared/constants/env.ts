@@ -10,4 +10,6 @@ export const ENV = {
   ENABLE_DEVTOOLS: import.meta.env.VITE_ENABLE_DEVTOOLS === 'true',
   ENABLE_MOCK_API: import.meta.env.VITE_ENABLE_MOCK_API === 'true',
   NODE_ENV: import.meta.env.MODE,
+
+  LABS_URL: import.meta.env.VITE_LABS_URL as string,
 } as const;

@@ -1,54 +1,76 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
+import { ENV } from '@/shared/constants/env';
 import { useLabStore } from '../store/useLabStore';
 import { toast } from 'sonner';
+import type { LabsResponse } from '../types/lab.types';
 
 const apiClient = axios.create({
-  baseURL: '/api/practice-labs',
+  baseURL: `${ENV.API_URL}/practice-labs`,
   withCredentials: true,
 });
 
+/* ─────────────────────────────────────────────────────────────────────────
+   GET /practice-labs  →  all labs grouped by category (with user progress)
+───────────────────────────────────────────────────────────────────────── */
+export const useLabsQuery = () =>
+  useQuery<LabsResponse>({
+    queryKey: ['labs'],
+    queryFn: async () => {
+      const res = await apiClient.get('/');
+      return res.data;
+    },
+    staleTime: 1000 * 60 * 5, // 5 min cache
+  });
+
+/* ─────────────────────────────────────────────────────────────────────────
+   POST /practice-labs/:labId/launch  →  { launchUrl, instanceId, executionMode }
+   Opens the sub-app in a new tab
+───────────────────────────────────────────────────────────────────────── */
 export const useStartLabMutation = () => {
-  const { startLab } = useLabStore();
+  const { startLab, setLaunching } = useLabStore();
 
   return useMutation({
     mutationFn: async (labId: string) => {
-      const response = await apiClient.post(`/${labId}/launch`);
-      return response.data; // { launchUrl: "https://labs.cyberlabs.io/launch/xyz", instanceId: "...", executionMode: "..." }
+      const res = await apiClient.post(`/${labId}/launch`);
+      return res.data as {
+        success: boolean;
+        launchUrl: string;
+        instanceId: string;
+        executionMode: string;
+      };
     },
+    onMutate: () => setLaunching(true),
     onSuccess: (data, labId) => {
-      // Mark lab as running locally so the user knows it's active
-      startLab(labId, data.launchUrl);
-      toast.success('تم تجهيز بيئة اللاب بنجاح');
-
-      // Open the lab in a new tab to avoid breaking the dashboard context
-      if (data.launchUrl) {
-        window.open(data.launchUrl, '_blank');
-      }
+      startLab(labId, data.launchUrl, data.instanceId);
+      toast.success('✅ Lab environment ready!');
+      window.open(data.launchUrl, '_blank', 'noopener,noreferrer');
     },
-    onError: () => toast.error('فشل في بدء تشغيل اللاب. حاول مجدداً.'),
+    onError: (err: any) => {
+      setLaunching(false);
+      const msg =
+        err?.response?.data?.message ?? 'Failed to start lab. Try again.';
+      toast.error(msg);
+    },
   });
 };
 
+/* ─────────────────────────────────────────────────────────────────────────
+   Stop / cleanup (local only — no backend stop endpoint in v2)
+───────────────────────────────────────────────────────────────────────── */
 export const useStopLabMutation = () => {
-  const { stopLab, labId } = useLabStore();
+  const { stopLab } = useLabStore();
   const queryClient = useQueryClient();
-
-  // Using old v1 api route for stopping temporarily, or update if there's a new one
-  const v1Client = axios.create({
-    baseURL: '/api/v1/labs',
-    withCredentials: true,
-  });
 
   return useMutation({
     mutationFn: async () => {
-      if (!labId) throw new Error('No active lab');
-      await v1Client.post(`/${labId}/stop`);
+      // v2 has no stop endpoint — lab sessions expire server-side
+      return Promise.resolve();
     },
     onSuccess: () => {
       stopLab();
-      toast.info('تم إيقاف بيئة اللاب');
-      queryClient.invalidateQueries({ queryKey: ['activeLab'] });
+      toast.info('Lab session ended.');
+      queryClient.invalidateQueries({ queryKey: ['labs'] });
     },
   });
 };

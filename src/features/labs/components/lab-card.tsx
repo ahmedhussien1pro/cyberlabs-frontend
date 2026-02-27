@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useStartLabMutation } from '../api/labQueries';
+import { useLabStore } from '../store/useLabStore';
 import {
   Clock,
   Zap,
@@ -13,6 +15,7 @@ import {
   Crown,
   Gem,
   Terminal,
+  Loader2,
   Trophy,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -76,7 +79,10 @@ export function LabCard({ lab, index = 0 }: LabCardProps) {
   // labs don't have access field from backend yet — default free
   const access = 'free' as 'free' | 'pro' | 'premium';
   const AccessIcon = ACCESS_ICON[access];
-
+  const { mutate: launchLab } = useStartLabMutation();
+  const isLaunching = useLabStore((s) => s.isLaunching);
+  const activeLab = useLabStore((s) => s.labId);
+  const isThisLabLaunching = isLaunching && activeLab === lab.id;
   return (
     <motion.div
       initial={{ opacity: 0, y: 14 }}
@@ -240,11 +246,23 @@ export function LabCard({ lab, index = 0 }: LabCardProps) {
             size='sm'
             className='w-full h-9 text-xs'
             variant={isCompleted ? 'outline' : 'default'}
+            disabled={isThisLabLaunching}
             onClick={(e) => {
               e.stopPropagation();
-              navigate(ROUTES.LABS.DETAIL(lab.id));
+              if (isCompleted || isStarted) {
+                // Resume or retry → launch directly
+                launchLab(lab.id);
+              } else {
+                // New → navigate to detail page for briefing first
+                navigate(ROUTES.LABS.DETAIL(lab.id));
+              }
             }}>
-            {isCompleted ? (
+            {isThisLabLaunching ? (
+              <>
+                <Loader2 className='h-3.5 w-3.5 me-1.5 animate-spin' />
+                Launching...
+              </>
+            ) : isCompleted ? (
               <>
                 <CheckCircle2 className='h-3.5 w-3.5 me-1.5' />
                 Try Again

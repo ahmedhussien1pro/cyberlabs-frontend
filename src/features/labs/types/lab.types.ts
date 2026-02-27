@@ -18,6 +18,7 @@ export interface LabUserProgress {
 
 export interface Lab {
   id: string;
+  scenario: string;
   slug?: string;
   title: string;
   ar_title: string;

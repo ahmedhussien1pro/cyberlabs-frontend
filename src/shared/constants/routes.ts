@@ -49,7 +49,7 @@ export const ROUTES = {
 
   LABS: {
     LIST: '/labs',
-    DETAIL: (id: string) => `/labs/${id}`,
+    DETAIL: (slug: string) => `/labs/${slug}`,
   },
 
   UNAUTHORIZED: '/401',

@@ -1,30 +1,50 @@
-export type LabDifficulty = 'Beginner' | 'Intermediate' | 'Advanced';
-export type LabStatus = 'published' | 'draft' | 'coming_soon';
-export type AssessmentType = 'mcq' | 'flag' | 'file_upload' | 'code';
+export type LabDifficulty = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+
+export interface LabHint {
+  id: string;
+  order: number;
+  xpCost: number;
+}
+
+export interface LabUserProgress {
+  progress: number;
+  attempts: number;
+  hintsUsed: number;
+  flagSubmitted: boolean;
+  completedAt: string | null;
+  startedAt: string;
+  lastAccess: string;
+}
 
 export interface Lab {
   id: string;
-  slug: string;
+  slug?: string;
   title: string;
   ar_title: string;
   description: string;
   ar_description: string;
   difficulty: LabDifficulty;
-  status: LabStatus;
-  access: 'free' | 'pro';
+  category: string;
+  executionMode: 'SHARED_BACKEND' | 'DOCKER' | 'VM';
+  duration: number;
   xpReward: number;
   pointsReward: number;
-  timeLimit?: number;
-  type: AssessmentType;
-  courseId?: string;
-  isCompleted?: boolean;
-  attempts?: number;
-  progress?: number;
+  skills: string[];
+  isPublished: boolean;
+  hints: LabHint[];
+  _count: { submissions: number; usersProgress: number };
+  usersProgress?: LabUserProgress[];
 }
 
-export interface LabFilters {
-  search?: string;
-  difficulty?: LabDifficulty;
-  type?: AssessmentType;
-  courseId?: string;
+export interface LabCategory {
+  id: string;
+  name: string;
+  ar_name: string;
+  labs: Lab[];
+}
+
+export interface LabsResponse {
+  success: boolean;
+  totalLabs: number;
+  categories: LabCategory[];
 }

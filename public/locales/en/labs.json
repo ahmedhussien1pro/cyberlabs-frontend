@@ -1,15 +1,31 @@
 {
-  "tabs": {
-    "instructions": "التعليمات",
-    "hints": "التلميحات",
-    "terminal": "الطرفية (Terminal)"
+  "list": {
+    "eyebrow": "Practice Labs",
+    "title": "Hack. Learn. Master.",
+    "subtitle": "Real-world vulnerable environments. No setup needed. Just attack.",
+    "empty": "No labs match your filters",
+    "emptyHint": "Try resetting the filters",
+    "error": "Failed to load labs. Please try again."
   },
-  "xss_basic": {
-    "title": "أساسيات XSS",
-    "description": "في هذا اللاب، يحتوي التطبيق على ثغرة Reflected XSS. ابحث عن طريقة لحقن كود JavaScript يقرأ قيمة document.cookie.",
-    "hints": {
-      "1": "حاول إدخال وسوم HTML عادية في حقل البحث لترى إن كانت تنعكس في الصفحة.",
-      "2": "استخدم وسم <script> مع دالة alert() للتأكد من تنفيذ الكود."
-    }
+  "filters": {
+    "title": "Filters",
+    "search": "Search labs...",
+    "active": "active",
+    "reset": "Reset",
+    "myProgress": "My Progress",
+    "inProgress": "In Progress",
+    "completed": "Completed",
+    "level": "Difficulty",
+    "allLevels": "All Levels",
+    "access": "Access",
+    "allAccess": "All Access",
+    "category": "Category",
+    "all": "All Categories"
+  },
+  "card": {
+    "start": "Start Lab",
+    "resume": "Resume Lab",
+    "retry": "Try Again",
+    "attempts": "Attempts"
   }
 }

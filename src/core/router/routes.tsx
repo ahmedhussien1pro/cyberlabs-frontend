@@ -184,6 +184,43 @@ export const routes: RouteObject[] = [
     path: '*',
     element: <LazyPage Component={Pages.NotFoundPage} />,
   },
+
+  // ── Temporary Pages ─────────────────────────────────────
+  {
+    path: '/temp',
+    element: <LazyPage Component={Pages.TempPage} />,
+  },
+  {
+    path: '/temp/quiz-result',
+    element: <LazyPage Component={Pages.QuizResults} />
+  },
+  {
+    path: "/temp-lab",
+    element: <LazyPage Component={Pages.LabLayout} />,
+    children: [
+      {
+        index: true,
+        element: <LazyPage Component={Pages.LabProductsPage} />,
+      },
+      {
+        path: "login",
+        element: <LazyPage Component={Pages.LabLoginPage} />,
+      },
+      {
+        element: <LazyPage Component={Pages.LabProtectedRoute} />,
+        children: [
+          {
+            path: "cart",
+            element: <LazyPage Component={Pages.LabCartPage} />,
+          },
+          {
+            path: "account",
+            element: <LazyPage Component={Pages.LabAccountPage} />,
+          },
+        ],
+      },
+    ],
+  }
 ];
 
 export default routes;

@@ -1,0 +1,169 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is a regular expression?",
+      "options": [
+        "A pattern used to search and manipulate text.",
+        "A database query language.",
+        "A graphical interface tool.",
+        "An algorithm for encryption."
+      ],
+      "answer": "A pattern used to search and manipulate text."
+    },
+    {
+      "id": 2,
+      "question": "Which character is used to match any single character except a line break?",
+      "options": ["*", "?", ".", "^"],
+      "answer": "."
+    },
+    {
+      "id": 3,
+      "question": "What does the caret (^) symbol represent in a regular expression when used outside square brackets?",
+      "options": [
+        "Exclusion",
+        "End of a line",
+        "Beginning of a line",
+        "Match any character"
+      ],
+      "answer": "Beginning of a line"
+    },
+    {
+      "id": 4,
+      "question": "Which metacharacter matches zero or more occurrences of the preceding character?",
+      "options": ["*", "+", "?", "{}"],
+      "answer": "*"
+    },
+    {
+      "id": 5,
+      "question": "How do you specify an optional character in a regex pattern?",
+      "options": ["*", "?", "+", "^"],
+      "answer": "?"
+    },
+    {
+      "id": 6,
+      "question": "What does \\d match in a regular expression?",
+      "options": [
+        "A single digit",
+        "A single non-digit",
+        "A whitespace character",
+        "An alphanumeric character"
+      ],
+      "answer": "A single digit"
+    },
+    {
+      "id": 7,
+      "question": "Which of the following matches any whitespace character?",
+      "options": ["\\s", "\\w", "\\d", "\\S"],
+      "answer": "\\s"
+    },
+    {
+      "id": 8,
+      "question": "What will the pattern [a-c]zz match?",
+      "options": [
+        "azz, bzz, czz",
+        "az, bz, cz",
+        "a, b, c",
+        "Nothing, it is invalid"
+      ],
+      "answer": "azz, bzz, czz"
+    },
+    {
+      "id": 9,
+      "question": "Which symbol is used to define a group in a regular expression?",
+      "options": ["[ ]", "( )", "{ }", "< >"],
+      "answer": "( )"
+    },
+    {
+      "id": 10,
+      "question": "How do you exclude specific characters in a charset?",
+      "options": [
+        "Using ^ inside square brackets",
+        "Using $ outside square brackets",
+        "Using * before square brackets",
+        "Using + after square brackets"
+      ],
+      "answer": "Using ^ inside square brackets"
+    },
+    {
+      "id": 11,
+      "question": "What does the pattern \\w match?",
+      "options": [
+        "Any alphanumeric character and underscore",
+        "Any whitespace character",
+        "Any non-digit character",
+        "Any line break"
+      ],
+      "answer": "Any alphanumeric character and underscore"
+    },
+    {
+      "id": 12,
+      "question": "Which repetition pattern matches exactly 5 occurrences of the preceding character?",
+      "options": ["{5}", "{,5}", "{5,}", "{1,5}"],
+      "answer": "{5}"
+    },
+    {
+      "id": 13,
+      "question": "What does the $ symbol denote in a regular expression?",
+      "options": [
+        "End of a line",
+        "Beginning of a line",
+        "Exclusion of a character",
+        "Repetition of a character"
+      ],
+      "answer": "End of a line"
+    },
+    {
+      "id": 14,
+      "question": "Which of the following patterns will match the word 'ring' but not 'king'?",
+      "options": ["[^k]ing", "ring|king", "[k]ing", "(ring|king)"],
+      "answer": "[^k]ing"
+    },
+    {
+      "id": 15,
+      "question": "What does the + symbol represent in regex?",
+      "options": [
+        "One or more occurrences of the preceding pattern",
+        "Zero or more occurrences of the preceding pattern",
+        "Exactly one occurrence of the preceding pattern",
+        "Optional occurrence of the preceding pattern"
+      ],
+      "answer": "One or more occurrences of the preceding pattern"
+    },
+    {
+      "id": 16,
+      "question": "How would you escape a literal dot (.) in a regular expression?",
+      "options": ["\\\\.", "\\*", "\\?", "\\d"],
+      "answer": "\\."
+    },
+    {
+      "id": 17,
+      "question": "Which pattern will match any single uppercase or lowercase letter?",
+      "options": ["[a-zA-Z]", "[A-Z]", "[a-z]", "[0-9]"],
+      "answer": "[a-zA-Z]"
+    },
+    {
+      "id": 18,
+      "question": "What does the \\S metacharacter match?",
+      "options": [
+        "Any non-whitespace character",
+        "Any whitespace character",
+        "Any alphanumeric character",
+        "Any digit"
+      ],
+      "answer": "Any non-whitespace character"
+    },
+    {
+      "id": 19,
+      "question": "Which of the following will match 'abc' or 'xyz'?",
+      "options": ["abc|xyz", "[abcxyz]", "abcxyz", "(abcxyz)"],
+      "answer": "abc|xyz"
+    },
+    {
+      "id": 20,
+      "question": "What does (no){3} match?",
+      "options": ["nonono", "nono", "no", "noonon"],
+      "answer": "nonono"
+    }
+  ]
+}

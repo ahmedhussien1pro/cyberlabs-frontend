@@ -112,3 +112,18 @@ export const PathDetailPage = lazy(
   () => import('@/features/paths/pages/path-detail-page'),
 );
 // Dev (temporary) Pages
+export const TempPage = lazy(() => import('@/features/dev/temp-page'));
+export const QuizResults = lazy(() => import('@/shared/components/labs/QuizResultsPage'))
+
+// Dev (Lab) Pages
+export const LabProtectedRoute = lazy(() => import("@/shared/components/labs/LabProtectedRoute"))
+
+export const LabLayout = lazy(() => import("@/shared/components/labs/StoreLab"))
+
+export const LabProductsPage = lazy(() => import("@/shared/components/labs/ProductsPageLab"))
+
+export const LabCartPage = lazy(() => import("@/shared/components/labs/CartItemsLab"))
+
+export const LabLoginPage = lazy(() => import("@/shared/components/labs/LoginLab"))
+
+export const LabAccountPage = lazy(() => import("@/shared/components/labs/AccountLab"))

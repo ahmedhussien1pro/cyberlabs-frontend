@@ -253,7 +253,7 @@ export function LabCard({ lab, index = 0 }: LabCardProps) {
                 // Resume or retry → launch directly
                 launchLab(lab.id);
               } else {
-                // New → navigate to detail page for briefing first
+                e.stopPropagation();
                 navigate(ROUTES.LABS.DETAIL(lab.id));
               }
             }}>

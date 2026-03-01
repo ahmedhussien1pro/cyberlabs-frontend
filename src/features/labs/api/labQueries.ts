@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '@/core/api/client'; // ← الـ client الرسمي بـ JWT
-// import { ENV } from '@/shared/constants/env';
+import { apiClient } from '@/core/api/client';
+import { tokenManager } from '@/features/auth/utils';
 import { useLabStore } from '../store/useLabStore';
 import { toast } from 'sonner';
 import type { LabsResponse } from '../types/lab.types';
@@ -53,8 +53,13 @@ export const useStartLabMutation = () => {
     onSuccess: (data, labId) => {
       startLab(labId, data.launchUrl, data.instanceId);
       toast.success('✅ Lab environment ready!');
-      // فتح المنصة الفرعية في tab جديد
-      window.open(data.launchUrl, '_blank', 'noopener,noreferrer');
+
+      // Pass accessToken via URL hash (never sent to server, cleared immediately by labs frontend)
+      void (async () => {
+        const at = await tokenManager.getAccessToken();
+        const url = at ? `${data.launchUrl}#at=${at}` : data.launchUrl;
+        window.open(url, '_blank', 'noopener,noreferrer');
+      })();
     },
     onError: (err: any) => {
       setLaunching(false);

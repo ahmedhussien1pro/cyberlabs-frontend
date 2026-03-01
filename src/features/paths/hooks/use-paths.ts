@@ -12,6 +12,19 @@ export const pathsQueryKeys = {
   detail: (slug: string) => ['paths', 'detail', slug] as const,
 };
 
+// Helper function to map backend enums to frontend UI types
+const mapBackendPathToFrontend = (path: any): LearningPath => {
+  return {
+    ...path,
+    // Convert BEGINNER -> Beginner, INTERMEDIATE -> Intermediate
+    difficulty: path.difficulty 
+      ? path.difficulty.charAt(0) + path.difficulty.slice(1).toLowerCase() 
+      : 'Beginner',
+    // Convert EMERALD -> emerald
+    color: path.color ? path.color.toLowerCase() : 'blue',
+  };
+};
+
 // ── All paths (list) ───────────────────────────────────────────────────
 export function usePaths(filters: PathFilters = {}) {
   return useQuery({
@@ -33,15 +46,20 @@ export function usePaths(filters: PathFilters = {}) {
         }
         return data;
       }
+      
       const params: Record<string, string> = {};
-      if (filters.difficulty && filters.difficulty !== 'all')
-        params.difficulty = filters.difficulty;
+      if (filters.difficulty && filters.difficulty !== 'all') {
+        // Backend expects UPPERCASE for enum matching
+        params.difficulty = filters.difficulty.toUpperCase();
+      }
       if (filters.search) params.search = filters.search;
       
       const res = await apiClient.get(API_ENDPOINTS.PATHS.BASE, { params });
+      
       // The backend returns a paginated structure: { data, meta }
-      // For now, we return the data array to match the existing hook signature
-      return res.data.data || res.data;
+      const items = res.data.data || res.data;
+      
+      return items.map(mapBackendPathToFrontend);
     },
     staleTime: 1000 * 60 * 10,
   });
@@ -56,7 +74,8 @@ export function usePath(slug: string) {
         return MOCK_PATHS.find((p) => p.slug === slug) ?? null;
       }
       const res = await apiClient.get(API_ENDPOINTS.PATHS.BY_SLUG(slug));
-      return res.data;
+      
+      return mapBackendPathToFrontend(res.data);
     },
     enabled: !!slug,
     staleTime: 1000 * 60 * 5,

@@ -35,9 +35,9 @@ export function useEnable2FA() {
   const { updateUser } = useAuthStore();
 
   return useMutation({
-    mutationFn: (token: string) =>
+    mutationFn: (code: string) =>
       apiClient
-        .post(API_ENDPOINTS.AUTH.TWO_FACTOR_ENABLE, { token })
+        .post(API_ENDPOINTS.AUTH.TWO_FACTOR_ENABLE, { code })
         .then(cast<Enable2FAResponse>),
     onSuccess: () => {
       updateUser({ twoFactorEnabled: true });
@@ -54,9 +54,9 @@ export function useDisable2FA() {
   const { updateUser } = useAuthStore();
 
   return useMutation({
-    mutationFn: (token: string) =>
+    mutationFn: (code: string) =>
       apiClient
-        .post(API_ENDPOINTS.AUTH.TWO_FACTOR_DISABLE, { token })
+        .post(API_ENDPOINTS.AUTH.TWO_FACTOR_DISABLE, { code })
         .then(cast<Disable2FAResponse>),
     onSuccess: () => {
       updateUser({ twoFactorEnabled: false });

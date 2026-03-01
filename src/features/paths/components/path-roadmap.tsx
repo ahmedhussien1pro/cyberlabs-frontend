@@ -7,9 +7,11 @@
 //   - Type icon + color per module type
 //   - Progress summary header
 //   - RTL support
+//   - CTA navigates to /courses/:slug or /labs/:slug
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import {
   BookOpen,
   FlaskConical,
@@ -22,11 +24,13 @@ import {
   Play,
   Clock,
   Sparkles,
+  ExternalLink,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { ROUTES } from '@/shared/constants';
 import type { PathModule, ModuleType } from '../types/path.types';
 
 // ── Module type config ────────────────────────────────────────────────
@@ -35,9 +39,9 @@ const MODULE_CFG: Record<
   {
     icon: React.ReactNode;
     labelKey: string;
-    dot: string; // timeline dot color
-    badge: string; // type badge classes
-    bg: string; // card bg accent
+    dot: string;
+    badge: string;
+    bg: string;
   }
 > = {
   course: {
@@ -73,19 +77,31 @@ const MODULE_CFG: Record<
 // ── Module state ──────────────────────────────────────────────────────
 type ModuleState = 'done' | 'active' | 'locked' | 'soon';
 
-function getModuleState(mod: PathModule, idx: number): ModuleState {
+function getModuleState(
+  mod: PathModule,
+  idx: number,
+  completedIds: string[],
+): ModuleState {
+  if (completedIds.includes(mod.id)) return 'done';
   if (mod.status === 'coming_soon') return 'soon';
   if (mod.isLocked) return 'locked';
-  // TODO: replace with real user progress from backend
-  // For now: first unlocked module = active, rest unlocked = done (mock)
-  if (idx === 0 && !mod.isLocked) return 'active';
-  return 'done';
+  if (mod.userProgress?.isCompleted) return 'done';
+  // First unlocked, non-completed module is active
+  if (idx === 0) return 'active';
+  return 'active';
+}
+
+// ── Resolve navigation URL for a module ──────────────────────────────
+function resolveModuleHref(mod: PathModule): string | null {
+  if (!mod.slug) return null;
+  if (mod.type === 'course') return ROUTES.COURSES.DETAIL(mod.slug);
+  if (mod.type === 'lab') return ROUTES.LABS.DETAIL(mod.slug);
+  return null;
 }
 
 // ── Props ─────────────────────────────────────────────────────────────
 interface PathRoadmapProps {
   modules: PathModule[];
-  /** Pass enrolled user's completed module IDs when backend is ready */
   completedIds?: string[];
 }
 
@@ -97,15 +113,14 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
   const toggle = (id: string) =>
     setExpanded((prev) => (prev === id ? null : id));
 
-  // Summary counts
   const doneCount = completedIds.length;
   const totalCount = modules.length;
   const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
-  const totalHours = modules.reduce((s, m) => s + m.estimatedHours, 0);
+  const totalHours = modules.reduce((s, m) => s + (m.estimatedHours ?? 0), 0);
 
   return (
     <section className='container mx-auto px-4 py-10'>
-      {/* ── Section header ──────────────────────────────────────── */}
+      {/* ── Section header ─────────────────────────────────────────── */}
       <div className='mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between'>
         <div>
           <h2 className='text-xl font-bold tracking-tight sm:text-2xl'>
@@ -116,7 +131,6 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
           </p>
         </div>
 
-        {/* Progress summary — right side */}
         <div className='flex shrink-0 items-center gap-4 rounded-xl border border-border/50 bg-muted/30 px-4 py-2.5'>
           <div className='text-right'>
             <p className='text-[11px] text-muted-foreground'>
@@ -138,9 +152,8 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
         </div>
       </div>
 
-      {/* ── Module list with timeline ────────────────────────────── */}
+      {/* ── Module list with timeline ────────────────────────────────── */}
       <div className='relative'>
-        {/* Vertical timeline line */}
         <div
           aria-hidden='true'
           className={cn(
@@ -151,14 +164,14 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
 
         <ol className='space-y-2'>
           {modules.map((mod, idx) => {
-            const cfg = MODULE_CFG[mod.type];
-            const state = completedIds.includes(mod.id)
-              ? 'done'
-              : getModuleState(mod, idx);
+            const cfg = MODULE_CFG[mod.type] ?? MODULE_CFG.course;
+            const state = getModuleState(mod, idx, completedIds);
             const isOpen = expanded === mod.id;
-            const modTitle = isAr ? mod.ar_title : mod.title;
-            const modDesc = isAr ? mod.ar_description : mod.description;
+            const modTitle = isAr && mod.ar_title ? mod.ar_title : mod.title;
+            const modDesc = isAr && mod.ar_description ? mod.ar_description : mod.description;
             const isLast = idx === modules.length - 1;
+            const href = resolveModuleHref(mod);
+            const isInteractive = state !== 'locked' && state !== 'soon';
 
             return (
               <motion.li
@@ -167,12 +180,10 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: idx * 0.04 }}
                 className='relative'>
-                {/* ── Row layout: dot + card ──────────────────── */}
                 <div className={cn('flex gap-4', isAr && 'flex-row-reverse')}>
-                  {/* ── Timeline dot ────────────────────────── */}
+                  {/* ── Timeline dot ──────────────────────────────── */}
                   <div className='relative flex shrink-0 flex-col items-center'>
                     <TimelineDot state={state} cfg={cfg} number={idx + 1} />
-                    {/* Connector stub below dot (hidden for last) */}
                     {!isLast && (
                       <div
                         className={cn(
@@ -185,26 +196,23 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
                     )}
                   </div>
 
-                  {/* ── Card ────────────────────────────────── */}
+                  {/* ── Card ──────────────────────────────────────── */}
                   <div
                     className={cn(
                       'mb-2 flex-1 min-w-0 rounded-xl border bg-card',
                       'transition-all duration-200',
-                      state === 'locked' || state === 'soon'
+                      !isInteractive
                         ? 'border-border/25 opacity-60'
                         : cn('border-border/50 cursor-pointer', cfg.bg),
                       isOpen && 'border-border shadow-sm',
                     )}>
-                    {/* ── Card header (always visible) ──────── */}
+                    {/* ── Card header ───────────────────────────── */}
                     <button
                       type='button'
-                      onClick={() =>
-                        state !== 'locked' && state !== 'soon' && toggle(mod.id)
-                      }
-                      disabled={state === 'locked' || state === 'soon'}
+                      onClick={() => isInteractive && toggle(mod.id)}
+                      disabled={!isInteractive}
                       className='flex w-full items-center gap-3 px-4 py-3 text-start'
                       aria-expanded={isOpen}>
-                      {/* Type icon pill */}
                       <span
                         className={cn(
                           'flex shrink-0 items-center justify-center',
@@ -212,9 +220,7 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
                           state === 'done' &&
                             'border-emerald-500/30 bg-emerald-500/10 text-emerald-500',
                           state === 'active' && cn('border', cfg.badge),
-                          state === 'locked' &&
-                            'border-border bg-muted text-muted-foreground',
-                          state === 'soon' &&
+                          (state === 'locked' || state === 'soon') &&
                             'border-border bg-muted text-muted-foreground',
                         )}>
                         {state === 'done' ? (
@@ -228,22 +234,19 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
                         )}
                       </span>
 
-                      {/* Title + badges */}
                       <div className='min-w-0 flex-1'>
                         <div className='flex flex-wrap items-center gap-1.5'>
-                          {/* Type badge */}
                           <span
                             className={cn(
                               'inline-flex items-center gap-1 rounded-full border',
                               'px-1.5 py-px text-[9px] font-bold uppercase tracking-wide',
-                              state === 'locked' || state === 'soon'
+                              !isInteractive
                                 ? 'border-border bg-muted text-muted-foreground'
                                 : cfg.badge,
                             )}>
                             {t(cfg.labelKey)}
                           </span>
 
-                          {/* Coming soon */}
                           {state === 'soon' && (
                             <span className='inline-flex items-center gap-1 rounded-full border border-zinc-500/20 bg-zinc-500/10 px-1.5 py-px text-[9px] font-bold uppercase tracking-wide text-zinc-500'>
                               <Sparkles className='h-2 w-2' />
@@ -251,7 +254,6 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
                             </span>
                           )}
 
-                          {/* Done badge */}
                           {state === 'done' && (
                             <Badge
                               variant='outline'
@@ -272,7 +274,6 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
                         </p>
                       </div>
 
-                      {/* Right meta: hours + chevron */}
                       <div
                         className={cn(
                           'flex shrink-0 items-center gap-2 text-xs text-muted-foreground',
@@ -280,9 +281,9 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
                         )}>
                         <span className='flex items-center gap-1'>
                           <Clock className='h-3 w-3' />
-                          {mod.estimatedHours}h
+                          {mod.estimatedHours ?? 0}h
                         </span>
-                        {state !== 'locked' && state !== 'soon' && (
+                        {isInteractive && (
                           <ChevronDown
                             className={cn(
                               'h-4 w-4 transition-transform duration-200',
@@ -293,7 +294,7 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
                       </div>
                     </button>
 
-                    {/* ── Expanded body ────────────────────────── */}
+                    {/* ── Expanded body ──────────────────────────── */}
                     <AnimatePresence initial={false}>
                       {isOpen && (
                         <motion.div
@@ -304,17 +305,17 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
                           transition={{ duration: 0.22, ease: 'easeInOut' }}
                           className='overflow-hidden'>
                           <div className='border-t border-border/40 px-4 pb-4 pt-3'>
-                            {/* Description */}
-                            <p className='mb-3 text-sm leading-relaxed text-muted-foreground'>
-                              {modDesc}
-                            </p>
+                            {modDesc && (
+                              <p className='mb-3 text-sm leading-relaxed text-muted-foreground'>
+                                {modDesc}
+                              </p>
+                            )}
 
-                            {/* Meta row */}
                             <div className='mb-3 flex flex-wrap gap-3 text-xs text-muted-foreground'>
                               <span className='flex items-center gap-1'>
                                 <Clock className='h-3 w-3 text-primary' />
                                 <strong className='text-foreground'>
-                                  {mod.estimatedHours}
+                                  {mod.estimatedHours ?? 0}
                                 </strong>{' '}
                                 hours
                               </span>
@@ -326,15 +327,30 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
                               </span>
                             </div>
 
-                            {/* CTA */}
-                            <Button
-                              size='sm'
-                              className='h-7 gap-1.5 px-4 text-xs'>
-                              <Play className='h-3 w-3' />
-                              {state === 'done'
-                                ? t('detail.continueLearning')
-                                : t('detail.startThisPath')}
-                            </Button>
+                            {/* ── CTA: Navigate to course or lab ── */}
+                            {href ? (
+                              <Button
+                                asChild
+                                size='sm'
+                                className='h-7 gap-1.5 px-4 text-xs'>
+                                <Link to={href}>
+                                  <Play className='h-3 w-3' />
+                                  {state === 'done'
+                                    ? t('detail.continueLearning')
+                                    : t('detail.startThisPath')}
+                                  <ExternalLink className='h-2.5 w-2.5 opacity-60' />
+                                </Link>
+                              </Button>
+                            ) : (
+                              <Button
+                                size='sm'
+                                variant='outline'
+                                disabled
+                                className='h-7 gap-1.5 px-4 text-xs opacity-50'>
+                                <Play className='h-3 w-3' />
+                                {t('detail.startThisPath')}
+                              </Button>
+                            )}
                           </div>
                         </motion.div>
                       )}
@@ -386,7 +402,6 @@ function TimelineDot({ state, cfg, number }: DotProps) {
 }
 
 function activeDotClass(cfg: (typeof MODULE_CFG)[ModuleType]): string {
-  // Extracts the color from badge class e.g. "text-blue-500 ..." → border + bg
   if (cfg.badge.includes('blue-500'))
     return 'border-blue-500 bg-blue-500/15 text-blue-500 shadow-blue-500/25';
   if (cfg.badge.includes('emerald-500'))

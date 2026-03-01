@@ -39,10 +39,10 @@ apiClient.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    if (config.method === 'get') {
-      config.params = { ...config.params, _t: Date.now() };
-    }
-
+    // Removed the _t cache buster injection as it causes 400 Bad Request
+    // in NestJS endpoints with strict ValidationPipes (forbidNonWhitelisted: true).
+    // React Query already handles caching effectively.
+    
     return config;
   },
   (error: AxiosError) => Promise.reject(error),

@@ -37,10 +37,14 @@ export function PathCard({ path, index }: PathCardProps) {
   const { t, i18n } = useTranslation('paths');
   const isAr = i18n.language === 'ar';
   const c = getPathColors(path.color);
-  const title = isAr ? path.ar_title : path.title;
-  const desc = isAr ? path.ar_description : path.description;
-  const tags = isAr ? path.ar_tags : path.tags;
-  const hasLock = path.modules.some((m) => m.isLocked);
+  const title = isAr && path.ar_title ? path.ar_title : path.title;
+  const desc = isAr && path.ar_description ? path.ar_description : path.description;
+  const tags = isAr && path.ar_tags?.length ? path.ar_tags : (path.tags || []);
+  
+  // Safe check for modules since the backend list API might not return modules array directly
+  const hasLock = Array.isArray(path.modules) 
+    ? path.modules.some((m) => m.isLocked)
+    : false;
 
   return (
     <motion.div
@@ -102,9 +106,9 @@ export function PathCard({ path, index }: PathCardProps) {
                 variant='outline'
                 className={cn(
                   'mt-1.5 rounded-full border px-2 py-px text-[10px] font-semibold',
-                  DIFF_BADGE[path.difficulty],
+                  DIFF_BADGE[path.difficulty] || DIFF_BADGE['Beginner'],
                 )}>
-                {path.difficulty}
+                {path.difficulty || 'Beginner'}
               </Badge>
             </div>
           </div>
@@ -137,15 +141,15 @@ export function PathCard({ path, index }: PathCardProps) {
           <div className='flex items-center gap-4 text-[11px] text-muted-foreground'>
             <span className='flex items-center gap-1'>
               <BookOpen className='h-3 w-3' />
-              {path.totalCourses} {t('card.courses')}
+              {path.totalCourses || 0} {t('card.courses')}
             </span>
             <span className='flex items-center gap-1'>
               <FlaskConical className='h-3 w-3' />
-              {path.totalLabs} {t('card.labs')}
+              {path.totalLabs || 0} {t('card.labs')}
             </span>
             <span className='flex items-center gap-1'>
               <Clock className='h-3 w-3' />
-              {path.estimatedHours}
+              {path.estimatedHours || 0}
               {t('card.hours')}
             </span>
           </div>

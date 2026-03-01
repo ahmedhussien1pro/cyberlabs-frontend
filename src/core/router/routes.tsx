@@ -8,7 +8,7 @@ import ProtectedRoute from './protected-route';
 const LazyPage = ({
   Component,
 }: {
-  Component: React.LazyExoticComponent<() => React.ReactElement>;
+  Component: React.LazyExoticComponent<React.ComponentType>;
 }) => (
   <Suspense fallback={<Preloader />}>
     <Component />
@@ -192,10 +192,10 @@ export const routes: RouteObject[] = [
   },
   {
     path: '/temp/quiz-result',
-    element: <LazyPage Component={Pages.QuizResults} />
+    element: <LazyPage Component={Pages.QuizResults} />,
   },
   {
-    path: "/temp-lab",
+    path: '/temp-lab',
     element: <LazyPage Component={Pages.LabLayout} />,
     children: [
       {
@@ -203,24 +203,24 @@ export const routes: RouteObject[] = [
         element: <LazyPage Component={Pages.LabProductsPage} />,
       },
       {
-        path: "login",
+        path: 'login',
         element: <LazyPage Component={Pages.LabLoginPage} />,
       },
       {
         element: <LazyPage Component={Pages.LabProtectedRoute} />,
         children: [
           {
-            path: "cart",
+            path: 'cart',
             element: <LazyPage Component={Pages.LabCartPage} />,
           },
           {
-            path: "account",
+            path: 'account',
             element: <LazyPage Component={Pages.LabAccountPage} />,
           },
         ],
       },
     ],
-  }
+  },
 ];
 
 export default routes;

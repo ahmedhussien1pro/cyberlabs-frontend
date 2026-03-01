@@ -10,14 +10,14 @@ interface DecryptionResult {
 
 async function getEncryptionKey(): Promise<CryptoKey> {
   const sessionKeyId = '__cyb_sk';
-  let keyMaterial = sessionStorage.getItem(sessionKeyId);
+  let keyMaterial = localStorage.getItem(sessionKeyId);
 
   if (!keyMaterial) {
     const randomBytes = crypto.getRandomValues(new Uint8Array(32));
     keyMaterial = Array.from(randomBytes, (byte) =>
       byte.toString(16).padStart(2, '0'),
     ).join('');
-    sessionStorage.setItem(sessionKeyId, keyMaterial);
+    localStorage.setItem(sessionKeyId, keyMaterial);
   }
 
   const encoder = new TextEncoder();
@@ -150,6 +150,6 @@ export const tokenCrypto = {
   },
 
   clearSessionKey(): void {
-    sessionStorage.removeItem('__cyb_sk');
+    localStorage.removeItem('__cyb_sk');
   },
 };

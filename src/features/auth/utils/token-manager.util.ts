@@ -27,7 +27,10 @@ class TokenManager {
 
       const token = await tokenCrypto.decryptToken(encryptedToken);
 
-      if (!token) return null;
+      if (!token) {
+        this.clearTokens();
+        return null;
+      }
 
       if (tokenUtils.isValidFormat(token) && !tokenUtils.isExpired(token)) {
         return token;
@@ -37,6 +40,7 @@ class TokenManager {
       return null;
     } catch (error) {
       sanitize.error('TokenManager.getAccessToken', error);
+      this.clearTokens();
       return null;
     }
   }
@@ -49,9 +53,15 @@ class TokenManager {
 
       if (!encryptedToken) return null;
 
-      return await tokenCrypto.decryptToken(encryptedToken);
+      const token = await tokenCrypto.decryptToken(encryptedToken);
+      if (!token) {
+        this.clearTokens();
+        return null;
+      }
+      return token;
     } catch (error) {
       sanitize.error('TokenManager.getRefreshToken', error);
+      this.clearTokens();
       return null;
     }
   }

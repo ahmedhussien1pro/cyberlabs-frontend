@@ -77,12 +77,18 @@ export function Enable2FADialog({ open, onClose, onSuccess }: Props) {
       <DialogContent className='max-w-md'>
         {/* ── LOADING ──────────────────────────────────── */}
         {step === 'loading' && (
-          <div className='flex flex-col items-center gap-4 py-8'>
-            <Loader2 size={36} className='animate-spin text-primary' />
-            <p className='text-sm text-muted-foreground'>
-              {t('2fa.generating')}
-            </p>
-          </div>
+          <>
+            {/* sr-only title required by Radix for screen reader accessibility */}
+            <DialogTitle className='sr-only'>
+              {t('2fa.enableTitle')}
+            </DialogTitle>
+            <div className='flex flex-col items-center gap-4 py-8'>
+              <Loader2 size={36} className='animate-spin text-primary' />
+              <p className='text-sm text-muted-foreground'>
+                {t('2fa.generating')}
+              </p>
+            </div>
+          </>
         )}
 
         {/* ── SCAN ─────────────────────────────────────── */}

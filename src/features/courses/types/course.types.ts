@@ -108,3 +108,138 @@ export interface PaginatedCourses {
   data: Course[];
   meta: { total: number; page: number; limit: number; totalPages: number };
 }
+// src/features/courses/types/course.types.ts  — APPEND
+
+export interface LearningPath {
+  id: string;
+  slug: string;
+  title: string;
+  ar_title: string | null;
+  description: string | null;
+  ar_description: string | null;
+  iconName: string;
+  color: CourseColor;
+  difficulty: Difficulty;
+  order: number;
+  totalCourses: number;
+  isFeatured: boolean;
+  isPublished: boolean;
+}
+
+export interface PathCourseItem {
+  id: string | null;
+  slug: string;
+  title: string;
+  ar_title: string | null;
+  description: string | null;
+  difficulty: Difficulty | null;
+  duration: number | null;
+  totalTopics: number;
+  color: CourseColor | null;
+  access: 'FREE' | 'PRO' | 'PREMIUM';
+  isPublished: boolean;
+  status: 'PUBLISHED' | 'COMING_SOON';
+  order: number;
+}
+export type Difficulty = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+// أحذف PathWithCourses القديم وضع الصح
+
+export interface PathModule {
+  id: string;
+  order: number;
+  title: string;
+  ar_title: string | null;
+  description: string | null;
+  ar_description: string | null;
+  type: 'COURSE' | 'LAB' | 'QUIZ' | 'PROJECT';
+  status: 'PUBLISHED' | 'COMING_SOON' | 'DRAFT';
+  estimatedHours: number;
+  isLocked: boolean;
+  courseId: string | null;
+  labId: string | null;
+  course: {
+    id: string;
+    slug: string;
+    title: string;
+    ar_title: string | null;
+    description: string | null;
+    ar_description: string | null;
+    thumbnail: string | null;
+    difficulty: Difficulty | null;
+    duration: number | null;
+  } | null;
+  lab: {
+    id: string;
+    title: string;
+    ar_title: string | null;
+    difficulty: Difficulty | null;
+    duration: number | null;
+  } | null;
+  userProgress: {
+    progress: number;
+    isCompleted: boolean;
+  };
+}
+
+export interface PathDetail {
+  id: string;
+  slug: string;
+  title: string;
+  ar_title: string | null;
+  description: string | null;
+  ar_description: string | null;
+  longDescription: string | null;
+  ar_longDescription: string | null;
+  iconName: string;
+  color: CourseColor;
+  difficulty: Difficulty;
+  order: number;
+  totalModules: number;
+  totalCourses: number;
+  totalLabs: number;
+  estimatedHours: number;
+  tags: string[];
+  ar_tags: string[];
+  isFeatured: boolean;
+  isNew: boolean;
+  isComingSoon: boolean;
+  isPublished: boolean;
+  modules: PathModule[];
+  isEnrolled: boolean;
+  progress: number;
+  enrolledAt: string | null;
+}
+
+export interface PathListItem {
+  id: string;
+  slug: string;
+  title: string;
+  ar_title: string | null;
+  description: string | null;
+  ar_description: string | null;
+  iconName: string;
+  color: CourseColor;
+  difficulty: Difficulty;
+  order: number;
+  totalCourses: number;
+  totalLabs: number;
+  estimatedHours: number;
+  tags: string[];
+  isFeatured: boolean;
+  isNew: boolean;
+  isComingSoon: boolean;
+  isPublished: boolean;
+  isEnrolled: boolean;
+  progress: number;
+  _count: { modules: number };
+}
+
+export interface PathsListResponse {
+  data: PathListItem[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}

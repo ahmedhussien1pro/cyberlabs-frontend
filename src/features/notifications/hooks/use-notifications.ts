@@ -4,7 +4,8 @@ import { API_ENDPOINTS } from '@/core/api/endpoints';
 import type { NotificationsResponse } from '../types/notification.types';
 
 const extractData = <T>(res: any): T => {
-  return (res?.data !== undefined ? res.data : res) as T;
+  const axiosData = res?.data !== undefined ? res.data : res;
+  return (axiosData?.data !== undefined ? axiosData.data : axiosData) as T;
 };
 
 const KEY = ['notifications'] as const;
@@ -44,7 +45,7 @@ export function useNotifications() {
         return {
           notifications: [],
           total: 0,
-          unreadCount: 0
+          unreadCount: 0,
         };
       }
     },

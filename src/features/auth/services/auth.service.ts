@@ -7,6 +7,7 @@ import type {
   User,
 } from '@/features/auth/types';
 import { sanitize } from '@/features/auth/utils';
+import { tokenManager } from '@/features/auth/utils';
 
 const cast = <T>(res: unknown) => res as unknown as T;
 
@@ -55,6 +56,26 @@ export const authService = {
 
   logout: async (): Promise<void> => {
     await apiClient.post(API_ENDPOINTS.AUTH.LOGOUT);
+  },
+  async refresh(): Promise<{
+    accessToken: string;
+    refreshToken: string;
+  } | null> {
+    try {
+      const refreshToken = await tokenManager.getRefreshToken();
+      const response = await apiClient.post(
+        API_ENDPOINTS.AUTH.REFRESH,
+        { refreshToken },
+        { withCredentials: true },
+      );
+      const data = response.data?.data || response.data;
+      return {
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+      };
+    } catch {
+      return null;
+    }
   },
 
   refreshToken: async (refreshToken: string): Promise<RefreshTokenResponse> => {

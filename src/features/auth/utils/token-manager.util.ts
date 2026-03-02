@@ -28,7 +28,7 @@ class TokenManager {
       const token = await tokenCrypto.decryptToken(encryptedToken);
 
       if (!token) {
-        this.clearTokens();
+        // this.clearTokens();
         return null;
       }
 
@@ -36,11 +36,11 @@ class TokenManager {
         return token;
       }
 
-      this.clearTokens();
+      // this.clearTokens();
       return null;
     } catch (error) {
       sanitize.error('TokenManager.getAccessToken', error);
-      this.clearTokens();
+      // this.clearTokens();
       return null;
     }
   }

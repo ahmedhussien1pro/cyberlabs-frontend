@@ -1,27 +1,23 @@
 {
-  "bell": {
-    "ariaLabel": "Notifications"
-  },
+  "bell": { "ariaLabel": "Notifications" },
   "panel": {
     "title": "Notifications",
     "markAll": "Mark all read",
-    "tab": {
-      "all": "All",
-      "unread": "Unread",
-      "archived": "Archived"
-    },
+    "viewAll": "View Notification Center",
+    "tab": { "all": "All", "unread": "Unread", "archived": "Archived" },
     "empty": {
-      "all": "No notifications yet",
-      "allHint": "Platform updates and achievements will appear here",
-      "unread": "All caught up! 🎉",
+      "all": "No notifications",
+      "allHint": "You will see notifications here",
+      "unread": "No unread notifications",
       "archived": "No archived notifications"
-    },
-    "endOfList": "That's all"
+    }
   },
   "actions": {
     "archive": "Archive",
-    "delete": "Delete"
+    "delete": "Delete",
+    "markRead": "Mark as read"
   },
+
   "type": {
     "SYSTEM": "System",
     "ACHIEVEMENT": "Achievement",
@@ -30,5 +26,14 @@
     "COURSE": "Course",
     "CHALLENGE": "Challenge",
     "MESSAGE": "Message"
+  },
+  "modal": {
+    "goTo": "Go to page"
+  },
+  "priority": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "urgent": "Urgent"
   }
 }

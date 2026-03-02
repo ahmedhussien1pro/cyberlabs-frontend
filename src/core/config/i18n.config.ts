@@ -22,6 +22,7 @@ i18n
       'oauthCallback',
       'resetPassword',
       'otpVerification',
+      'notifications',
       'logout',
       'language',
       'terms',

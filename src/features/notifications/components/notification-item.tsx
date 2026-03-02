@@ -1,18 +1,7 @@
-import { forwardRef } from 'react';
+import { forwardRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import {
-  Archive,
-  Bell,
-  BookOpen,
-  FlaskConical,
-  MessageSquare,
-  Swords,
-  Trash2,
-  Trophy,
-  X,
-  Zap,
-} from 'lucide-react';
+import { Archive, Bell, Trash2, X } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ar, enUS } from 'date-fns/locale';
 import { motion } from 'framer-motion';
@@ -24,22 +13,11 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import type {
-  Notification,
-  NotificationType,
-} from '../types/notification.types';
+import type { Notification } from '../types/notification.types';
+import { NotificationDetailModal } from './notification-detail-modal';
+import { TYPE_CONFIG } from './type-config';
 
-/* ─── Icon + color map ───────────────────────────────────── */
-const ICON: Record<NotificationType, { icon: React.ElementType; cls: string }> =
-  {
-    SYSTEM: { icon: Bell, cls: 'bg-blue-500/10   text-blue-500' },
-    ACHIEVEMENT: { icon: Trophy, cls: 'bg-yellow-500/10 text-yellow-500' },
-    LEVEL_UP: { icon: Zap, cls: 'bg-orange-500/10 text-orange-500' },
-    LAB: { icon: FlaskConical, cls: 'bg-cyan-500/10   text-cyan-500' },
-    COURSE: { icon: BookOpen, cls: 'bg-blue-500/10   text-blue-400' },
-    CHALLENGE: { icon: Swords, cls: 'bg-purple-500/10 text-purple-500' },
-    MESSAGE: { icon: MessageSquare, cls: 'bg-green-500/10  text-green-500' },
-  };
+const FALLBACK = { icon: Bell, cls: 'bg-muted text-muted-foreground' };
 
 interface Props {
   notification: Notification;
@@ -57,12 +35,20 @@ export const NotificationItem = forwardRef<HTMLDivElement, Props>(
   ) => {
     const { t, i18n } = useTranslation('notifications');
     const navigate = useNavigate();
-    const locale = i18n.language === 'ar' ? ar : enUS;
-    const { icon: Icon, cls } = ICON[n.type] ?? ICON.SYSTEM;
+    const isAr = i18n.language === 'ar';
+    const locale = isAr ? ar : enUS;
+    const { icon: Icon, cls } = TYPE_CONFIG[n.type] ?? FALLBACK;
+    const [modalOpen, setModalOpen] = useState(false);
+    const title = isAr ? (n.ar_title ?? n.title) : n.title;
+    const body = isAr ? (n.ar_body ?? n.body) : n.body;
 
     const handleClick = () => {
       if (!n.isRead) onRead(n.id);
-      if (n.link) navigate(n.link);
+      if (n.actionUrl) {
+        navigate(n.actionUrl);
+      } else {
+        setModalOpen(true);
+      }
     };
 
     return (
@@ -85,17 +71,13 @@ export const NotificationItem = forwardRef<HTMLDivElement, Props>(
           onKeyDown={(e) => e.key === 'Enter' && handleClick()}>
           {/* ── Unread dot ───────────────────────── */}
           {!n.isRead && !isArchived && (
-            <span
-              className='absolute start-1.5 top-1/2 h-1.5 w-1.5
-                          -translate-y-1/2 rounded-full bg-primary'
-            />
+            <span className='absolute start-1.5 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-primary' />
           )}
 
           {/* ── Type icon ────────────────────────── */}
           <div
             className={cn(
-              'mt-0.5 flex h-8 w-8 shrink-0 items-center',
-              'justify-center rounded-lg',
+              'mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
               cls,
             )}>
             <Icon size={15} />
@@ -108,11 +90,13 @@ export const NotificationItem = forwardRef<HTMLDivElement, Props>(
                 'truncate text-sm',
                 n.isRead ? 'font-normal' : 'font-semibold',
               )}>
-              {n.title}
+              {title}
             </p>
-            <p className='line-clamp-2 text-xs text-muted-foreground'>
-              {n.body}
-            </p>
+            {body && (
+              <p className='line-clamp-2 text-xs text-muted-foreground'>
+                {body}
+              </p>
+            )}
             <p className='text-[10px] text-muted-foreground/50'>
               {formatDistanceToNow(new Date(n.createdAt), {
                 addSuffix: true,
@@ -122,10 +106,7 @@ export const NotificationItem = forwardRef<HTMLDivElement, Props>(
           </div>
 
           {/* ── Actions (visible on hover) ────────── */}
-          <div
-            className='flex shrink-0 flex-col gap-1
-                          opacity-0 transition-opacity group-hover:opacity-100'>
-            {/* Archive */}
+          <div className='flex shrink-0 flex-col gap-1 opacity-0 transition-opacity group-hover:opacity-100'>
             {!isArchived && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -145,8 +126,6 @@ export const NotificationItem = forwardRef<HTMLDivElement, Props>(
                 </TooltipContent>
               </Tooltip>
             )}
-
-            {/* Delete */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -164,6 +143,11 @@ export const NotificationItem = forwardRef<HTMLDivElement, Props>(
             </Tooltip>
           </div>
         </motion.div>
+        <NotificationDetailModal
+          notification={modalOpen ? n : null}
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+        />
       </TooltipProvider>
     );
   },

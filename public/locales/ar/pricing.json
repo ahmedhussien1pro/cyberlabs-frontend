@@ -5,18 +5,21 @@
     "heroSubtitle": "مختبرات حقيقية. مهارات حقيقية. شهادات معترف بها.",
     "heroDesc": "وصول كامل للمختبرات والمسارات والتحديات. إلغاء في أي وقت.",
     "heroImageAlt": "منصة CyberLabs",
-    "perMonth": "شهر",
-    "currentPlan": "خطتك الحالية",
-    "comingSoon": "قريباً",
-    "notifyMe": "أبلغني عند الإطلاق",
-    "billedAnnually": "يُحسب ${{total}} / سنة",
-    "plansLabel": "اختر خطتك",
-    "plansTitle": "أسعار بسيطة، نتائج احترافية",
     "compareTitle": "مقارنة الخطط",
     "compareDesc": "كل شيء مدرج — بدون رسوم خفية.",
     "showRows": "عرض {{count}} ميزات أخرى",
     "hideRows": "عرض أقل",
-
+    "perMonth": "شهر",
+    "plansTitle": "اختر خطتك",
+    "plansLabel": "رقّي خطتك في أي وقت",
+    "comingSoon": "قريباً",
+    "notifyMe": "أبلغني",
+    "currentPlan": "الخطة الحالية",
+    "billedAnnually": "يُدفع سنوياً: ${{total}}",
+    "checkoutError": "فشل بدء الدفع. حاول مرة أخرى.",
+    "portalError": "تعذر فتح بوابة الفواتير.",
+    "cancelSuccess": "تم جدولة الإلغاء لنهاية الفترة الحالية.",
+    "cancelError": "تعذر إلغاء الاشتراك.",
     "cycle": { "monthly": "شهري", "annual": "سنوي" },
     "badge": { "popular": "الأكثر شيوعاً" },
 
@@ -126,11 +129,6 @@
       "upgradeCta": "ترقية إلى Pro",
       "freeCta": "ابدأ مجاناً"
     },
-
-    "checkoutError": "فشل بدء الدفع. يرجى المحاولة مرة أخرى.",
-    "portalError": "فشل فتح بوابة الفوترة.",
-    "cancelSuccess": "تم إلغاء الاشتراك بنجاح.",
-    "cancelError": "فشل إلغاء الاشتراك.",
 
     "paywall": {
       "title": "محتوى Pro",

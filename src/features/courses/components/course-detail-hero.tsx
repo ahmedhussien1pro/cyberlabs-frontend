@@ -1,4 +1,3 @@
-// src/features/courses/components/course-detail-hero.tsx
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -25,11 +24,11 @@ import { MatrixRain } from '@/shared/components/common/landing/matrix-rain';
 import { ROUTES } from '@/shared/constants';
 import type { Course } from '../types/course.types';
 
-// ── Color maps ────────────────────────────────────────────────────────
+// ── Color maps (color is normalized to lowercase by normalizeCourse) ──
 const ACCESS_BADGE: Record<string, string> = {
-  free: 'border-emerald-500/40 text-emerald-400 bg-emerald-500/10',
-  pro: 'border-blue-500/40    text-blue-400    bg-blue-500/10',
-  premium: 'border-violet-500/40  text-violet-400  bg-violet-500/10',
+  FREE: 'border-emerald-500/40 text-emerald-400 bg-emerald-500/10',
+  PRO: 'border-blue-500/40    text-blue-400    bg-blue-500/10',
+  PREMIUM: 'border-violet-500/40  text-violet-400  bg-violet-500/10',
 };
 const GLOW: Record<string, string> = {
   emerald: 'shadow-emerald-500/15',
@@ -41,11 +40,11 @@ const GLOW: Record<string, string> = {
 };
 const FALLBACK_BG: Record<string, string> = {
   emerald: 'from-emerald-950 to-emerald-900',
-  blue: 'from-blue-950 to-blue-900',
-  violet: 'from-violet-950 to-violet-900',
-  orange: 'from-orange-950 to-orange-900',
-  rose: 'from-rose-950 to-rose-900',
-  cyan: 'from-cyan-950 to-cyan-900',
+  blue: 'from-blue-950    to-blue-900',
+  violet: 'from-violet-950  to-violet-900',
+  orange: 'from-orange-950  to-orange-900',
+  rose: 'from-rose-950    to-rose-900',
+  cyan: 'from-cyan-950    to-cyan-900',
 };
 const FALLBACK_TEXT: Record<string, string> = {
   emerald: 'text-emerald-400',
@@ -87,29 +86,23 @@ export function CourseDetailHero({
   const prereqs =
     lang === 'ar' ? course.ar_prerequisites : course.prerequisites;
   const topics = lang === 'ar' ? course.ar_topics : course.topics;
-  const comingSoon = course.status === 'coming_soon';
+  const comingSoon = course.state === 'COMING_SOON';
   const hasTopics = topics.length > 0;
+  const imgSrc = course.image ?? course.thumbnail;
 
   return (
     <div className='relative overflow-hidden border-b border-border/50'>
-      {/* ── Background ─────────────────────────────────────────────── */}
       <div className='absolute inset-0 bg-background' />
-      <div
-        className='absolute inset-0 bg-gradient-to-b
-                      from-muted/80 via-muted/30 to-transparent
-                      dark:from-zinc-950 dark:via-zinc-900/50 dark:to-transparent'
-      />
+      <div className='absolute inset-0 bg-gradient-to-b from-muted/80 via-muted/30 to-transparent dark:from-zinc-950 dark:via-zinc-900/50 dark:to-transparent' />
       <MatrixRain className='absolute inset-0 opacity-[0.03] dark:opacity-[0.06]' />
 
-      <div className='relative z-10 container mx-auto px-4 py-6 '>
+      <div className='relative z-10 container mx-auto px-4 py-6'>
         <div
           className={cn(
             'gap-6 items-stretch',
             hasTopics ? 'grid lg:grid-cols-[1fr_260px]' : 'flex flex-col',
           )}>
           <div className='flex flex-col gap-5 min-w-0'>
-            {/* Back link */}
-
             {/* Course identity */}
             <div className='space-y-3.5 flex-1'>
               {/* Badges */}
@@ -120,19 +113,18 @@ export function CourseDetailHero({
                     'text-xs font-bold gap-1.5',
                     ACCESS_BADGE[course.access],
                   )}>
-                  {course.access === 'free' ? (
+                  {course.access === 'FREE' ? (
                     <Unlock className='h-3 w-3' />
                   ) : (
                     <Crown className='h-3 w-3' />
                   )}
-                  {course.access.toUpperCase()}
+                  {course.access}
                 </Badge>
                 <Badge variant='secondary' className='text-xs'>
                   {lang === 'ar' ? course.ar_category : course.category}
                 </Badge>
                 <Badge variant='secondary' className='text-xs gap-1'>
-                  <Shield className='h-3 w-3' />
-                  {diff}
+                  <Shield className='h-3 w-3' /> {diff}
                 </Badge>
                 {course.isNew && (
                   <Badge className='text-xs bg-primary text-primary-foreground'>
@@ -149,9 +141,7 @@ export function CourseDetailHero({
               </div>
 
               {/* Title */}
-              <h1
-                className='text-3xl md:text-4xl font-black tracking-tight
-                             text-foreground leading-tight'>
+              <h1 className='text-3xl md:text-4xl font-black tracking-tight text-foreground leading-tight'>
                 {title}
               </h1>
 
@@ -160,7 +150,7 @@ export function CourseDetailHero({
                 {desc}
               </p>
 
-              {/* Stats row — appears once only */}
+              {/* Stats row */}
               <div className='flex flex-wrap gap-x-5 gap-y-2 text-sm text-foreground/60'>
                 <span className='flex items-center gap-1.5'>
                   <BookOpen className='h-4 w-4 text-primary/80' />
@@ -181,19 +171,19 @@ export function CourseDetailHero({
                     {t('detail.labsIncluded', 'Labs included')}
                   </span>
                 </span>
-                {course.enrolledCount > 0 && (
+                {(course.enrollmentCount ?? 0) > 0 && (
                   <span className='flex items-center gap-1.5'>
                     <Users className='h-4 w-4 text-primary/80' />
                     <strong className='text-foreground/80 font-semibold'>
-                      {course.enrolledCount.toLocaleString()}
+                      {course.enrollmentCount.toLocaleString()}
                     </strong>
                   </span>
                 )}
-                {course.rating > 0 && (
+                {(course.averageRating ?? 0) > 0 && (
                   <span className='flex items-center gap-1.5'>
                     <Star className='h-4 w-4 fill-yellow-500 text-yellow-500' />
                     <strong className='text-foreground/80 font-semibold'>
-                      {course.rating}
+                      {course.averageRating}
                     </strong>
                     <span className='text-foreground/40'>
                       ({course.reviewCount})
@@ -202,15 +192,12 @@ export function CourseDetailHero({
                 )}
                 <Link
                   to={ROUTES.COURSES.LIST}
-                  className='flex items-center gap-1.5 text-sm font-medium h-4 w-36 
-                         text-primary
-                         hover:text-foreground transition-colors '>
+                  className='flex items-center gap-1.5 text-sm font-medium h-4 w-36 text-primary hover:text-foreground transition-colors'>
                   <ChevronLeft className='h-4 w-4 rtl:rotate-180' />
                   {t('detail.backToList', 'All Courses')}
                 </Link>
               </div>
 
-              {/* Progress fallback: only when no right column */}
               {enrolled && !hasTopics && course.totalTopics > 0 && (
                 <div className='max-w-xs space-y-1.5'>
                   <div className='flex justify-between text-xs text-foreground/60'>
@@ -224,7 +211,7 @@ export function CourseDetailHero({
               )}
             </div>
 
-            {/* ── CTA Box — bottom of col 1 ────────────────────────── */}
+            {/* CTA Box */}
             <div
               className={cn(
                 'rounded-2xl border border-border/60 bg-card overflow-hidden',
@@ -233,10 +220,10 @@ export function CourseDetailHero({
               )}>
               {/* Thumbnail */}
               <div className='sm:w-48 h-40 sm:h-auto shrink-0 overflow-hidden bg-muted'>
-                {course.image ? (
+                {imgSrc ? (
                   <img
-                    src={course.image}
-                    alt={title}
+                    src={imgSrc}
+                    alt={title ?? ''}
                     className='w-full h-full object-cover'
                   />
                 ) : (
@@ -258,21 +245,17 @@ export function CourseDetailHero({
 
               {/* Skills + prereqs + buttons */}
               <div className='flex-1 p-4 flex flex-col sm:flex-row gap-4 min-w-0'>
-                {/* Info */}
                 <div className='flex-1 min-w-0 flex flex-col gap-2.5 justify-center'>
                   {skills.length > 0 && (
                     <div>
-                      <p
-                        className='text-[10px] font-bold uppercase tracking-wider
-                                    text-foreground/40 mb-1.5'>
+                      <p className='text-[10px] font-bold uppercase tracking-wider text-foreground/40 mb-1.5'>
                         {t('detail.skillsLabel', "Skills you'll gain")}
                       </p>
                       <div className='flex flex-wrap gap-1'>
                         {skills.slice(0, 5).map((s, i) => (
                           <span
                             key={i}
-                            className='text-xs px-2 py-0.5 rounded-full
-                                       border border-border/40 bg-muted/50 text-foreground/60'>
+                            className='text-xs px-2 py-0.5 rounded-full border border-border/40 bg-muted/50 text-foreground/60'>
                             {s}
                           </span>
                         ))}
@@ -281,9 +264,7 @@ export function CourseDetailHero({
                   )}
                   {prereqs.length > 0 && (
                     <div>
-                      <p
-                        className='text-[10px] font-bold uppercase tracking-wider
-                                    text-foreground/40 mb-1.5'>
+                      <p className='text-[10px] font-bold uppercase tracking-wider text-foreground/40 mb-1.5'>
                         {t('detail.prereqLabel', 'Prerequisites')}
                       </p>
                       <ul className='flex flex-wrap gap-x-4 gap-y-1'>
@@ -291,7 +272,7 @@ export function CourseDetailHero({
                           <li
                             key={i}
                             className='flex items-center gap-1.5 text-xs text-foreground/55'>
-                            <CheckCircle2 className='h-3 w-3 text-muted-foreground shrink-0' />
+                            <CheckCircle2 className='h-3 w-3 text-muted-foreground shrink-0' />{' '}
                             {p}
                           </li>
                         ))}
@@ -303,11 +284,11 @@ export function CourseDetailHero({
                 {/* CTA buttons */}
                 <div className='flex flex-row sm:flex-col gap-2 sm:w-44 shrink-0 sm:justify-center'>
                   {enrolled ? (
-                    <Button className=' sm:flex-none sm:w-full'>
+                    <Button className='sm:flex-none sm:w-full'>
                       <Zap className='h-4 w-4 me-2' />
                       {t('detail.continueLearning', 'Continue Learning')}
                     </Button>
-                  ) : course.access === 'free' ? (
+                  ) : course.access === 'FREE' ? (
                     <Button
                       className='sm:flex-none sm:w-full'
                       onClick={onEnroll}
@@ -331,7 +312,7 @@ export function CourseDetailHero({
                       disabled={comingSoon}>
                       <Crown className='h-4 w-4 me-2' />
                       {t('detail.upgrade', 'Upgrade to {{plan}}', {
-                        plan: course.access.toUpperCase(),
+                        plan: course.access,
                       })}
                     </Button>
                   )}
@@ -339,8 +320,7 @@ export function CourseDetailHero({
                   <button
                     onClick={onToggleFav}
                     className={cn(
-                      'sm:flex-none sm:w-full',
-                      'flex items-center justify-center gap-2',
+                      'sm:flex-none sm:w-full flex items-center justify-center gap-2',
                       'rounded border py-2 px-3 text-xs font-medium transition-all',
                       fav
                         ? 'border-rose-500/50 bg-rose-500/10 text-rose-500 hover:bg-rose-500/15'
@@ -360,12 +340,9 @@ export function CourseDetailHero({
             </div>
           </div>
 
+          {/* Topics sidebar */}
           {hasTopics && (
-            <div
-              className='rounded-xl border border-border/40
-                            bg-muted/20 dark:bg-white/[0.03]
-                            p-4 flex flex-col gap-3 self-stretch'>
-              {/* Progress at top */}
+            <div className='rounded-xl border border-border/40 bg-muted/20 dark:bg-white/[0.03] p-4 flex flex-col gap-3 self-stretch'>
               {enrolled && course.totalTopics > 0 ? (
                 <div className='space-y-1.5 pb-3 border-b border-border/30'>
                   <div className='flex justify-between items-center'>
@@ -380,34 +357,21 @@ export function CourseDetailHero({
                 </div>
               ) : (
                 <div className='pb-2 border-b border-border/30'>
-                  <p
-                    className='text-[10px] font-bold uppercase tracking-widest
-                                text-foreground/40'>
+                  <p className='text-[10px] font-bold uppercase tracking-widest text-foreground/40'>
                     {t('detail.willLearn', "What you'll learn")}
                   </p>
                 </div>
               )}
-
-              {/* "What you'll learn" label (shown after progress too) */}
               {enrolled && (
-                <p
-                  className='text-[10px] font-bold uppercase tracking-widest
-                              text-foreground/35 -mb-1'>
+                <p className='text-[10px] font-bold uppercase tracking-widest text-foreground/35 -mb-1'>
                   {t('detail.willLearn', "What you'll learn")}
                 </p>
               )}
-
-              {/* Topics — flex-1 so they fill remaining height */}
               <div className='flex flex-col gap-1.5 flex-1'>
                 {topics.map((topic, i) => (
                   <div
                     key={i}
-                    className='flex items-center gap-2.5 rounded-lg
-                               bg-background/60 dark:bg-white/[0.04]
-                               border border-border/30 px-3 py-2
-                               text-xs text-foreground/75
-                               hover:border-primary/30 hover:text-foreground
-                               transition-colors duration-150 cursor-default'>
+                    className='flex items-center gap-2.5 rounded-lg bg-background/60 dark:bg-white/[0.04] border border-border/30 px-3 py-2 text-xs text-foreground/75 hover:border-primary/30 hover:text-foreground transition-colors duration-150 cursor-default'>
                     <Zap className='h-3.5 w-3.5 shrink-0 text-primary' />
                     <span className='leading-snug'>{topic}</span>
                   </div>

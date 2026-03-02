@@ -1,27 +1,32 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { coursesApi } from '../services/courses.api';
 import { useCourseProgressStore } from '../store/course-progress.store';
 import { toast } from 'sonner';
 
 interface Params {
   courseId: string;
-  topicId: string;
+  lessonId: string;
 }
 
-async function mockMark(_p: Params): Promise<{ success: boolean }> {
-  return new Promise((res) => setTimeout(() => res({ success: true }), 300));
-}
-
-export function useMarkTopicComplete() {
+export function useMarkLessonComplete() {
+  const queryClient = useQueryClient();
   const { markTopicComplete } = useCourseProgressStore();
 
   return useMutation({
-    mutationFn: mockMark,
-    onMutate: ({ courseId, topicId }) => {
-      markTopicComplete(courseId, topicId);
+    mutationFn: ({ courseId, lessonId }: Params) =>
+      coursesApi.markLessonComplete(courseId, lessonId),
+    onMutate: ({ courseId, lessonId }) => {
+      markTopicComplete(courseId, lessonId);
     },
-    onSuccess: (_d, { courseId, topicId }) => {
-      markTopicComplete(courseId, topicId);
-      toast.success('Topic complete!', { duration: 1500 });
+    onSuccess: (_data, { courseId }) => {
+      queryClient.invalidateQueries({ queryKey: ['enrollments', 'me'] });
+      queryClient.invalidateQueries({
+        queryKey: ['courses', 'detail', courseId],
+      });
+      toast.success('Lesson complete!', { duration: 1500 });
+    },
+    onError: () => {
+      toast.error('Could not mark lesson as complete. Try again.');
     },
   });
 }

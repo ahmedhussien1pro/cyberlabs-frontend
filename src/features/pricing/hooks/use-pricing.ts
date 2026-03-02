@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
-import { PLANS } from '../data/plans.data';
 import {
   fetchPlans,
   fetchMySubscription,
@@ -22,8 +21,7 @@ export function usePlans() {
     queryKey: KEYS.plans,
     queryFn: fetchPlans,
     staleTime: 1000 * 60 * 10,
-    placeholderData: PLANS,
-    retry: false,
+    retry: 1,
   });
 }
 

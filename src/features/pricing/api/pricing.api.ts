@@ -9,32 +9,16 @@ import type {
   PlanId,
 } from '../types/pricing.types';
 
-// ── Raw shape returned by the backend ────────────────────────────────
+// shape from backend
 interface BackendPlan {
   id: string;
-  name: string;
-  price: number;
+  name: string; // 'free' | 'pro' | 'team' | 'enterprise'
+  price: number; // per-month price (even for YEARLY, store monthly equivalent)
   duration: 'MONTHLY' | 'YEARLY';
   features: string[];
-  stripePriceId?: string;
+  ar_features: string[];
+  stripePriceId: string | null;
   isActive: boolean;
-}
-
-// ── Merge backend prices into local PLANS (keeps i18n keys & UI config)
-function mergePlansWithPrices(backendPlans: BackendPlan[]): Plan[] {
-  return PLANS.map((localPlan) => {
-    const monthlyRow = backendPlans.find(
-      (p) => p.name.toLowerCase() === localPlan.id && p.duration === 'MONTHLY',
-    );
-    const yearlyRow = backendPlans.find(
-      (p) => p.name.toLowerCase() === localPlan.id && p.duration === 'YEARLY',
-    );
-    return {
-      ...localPlan,
-      monthlyPrice: monthlyRow?.price ?? localPlan.monthlyPrice,
-      annualPrice: yearlyRow?.price ?? localPlan.annualPrice,
-    };
-  });
 }
 
 const FREE_FALLBACK: UserSubscription = {
@@ -45,21 +29,47 @@ const FREE_FALLBACK: UserSubscription = {
   cancelAtPeriodEnd: false,
 };
 
-// ── NOTE: apiClient interceptor already unwraps response.data ────────
-// NEVER do `const { data } = await apiClient.get(...)` — data = undefined
+function mergePlansFromDb(rows: BackendPlan[]): Plan[] {
+  return PLANS.map((uiPlan) => {
+    const monthly = rows.find(
+      (p) => p.name.toLowerCase() === uiPlan.id && p.duration === 'MONTHLY',
+    );
+    const yearly = rows.find(
+      (p) => p.name.toLowerCase() === uiPlan.id && p.duration === 'YEARLY',
+    );
 
-// ── GET /api/plans ───────────────────────────────────────────────────
-export async function fetchPlans(): Promise<Plan[]> {
-  try {
-    const raw = (await apiClient.get('/plans')) as BackendPlan[];
-    if (!Array.isArray(raw) || raw.length === 0) return PLANS;
-    return mergePlansWithPrices(raw);
-  } catch {
-    return PLANS;
-  }
+    // IMPORTANT: no local-price fallback (avoid mock prices)
+    const monthlyPrice = monthly?.price ?? 0;
+    const annualPrice = yearly?.price ?? 0;
+
+    // comingSoon if:
+    // - plan is not active (coming soon), OR
+    // - missing stripePriceId for either cycle (prevents 404 on checkout)
+    const comingSoon =
+      uiPlan.id !== 'free' &&
+      (!monthly?.isActive ||
+        !yearly?.isActive ||
+        !monthly?.stripePriceId ||
+        !yearly?.stripePriceId);
+
+    return {
+      ...uiPlan,
+      monthlyPrice,
+      annualPrice,
+      comingSoon,
+    };
+  });
 }
 
-// ── GET /api/subscriptions/me ────────────────────────────────────────
+// GET /api/plans
+export async function fetchPlans(): Promise<Plan[]> {
+  const rows = (await apiClient.get('/plans')) as BackendPlan[];
+  if (!Array.isArray(rows)) {
+    throw new Error('Invalid plans payload');
+  }
+  return mergePlansFromDb(rows);
+}
+
 export async function fetchMySubscription(): Promise<UserSubscription> {
   try {
     const sub = (await apiClient.get(
@@ -71,8 +81,6 @@ export async function fetchMySubscription(): Promise<UserSubscription> {
   }
 }
 
-// ── POST /api/subscriptions/checkout ────────────────────────────────
-// Maps frontend 'monthly'|'annual' → backend 'MONTHLY'|'YEARLY'
 export async function createCheckoutSession(
   planId: PlanId,
   cycle: BillingCycle,
@@ -81,23 +89,19 @@ export async function createCheckoutSession(
   const billingCycle: 'MONTHLY' | 'YEARLY' =
     cycle === 'annual' ? 'YEARLY' : 'MONTHLY';
 
-  const result = (await apiClient.post('/subscriptions/checkout', {
+  return (await apiClient.post('/subscriptions/checkout', {
     planId,
     billingCycle,
     successUrl: returnTo || `${window.location.origin}/pricing?success=true`,
   })) as CheckoutSession;
-
-  return result;
 }
 
-// ── POST /api/subscriptions/portal ──────────────────────────────────
 export async function createPortalSession(): Promise<{ portalUrl: string }> {
   return (await apiClient.post('/subscriptions/portal')) as {
     portalUrl: string;
   };
 }
 
-// ── POST /api/subscriptions/cancel ──────────────────────────────────
 export async function cancelSubscription(): Promise<UserSubscription> {
   return (await apiClient.post('/subscriptions/cancel')) as UserSubscription;
 }

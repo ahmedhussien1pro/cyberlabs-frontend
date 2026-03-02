@@ -1,79 +1,77 @@
-export type CourseAccess = 'free' | 'pro' | 'premium';
-export type CourseDifficulty = 'Beginner' | 'Intermediate' | 'Advanced';
-export type CourseColor =
-  | 'emerald'
-  | 'blue'
-  | 'violet'
-  | 'orange'
-  | 'rose'
-  | 'cyan';
-export type CourseStatus = 'published' | 'coming_soon' | 'draft';
-export type LessonType = 'article' | 'video' | 'lab' | 'quiz' | 'project';
-export type CourseContentType = 'practical' | 'theoretical' | 'mixed';
+// ── Enums match Prisma schema (UPPERCASE) ────────────────────────────
+// Exception: CourseColor stays lowercase — Tailwind class names require it
+export type CourseAccess = 'FREE' | 'PRO' | 'PREMIUM';
+export type CourseDifficulty = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | 'EXPERT';
+export type CourseColor = 'emerald' | 'blue' | 'violet' | 'orange' | 'rose' | 'cyan';
+export type CourseState = 'PUBLISHED' | 'COMING_SOON' | 'DRAFT';
+export type LessonType = 'VIDEO' | 'ARTICLE' | 'QUIZ';
+export type CourseContentType = 'PRACTICAL' | 'THEORETICAL' | 'MIXED';
 export type CourseCategory =
-  | 'Web Security'
-  | 'Penetration Testing'
-  | 'Malware Analysis'
-  | 'Cloud Security'
-  | 'Fundamentals'
-  | 'Cryptography'
-  | 'Network Security'
-  | 'Tools & Techniques'
-  | 'Career & Industry';
+  | 'WEB_SECURITY'
+  | 'PENETRATION_TESTING'
+  | 'MALWARE_ANALYSIS'
+  | 'CLOUD_SECURITY'
+  | 'FUNDAMENTALS'
+  | 'CRYPTOGRAPHY'
+  | 'NETWORK_SECURITY'
+  | 'TOOLS_AND_TECHNIQUES'
+  | 'CAREER_AND_INDUSTRY';
 
-export interface CourseInstructor {
-  name: string;
-  title: string;
-  avatar?: string;
-}
+// Unified alias — used by LearningPath/PathModule models
+export type Difficulty = CourseDifficulty;
 
+// ── Lesson & Section ─────────────────────────────────────────────────
 export interface CourseLesson {
   id: string;
   order: number;
   title: string;
-  ar_title: string;
+  ar_title: string | null;
   type: LessonType;
-  durationMin: number;
-  isFree: boolean;
+  duration: number;      // Prisma: duration Int?
+  isPreview: boolean;    // Prisma: isPreview Boolean
 }
 
 export interface CourseSection {
   id: string;
   order: number;
   title: string;
-  ar_title: string;
+  ar_title: string | null;
   lessons: CourseLesson[];
 }
 
+// ── Instructor ───────────────────────────────────────────────────────
+export interface CourseInstructor {
+  name: string;
+  title: string;
+  avatar?: string;
+}
+
+// ── Course ───────────────────────────────────────────────────────────
 export interface Course {
   id: string;
   slug: string;
-
   title: string;
-  ar_title: string;
-  description: string;
-  ar_description: string;
-  longDescription: string;
-  ar_longDescription: string;
-
-  image: string;
-  color: CourseColor;
+  ar_title: string | null;
+  description: string | null;
+  ar_description: string | null;
+  longDescription: string | null;
+  ar_longDescription: string | null;
+  image: string | null;
+  thumbnail: string | null;
+  color: CourseColor;          // normalized to lowercase by API layer
   access: CourseAccess;
-  status: CourseStatus;
+  state: CourseState;          // Prisma: state (not status)
   difficulty: CourseDifficulty;
-  ar_difficulty: string;
+  ar_difficulty: string | null;
   category: CourseCategory;
-  ar_category: string;
+  ar_category: string | null;
   contentType: CourseContentType;
-
   estimatedHours: number;
-  enrolledCount: number;
-  rating: number;
+  enrollmentCount: number;     // Prisma: enrollmentCount Int
+  averageRating: number;       // Prisma: averageRating Float
   reviewCount: number;
   totalTopics: number;
-
   instructor: CourseInstructor;
-
   topics: string[];
   ar_topics: string[];
   skills: string[];
@@ -82,22 +80,19 @@ export interface Course {
   ar_prerequisites: string[];
   tags: string[];
   sections: CourseSection[];
-
-  /** External labs URL shown in "Go To Labs" button */
   labsLink?: string;
-
   isNew?: boolean;
   isFeatured?: boolean;
 }
 
-// ── Filters ─────────────────────────────────────────────────────────
+// ── Filters ──────────────────────────────────────────────────────────
 export interface CourseFilters {
   search?: string;
   difficulty?: CourseDifficulty | 'all';
   access?: CourseAccess | 'all';
   category?: CourseCategory | 'all';
   contentType?: CourseContentType | 'all';
-  status?: CourseStatus | 'all';
+  state?: CourseState | 'all';
   onlyFavorites?: boolean;
   onlyEnrolled?: boolean;
   onlyCompleted?: boolean;
@@ -108,8 +103,24 @@ export interface PaginatedCourses {
   data: Course[];
   meta: { total: number; page: number; limit: number; totalPages: number };
 }
-// src/features/courses/types/course.types.ts  — APPEND
 
+// ── Enrollment ───────────────────────────────────────────────────────
+export interface Enrollment {
+  id: string;
+  userId: string;
+  courseId: string;
+  progress: number;
+  isCompleted: boolean;
+  enrolledAt: string;
+  completedAt: string | null;
+  lastAccessedAt: string | null;
+  course: Pick<
+    Course,
+    'id' | 'slug' | 'title' | 'ar_title' | 'thumbnail' | 'color' | 'difficulty'
+  >;
+}
+
+// ── Learning Path Types ──────────────────────────────────────────────
 export interface LearningPath {
   id: string;
   slug: string;
@@ -136,13 +147,11 @@ export interface PathCourseItem {
   duration: number | null;
   totalTopics: number;
   color: CourseColor | null;
-  access: 'FREE' | 'PRO' | 'PREMIUM';
+  access: CourseAccess;
   isPublished: boolean;
-  status: 'PUBLISHED' | 'COMING_SOON';
+  status: CourseState;
   order: number;
 }
-export type Difficulty = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
-// أحذف PathWithCourses القديم وضع الصح
 
 export interface PathModule {
   id: string;
@@ -236,10 +245,5 @@ export interface PathListItem {
 
 export interface PathsListResponse {
   data: PathListItem[];
-  meta: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  };
+  meta: { total: number; page: number; limit: number; totalPages: number };
 }

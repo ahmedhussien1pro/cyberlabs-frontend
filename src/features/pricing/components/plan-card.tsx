@@ -207,7 +207,9 @@ export function PricingPlansSectionV07({
 
                       <div className='text-end'>
                         <p className='text-sm font-black text-foreground'>
-                          ${planPrice}
+                          {plan.id !== 'free' && planPrice === 0
+                            ? '—'
+                            : `$${planPrice}`}
                           <span className='text-[10px] font-normal text-muted-foreground'>
                             /{t('pricing.perMonth')}
                           </span>

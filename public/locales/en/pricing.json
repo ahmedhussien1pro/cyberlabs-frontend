@@ -5,18 +5,21 @@
     "heroSubtitle": "Real labs. Real skills. Recognized certs.",
     "heroDesc": "Full access to labs, paths, and real-world challenges. Cancel anytime.",
     "heroImageAlt": "CyberLabs Platform",
-    "perMonth": "mo",
-    "currentPlan": "Current Plan",
-    "comingSoon": "Coming Soon",
-    "notifyMe": "Notify Me",
-    "billedAnnually": "Billed ${{total}}/yr",
-    "plansLabel": "Choose your plan",
-    "plansTitle": "Simple Pricing, Serious Results",
     "compareTitle": "Compare Plans",
     "compareDesc": "Everything included — no hidden fees.",
     "showRows": "Show {{count}} more features",
     "hideRows": "Show less",
-
+    "perMonth": "mo",
+    "plansTitle": "Choose your plan",
+    "plansLabel": "Upgrade when you’re ready",
+    "comingSoon": "Coming soon",
+    "notifyMe": "Notify me",
+    "currentPlan": "Current plan",
+    "billedAnnually": "Billed annually: ${{total}}",
+    "checkoutError": "Checkout failed. Please try again.",
+    "portalError": "Could not open billing portal.",
+    "cancelSuccess": "Cancellation scheduled at period end.",
+    "cancelError": "Could not cancel subscription.",
     "cycle": { "monthly": "Monthly", "annual": "Annual" },
     "badge": { "popular": "Most Popular" },
 
@@ -126,11 +129,6 @@
       "upgradeCta": "Upgrade to Pro",
       "freeCta": "Start for Free"
     },
-
-    "checkoutError": "Failed to start checkout. Please try again.",
-    "portalError": "Failed to open billing portal.",
-    "cancelSuccess": "Subscription cancelled successfully.",
-    "cancelError": "Failed to cancel subscription.",
 
     "paywall": {
       "title": "Pro Content",

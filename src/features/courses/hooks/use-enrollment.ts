@@ -1,26 +1,31 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { coursesApi } from '../services/courses.api';
 import { useCourseProgressStore } from '../store/course-progress.store';
 import { toast } from 'sonner';
+import type { Enrollment } from '../types/course.types';
 
-interface EnrollParams {
-  courseId: string;
+// GET /enrollments/me  — used on Dashboard
+export function useMyEnrollments() {
+  return useQuery<Enrollment[]>({
+    queryKey: ['enrollments', 'me'],
+    queryFn: () => coursesApi.getMyEnrollments(),
+    staleTime: 1000 * 60 * 5,
+  });
 }
 
-async function mockEnroll(_p: EnrollParams): Promise<{ success: boolean }> {
-  return new Promise((res) => setTimeout(() => res({ success: true }), 500));
-}
-
+// POST /courses/:courseId/enroll
 export function useEnrollment() {
+  const queryClient = useQueryClient();
   const { enrollCourse } = useCourseProgressStore();
 
   return useMutation({
-    mutationFn: mockEnroll,
-    // Optimistic: update store immediately
-    onMutate: ({ courseId }) => {
+    mutationFn: (courseId: string) => coursesApi.enroll(courseId),
+    onMutate: (courseId) => {
       enrollCourse(courseId);
     },
-    onSuccess: (_d, { courseId }) => {
-      enrollCourse(courseId); // idempotent — ensures store is in sync
+    onSuccess: (_data, courseId) => {
+      enrollCourse(courseId);
+      queryClient.invalidateQueries({ queryKey: ['enrollments', 'me'] });
       toast.success('Enrolled! Start learning now.', { duration: 2000 });
     },
     onError: () => {

@@ -6,7 +6,6 @@ import {
   Info,
   BookOpen,
   Clock,
-  // Users,
   Star,
   FlaskConical,
   BookMarked,
@@ -27,23 +26,24 @@ import { CourseInfoDialog } from './course-info-dialog';
 import { useCourseProgressStore } from '../store/course-progress.store';
 import type { Course } from '../types/course.types';
 
-// ── Color maps ───────────────────────────────────────────────────────
+// ── Color maps (keys must match backend UPPERCASE enums) ──────────────
 const ACCESS_BADGE: Record<string, string> = {
-  free: 'border-emerald-500/40 text-emerald-400 bg-emerald-500/10',
-  pro: 'border-blue-500/40    text-blue-400    bg-blue-500/10',
-  premium: 'border-violet-500/40  text-violet-400  bg-violet-500/10',
+  FREE: 'border-emerald-500/40 text-emerald-400 bg-emerald-500/10',
+  PRO: 'border-blue-500/40    text-blue-400    bg-blue-500/10',
+  PREMIUM: 'border-violet-500/40  text-violet-400  bg-violet-500/10',
 };
 const ACCESS_ICON: Record<string, React.ElementType> = {
-  free: Unlock,
-  pro: Crown,
-  premium: Gem,
+  FREE: Unlock,
+  PRO: Crown,
+  PREMIUM: Gem,
 };
 const CONTENT_ICON: Record<string, { Icon: React.ElementType; label: string }> =
   {
-    practical: { Icon: FlaskConical, label: 'Practical' },
-    theoretical: { Icon: BookMarked, label: 'Theory' },
-    mixed: { Icon: BookOpen, label: 'Mixed' },
+    PRACTICAL: { Icon: FlaskConical, label: 'Practical' },
+    THEORETICAL: { Icon: BookMarked, label: 'Theory' },
+    MIXED: { Icon: BookOpen, label: 'Mixed' },
   };
+// color is normalized to lowercase by normalizeCourse()
 const FALLBACK_BG: Record<string, string> = {
   emerald: 'from-emerald-950 to-emerald-900 border-emerald-800/50',
   blue: 'from-blue-950    to-blue-900    border-blue-800/50',
@@ -69,7 +69,7 @@ const HOVER_RING: Record<string, string> = {
   cyan: 'hover:ring-cyan-500/30',
 };
 
-// ── Component ────────────────────────────────────────────────────────
+// ── Component ─────────────────────────────────────────────────────────
 interface CourseCardProps {
   course: Course;
   view?: 'grid' | 'list';
@@ -94,9 +94,9 @@ export function CourseCard({
   const title = lang === 'ar' ? course.ar_title : course.title;
   const desc = lang === 'ar' ? course.ar_description : course.description;
   const diff = lang === 'ar' ? course.ar_difficulty : course.difficulty;
-  const ct = CONTENT_ICON[course.contentType ?? 'mixed'];
+  const ct = CONTENT_ICON[course.contentType ?? 'MIXED'];
   const AccessIcon = ACCESS_ICON[course.access] ?? Unlock;
-  const comingSoon = course.status === 'coming_soon';
+  const comingSoon = course.state === 'COMING_SOON';
 
   const handleFav = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -133,18 +133,17 @@ export function CourseCard({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={cn(
-          'group relative flex flex-col rounded-2xl border bg-card  overflow-hidden',
+          'group relative flex flex-col rounded-2xl border bg-card overflow-hidden',
           'transition-all duration-300 ring-1 ring-transparent',
           HOVER_RING[course.color],
           comingSoon ? 'opacity-80' : 'hover:shadow-xl hover:-translate-y-0.5',
         )}>
         {/* Thumbnail */}
-        <div className='relative aspect-video  overflow-hidden bg-muted'>
-          {/* <div className='relative h-40 overflow-hidden bg-muted'> */}
-          {course.image ? (
+        <div className='relative aspect-video overflow-hidden bg-muted'>
+          {course.image || course.thumbnail ? (
             <img
-              src={course.image}
-              alt={title}
+              src={course.image ?? course.thumbnail!}
+              alt={title ?? ''}
               loading='lazy'
               className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-105'
             />
@@ -165,30 +164,23 @@ export function CourseCard({
             </div>
           )}
 
-          {/* Coming soon overlay */}
           {comingSoon && (
             <div className='absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm'>
-              <span
-                className='text-xs font-bold uppercase tracking-widest text-white/80
-                               border border-white/20 rounded-full px-3 py-1'>
+              <span className='text-xs font-bold uppercase tracking-widest text-white/80 border border-white/20 rounded-full px-3 py-1'>
                 {t('card.comingSoon', 'Coming Soon')}
               </span>
             </div>
           )}
 
-          {/* Available badge */}
           {!comingSoon && (
             <div className='absolute top-3 start-3'>
-              <span
-                className='inline-flex items-center gap-1 rounded-full bg-emerald-500
-                               px-2.5 py-1 text-[11px] font-bold text-white shadow-md'>
+              <span className='inline-flex items-center gap-1 rounded-full bg-emerald-500 px-2.5 py-1 text-[11px] font-bold text-white shadow-md'>
                 <span className='h-1.5 w-1.5 rounded-full bg-white' />
                 {t('card.available', 'Available')}
               </span>
             </div>
           )}
 
-          {/* Favorite btn */}
           <motion.button
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{
@@ -211,7 +203,6 @@ export function CourseCard({
 
         {/* Body */}
         <div className='flex flex-col flex-1 p-4 gap-3'>
-          {/* Title + Category */}
           <div className='flex items-start justify-between gap-2'>
             <h3 className='text-sm font-bold text-foreground leading-snug line-clamp-2 flex-1'>
               {title}
@@ -221,12 +212,10 @@ export function CourseCard({
             </span>
           </div>
 
-          {/* Description */}
           <p className='text-xs text-muted-foreground leading-relaxed line-clamp-2'>
             {desc}
           </p>
 
-          {/* Badges — NO emojis */}
           <div className='flex flex-wrap items-center gap-1.5'>
             <Badge
               variant='outline'
@@ -240,7 +229,7 @@ export function CourseCard({
                 ACCESS_BADGE[course.access],
               )}>
               <AccessIcon className='h-3 w-3' />
-              {course.access.toUpperCase()}
+              {course.access}
             </Badge>
             {course.totalTopics > 0 && (
               <Badge
@@ -259,7 +248,6 @@ export function CourseCard({
             )}
           </div>
 
-          {/* CTA Buttons */}
           <div className='flex gap-2 mt-auto pt-1'>
             <Button
               variant='outline'
@@ -299,7 +287,7 @@ export function CourseCard({
   );
 }
 
-// ── List variant ──────────────────────────────────────────────────────
+// ── List variant ───────────────────────────────────────────────────────
 function CourseCardList({
   course,
   enrolled,
@@ -325,14 +313,12 @@ function CourseCardList({
 
   return (
     <>
-      <div
-        className='group flex gap-4 rounded-2xl border border-border/50 bg-card p-4
-                      hover:border-border hover:shadow-md transition-all'>
+      <div className='group flex gap-4 rounded-2xl border border-border/50 bg-card p-4 hover:border-border hover:shadow-md transition-all'>
         <div className='relative h-24 w-36 rounded-xl overflow-hidden shrink-0 bg-muted'>
-          {course.image ? (
+          {course.image || course.thumbnail ? (
             <img
-              src={course.image}
-              alt={title}
+              src={course.image ?? course.thumbnail!}
+              alt={title ?? ''}
               className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
             />
           ) : (
@@ -381,11 +367,12 @@ function CourseCardList({
                 'gap-1 text-[10px] font-bold',
                 ACCESS_BADGE[course.access],
               )}>
-              <AccessIcon className='h-3 w-3' /> {course.access.toUpperCase()}
+              <AccessIcon className='h-3 w-3' /> {course.access}
             </Badge>
-            {course.rating > 0 && (
+            {(course.averageRating ?? 0) > 0 && (
               <span className='flex items-center gap-1 text-[10px] text-yellow-500'>
-                <Star className='h-3 w-3 fill-yellow-500' /> {course.rating}
+                <Star className='h-3 w-3 fill-yellow-500' />{' '}
+                {course.averageRating}
               </span>
             )}
           </div>
@@ -402,7 +389,7 @@ function CourseCardList({
             <Button
               size='sm'
               className='h-8 text-xs px-3'
-              disabled={course.status === 'coming_soon'}
+              disabled={course.state === 'COMING_SOON'}
               onClick={() => navigate(ROUTES.COURSES.DETAIL(course.slug))}>
               {enrolled ? (
                 <>

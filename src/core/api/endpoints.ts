@@ -1,3 +1,4 @@
+// src/core/api/endpoints.ts
 export const API_ENDPOINTS = {
   AUTH: {
     LOGIN: '/auth/login',
@@ -15,7 +16,6 @@ export const API_ENDPOINTS = {
     GOOGLE_CALLBACK: '/auth/google/callback',
     GITHUB_LOGIN: '/auth/github',
     GITHUB_CALLBACK: '/auth/github/callback',
-    // 2FA
     TWO_FACTOR_GENERATE: '/auth/2fa/generate',
     TWO_FACTOR_ENABLE: '/auth/2fa/enable',
     TWO_FACTOR_DISABLE: '/auth/2fa/disable',
@@ -31,13 +31,13 @@ export const API_ENDPOINTS = {
     UPDATE_AVATAR: '/users/avatar',
     AVATAR_PRESIGN: '/users/me/avatar/presign',
     AVATAR_CONFIRM: '/users/me/avatar/confirm',
-
     DELETE_ACCOUNT: '/users/me',
     EXPORT_DATA: '/users/me/export',
     SESSIONS: '/users/me/sessions',
     REVOKE_SESSION: (id: string) => `/users/me/sessions/${id}`,
     NOTIFICATION_PREFS: '/users/me/notifications/preferences',
   },
+
   NOTIFICATIONS: {
     BASE: '/notifications',
     MARK_READ: (id: string) => `/notifications/${id}/read`,
@@ -45,19 +45,30 @@ export const API_ENDPOINTS = {
     ARCHIVE: (id: string) => `/notifications/${id}/archive`,
     DELETE: (id: string) => `/notifications/${id}`,
   },
+
   PATHS: {
     BASE: '/paths',
     BY_SLUG: (slug: string) => `/paths/${slug}`,
+    ENROLL: (slug: string) => `/paths/${slug}/enroll`,
   },
+
   COURSES: {
     BASE: '/courses',
     BY_SLUG: (slug: string) => `/courses/${slug}`,
-    TOPIC: (slug: string, topicId: string) =>
-      `/courses/${slug}/topics/${topicId}`,
-    ENROLL: (id: string) => `/courses/${id}/enroll`,
-    MARK_COMPLETE: (id: string, topicId: string) =>
-      `/courses/${id}/topics/${topicId}/complete`,
+    CURRICULUM: (slug: string) => `/courses/${slug}/curriculum`,
+    SECTIONS: (slug: string) => `/courses/${slug}/sections`,
+    ENROLL: (courseId: string) => `/courses/${courseId}/enroll`,
+    MARK_LESSON_COMPLETE: (courseId: string, lessonId: string) =>
+      `/courses/${courseId}/lessons/${lessonId}/complete`,
+    MY_PROGRESS: '/courses/me/progress',
+    MY_FAVORITES: '/courses/me/favorites',
   },
+
+  ENROLLMENTS: {
+    BASE: '/enrollments',
+    MY: '/enrollments/me',
+  },
+
   DASHBOARD: {
     STATS: '/dashboard/stats',
     RECENT_ACTIVITY: '/dashboard/activity',

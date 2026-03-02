@@ -1,43 +1,24 @@
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/core/api/client';
-import { useCourseProgressStore } from '../store/course-progress.store';
-import type { Topic } from '@/core/types/curriculumCourses.types';
+import type { CourseLesson } from '../types/course.types';
 
-const extractData = <T>(res: any): T => {
-  return (res?.data !== undefined ? res.data : res) as T;
+const extractData = <T>(res: any): T =>
+  (res?.data !== undefined ? res.data : res) as T;
+
+export const lessonQueryKeys = {
+  detail: (slug: string, lessonId: string) =>
+    ['courses', slug, 'lessons', lessonId] as const,
 };
 
-export const topicQueryKeys = {
-  detail: (slug: string, topicId: string) =>
-    ['courses', slug, 'topics', topicId] as const,
-};
-
-export function useTopic(courseSlug: string, topicId: string) {
-  return useQuery({
-    queryKey: topicQueryKeys.detail(courseSlug, topicId),
-    queryFn: async (): Promise<Topic | null> => {
-      return apiClient
-        .get(`/courses/${courseSlug}/topics/${topicId}`)
-        .then(extractData<Topic>);
-    },
-    enabled: !!courseSlug && !!topicId,
+// GET /courses/:slug/lessons/:lessonId
+export function useLesson(courseSlug: string, lessonId: string) {
+  return useQuery<CourseLesson | null>({
+    queryKey: lessonQueryKeys.detail(courseSlug, lessonId),
+    queryFn: async () =>
+      apiClient
+        .get(`/courses/${courseSlug}/lessons/${lessonId}`)
+        .then(extractData<CourseLesson>),
+    enabled: !!courseSlug && !!lessonId,
     staleTime: 1000 * 60 * 30,
-  });
-}
-
-export function useMarkTopicComplete() {
-  const markComplete = useCourseProgressStore((s) => s.markTopicComplete);
-
-  return useMutation({
-    mutationFn: async ({
-      courseId,
-      topicId,
-    }: {
-      courseId: string;
-      topicId: string;
-    }) => {
-      await apiClient.post(`/courses/${courseId}/topics/${topicId}/complete`);
-      markComplete(courseId, topicId);
-    },
   });
 }

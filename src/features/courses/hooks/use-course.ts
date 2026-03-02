@@ -1,25 +1,26 @@
 import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '@/core/api/client';
-import { API_ENDPOINTS } from '@/core/api/endpoints';
-import type { Course } from '../types/course.types';
-
-const extractData = <T>(res: any): T => {
-  return (res?.data !== undefined ? res.data : res) as T;
-};
+import { coursesApi } from '../services/courses.api';
+import type { Course, CourseSection } from '../types/course.types';
 
 export const courseQueryKeys = {
   detail: (slug: string) => ['courses', 'detail', slug] as const,
+  curriculum: (slug: string) => ['courses', 'curriculum', slug] as const,
 };
 
 export function useCourse(slug: string) {
-  return useQuery({
+  return useQuery<Course | null>({
     queryKey: courseQueryKeys.detail(slug),
-    queryFn: async (): Promise<Course | null> => {
-      return apiClient
-        .get(API_ENDPOINTS.COURSES.BY_SLUG(slug))
-        .then(extractData<Course>);
-    },
+    queryFn: () => coursesApi.get(slug),
     enabled: !!slug,
     staleTime: 1000 * 60 * 5,
+  });
+}
+
+export function useCourseCurriculum(slug: string) {
+  return useQuery<CourseSection[]>({
+    queryKey: courseQueryKeys.curriculum(slug),
+    queryFn: () => coursesApi.getCurriculum(slug),
+    enabled: !!slug,
+    staleTime: 1000 * 60 * 10,
   });
 }

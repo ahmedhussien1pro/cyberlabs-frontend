@@ -58,17 +58,16 @@ export default function CourseDetailPage() {
     lang === 'ar' ? course.ar_longDescription : course.longDescription;
 
   const handleEnroll = () => {
-    if (course.access !== 'free') {
+    if (course.access !== 'FREE') {
       window.location.href = '/pricing';
       return;
     }
-    enroll({ courseId: course.id });
+    enroll(course.id);
   };
 
   return (
     <MainLayout>
       <div className='min-h-screen bg-background'>
-        {/* Hero — extracted component */}
         <CourseDetailHero
           course={course}
           enrolled={enrolled}
@@ -80,7 +79,6 @@ export default function CourseDetailPage() {
           onToggleFav={() => toggleFavorite(course.id)}
         />
 
-        {/* Curriculum section */}
         <div className='container mx-auto px-4 py-10'>
           {longDesc && (
             <div className='mb-8 p-5 rounded-xl border border-border/40 bg-muted/20'>

@@ -1,3 +1,4 @@
+// src/features/pricing/components/upgrade-modal.tsx
 import { create } from 'zustand';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Lock, Zap } from 'lucide-react';
@@ -5,10 +6,10 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ROUTES } from '@/shared/constants';
-import { useCheckout } from '../hooks/use-pricing';
+import { usePlans, useCheckout } from '../hooks/use-pricing';
 
 export interface PaywallContext {
-  featureKey: string;
+  featureKey?: string;
   returnTo?: string;
 }
 
@@ -27,12 +28,18 @@ export const useUpgradeModal = create<UpgradeModalStore>((set) => ({
   hide: () => set({ open: false }),
 }));
 
-// ── Modal component — mount once in App.tsx / RootLayout ─────────────
+// ── Modal component — mount once in RootLayout ────────────────────────
 export function UpgradeModal() {
   const { t } = useTranslation('pricing');
   const navigate = useNavigate();
   const { open, context, hide } = useUpgradeModal();
   const checkout = useCheckout();
+
+  // Pull live Pro plan annual price from backend (falls back to PLANS mock)
+  const { data: plans = [] } = usePlans();
+  const proPlan = plans.find((p) => p.id === 'pro');
+  const proAnnualPrice = proPlan?.annualPrice ?? 9;
+  const proMonthlyPrice = proPlan?.monthlyPrice ?? 14;
 
   return (
     <AnimatePresence>
@@ -78,16 +85,21 @@ export function UpgradeModal() {
                 : t('pricing.paywall.generic')}
             </p>
 
-            {/* Price teaser */}
+            {/* Price teaser — live from backend */}
             <div className='mb-5 rounded-xl border border-blue-500/25 bg-blue-500/8 px-4 py-3 text-center'>
               <p className='text-[11px] text-muted-foreground'>
                 {t('pricing.paywall.proFrom')}
               </p>
-              <p className='text-2xl font-black text-foreground'>
-                $9
-                <span className='text-sm font-normal text-muted-foreground'>
+              <div className='flex items-end justify-center gap-1'>
+                <p className='text-2xl font-black text-foreground'>
+                  ${proAnnualPrice}
+                </p>
+                <span className='mb-0.5 text-sm font-normal text-muted-foreground'>
                   /mo
                 </span>
+              </div>
+              <p className='text-[11px] text-muted-foreground line-through opacity-60'>
+                ${proMonthlyPrice}/mo billed monthly
               </p>
               <p className='text-[11px] text-emerald-500'>
                 {t('pricing.paywall.annualNote')}

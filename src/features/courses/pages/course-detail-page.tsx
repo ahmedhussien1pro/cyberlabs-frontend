@@ -1,3 +1,4 @@
+// src/features/courses/pages/course-detail-page.tsx
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Clock, Shield } from 'lucide-react';
@@ -6,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import MainLayout from '@/shared/components/layout/main-layout';
 import { CourseCurriculum } from '../components/course-curriculum';
 import { CourseDetailHero } from '../components/course-detail-hero';
+import { CourseLabsSection } from '../components/course-labs-section';
 import { useCourse } from '../hooks/use-course';
 import { useEnrollment } from '../hooks/use-enrollment';
 import { useCourseProgressStore } from '../store/course-progress.store';
@@ -59,7 +61,7 @@ export default function CourseDetailPage() {
 
   const handleEnroll = () => {
     if (course.access !== 'FREE') {
-      window.location.href = '/pricing';
+      window.location.href = ROUTES.PRICING;
       return;
     }
     enroll(course.id);
@@ -99,6 +101,9 @@ export default function CourseDetailPage() {
               </p>
             </div>
           )}
+
+          {/* ── Labs مربوطة بالكورس ده ── */}
+          <CourseLabsSection courseSlug={slug} courseId={course.id} />
         </div>
       </div>
     </MainLayout>

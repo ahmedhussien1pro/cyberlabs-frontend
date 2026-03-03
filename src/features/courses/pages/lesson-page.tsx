@@ -19,9 +19,8 @@ import { TopicSidebar } from '../components/topic-sidebar';
 import { PaywallOverlay } from '../components/paywall-overlay';
 import CourseElementRenderer from '../components/CourseElementRenderer';
 import { useCourse } from '../hooks/use-course';
-import { useTopic, useMarkTopicComplete } from '../hooks/use-topic';
+import { useCourseContent, useMarkTopicComplete } from '../hooks/use-topic';
 import { useCourseProgressStore } from '../store/course-progress.store';
-// import { useNavigate as useNav } from 'react-router-dom';
 
 export default function LessonPage() {
   const { slug = '', topicId = '' } = useParams<{
@@ -33,21 +32,42 @@ export default function LessonPage() {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // ── Data ─────────────────────────────────────────────
+  // ── Data ──────────────────────────────────────────────
   const { data: course, isLoading: courseLoading } = useCourse(slug);
-  const { data: topic, isLoading: topicLoading } = useTopic(slug, topicId);
+  const { data: content, isLoading: contentLoading } = useCourseContent(slug);
   const { mutate: markComplete, isPending: marking } = useMarkTopicComplete();
   const { isEnrolled, isTopicCompleted } = useCourseProgressStore();
 
-  const isLoading = courseLoading || topicLoading;
+  const isLoading = courseLoading || contentLoading;
   const enrolled = course ? isEnrolled(course.id) : false;
   const isCompleted = course ? isTopicCompleted(course.id, topicId) : false;
 
-  // ── Navigation between topics ─────────────────────────
+  // ── Navigation between topics ──────────────────────────
   const sections = course?.sections ?? [];
   const currentIdx = sections.findIndex((s) => s.id === topicId);
-  const prevSection = sections[currentIdx - 1];
-  const nextSection = sections[currentIdx + 1];
+  const prevSection = currentIdx > 0 ? sections[currentIdx - 1] : null;
+  const nextSection =
+    currentIdx < sections.length - 1 ? sections[currentIdx + 1] : null;
+
+  // ── Current topic content (matched by section order index) ─
+  // sections[i] ↔ content.topics[i] — same order, seeded together
+  const topicContent = content?.topics?.[currentIdx] ?? null;
+
+  // ── Topic title: prefer DB section title (localised), fallback to JSON ──
+  // topic.title is TranslatedText ({ en, ar }), so we pick the right lang
+  const topicTitle =
+    lang === 'ar'
+      ? (sections[currentIdx]?.ar_title ??
+        sections[currentIdx]?.title ??
+        topicContent?.title?.ar ??
+        '')
+      : (sections[currentIdx]?.title ?? topicContent?.title?.en ?? '');
+
+  // ── courseTitle: ar_title may be null — always fall back to title ──
+  const courseDisplayTitle =
+    lang === 'ar'
+      ? (course?.ar_title ?? course?.title ?? '')
+      : (course?.title ?? '');
 
   const navigate_topic = (id: string) => {
     navigate(ROUTES.COURSES.TOPIC(slug, id));
@@ -61,7 +81,6 @@ export default function LessonPage() {
       { courseId: course.id, topicId },
       {
         onSuccess: () => {
-          // Auto-advance to next topic
           if (nextSection) {
             setTimeout(() => navigate_topic(nextSection.id), 600);
           }
@@ -70,21 +89,17 @@ export default function LessonPage() {
     );
   };
 
-  // ── Access check: is this topic locked? ──────────────
+  // ── Access check ───────────────────────────────────────
+  // First topic (index 0) is always accessible as preview
   const isLocked =
-    course && !enrolled && course.access !== 'free' && currentIdx > 0; // first topic always free
-
-  // ── Topic title ──────────────────────────────────────
-  const topicTitle =
-    (lang === 'ar'
-      ? sections[currentIdx]?.ar_title
-      : sections[currentIdx]?.title) ??
-    topic?.title?.[lang === 'ar' ? 'ar' : 'en'] ??
-    '';
+    !!course &&
+    !enrolled &&
+    course.access !== 'FREE' &&
+    course.access !== ('free' as any) &&
+    currentIdx > 0;
 
   return (
     <div className='flex h-[calc(100vh-56px)] overflow-hidden bg-background'>
-      {/* ── Sidebar (desktop always visible, mobile drawer) ── */}
       {/* Backdrop (mobile) */}
       {sidebarOpen && (
         <div
@@ -93,6 +108,7 @@ export default function LessonPage() {
         />
       )}
 
+      {/* ── Sidebar ──────────────────────────────────── */}
       <aside
         className={cn(
           'fixed inset-y-0 start-0 z-30 w-72 border-e border-border/50 bg-card flex flex-col',
@@ -101,12 +117,11 @@ export default function LessonPage() {
             ? 'translate-x-0'
             : '-translate-x-full rtl:translate-x-full',
         )}>
-        {/* Sidebar header */}
         <div className='flex items-center justify-between px-4 py-3 border-b border-border/50 shrink-0'>
           <Link
             to={ROUTES.COURSES.DETAIL(slug)}
             className='text-sm font-semibold text-foreground line-clamp-1 hover:text-primary transition-colors'>
-            {lang === 'ar' ? course?.ar_title : course?.title}
+            {courseDisplayTitle}
           </Link>
           <button
             onClick={() => setSidebarOpen(false)}
@@ -115,7 +130,6 @@ export default function LessonPage() {
           </button>
         </div>
 
-        {/* Sidebar content */}
         <div className='flex-1 overflow-hidden'>
           {course && (
             <TopicSidebar
@@ -129,18 +143,16 @@ export default function LessonPage() {
         </div>
       </aside>
 
-      {/* ── Main content area ─────────────────────────── */}
+      {/* ── Main content area ────────────────────────── */}
       <main className='flex-1 flex flex-col overflow-hidden'>
         {/* Top bar */}
         <div className='flex items-center gap-3 px-4 py-3 border-b border-border/50 bg-card shrink-0'>
-          {/* Hamburger (mobile) */}
           <button
             onClick={() => setSidebarOpen(true)}
             className='lg:hidden text-muted-foreground hover:text-foreground transition-colors'>
             <Menu className='h-5 w-5' />
           </button>
 
-          {/* Breadcrumb */}
           <div className='flex-1 flex items-center gap-1.5 text-sm text-muted-foreground min-w-0'>
             <Link
               to={ROUTES.COURSES.LIST}
@@ -151,13 +163,12 @@ export default function LessonPage() {
             <Link
               to={ROUTES.COURSES.DETAIL(slug)}
               className='hover:text-foreground transition-colors truncate max-w-[120px]'>
-              {lang === 'ar' ? course?.ar_title : course?.title}
+              {courseDisplayTitle}
             </Link>
             <ChevronRight className='h-3.5 w-3.5 shrink-0 rtl:rotate-180' />
             <span className='text-foreground truncate'>{topicTitle}</span>
           </div>
 
-          {/* Prev / Next */}
           <div className='flex items-center gap-1 shrink-0'>
             <Button
               variant='ghost'
@@ -197,13 +208,13 @@ export default function LessonPage() {
             {!isLoading && isLocked && course && (
               <PaywallOverlay
                 access={course.access}
-                courseTitle={lang === 'ar' ? course.ar_title : course.title}
-                onUpgrade={() => navigate(ROUTES.PRICING ?? '/pricing')}
+                courseTitle={courseDisplayTitle} // ← string guaranteed (no null)
+                onUpgrade={() => navigate('/pricing')}
               />
             )}
 
-            {/* Error */}
-            {!isLoading && !topic && !isLocked && (
+            {/* Not found */}
+            {!isLoading && !topicContent && !isLocked && (
               <div className='flex flex-col items-center justify-center py-24 gap-4'>
                 <AlertTriangle className='h-10 w-10 text-muted-foreground' />
                 <p className='text-muted-foreground text-sm'>
@@ -212,19 +223,18 @@ export default function LessonPage() {
               </div>
             )}
 
-            {/* Topic title */}
-            {!isLoading && !isLocked && topic && (
+            {/* Topic content */}
+            {!isLoading && !isLocked && topicContent && (
               <>
                 <h1 className='text-2xl md:text-3xl font-black text-foreground mb-8 leading-tight'>
                   {topicTitle}
                 </h1>
 
-                {/* Render elements */}
-                <CourseElementRenderer elements={topic.elements} />
+                {/* elements is CourseElement[] — type-safe ✅ */}
+                <CourseElementRenderer elements={topicContent.elements} />
 
-                {/* ── Bottom Actions ──────────────────── */}
+                {/* ── Bottom Actions ─────────────────────── */}
                 <div className='mt-12 pt-8 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-4'>
-                  {/* Prev */}
                   <Button
                     variant='outline'
                     size='sm'
@@ -236,12 +246,11 @@ export default function LessonPage() {
                     {t('nav.prev', 'Previous')}
                   </Button>
 
-                  {/* Mark complete / Next */}
                   <div className='flex gap-2'>
                     {!isCompleted ? (
                       <Button
                         onClick={handleMarkComplete}
-                        disabled={marking}
+                        disabled={marking || !enrolled}
                         className='min-w-[180px]'>
                         {marking ? (
                           <Loader2 className='h-4 w-4 me-2 animate-spin' />
@@ -279,7 +288,6 @@ export default function LessonPage() {
   );
 }
 
-// ── Skeleton ─────────────────────────────────────────────────
 function TopicSkeleton() {
   return (
     <div className='space-y-5 animate-pulse'>

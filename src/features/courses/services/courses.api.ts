@@ -1,3 +1,4 @@
+// src/features/courses/services/courses.api.ts
 import apiClient from '@/core/api/client';
 import { API_ENDPOINTS } from '@/core/api/endpoints';
 import type {
@@ -13,8 +14,19 @@ import type {
 
 const { COURSES, PATHS, ENROLLMENTS } = API_ENDPOINTS;
 
+// ── Types ─────────────────────────────────────────────────────────────
+export interface MyProgressResponse {
+  enrolled: string[];
+  completed: Record<string, string[]>; // courseId → sectionId[]
+  favorites: string[];
+  enrollments: Array<{
+    courseId: string;
+    progress: number;
+    isCompleted: boolean;
+  }>;
+}
+
 // ── Normalizer ────────────────────────────────────────────────────────
-// Backend returns color as UPPERCASE (BLUE/EMERALD). Tailwind needs lowercase.
 export function normalizeCourse(raw: any): Course {
   return {
     ...raw,
@@ -54,39 +66,36 @@ export const coursesApi = {
       .get(COURSES.BY_SLUG(slug))
       .then((r) => normalizeCourse(r.data?.data ?? r.data)),
 
-  // GET /courses/:slug/curriculum  → sections[] with lessons[]
+  // GET /courses/:slug/curriculum
   getCurriculum: (slug: string): Promise<CourseSection[]> =>
     apiClient
       .get(COURSES.CURRICULUM(slug))
       .then((r) => (Array.isArray(r.data) ? r.data : (r.data?.data ?? []))),
 
-  // GET /courses/:slug/sections  → alternate endpoint
+  // GET /courses/:slug/sections
   getSections: (slug: string): Promise<CourseSection[]> =>
     apiClient
       .get(COURSES.SECTIONS(slug))
       .then((r) => (Array.isArray(r.data) ? r.data : (r.data?.data ?? []))),
 
-  // POST /courses/:courseId/enroll
+  // POST /courses/:courseIdOrSlug/enroll
   enroll: (
     courseId: string,
-  ): Promise<{ success: boolean; enrolledAt: string }> =>
+  ): Promise<{ success: boolean; enrolledAt: string; courseId?: string }> =>
     apiClient.post(COURSES.ENROLL(courseId)).then((r) => r.data),
 
-  // POST /courses/:courseId/lessons/:lessonId/complete
-  markLessonComplete: (
+  // POST /courses/:courseId/topics/:topicId/complete  (section-level)
+  markTopicComplete: (
     courseId: string,
-    lessonId: string,
-  ): Promise<{ success: boolean; completedAt: string }> =>
+    topicId: string,
+  ): Promise<{ success: boolean; progress: number; isCompleted: boolean }> =>
     apiClient
-      .post(COURSES.MARK_LESSON_COMPLETE(courseId, lessonId))
+      .post(`/courses/${courseId}/topics/${topicId}/complete`)
       .then((r) => r.data),
 
   // GET /courses/me/progress
-  getMyProgress: (): Promise<{
-    enrolled: string[];
-    completed: Record<string, string[]>;
-    favorites: string[];
-  }> => apiClient.get(COURSES.MY_PROGRESS).then((r) => r.data),
+  getMyProgress: (): Promise<MyProgressResponse> =>
+    apiClient.get(COURSES.MY_PROGRESS).then((r) => r.data),
 
   // PUT /courses/me/favorites
   syncFavorite: (
@@ -98,7 +107,7 @@ export const coursesApi = {
       .then((r) => r.data),
 
   // ── Enrollments ──────────────────────────────────────────────────
-  // GET /enrollments/me  → all enrolled courses for current user
+  // GET /enrollments/me
   getMyEnrollments: (): Promise<Enrollment[]> =>
     apiClient
       .get(ENROLLMENTS.MY)

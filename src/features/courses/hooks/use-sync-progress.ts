@@ -1,33 +1,46 @@
+// src/features/courses/hooks/use-sync-progress.ts
 import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { coursesApi, type MyProgressResponse } from '../services/courses.api';
 import { useCourseProgressStore } from '../store/course-progress.store';
-import { coursesApi } from '../services/courses.api';
 
-export function useSyncProgress(isAuthenticated: boolean) {
-  const { enrollCourse, markTopicComplete, toggleFavorite, isFavorite } =
-    useCourseProgressStore();
+/**
+ * Syncs backend progress into the local Zustand store.
+ * Call once in the authenticated layout — runs after login.
+ *
+ * Syncs:
+ *  - enrolledCourses   ← enrollment.courseId[]
+ *  - completedTopics   ← { courseId: sectionId[] }
+ *  - favoriteCourses   ← courseFavorite.courseId[]
+ */
+export function useSyncProgress() {
+  const store = useCourseProgressStore();
 
-  const { data } = useQuery({
+  const { data, isSuccess } = useQuery<MyProgressResponse>({
     queryKey: ['courses', 'me', 'progress'],
     queryFn: coursesApi.getMyProgress,
-    enabled: isAuthenticated,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 1000 * 60 * 5, // re-fetch after 5 min
+    retry: false, // don't retry on 401
   });
 
   useEffect(() => {
-    if (!data) return;
+    if (!isSuccess || !data) return;
 
-    // Hydrate enrolled
-    data.enrolled.forEach((id) => enrollCourse(id));
+    // 1. Sync enrollments
+    data.enrolled.forEach((courseId) => store.enrollCourse(courseId));
 
-    // Hydrate completed topics
-    Object.entries(data.completed).forEach(([courseId, topicIds]) => {
-      topicIds.forEach((tid) => markTopicComplete(courseId, tid));
+    // 2. Sync completed sections (backend: { courseId: sectionId[] })
+    Object.entries(data.completed).forEach(([courseId, sectionIds]) => {
+      sectionIds.forEach((sectionId) =>
+        store.markTopicComplete(courseId, sectionId),
+      );
     });
 
-    // Hydrate favorites
-    data.favorites.forEach((id) => {
-      if (!isFavorite(id)) toggleFavorite(id);
+    // 3. Sync favorites (only toggle if not already marked)
+    data.favorites.forEach((courseId) => {
+      if (!store.isFavorite(courseId)) store.toggleFavorite(courseId);
     });
-  }, [data]);
+  }, [isSuccess, data]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return { isSynced: isSuccess };
 }

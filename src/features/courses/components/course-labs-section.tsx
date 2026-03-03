@@ -39,17 +39,25 @@ export function CourseLabsSection({ courseSlug }: Props) {
   const { data, isLoading } = useQuery<{ labs: CourseLab[] }>({
     queryKey: ['courses', courseSlug, 'labs'],
     queryFn: () =>
-      apiClient.get(`/courses/${courseSlug}/labs`).then((r) => r.data),
+      apiClient
+        .get(`/courses/${courseSlug}/labs`)
+        // ✅ الإصلاح: الـ interceptor بيرجع response.data مباشرة
+        // لو مفيش TransformInterceptor global → r هو { labs: [...] } مباشرة
+        // لو فيه → r هو { data: { labs: [...] } }
+        .then((r: any) => r?.data ?? r),
     staleTime: 1000 * 60 * 10,
+    // ✅ مهم: لو الـ API رجع undefined، React Query بيشتكي
+    // placeholderData بيمنع ده
+    placeholderData: { labs: [] },
   });
 
   const labs = data?.labs ?? [];
 
-  // بلا section لو مفيش لابات ولا loading
   if (!isLoading && labs.length === 0) return null;
 
   return (
-    <section className='mt-10'>
+    // ✅ id للـ scroll من زر اللابس في الـ curriculum
+    <section id='course-labs-section' className='mt-10'>
       <div className='flex items-center gap-2 mb-5'>
         <div className='h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center'>
           <FlaskConical className='h-4 w-4 text-emerald-500' />
@@ -66,7 +74,6 @@ export function CourseLabsSection({ courseSlug }: Props) {
         </div>
       </div>
 
-      {/* Loading */}
       {isLoading && (
         <div className='grid sm:grid-cols-2 gap-3'>
           {Array.from({ length: 4 }).map((_, i) => (
@@ -75,7 +82,6 @@ export function CourseLabsSection({ courseSlug }: Props) {
         </div>
       )}
 
-      {/* Labs list */}
       {!isLoading && (
         <div className='grid sm:grid-cols-2 gap-3'>
           {labs.map((lab) => {
@@ -94,12 +100,9 @@ export function CourseLabsSection({ courseSlug }: Props) {
                   'border border-border/50 bg-card hover:border-emerald-500/30',
                   'hover:bg-emerald-500/5 transition-all duration-200',
                 )}>
-                {/* Icon */}
                 <div className='shrink-0 h-10 w-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center'>
                   <FlaskConical className='h-5 w-5 text-emerald-500' />
                 </div>
-
-                {/* Info */}
                 <div className='flex-1 min-w-0'>
                   <p className='text-sm font-semibold text-foreground truncate leading-snug'>
                     {title}
@@ -127,7 +130,6 @@ export function CourseLabsSection({ courseSlug }: Props) {
                     )}
                   </div>
                 </div>
-
                 <ChevronRight className='h-4 w-4 text-muted-foreground group-hover:text-emerald-500 transition-colors shrink-0 rtl:rotate-180' />
               </Link>
             );

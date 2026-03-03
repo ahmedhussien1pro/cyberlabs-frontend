@@ -1,73 +1,110 @@
 // src/shared/components/common/subscription-badge.tsx
-import { Shield, Star, Crown, Users } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { PlanId } from '@/features/pricing/types/pricing.types';
-import { PLAN_BADGE_CONFIG } from '@/features/pricing/types/pricing.types';
 
-const PLAN_ICON: Record<PlanId, React.ElementType> = {
-  free: Shield,
-  pro: Star,
-  team: Crown,
-  enterprise: Users,
+export type UiPlanId = 'free' | 'pro' | 'team' | 'enterprise';
+
+const CFG: Record<
+  UiPlanId,
+  {
+    label: string;
+    pillCls: string;
+    dotCls: string;
+    iconCls: string;
+  }
+> = {
+  free: {
+    label: 'Free',
+    pillCls: 'border-border/50 bg-muted/40 text-muted-foreground',
+    dotCls: 'bg-muted-foreground/60',
+    iconCls: 'text-muted-foreground',
+  },
+  pro: {
+    label: 'PRO',
+    // Perplexity-ish: subtle gradient + thin border + compact typography
+    pillCls:
+      'border-sky-400/25 bg-gradient-to-r from-sky-500/15 via-blue-500/10 to-indigo-500/15 text-sky-200',
+    dotCls: 'bg-gradient-to-br from-sky-400 to-indigo-500',
+    iconCls: 'text-sky-200',
+  },
+  team: {
+    label: 'TEAM',
+    pillCls:
+      'border-violet-400/25 bg-gradient-to-r from-violet-500/15 via-fuchsia-500/10 to-violet-500/15 text-violet-200',
+    dotCls: 'bg-gradient-to-br from-violet-400 to-fuchsia-500',
+    iconCls: 'text-violet-200',
+  },
+  enterprise: {
+    label: 'ENT',
+    pillCls:
+      'border-cyan-400/25 bg-gradient-to-r from-cyan-500/15 via-emerald-500/10 to-cyan-500/15 text-cyan-200',
+    dotCls: 'bg-gradient-to-br from-cyan-400 to-emerald-400',
+    iconCls: 'text-cyan-200',
+  },
 };
 
-interface SubscriptionBadgeProps {
-  planId: PlanId;
-  size?: 'sm' | 'md';
-  showIcon?: boolean;
-  className?: string;
-}
-
-export function SubscriptionBadge({
+export function SubscriptionPillBadge({
   planId,
-  size = 'sm',
-  showIcon = true,
   className,
-}: SubscriptionBadgeProps) {
-  // لا تعرض badge للـ free
+  showIcon = true,
+  size = 'sm',
+}: {
+  planId: UiPlanId;
+  className?: string;
+  showIcon?: boolean;
+  size?: 'sm' | 'md';
+}) {
   if (planId === 'free') return null;
 
-  const cfg = PLAN_BADGE_CONFIG[planId];
-  const Icon = PLAN_ICON[planId];
+  const cfg = CFG[planId];
 
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 rounded-full border font-bold tracking-wide',
-        size === 'sm' ? 'px-2 py-0.5 text-[10px]' : 'px-2.5 py-1 text-xs',
-        cfg.bgClass,
-        cfg.borderClass,
-        cfg.colorClass,
+        'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-semibold tracking-wide',
+        size === 'sm' ? 'text-[10px]' : 'text-xs px-2.5 py-1',
+        'shadow-sm',
+        cfg.pillCls,
         className,
       )}>
       {showIcon && (
-        <Icon className={cn(size === 'sm' ? 'h-2.5 w-2.5' : 'h-3 w-3')} />
+        <Star
+          className={cn(size === 'sm' ? 'h-3 w-3' : 'h-3.5 w-3.5', cfg.iconCls)}
+          fill='currentColor'
+        />
       )}
       {cfg.label}
     </span>
   );
 }
 
-/**
- * نسخة أصغر تُستخدم جنب الـ avatar في الـ nav
- * مثال: <SubscriptionBadgeDot planId="pro" />
- */
-export function SubscriptionBadgeDot({ planId }: { planId: PlanId }) {
+export function SubscriptionAvatarDot({
+  planId,
+  className,
+}: {
+  planId: UiPlanId;
+  className?: string;
+}) {
   if (planId === 'free') return null;
 
-  const cfg = PLAN_BADGE_CONFIG[planId];
+  const cfg = CFG[planId];
 
+  // Dot ring + glow (يطلع premium بدون ما يبقى “notification” قوي)
   return (
     <span
-      title={cfg.label}
       className={cn(
-        'absolute -bottom-0.5 -end-0.5 h-3.5 w-3.5 rounded-full border-2 border-background',
-        planId === 'pro'
-          ? 'bg-primary'
-          : planId === 'team'
-            ? 'bg-violet-500'
-            : 'bg-cyan-500',
+        'absolute -end-0.5 -bottom-0.5 grid h-4 w-4 place-items-center rounded-full',
+        'ring-2 ring-background',
+        className,
       )}
-    />
+      title={cfg.label}
+      aria-label={`Subscription plan: ${cfg.label}`}>
+      <span
+        className={cn(
+          'h-3 w-3 rounded-full shadow-[0_0_10px_rgba(56,189,248,0.35)]',
+          cfg.dotCls,
+        )}
+      />
+    </span>
   );
 }

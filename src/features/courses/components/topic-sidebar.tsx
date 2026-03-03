@@ -53,7 +53,7 @@ export function TopicSidebar({
         {sections.map((section, idx) => {
           const isActive = section.id === activeId;
           const isCompleted = isTopicCompleted(courseId, section.id);
-          const isLocked = !isEnrolled && access !== 'free' && idx > 0;
+          const isLocked = !isEnrolled && access !== 'FREE' && idx > 0;
           const title = lang === 'ar' ? section.ar_title : section.title;
 
           if (isLocked) {

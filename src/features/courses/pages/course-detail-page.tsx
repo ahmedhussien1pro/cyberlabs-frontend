@@ -1,9 +1,11 @@
 // src/features/courses/pages/course-detail-page.tsx
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 import { Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { apiClient } from '@/core/api/client';
 import MainLayout from '@/shared/components/layout/main-layout';
 import { CourseCurriculum } from '../components/course-curriculum';
 import { CourseDetailHero } from '../components/course-detail-hero';
@@ -17,6 +19,7 @@ export default function CourseDetailPage() {
   const { slug = '' } = useParams<{ slug: string }>();
   const { i18n, t } = useTranslation('courses');
   const lang = i18n.language === 'ar' ? 'ar' : 'en';
+
   const { data: course, isLoading, isError } = useCourse(slug);
   const { mutate: enroll, isPending: enrolling } = useEnrollment();
   const {
@@ -26,6 +29,16 @@ export default function CourseDetailPage() {
     toggleFavorite,
     isFavorite,
   } = useCourseProgressStore();
+
+  const { data: labsData } = useQuery<{ labs: any[] }>({
+    queryKey: ['courses', slug, 'labs'],
+    queryFn: () =>
+      apiClient.get(`/courses/${slug}/labs`).then((r: any) => r?.data ?? r),
+    enabled: !!slug,
+    staleTime: 1000 * 60 * 10,
+    placeholderData: { labs: [] },
+  });
+  const hasLabs = (labsData?.labs?.length ?? 0) > 0;
 
   if (isLoading)
     return (
@@ -80,7 +93,6 @@ export default function CourseDetailPage() {
           onEnroll={handleEnroll}
           onToggleFav={() => toggleFavorite(course.id)}
         />
-
         <div className='container mx-auto px-4 py-10'>
           {longDesc && (
             <div className='mb-8 p-5 rounded-xl border border-border/40 bg-muted/20'>
@@ -88,7 +100,12 @@ export default function CourseDetailPage() {
             </div>
           )}
 
-          <CourseCurriculum course={course} isEnrolled={enrolled} />
+          {/* ✅ بيمرر hasLabs للـ curriculum عشان يعرض زر اللابس */}
+          <CourseCurriculum
+            course={course}
+            isEnrolled={enrolled}
+            hasLabs={hasLabs}
+          />
 
           <CourseLabsSection courseSlug={slug} courseId={course.id} />
         </div>

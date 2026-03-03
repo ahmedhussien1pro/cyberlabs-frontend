@@ -1,4 +1,3 @@
-// src/features/paths/components/path-roadmap.tsx
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import {
@@ -15,8 +14,8 @@ import { ROUTES } from '@/shared/constants';
 import { SharedCourseCard } from '@/shared/components/shared-course-card';
 import type { CourseCardData } from '@/shared/components/shared-course-card';
 import type { PathModule, ModuleType } from '../types/path.types';
+import { useCourseProgressStore } from '@/features/courses/store/course-progress.store';
 
-// ── State ─────────────────────────────────────────────────────────────
 type ModuleState = 'done' | 'active' | 'locked' | 'soon';
 
 function getModuleState(mod: PathModule, completedIds: string[]): ModuleState {
@@ -26,16 +25,12 @@ function getModuleState(mod: PathModule, completedIds: string[]): ModuleState {
   if (mod.isLocked) return 'locked';
   return 'active';
 }
-
-// ── Href ──────────────────────────────────────────────────────────────
 function resolveHref(mod: PathModule): string | undefined {
   if (!mod.slug) return undefined;
   if (mod.type === 'course') return ROUTES.COURSES.DETAIL(mod.slug);
   if (mod.type === 'lab') return ROUTES.LABS.DETAIL(mod.slug);
   return undefined;
 }
-
-// ── Map module → CourseCardData ───────────────────────────────────────
 function toCardData(mod: PathModule): CourseCardData {
   const c = mod.course as any;
   return {
@@ -56,7 +51,6 @@ function toCardData(mod: PathModule): CourseCardData {
   };
 }
 
-// ── State-based styles ────────────────────────────────────────────────
 const STATE_TOP_BORDER: Record<ModuleState, string> = {
   done: 'border-t-emerald-500',
   active: 'border-t-primary',
@@ -69,8 +63,6 @@ const STATE_BADGE: Record<ModuleState, string> = {
   locked: 'border-border    bg-muted      text-muted-foreground/60',
   soon: 'border-border/50 bg-muted/60   text-muted-foreground/40',
 };
-
-// ── Module Type label ─────────────────────────────────────────────────
 const TYPE_LABEL: Record<ModuleType, string> = {
   course: 'detail.course',
   lab: 'detail.lab',
@@ -78,16 +70,15 @@ const TYPE_LABEL: Record<ModuleType, string> = {
   project: 'detail.project',
 };
 
-// ── Props ─────────────────────────────────────────────────────────────
 interface PathRoadmapProps {
   modules: PathModule[];
   completedIds?: string[];
 }
 
-// ═════════════════════════════════════════════════════════════════════
 export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
   const { t, i18n } = useTranslation('paths');
   const isAr = i18n.language === 'ar';
+  const { isEnrolled, resetProgress } = useCourseProgressStore();
 
   const doneCount = modules.filter(
     (m) => completedIds.includes(m.id) || !!m.userProgress?.isCompleted,
@@ -98,7 +89,7 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
 
   return (
     <section className='container mx-auto px-4 py-10'>
-      {/* ── Progress Header ──────────────────────────────────────── */}
+      {/* Progress Header */}
       <div className='mb-10 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between'>
         <div>
           <h2 className='text-xl font-bold tracking-tight sm:text-2xl'>
@@ -108,8 +99,6 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
             {totalCount} {t('detail.followOrderSuffix')}
           </p>
         </div>
-
-        {/* Stats strip */}
         <div className='flex flex-wrap items-center gap-3'>
           <div className='flex items-center gap-2.5 rounded-xl border border-border/50 bg-muted/30 px-4 py-2.5'>
             <BarChart3 className='h-4 w-4 text-primary' />
@@ -125,7 +114,6 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
               </div>
             </div>
           </div>
-
           <div className='flex items-center gap-2 rounded-xl border border-border/50 bg-muted/30 px-4 py-2.5'>
             <Clock className='h-4 w-4 text-primary' />
             <div>
@@ -137,7 +125,6 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
               </p>
             </div>
           </div>
-
           <div className='flex items-center gap-2 rounded-xl border border-border/50 bg-muted/30 px-4 py-2.5'>
             <Trophy className='h-4 w-4 text-amber-400' />
             <div>
@@ -152,14 +139,31 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
         </div>
       </div>
 
-      {/* ── Cards Grid ───────────────────────────────────────────── */}
+      {/* Cards */}
       <div className='grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-3'>
         {modules.map((mod, idx) => {
           const state = getModuleState(mod, completedIds);
           const cardData = toCardData(mod);
           const href = resolveHref(mod);
           const isInteractive = state !== 'locked' && state !== 'soon';
-          const modTitle = isAr && mod.ar_title ? mod.ar_title : mod.title;
+
+          const courseId = (mod.course as any)?.id ?? '';
+          // const courseTopics = (mod.course as any)?.totalTopics ?? 0;
+
+          // ✅ enrolled: من الـ store الحقيقي
+          const enrolledInCourse =
+            (courseId && isEnrolled(courseId)) ||
+            !!mod.userProgress?.isCompleted;
+
+          // ✅ isCompleted: store أو backend
+          const courseComplete =
+            !!mod.userProgress?.isCompleted ||
+            (mod.userProgress?.progress ?? 0) >= 100;
+
+          // ✅ onReset: يمسح local store
+          const handleReset = courseId
+            ? () => resetProgress(courseId)
+            : undefined;
 
           return (
             <motion.div
@@ -167,9 +171,8 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35, delay: idx * 0.07 }}
-              className='relative pt-4' // pt-4 → space for the step badge that pokes up
-            >
-              {/* ── Step badge (pokes above the card border-t) ──── */}
+              className='relative pt-4'>
+              {/* Step badge */}
               <div
                 className={cn(
                   'absolute top-0.5 start-4 z-20',
@@ -188,7 +191,7 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
                 )}
               </div>
 
-              {/* ── Module type label (top-end of card) ─────────── */}
+              {/* Type label */}
               <div
                 className={cn(
                   'absolute top-1 end-4 z-20',
@@ -200,7 +203,7 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
                 {t(TYPE_LABEL[mod.type] ?? TYPE_LABEL.course)}
               </div>
 
-              {/* ── Card wrapper: top-color-border + state ring ── */}
+              {/* Card wrapper */}
               <div
                 className={cn(
                   'relative rounded-2xl border-t-[3px] overflow-hidden',
@@ -210,7 +213,6 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
                   state === 'active' && 'ring-primary/15',
                   !isInteractive && 'opacity-65',
                 )}>
-                {/* ── Locked overlay ──────────────────────────── */}
                 {state === 'locked' && (
                   <div className='absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-2xl bg-background/75 backdrop-blur-[3px]'>
                     <Lock className='h-9 w-9 text-muted-foreground/40' />
@@ -220,17 +222,17 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
                   </div>
                 )}
 
-                {/* ── Shared Course Card ───────────────────────── */}
                 <SharedCourseCard
                   course={cardData}
                   variant='full'
                   href={href}
-                  enrolled={!!mod.userProgress?.isCompleted}
+                  enrolled={enrolledInCourse}
+                  isCompleted={courseComplete} // ✅
+                  onReset={handleReset} // ✅
                   index={idx}
                 />
               </div>
 
-              {/* ── Step connector: arrow between cards (mobile only) */}
               {idx < modules.length - 1 && (
                 <div className='absolute -bottom-5 start-1/2 -translate-x-1/2 flex flex-col items-center gap-0.5 sm:hidden'>
                   <div className='h-3 w-px bg-border/40' />
@@ -242,7 +244,6 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
         })}
       </div>
 
-      {/* ── Completion banner (100%) ──────────────────────────────── */}
       {pct === 100 && (
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}

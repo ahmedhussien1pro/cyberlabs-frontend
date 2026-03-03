@@ -28,6 +28,7 @@ export default function CourseDetailPage() {
     getCompletedCount,
     toggleFavorite,
     isFavorite,
+    resetProgress, // ✅ أُضيف
   } = useCourseProgressStore();
 
   const { data: labsData } = useQuery<{ labs: any[] }>({
@@ -80,6 +81,27 @@ export default function CourseDetailPage() {
     enroll(course.id);
   };
 
+  // ✅ Reset: امسح التوبيكات المكتملة بس — الـ enrollment يفضل
+  const handleReset = () => {
+    resetProgress(course.id);
+  };
+
+  // ✅ Continue: اسكرول لأول topic مش مكتمل
+  const handleContinue = () => {
+    const completedCount = getCompletedCount(course.id);
+    // كل topic ليه id="topic-row-{index}" في الـ curriculum
+    const targetId = `topic-row-${completedCount}`;
+    const el = document.getElementById(targetId);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else {
+      // fallback: اسكرول للـ curriculum section
+      document
+        .getElementById('course-curriculum')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <MainLayout>
       <div className='min-h-screen bg-background'>
@@ -92,7 +114,10 @@ export default function CourseDetailPage() {
           fav={fav}
           onEnroll={handleEnroll}
           onToggleFav={() => toggleFavorite(course.id)}
+          onReset={handleReset} // ✅
+          onContinue={handleContinue} // ✅
         />
+
         <div className='container mx-auto px-4 py-10'>
           {longDesc && (
             <div className='mb-8 p-5 rounded-xl border border-border/40 bg-muted/20'>
@@ -100,11 +125,10 @@ export default function CourseDetailPage() {
             </div>
           )}
 
-          {/* ✅ بيمرر hasLabs للـ curriculum عشان يعرض زر اللابس */}
           <CourseCurriculum
             course={course}
             isEnrolled={enrolled}
-            hasLabs={hasLabs}
+            hasLabs={hasLabs} // ✅ دايماً يتبعت حتى لو false
           />
 
           <CourseLabsSection courseSlug={slug} courseId={course.id} />

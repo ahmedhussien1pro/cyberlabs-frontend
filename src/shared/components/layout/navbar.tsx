@@ -6,15 +6,13 @@ import {
   Code,
   GraduationCap,
   Trophy,
-  Crown,
-  Star,
-  Building2,
   LayoutDashboard,
   Info,
   Mail,
   ShieldAlert,
   FileText,
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { useProfile } from '../../../features/profile/hooks/use-profile';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -35,39 +33,19 @@ import { SearchButton, SearchDialog } from './search-dialog';
 import { NavDropdown } from './nav-dropdown';
 import { useAuthStore } from '@/core/store';
 import { ROUTES } from '@/shared/constants';
-import { useMySubscription } from '@/features/pricing/hooks/use-pricing';
-
-// Plan badges
-const PLAN_BADGES = {
-  pro: {
-    icon: Star,
-    classes: 'bg-primary text-primary-foreground border-primary',
-  },
-  team: {
-    icon: Crown,
-    classes: 'bg-violet-500 text-white border-violet-500',
-  },
-  enterprise: {
-    icon: Building2,
-    classes: 'bg-cyan-500 text-white border-cyan-500',
-  },
-};
+import { useSubscriptionBadge } from '@/features/pricing/hooks/use-pricing';
+import { PLAN_BADGE_CONFIG } from '@/features/pricing/types/pricing.types';
 
 export function Navbar() {
   const { t } = useTranslation('common');
   const { isAuthenticated, user, logout } = useAuthStore();
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { data: sub } = useMySubscription();
+
+  const { planId, isSubscribed } = useSubscriptionBadge();
   const { data: profile } = useProfile();
   const userAvatar = profile?.avatarUrl;
-  // Resolve plan identifier and visual token
-  const currentPlan = sub?.planId || 'free';
-  const badgeToken =
-    currentPlan !== 'free'
-      ? PLAN_BADGES[currentPlan as keyof typeof PLAN_BADGES]
-      : null;
-  const BadgeIcon = badgeToken?.icon;
+  const cfg = PLAN_BADGE_CONFIG[planId];
 
   const learningItems = [
     {
@@ -140,27 +118,22 @@ export function Navbar() {
     <>
       <nav className='sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
         <div className='container flex h-16 items-center justify-between gap-4 mx-auto'>
-          {/* Logo */}
           <Logo size='sm' />
 
-          {/* Desktop Navigation */}
           <div className='hidden lg:flex items-center gap-6 flex-1 justify-center'>
             <Link
               to={ROUTES.HOME}
               className='text-sm font-medium text-muted-foreground hover:text-foreground transition-colors'>
               {t('navigation.home')}
             </Link>
-
             <NavDropdown
               label={t('navigation.learning', 'Learning')}
               items={learningItems}
             />
-
             <NavDropdown
               label={t('navigation.company', 'Company')}
               items={companyItems}
             />
-
             <Link
               to={ROUTES.PRICING}
               className='text-sm font-medium text-muted-foreground hover:text-foreground transition-colors'>
@@ -168,25 +141,29 @@ export function Navbar() {
             </Link>
           </div>
 
-          {/* Right Section */}
           <div className='flex items-center gap-2'>
-            {/* Search - Desktop only */}
             <div className='hidden lg:block'>
               <SearchButton onClick={() => setSearchOpen(true)} />
             </div>
             {isAuthenticated && <NotificationBell />}
-
             <LanguageSwitcher />
             <ThemeToggle />
 
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
+                  {/*
+                   * ── Avatar trigger ──────────────────────────────────
+                   * للـ subscribers: pill صغير أسفل الـ avatar (bottom pill)
+                   * مثل الصورة المرفقة
+                   */}
                   <Button
                     variant='ghost'
-                    size='icon'
-                    className='rounded-full relative'>
-                    <Avatar className='h-10 w-10  overflow-hidden'>
+                    className={cn(
+                      'relative rounded-full p-1 h-auto w-auto',
+                      isSubscribed && 'mb-2',
+                    )}>
+                    <Avatar className='h-9 w-9 overflow-hidden'>
                       <AvatarImage
                         src={userAvatar}
                         alt={user?.name}
@@ -197,26 +174,40 @@ export function Navbar() {
                       </AvatarFallback>
                     </Avatar>
 
-                    {/* Subscription Badge Indicator */}
-                    {BadgeIcon && (
+                    {/* ── Bottom pill badge ── */}
+                    {isSubscribed && (
                       <span
-                        className={`absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full border-2 border-background shadow-sm ${badgeToken?.classes}`}
-                        title={`Plan: ${currentPlan.toUpperCase()}`}>
-                        <BadgeIcon className='h-2.5 w-2.5' />
+                        className={cn(
+                          'absolute -bottom-3 left-1/2 -translate-x-1/2',
+                          'text-[9px] font-bold uppercase leading-tight',
+                          'px-1.5 py-px rounded-full border shadow-sm whitespace-nowrap',
+                          cfg.bgClass,
+                          cfg.colorClass,
+                          cfg.borderClass,
+                        )}>
+                        {cfg.label}
                       </span>
                     )}
                   </Button>
                 </DropdownMenuTrigger>
+
                 <DropdownMenuContent align='end' className='w-56'>
                   <DropdownMenuLabel>
                     <div className='flex flex-col space-y-1'>
-                      <div className='flex items-center justify-between'>
-                        <p className='text-sm font-medium'>{user?.name}</p>
-                        {/* Status tag in dropdown */}
-                        {currentPlan !== 'free' && (
+                      <div className='flex items-center justify-between gap-2'>
+                        <p className='text-sm font-medium truncate'>
+                          {user?.name}
+                        </p>
+                        {isSubscribed && (
                           <span
-                            className={`text-[9px] uppercase font-bold px-1.5 py-0.5 rounded-sm ${badgeToken?.classes}`}>
-                            {currentPlan}
+                            className={cn(
+                              'shrink-0 text-[10px] uppercase font-semibold',
+                              'px-2 py-0.5 rounded-full border',
+                              cfg.bgClass,
+                              cfg.colorClass,
+                              cfg.borderClass,
+                            )}>
+                            {cfg.label}
                           </span>
                         )}
                       </div>
@@ -232,7 +223,7 @@ export function Navbar() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to={`/profile`}>
+                    <Link to='/profile'>
                       {t('navigation.profile', 'Profile')}
                     </Link>
                   </DropdownMenuItem>
@@ -260,7 +251,6 @@ export function Navbar() {
               </div>
             )}
 
-            {/* Mobile Menu */}
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild className='lg:hidden'>
                 <Button variant='ghost' size='icon'>
@@ -342,7 +332,6 @@ export function Navbar() {
         </div>
       </nav>
 
-      {/* Search Dialog */}
       <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
     </>
   );

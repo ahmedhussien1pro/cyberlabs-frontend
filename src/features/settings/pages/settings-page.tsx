@@ -7,6 +7,7 @@ import {
   Monitor,
   Bell,
   AlertTriangle,
+  CreditCard,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AccountTab } from '../components/account-tab';
@@ -15,6 +16,7 @@ import { AppearanceTab } from '../components/appearance-tab';
 import { SessionsTab } from '../components/sessions-tab';
 import { NotificationsTab } from '../components/notifications-tab';
 import { DangerZoneTab } from '../components/danger-zone-tab';
+import { BillingTab } from '../components/billing-tab';
 
 const TABS = [
   { id: 'account', icon: User, key: 'tabs.account', danger: false },
@@ -22,6 +24,7 @@ const TABS = [
   { id: 'sessions', icon: Monitor, key: 'tabs.sessions', danger: false },
   { id: 'notifications', icon: Bell, key: 'tabs.notifications', danger: false },
   { id: 'appearance', icon: Palette, key: 'tabs.appearance', danger: false },
+  { id: 'billing', icon: CreditCard, key: 'tabs.billing', danger: false },
   { id: 'danger', icon: AlertTriangle, key: 'tabs.danger', danger: true },
 ] as const;
 
@@ -58,7 +61,7 @@ export default function SettingsPage(): React.ReactElement {
                       : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                 )}>
                 <Icon size={15} />
-                {t(key)}
+                {t(key, id.charAt(0).toUpperCase() + id.slice(1))}
               </button>
             ))}
           </nav>
@@ -71,6 +74,7 @@ export default function SettingsPage(): React.ReactElement {
           {active === 'sessions' && <SessionsTab />}
           {active === 'notifications' && <NotificationsTab />}
           {active === 'appearance' && <AppearanceTab />}
+          {active === 'billing' && <BillingTab />}
           {active === 'danger' && <DangerZoneTab />}
         </div>
       </div>

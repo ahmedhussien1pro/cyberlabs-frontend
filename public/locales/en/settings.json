@@ -8,6 +8,7 @@
     "sessions": "Sessions",
     "notifications": "Notifications",
     "appearance": "Appearance",
+    "billing": "Billing",
     "danger": "Danger Zone"
   },
   "account": {
@@ -89,6 +90,25 @@
     "themeDesc": "Toggle between light and dark mode",
     "language": "Language",
     "languageDesc": "Change the interface language"
+  },
+  "billing": {
+    "title": "Subscription",
+    "description": "Manage your active plan and billing",
+    "freePlan": "You are on the free plan",
+    "upgradeDesc": "Upgrade to Pro to unlock all labs, courses, and certificates.",
+    "viewPlans": "View Plans",
+    "billedLabel": "Billed",
+    "renewsOn": "Renews on",
+    "cancelsOn": "Cancels on",
+    "manageBilling": "Manage Billing",
+    "cancelSubscription": "Cancel Subscription",
+    "cancelNotice": "Your subscription is scheduled to cancel at the end of this billing period. You'll retain access until {{date}}.",
+    "status": {
+      "active": "Active",
+      "trialing": "Trialing",
+      "past_due": "Past Due",
+      "canceled": "Canceled"
+    }
   },
   "dangerZone": {
     "exportTitle": "Export My Data",

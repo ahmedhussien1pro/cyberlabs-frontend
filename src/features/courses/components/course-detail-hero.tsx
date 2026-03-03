@@ -15,16 +15,27 @@ import {
   Rocket,
   Loader2,
   CheckCircle2,
+  RotateCcw,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { cn } from '@/lib/utils';
 import { MatrixRain } from '@/shared/components/common/landing/matrix-rain';
 import { ROUTES } from '@/shared/constants';
 import type { Course } from '../types/course.types';
 
-// ── Color maps (color is normalized to lowercase by normalizeCourse) ──
 const ACCESS_BADGE: Record<string, string> = {
   FREE: 'border-emerald-500/40 text-emerald-400 bg-emerald-500/10',
   PRO: 'border-blue-500/40    text-blue-400    bg-blue-500/10',
@@ -40,11 +51,11 @@ const GLOW: Record<string, string> = {
 };
 const FALLBACK_BG: Record<string, string> = {
   emerald: 'from-emerald-950 to-emerald-900',
-  blue: 'from-blue-950    to-blue-900',
-  violet: 'from-violet-950  to-violet-900',
-  orange: 'from-orange-950  to-orange-900',
-  rose: 'from-rose-950    to-rose-900',
-  cyan: 'from-cyan-950    to-cyan-900',
+  blue: 'from-blue-950 to-blue-900',
+  violet: 'from-violet-950 to-violet-900',
+  orange: 'from-orange-950 to-orange-900',
+  rose: 'from-rose-950 to-rose-900',
+  cyan: 'from-cyan-950 to-cyan-900',
 };
 const FALLBACK_TEXT: Record<string, string> = {
   emerald: 'text-emerald-400',
@@ -64,6 +75,8 @@ export interface CourseDetailHeroProps {
   fav: boolean;
   onEnroll: () => void;
   onToggleFav: () => void;
+  onReset?: () => void; // ✅
+  onContinue?: () => void; // ✅ scroll للأول topic
 }
 
 export function CourseDetailHero({
@@ -75,6 +88,8 @@ export function CourseDetailHero({
   fav,
   onEnroll,
   onToggleFav,
+  onReset,
+  onContinue,
 }: CourseDetailHeroProps) {
   const { i18n, t } = useTranslation('courses');
   const lang = i18n.language === 'ar' ? 'ar' : 'en';
@@ -90,6 +105,9 @@ export function CourseDetailHero({
   const hasTopics = topics.length > 0;
   const imgSrc = course.image ?? course.thumbnail;
 
+  // ✅ 3 حالات: غير مسجّل / مسجّل ناقص / مسجّل مكتمل
+  const isCompleted = enrolled && progress >= 100;
+
   return (
     <div className='relative overflow-hidden border-b border-border/50'>
       <div className='absolute inset-0 bg-background' />
@@ -103,7 +121,6 @@ export function CourseDetailHero({
             hasTopics ? 'grid lg:grid-cols-[1fr_260px]' : 'flex flex-col',
           )}>
           <div className='flex flex-col gap-5 min-w-0'>
-            {/* Course identity */}
             <div className='space-y-3.5 flex-1'>
               {/* Badges */}
               <div className='flex flex-wrap items-center gap-2'>
@@ -138,19 +155,23 @@ export function CourseDetailHero({
                     Coming Soon
                   </Badge>
                 )}
+                {/* ✅ Completed badge */}
+                {isCompleted && (
+                  <Badge className='text-xs gap-1 border-emerald-500/40 bg-emerald-500/10 text-emerald-400'>
+                    <CheckCircle2 className='h-3 w-3' />
+                    {t('detail.completed', 'Completed')}
+                  </Badge>
+                )}
               </div>
 
-              {/* Title */}
               <h1 className='text-3xl md:text-4xl font-black tracking-tight text-foreground leading-tight'>
                 {title}
               </h1>
-
-              {/* Description */}
               <p className='text-foreground/70 text-[15px] leading-relaxed'>
                 {desc}
               </p>
 
-              {/* Stats row */}
+              {/* Stats */}
               <div className='flex flex-wrap gap-x-5 gap-y-2 text-sm text-foreground/60'>
                 <span className='flex items-center gap-1.5'>
                   <BookOpen className='h-4 w-4 text-primary/80' />
@@ -204,9 +225,21 @@ export function CourseDetailHero({
                     <span>
                       {done}/{course.totalTopics} {t('detail.done', 'done')}
                     </span>
-                    <span className='text-primary font-bold'>{progress}%</span>
+                    <span
+                      className={cn(
+                        'font-bold',
+                        isCompleted ? 'text-emerald-400' : 'text-primary',
+                      )}>
+                      {progress}%
+                    </span>
                   </div>
-                  <Progress value={progress} className='h-1.5' />
+                  <Progress
+                    value={progress}
+                    className={cn(
+                      'h-1.5',
+                      isCompleted && '[&>div]:bg-emerald-500',
+                    )}
+                  />
                 </div>
               )}
             </div>
@@ -243,7 +276,7 @@ export function CourseDetailHero({
                 )}
               </div>
 
-              {/* Skills + prereqs + buttons */}
+              {/* Skills + prereqs + CTA */}
               <div className='flex-1 p-4 flex flex-col sm:flex-row gap-4 min-w-0'>
                 <div className='flex-1 min-w-0 flex flex-col gap-2.5 justify-center'>
                   {skills.length > 0 && (
@@ -281,14 +314,62 @@ export function CourseDetailHero({
                   )}
                 </div>
 
-                {/* CTA buttons */}
+                {/* ✅ CTA — 3 حالات واضحة */}
                 <div className='flex flex-row sm:flex-col gap-2 sm:w-44 shrink-0 sm:justify-center'>
                   {enrolled ? (
-                    <Button className='sm:flex-none sm:w-full'>
-                      <Zap className='h-4 w-4 me-2' />
-                      {t('detail.continueLearning', 'Continue Learning')}
-                    </Button>
+                    isCompleted ? (
+                      /* ✅ حالة 3: مكتمل → Reset بلون برتقالي + AlertDialog */
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant='outline'
+                            className={cn(
+                              'sm:flex-none sm:w-full gap-2',
+                              'border-orange-500/40 bg-orange-500/5 text-orange-400',
+                              'hover:bg-orange-500/15 hover:border-orange-500/60',
+                            )}>
+                            <RotateCcw className='h-4 w-4' />
+                            {t('detail.resetProgress', 'Reset Progress')}
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              {t(
+                                'detail.resetConfirmTitle',
+                                'Reset course progress?',
+                              )}
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              {t(
+                                'detail.resetConfirmDesc',
+                                'Your completed topics will be cleared locally. You can start fresh from the beginning.',
+                              )}
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>
+                              {t('common.cancel', 'Cancel')}
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              className='bg-orange-500 hover:bg-orange-600 text-white'
+                              onClick={onReset}>
+                              {t('detail.resetConfirm', 'Yes, Reset')}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    ) : (
+                      /* ✅ حالة 2: مسجّل ناقص → Continue Learning يعمل scroll */
+                      <Button
+                        className='sm:flex-none sm:w-full'
+                        onClick={onContinue}>
+                        <Zap className='h-4 w-4 me-2' />
+                        {t('detail.continueLearning', 'Continue Learning')}
+                      </Button>
+                    )
                   ) : course.access === 'FREE' ? (
+                    /* حالة 1a: غير مسجّل FREE */
                     <Button
                       className='sm:flex-none sm:w-full'
                       onClick={onEnroll}
@@ -306,6 +387,7 @@ export function CourseDetailHero({
                       )}
                     </Button>
                   ) : (
+                    /* حالة 1b: غير مسجّل PRO/PREMIUM */
                     <Button
                       className='flex-1 sm:flex-none sm:w-full'
                       onClick={onEnroll}
@@ -317,6 +399,7 @@ export function CourseDetailHero({
                     </Button>
                   )}
 
+                  {/* Favorite — ثابت */}
                   <button
                     onClick={onToggleFav}
                     className={cn(
@@ -349,11 +432,24 @@ export function CourseDetailHero({
                     <span className='text-xs text-foreground/55'>
                       {done}/{course.totalTopics} {t('detail.done', 'done')}
                     </span>
-                    <span className='text-primary font-bold text-sm'>
+                    <span
+                      className={cn(
+                        'font-bold text-sm',
+                        isCompleted ? 'text-emerald-400' : 'text-primary',
+                      )}>
                       {progress}%
+                      {isCompleted && (
+                        <CheckCircle2 className='inline h-3.5 w-3.5 ms-1' />
+                      )}
                     </span>
                   </div>
-                  <Progress value={progress} className='h-1.5' />
+                  <Progress
+                    value={progress}
+                    className={cn(
+                      'h-1.5',
+                      isCompleted && '[&>div]:bg-emerald-500',
+                    )}
+                  />
                 </div>
               ) : (
                 <div className='pb-2 border-b border-border/30'>

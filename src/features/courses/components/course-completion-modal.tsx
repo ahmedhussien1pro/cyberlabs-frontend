@@ -1,10 +1,11 @@
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Trophy, Sparkles, X, BookOpen } from 'lucide-react';
+import { Trophy, Sparkles, X, BookOpen, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
+// ✅ Confetti ثابت على مستوى الـ module — بدون Math.random في الـ render
 const COLORS = [
   '#3b82f6',
   '#8b5cf6',
@@ -26,12 +27,18 @@ interface Props {
   open: boolean;
   courseTitle: string;
   onClose: () => void;
+  /** بعد الـ reset: يرجع الكورس لحالة غير مكتملة */
+  onReset?: () => void;
 }
 
-export function CourseCompletionModal({ open, courseTitle, onClose }: Props) {
+export function CourseCompletionModal({
+  open,
+  courseTitle,
+  onClose,
+  onReset,
+}: Props) {
   const { t } = useTranslation('courses');
 
-  // إغلاق بالـ Escape
   useEffect(() => {
     if (!open) return;
     const handler = (e: KeyboardEvent) => {
@@ -40,6 +47,11 @@ export function CourseCompletionModal({ open, courseTitle, onClose }: Props) {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [open, onClose]);
+
+  const handleReset = () => {
+    onReset?.();
+    onClose();
+  };
 
   return (
     <>
@@ -64,7 +76,7 @@ export function CourseCompletionModal({ open, courseTitle, onClose }: Props) {
             />
 
             {/* Modal */}
-            <div className='fixed inset-0 z-50 flex items-center justify-center  pointer-events-none'>
+            <div className='fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none'>
               <motion.div
                 key='modal'
                 initial={{ opacity: 0, scale: 0.75, y: 50 }}
@@ -73,7 +85,7 @@ export function CourseCompletionModal({ open, courseTitle, onClose }: Props) {
                 transition={{ type: 'spring', stiffness: 280, damping: 22 }}
                 className='relative w-full max-w-md rounded-2xl border border-border/50 bg-card shadow-2xl overflow-hidden pointer-events-auto'
                 onClick={(e) => e.stopPropagation()}>
-                {/* ── Confetti ── */}
+                {/* Confetti */}
                 <div
                   className='pointer-events-none absolute inset-0 overflow-hidden rounded-2xl'
                   aria-hidden>
@@ -173,22 +185,51 @@ export function CourseCompletionModal({ open, courseTitle, onClose }: Props) {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.62 }}
                     className='flex gap-3 w-full'>
-                    {/* ✅ "Continue Learning" disabled — الكورس خلص */}
-                    <Button
-                      variant='outline'
-                      size='sm'
-                      disabled
-                      className={cn(
-                        'flex-1 cursor-not-allowed opacity-50',
-                        'border-emerald-500/30 text-emerald-400',
-                      )}>
-                      ✓ {t('completion.allDone', 'All Done!')}
-                    </Button>
+                    {/*
+                     * ✅ Reset Progress — يبدأ من جديد
+                     * disabled لو مفيش onReset (مش موجود سياق للـ reset)
+                     */}
+                    {onReset ? (
+                      <Button
+                        variant='outline'
+                        size='sm'
+                        className={cn(
+                          'flex-1 gap-2',
+                          'border-orange-500/30 text-orange-400',
+                          'hover:bg-orange-500/10 hover:border-orange-500/50',
+                        )}
+                        onClick={handleReset}>
+                        <RotateCcw className='h-3.5 w-3.5' />
+                        {t('completion.reset', 'Reset Progress')}
+                      </Button>
+                    ) : (
+                      <Button
+                        variant='outline'
+                        size='sm'
+                        disabled
+                        className='flex-1 cursor-not-allowed opacity-40 border-emerald-500/20 text-emerald-400'>
+                        ✓ {t('completion.allDone', 'All Done!')}
+                      </Button>
+                    )}
 
                     <Button size='sm' className='flex-1' onClick={onClose}>
                       {t('completion.close', 'Close')}
                     </Button>
                   </motion.div>
+
+                  {/* تحذير صغير تحت الـ Reset */}
+                  {onReset && (
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.72 }}
+                      className='text-[11px] text-muted-foreground/60'>
+                      {t(
+                        'completion.resetNote',
+                        'Reset clears local progress only',
+                      )}
+                    </motion.p>
+                  )}
                 </div>
               </motion.div>
             </div>

@@ -24,7 +24,6 @@ import CourseElementRenderer from './CourseElementRenderer';
 import type { CourseElement } from '@/core/types/curriculumCourses.types';
 import { CourseCompletionModal } from './course-completion-modal';
 
-// ── Types ─────────────────────────────────────────────────────────────
 type TopicState = 'done' | 'active' | 'locked' | 'soon';
 
 interface CurriculumTopic {
@@ -33,10 +32,9 @@ interface CurriculumTopic {
   elements: CourseElement[];
 }
 
-// ── Helpers ────────────────────────────────────────────────────────────
 function getTopicState(
   idx: number,
-  sectionId: string, // ✅ DB Section UUID
+  sectionId: string,
   courseId: string,
   isEnrolled: boolean,
   courseState: string,
@@ -44,7 +42,7 @@ function getTopicState(
 ): TopicState {
   if (courseState === 'COMING_SOON') return 'soon';
   if (!isEnrolled && idx >= 2) return 'locked';
-  if (isTopicCompleted(courseId, sectionId)) return 'done'; // ✅ UUID
+  if (isTopicCompleted(courseId, sectionId)) return 'done';
   return 'active';
 }
 
@@ -63,7 +61,7 @@ function TopicRow({
 }: {
   courseId: string;
   topic: CurriculumTopic;
-  sectionId: string; // ✅ DB Section UUID
+  sectionId: string;
   topicIndex: number;
   total: number;
   isEnrolled: boolean;
@@ -89,34 +87,32 @@ function TopicRow({
   const isLast = topicIndex === total - 1;
   const title = topic.title[lang] ?? topic.title.en;
   const topicNum = String(topicIndex + 1).padStart(2, '0');
+  const isDisabled = state === 'locked' || state === 'soon' || !sectionId;
 
   const handleMarkComplete = () => {
     if (!sectionId) return;
     markComplete(
-      { courseId, topicId: sectionId }, // ✅ DB UUID → backend يقبله
+      { courseId, topicId: sectionId },
       {
         onSuccess: () => {
           setTimeout(() => {
-            if (isCourseCompleted(courseId, total)) {
-              onCourseComplete();
-            }
+            if (isCourseCompleted(courseId, total)) onCourseComplete();
           }, 150);
         },
       },
     );
   };
 
-  // لو الـ section مش موجود في DB (topic من JSON بس) → active
-  const isDisabled = state === 'locked' || state === 'soon' || !sectionId;
-
   return (
+    /* ✅ id للـ scroll من الهيرو */
     <motion.li
+      id={`topic-row-${topicIndex}`}
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25, delay: topicIndex * 0.04 }}
       className='relative'>
       <div className='flex gap-4'>
-        {/* Timeline */}
+        {/* Timeline dot */}
         <div className='relative flex shrink-0 flex-col items-center'>
           <div
             className={cn(
@@ -161,7 +157,6 @@ function TopicRow({
             isOpen && !isDone && 'border-primary/30 shadow-sm',
             isOpen && isDone && 'border-emerald-500/40 shadow-sm',
           )}>
-          {/* Header */}
           <button
             type='button'
             disabled={isDisabled}
@@ -170,7 +165,7 @@ function TopicRow({
             className='flex w-full items-center gap-3 px-4 py-3.5 text-start'>
             <span
               className={cn(
-                'flex shrink-0 items-center justify-center h-8 w-8 rounded-lg border transition-colors duration-300',
+                'flex shrink-0 items-center justify-center h-8 w-8 rounded-lg border transition-colors',
                 isDone
                   ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-500'
                   : state === 'active'
@@ -217,7 +212,7 @@ function TopicRow({
               </div>
               <p
                 className={cn(
-                  'text-sm font-semibold leading-snug transition-colors duration-300',
+                  'text-sm font-semibold leading-snug',
                   isDone ? 'text-emerald-400/80' : 'text-foreground',
                 )}>
                 {title}
@@ -242,7 +237,6 @@ function TopicRow({
             </div>
           </button>
 
-          {/* Expanded */}
           <AnimatePresence initial={false}>
             {isOpen && (
               <motion.div
@@ -261,7 +255,6 @@ function TopicRow({
                     <CourseElementRenderer elements={topic.elements} />
                   )}
 
-                  {/* Mark Complete */}
                   {isEnrolled && sectionId && (
                     <div className='flex justify-end pt-3 border-t border-border/30'>
                       {isDone ? (
@@ -300,7 +293,6 @@ function TopicRow({
   );
 }
 
-// ── Skeleton ──────────────────────────────────────────────────────────
 function CurriculumSkeleton() {
   return (
     <div className='space-y-3'>
@@ -314,11 +306,10 @@ function CurriculumSkeleton() {
   );
 }
 
-// ── Main ──────────────────────────────────────────────────────────────
 interface CourseCurriculumProps {
   course: Course;
   isEnrolled: boolean;
-  hasLabs?: boolean;
+  hasLabs?: boolean; // ✅ undefined أو false → disabled, true → enabled
 }
 
 export function CourseCurriculum({
@@ -330,11 +321,12 @@ export function CourseCurriculum({
   const lang = i18n.language === 'ar' ? 'ar' : 'en';
   const [openId, setOpenId] = useState<string | null>(null);
   const [celebrateOpen, setCelebrateOpen] = useState(false);
-  const { getProgress, getCompletedCount } = useCourseProgressStore();
+
+  const { getProgress, getCompletedCount, resetProgress } =
+    useCourseProgressStore();
 
   const { data: curriculumData, isLoading } = useCurriculum(course.slug);
   const topics = (curriculumData?.topics ?? []) as CurriculumTopic[];
-  // ✅ DB sections — نفس الترتيب زي topics (seeded معاهم)
   const sections = course.sections ?? [];
 
   const toggle = (id: string) => setOpenId((p) => (p === id ? null : id));
@@ -345,6 +337,11 @@ export function CourseCurriculum({
   const courseTitle =
     lang === 'ar' ? (course.ar_title ?? course.title) : course.title;
 
+  const handleReset = () => {
+    resetProgress(course.id);
+    setOpenId(null);
+  };
+
   const handleScrollToLabs = () => {
     document
       .getElementById('course-labs-section')
@@ -352,12 +349,13 @@ export function CourseCurriculum({
   };
 
   return (
-    <section>
-      {/* ✅ Celebration popup عند 100% */}
+    /* ✅ id للـ scroll من الهيرو */
+    <section id='course-curriculum' className='space-y-6'>
       <CourseCompletionModal
         open={celebrateOpen}
         courseTitle={courseTitle}
         onClose={() => setCelebrateOpen(false)}
+        onReset={handleReset}
       />
 
       {/* Header */}
@@ -391,7 +389,7 @@ export function CourseCurriculum({
         </div>
       </div>
 
-      {/* Topics */}
+      {/* Topics list */}
       {isLoading ? (
         <CurriculumSkeleton />
       ) : topics.length === 0 ? (
@@ -410,7 +408,7 @@ export function CourseCurriculum({
                 key={topic.id}
                 courseId={course.id}
                 topic={topic}
-                sectionId={sections[idx]?.id ?? ''} // ✅ DB UUID بالـ index
+                sectionId={sections[idx]?.id ?? ''}
                 topicIndex={idx}
                 total={total}
                 isEnrolled={isEnrolled}
@@ -424,24 +422,26 @@ export function CourseCurriculum({
         </div>
       )}
 
-      {/* زر اللابس */}
-      {hasLabs && (
-        <div className='flex justify-center pt-4'>
-          <Button
-            variant='outline'
-            size='lg'
-            onClick={handleScrollToLabs}
-            className={cn(
-              'gap-2.5 min-w-[220px] rounded-xl border-primary/40',
-              'hover:bg-primary/10 hover:border-primary/60 hover:text-primary',
-              'transition-all font-semibold cursor-pointer',
-            )}>
-            <FlaskConical className='h-5 w-5' />
-            {t('curriculum.goToLabs', 'Go To Labs')}
-            <ExternalLink className='h-3.5 w-3.5 opacity-70' />
-          </Button>
-        </div>
-      )}
+      {/* ✅ Labs button — دايماً موجود، disabled لو مفيش لابات */}
+      <div className='flex justify-center pt-4'>
+        <Button
+          variant='outline'
+          size='lg'
+          onClick={hasLabs ? handleScrollToLabs : undefined}
+          disabled={!hasLabs}
+          className={cn(
+            'gap-2.5 min-w-[220px] rounded-xl border-primary/40 font-semibold',
+            hasLabs
+              ? 'hover:bg-primary/10 hover:border-primary/60 hover:text-primary transition-all cursor-pointer'
+              : 'opacity-50 cursor-not-allowed',
+          )}>
+          <FlaskConical className='h-5 w-5' />
+          {hasLabs
+            ? t('curriculum.goToLabs', 'Go To Labs')
+            : t('curriculum.noLabs', 'No Labs Available')}
+          {hasLabs && <ExternalLink className='h-3.5 w-3.5 opacity-70' />}
+        </Button>
+      </div>
     </section>
   );
 }

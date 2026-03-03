@@ -1,4 +1,3 @@
-// src/shared/components/shared-course-card.tsx
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import {
@@ -15,14 +14,25 @@ import {
   Info,
   Zap,
   Sparkles,
+  RotateCcw,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { ROUTES } from '@/shared/constants';
 
-// ── Shared data shape ─────────────────────────────────────────────────
 export interface CourseCardData {
   id: string;
   slug: string;
@@ -41,7 +51,7 @@ export interface CourseCardData {
   ar_category?: string;
   totalTopics?: number;
   estimatedHours?: number;
-  state?: string; // 'PUBLISHED' | 'COMING_SOON'
+  state?: string;
   averageRating?: number;
 }
 
@@ -49,6 +59,8 @@ export interface SharedCourseCardProps {
   course: CourseCardData;
   variant?: 'full' | 'mini';
   enrolled?: boolean;
+  isCompleted?: boolean; // ✅ جديد
+  onReset?: () => void; // ✅ جديد
   isFavorite?: boolean;
   onFavoriteToggle?: (e: React.MouseEvent) => void;
   onInfoClick?: () => void;
@@ -56,7 +68,6 @@ export interface SharedCourseCardProps {
   href?: string;
 }
 
-// ── Color maps ────────────────────────────────────────────────────────
 const FALLBACK_BG: Record<string, string> = {
   emerald: 'from-emerald-950 to-emerald-900 border-emerald-800/50',
   blue: 'from-blue-950    to-blue-900    border-blue-800/50',
@@ -104,7 +115,6 @@ function normalizeDiff(d?: string) {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-// ── Thumbnail ─────────────────────────────────────────────────────────
 function CourseThumbnail({
   course,
   className,
@@ -144,10 +154,49 @@ function CourseThumbnail({
   );
 }
 
+// ─── Reset Confirm AlertDialog ────────────────────────────────────────
+function ResetConfirmDialog({
+  onReset,
+  trigger,
+}: {
+  onReset: () => void;
+  trigger: React.ReactNode;
+}) {
+  const { t } = useTranslation('courses');
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>
+            {t('detail.resetConfirmTitle', 'Reset course progress?')}
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            {t(
+              'detail.resetConfirmDesc',
+              'This will clear your local progress for this course. Your completion record on the server will remain intact.',
+            )}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>{t('common.cancel', 'Cancel')}</AlertDialogCancel>
+          <AlertDialogAction
+            className='bg-orange-500 hover:bg-orange-600 text-white'
+            onClick={onReset}>
+            {t('detail.resetConfirm', 'Yes, Reset')}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
 // ═══ FULL VARIANT ════════════════════════════════════════════════════
 function FullCard({
   course,
   enrolled,
+  isCompleted,
+  onReset,
   isFavorite,
   onFavoriteToggle,
   onInfoClick,
@@ -290,27 +339,49 @@ function FullCard({
               <Info className='h-3.5 w-3.5 me-1.5' /> More Info
             </Button>
           )}
-          <Button
-            size='sm'
-            className='flex-1 h-9 text-xs'
-            disabled={comingSoon}
-            asChild={!comingSoon}>
-            {comingSoon ? (
-              <span>Coming Soon</span>
-            ) : (
-              <Link to={destHref}>
-                {enrolled ? (
-                  <>
-                    <Zap className='h-3.5 w-3.5 me-1' /> Continue
-                  </>
-                ) : (
-                  <>
-                    Start Learning <ArrowRight className='h-3.5 w-3.5 ms-1.5' />
-                  </>
-                )}
-              </Link>
-            )}
-          </Button>
+
+          {/* ✅ زر واحد بـ 3 حالات */}
+          {enrolled && isCompleted && onReset ? (
+            /* حالة: خلّص الكورس → Reset مع Confirm */
+            <ResetConfirmDialog
+              onReset={onReset}
+              trigger={
+                <Button
+                  size='sm'
+                  className={cn(
+                    'flex-1 h-9 text-xs gap-1.5',
+                    'bg-orange-500/10 border border-orange-500/30 text-orange-400',
+                    'hover:bg-orange-500/20 hover:border-orange-500/50',
+                  )}
+                  variant='outline'>
+                  <RotateCcw className='h-3.5 w-3.5' /> Reset Progress
+                </Button>
+              }
+            />
+          ) : (
+            <Button
+              size='sm'
+              className='flex-1 h-9 text-xs'
+              disabled={comingSoon}
+              asChild={!comingSoon}>
+              {comingSoon ? (
+                <span>Coming Soon</span>
+              ) : (
+                <Link to={destHref}>
+                  {enrolled ? (
+                    <>
+                      <Zap className='h-3.5 w-3.5 me-1' /> Continue
+                    </>
+                  ) : (
+                    <>
+                      Start Learning{' '}
+                      <ArrowRight className='h-3.5 w-3.5 ms-1.5' />
+                    </>
+                  )}
+                </Link>
+              )}
+            </Button>
+          )}
         </div>
       </div>
     </motion.div>
@@ -318,7 +389,13 @@ function FullCard({
 }
 
 // ═══ MINI VARIANT ════════════════════════════════════════════════════
-function MiniCard({ course, enrolled, href }: SharedCourseCardProps) {
+function MiniCard({
+  course,
+  enrolled,
+  isCompleted,
+  onReset,
+  href,
+}: SharedCourseCardProps) {
   const { i18n } = useTranslation('courses');
   const lang = i18n.language === 'ar' ? 'ar' : 'en';
   const color = course.color ?? 'blue';
@@ -341,8 +418,7 @@ function MiniCard({ course, enrolled, href }: SharedCourseCardProps) {
   const inner = (
     <div
       className={cn(
-        'group flex gap-3 rounded-xl border bg-card overflow-hidden',
-        'transition-all duration-200',
+        'group flex gap-3 rounded-xl border bg-card overflow-hidden transition-all duration-200',
         comingSoon
           ? 'border-border/30 opacity-60 cursor-not-allowed'
           : cn(
@@ -358,7 +434,6 @@ function MiniCard({ course, enrolled, href }: SharedCourseCardProps) {
           </div>
         )}
       </div>
-
       <div className='flex min-w-0 flex-1 flex-col justify-center gap-1.5 py-3 pe-3'>
         <h4 className='line-clamp-1 text-sm font-bold text-foreground transition-colors group-hover:text-primary'>
           {title}
@@ -388,16 +463,22 @@ function MiniCard({ course, enrolled, href }: SharedCourseCardProps) {
           )}
         </div>
       </div>
-
+      {/* ✅ Icon state */}
       <div className='flex shrink-0 items-center pe-3'>
         <div
           className={cn(
             'flex h-8 w-8 items-center justify-center rounded-full border transition-all',
             comingSoon
               ? 'border-border/30 text-muted-foreground/30'
-              : 'border-border/50 bg-muted/50 text-muted-foreground group-hover:border-primary/40 group-hover:bg-primary/10 group-hover:text-primary',
+              : enrolled && isCompleted
+                ? 'border-orange-500/30 bg-orange-500/10 text-orange-400'
+                : enrolled
+                  ? 'border-border/50 bg-muted/50 text-muted-foreground group-hover:border-primary/40 group-hover:bg-primary/10 group-hover:text-primary'
+                  : 'border-border/50 bg-muted/50 text-muted-foreground group-hover:border-primary/40 group-hover:bg-primary/10 group-hover:text-primary',
           )}>
-          {enrolled ? (
+          {enrolled && isCompleted ? (
+            <RotateCcw className='h-3.5 w-3.5' />
+          ) : enrolled ? (
             <Zap className='h-3.5 w-3.5' />
           ) : (
             <ArrowRight className='h-3.5 w-3.5' />
@@ -407,9 +488,19 @@ function MiniCard({ course, enrolled, href }: SharedCourseCardProps) {
     </div>
   );
 
-  return comingSoon ? (
-    inner
-  ) : (
+  if (comingSoon) return inner;
+
+  // ✅ Mini: لو completed → AlertDialog للـ reset
+  if (enrolled && isCompleted && onReset) {
+    return (
+      <ResetConfirmDialog
+        onReset={onReset}
+        trigger={<div className='block cursor-pointer'>{inner}</div>}
+      />
+    );
+  }
+
+  return (
     <Link to={destHref} className='block'>
       {inner}
     </Link>

@@ -8,6 +8,7 @@
     "sessions": "الجلسات",
     "notifications": "الإشعارات",
     "appearance": "المظهر",
+    "billing": "الفواتير",
     "danger": "منطقة الخطر"
   },
   "account": {
@@ -89,6 +90,25 @@
     "themeDesc": "التبديل بين الوضع الفاتح والداكن",
     "language": "اللغة",
     "languageDesc": "تغيير لغة الواجهة"
+  },
+  "billing": {
+    "title": "الاشتراك",
+    "description": "إدارة خطتك النشطة والفواتير",
+    "freePlan": "أنت على الخطة المجانية",
+    "upgradeDesc": "قم بالترقية إلى Pro للوصول إلى جميع المختبرات والكورسات والشهادات.",
+    "viewPlans": "عرض الخطط",
+    "billedLabel": "الفوترة",
+    "renewsOn": "تجديد في",
+    "cancelsOn": "ينتهي في",
+    "manageBilling": "إدارة الفواتير",
+    "cancelSubscription": "إلغاء الاشتراك",
+    "cancelNotice": "تم جدولة إلغاء اشتراكك في نهاية فترة الفوترة الحالية. ستحتفظ بالوصول حتى {{date}}.",
+    "status": {
+      "active": "نشط",
+      "trialing": "تجريبي",
+      "past_due": "متأخر الدفع",
+      "canceled": "ملغى"
+    }
   },
   "dangerZone": {
     "exportTitle": "تصدير بياناتي",

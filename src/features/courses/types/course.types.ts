@@ -1,8 +1,18 @@
 // ── Enums match Prisma schema (UPPERCASE) ────────────────────────────
 // Exception: CourseColor stays lowercase — Tailwind class names require it
 export type CourseAccess = 'FREE' | 'PRO' | 'PREMIUM';
-export type CourseDifficulty = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | 'EXPERT';
-export type CourseColor = 'emerald' | 'blue' | 'violet' | 'orange' | 'rose' | 'cyan';
+export type CourseDifficulty =
+  | 'BEGINNER'
+  | 'INTERMEDIATE'
+  | 'ADVANCED'
+  | 'EXPERT';
+export type CourseColor =
+  | 'emerald'
+  | 'blue'
+  | 'violet'
+  | 'orange'
+  | 'rose'
+  | 'cyan';
 export type CourseState = 'PUBLISHED' | 'COMING_SOON' | 'DRAFT';
 export type LessonType = 'VIDEO' | 'ARTICLE' | 'QUIZ';
 export type CourseContentType = 'PRACTICAL' | 'THEORETICAL' | 'MIXED';
@@ -27,8 +37,8 @@ export interface CourseLesson {
   title: string;
   ar_title: string | null;
   type: LessonType;
-  duration: number;      // Prisma: duration Int?
-  isPreview: boolean;    // Prisma: isPreview Boolean
+  duration: number;
+  isPreview: boolean;
 }
 
 export interface CourseSection {
@@ -58,17 +68,17 @@ export interface Course {
   ar_longDescription: string | null;
   image: string | null;
   thumbnail: string | null;
-  color: CourseColor;          // normalized to lowercase by API layer
+  color: CourseColor;
   access: CourseAccess;
-  state: CourseState;          // Prisma: state (not status)
+  state: CourseState;
   difficulty: CourseDifficulty;
   ar_difficulty: string | null;
   category: CourseCategory;
   ar_category: string | null;
   contentType: CourseContentType;
   estimatedHours: number;
-  enrollmentCount: number;     // Prisma: enrollmentCount Int
-  averageRating: number;       // Prisma: averageRating Float
+  enrollmentCount: number;
+  averageRating: number;
   reviewCount: number;
   totalTopics: number;
   instructor: CourseInstructor;
@@ -246,4 +256,34 @@ export interface PathListItem {
 export interface PathsListResponse {
   data: PathListItem[];
   meta: { total: number; page: number; limit: number; totalPages: number };
+}
+
+// ── Curriculum JSON Types ─────────────────────────────────────────────
+export interface CurriculumElement {
+  id: string | number;
+  type:
+    | 'image'
+    | 'title'
+    | 'text'
+    | 'table'
+    | 'terminal'
+    | 'note'
+    | 'hr'
+    | 'orderedList'
+    | 'list'
+    | 'quiz';
+  value?: { en: string; ar: string };
+  [key: string]: unknown;
+}
+
+export interface CurriculumTopic {
+  id: string;
+  title: { en: string; ar: string };
+  elements: CurriculumElement[];
+}
+
+export interface CurriculumData {
+  topics: CurriculumTopic[];
+  totalTopics: number;
+  landingData?: Record<string, unknown>;
 }

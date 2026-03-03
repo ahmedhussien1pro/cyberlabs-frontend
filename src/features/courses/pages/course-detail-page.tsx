@@ -1,7 +1,7 @@
 // src/features/courses/pages/course-detail-page.tsx
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Clock, Shield } from 'lucide-react';
+import { Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import MainLayout from '@/shared/components/layout/main-layout';
@@ -88,21 +88,8 @@ export default function CourseDetailPage() {
             </div>
           )}
 
-          {course.sections.length > 0 ? (
-            <CourseCurriculum course={course} isEnrolled={enrolled} />
-          ) : (
-            <div className='flex flex-col items-center justify-center py-20 gap-3 text-center'>
-              <Clock className='h-10 w-10 text-muted-foreground' />
-              <p className='font-semibold text-foreground'>
-                {t('curriculum.empty', 'Curriculum coming soon')}
-              </p>
-              <p className='text-sm text-muted-foreground'>
-                {t('curriculum.emptyHint', 'Check back later for updates.')}
-              </p>
-            </div>
-          )}
+          <CourseCurriculum course={course} isEnrolled={enrolled} />
 
-          {/* ── Labs مربوطة بالكورس ده ── */}
           <CourseLabsSection courseSlug={slug} courseId={course.id} />
         </div>
       </div>

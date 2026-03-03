@@ -8,7 +8,7 @@ export const PLANS: Plan[] = [
     monthlyPrice: 0,
     annualPrice: 0,
     color: 'zinc',
-    ctaKey: 'pricing.cta.free',
+    ctaKey: 'pricing.cta.freeCta',
     highlights: [
       'pricing.plans.free.h1',
       'pricing.plans.free.h2',
@@ -24,7 +24,7 @@ export const PLANS: Plan[] = [
     annualPrice: 9,
     color: 'blue',
     badge: 'pricing.badge.popular',
-    ctaKey: 'pricing.cta.pro',
+    ctaKey: 'pricing.cta.upgradeCta',
     highlights: [
       'pricing.plans.pro.h1',
       'pricing.plans.pro.h2',

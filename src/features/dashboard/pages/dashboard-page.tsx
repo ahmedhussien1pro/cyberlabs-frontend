@@ -1,6 +1,7 @@
 import { useUserPoints } from '@/shared/hooks/use-user-data';
 import { XpProgressBar } from '@/features/profile/components/profile-activity/xp-progress-bar';
 import { WelcomeBanner } from '../components/overview/welcome-banner';
+import { SubscriptionBanner } from '../components/overview/subscription-banner';
 import { StatsRow } from '../components/overview/stats-row';
 import { ActiveCoursesCard } from '../components/overview/active-courses-card';
 import { RecentLabsCard } from '../components/overview/recent-labs-card';
@@ -15,7 +16,7 @@ export default function DashboardPage(): React.ReactElement {
     <div className='container max-w-5xl space-y-5 py-6'>
       {/* Row 1: Welcome banner */}
       <WelcomeBanner />
-
+      <SubscriptionBanner />
       {/* Row 2: Stats cards */}
       <StatsRow />
 

@@ -1,103 +1,82 @@
 // src/features/paths/components/path-roadmap.tsx
-// Design reference: TryHackMe path roadmap + Coursera module list
-// Features:
-//   - Timeline connector مع ألوان حسب state
-//   - Expand/collapse لكل module (accordion)
-//   - State: done / active / locked / coming-soon
-//   - Type icon + color per module type
-//   - Progress summary header
-//   - RTL support
-//   - CTA navigates to /courses/:slug or /labs/:slug
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
-  BookOpen,
-  FlaskConical,
-  HelpCircle,
-  FolderKanban,
-  Lock,
   CheckCircle2,
-  Clock3,
-  ChevronDown,
-  Play,
-  Clock,
+  Lock,
   Sparkles,
-  ExternalLink,
+  BarChart3,
+  Trophy,
+  Clock,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { ROUTES } from '@/shared/constants';
+import { SharedCourseCard } from '@/shared/components/shared-course-card';
+import type { CourseCardData } from '@/shared/components/shared-course-card';
 import type { PathModule, ModuleType } from '../types/path.types';
 
-// ── Module type config ────────────────────────────────────────────────
-const MODULE_CFG: Record<
-  ModuleType,
-  {
-    icon: React.ReactNode;
-    labelKey: string;
-    dot: string;
-    badge: string;
-    bg: string;
-  }
-> = {
-  course: {
-    icon: <BookOpen className='h-4 w-4' />,
-    labelKey: 'detail.course',
-    dot: 'bg-blue-500',
-    badge: 'border-blue-500/25 bg-blue-500/10 text-blue-500',
-    bg: 'hover:border-blue-500/30',
-  },
-  lab: {
-    icon: <FlaskConical className='h-4 w-4' />,
-    labelKey: 'detail.lab',
-    dot: 'bg-emerald-500',
-    badge: 'border-emerald-500/25 bg-emerald-500/10 text-emerald-500',
-    bg: 'hover:border-emerald-500/30',
-  },
-  quiz: {
-    icon: <HelpCircle className='h-4 w-4' />,
-    labelKey: 'detail.quiz',
-    dot: 'bg-amber-500',
-    badge: 'border-amber-500/25 bg-amber-500/10 text-amber-500',
-    bg: 'hover:border-amber-500/30',
-  },
-  project: {
-    icon: <FolderKanban className='h-4 w-4' />,
-    labelKey: 'detail.project',
-    dot: 'bg-violet-500',
-    badge: 'border-violet-500/25 bg-violet-500/10 text-violet-500',
-    bg: 'hover:border-violet-500/30',
-  },
-};
-
-// ── Module state ──────────────────────────────────────────────────────
+// ── State ─────────────────────────────────────────────────────────────
 type ModuleState = 'done' | 'active' | 'locked' | 'soon';
 
-function getModuleState(
-  mod: PathModule,
-  idx: number,
-  completedIds: string[],
-): ModuleState {
-  if (completedIds.includes(mod.id)) return 'done';
+function getModuleState(mod: PathModule, completedIds: string[]): ModuleState {
+  if (completedIds.includes(mod.id) || mod.userProgress?.isCompleted)
+    return 'done';
   if (mod.status === 'coming_soon') return 'soon';
   if (mod.isLocked) return 'locked';
-  if (mod.userProgress?.isCompleted) return 'done';
-  // First unlocked, non-completed module is active
-  if (idx === 0) return 'active';
   return 'active';
 }
 
-// ── Resolve navigation URL for a module ──────────────────────────────
-function resolveModuleHref(mod: PathModule): string | null {
-  if (!mod.slug) return null;
+// ── Href ──────────────────────────────────────────────────────────────
+function resolveHref(mod: PathModule): string | undefined {
+  if (!mod.slug) return undefined;
   if (mod.type === 'course') return ROUTES.COURSES.DETAIL(mod.slug);
   if (mod.type === 'lab') return ROUTES.LABS.DETAIL(mod.slug);
-  return null;
+  return undefined;
 }
+
+// ── Map module → CourseCardData ───────────────────────────────────────
+function toCardData(mod: PathModule): CourseCardData {
+  const c = mod.course as any;
+  return {
+    id: mod.id,
+    slug: mod.slug ?? c?.slug ?? '',
+    title: mod.title || c?.title || '',
+    ar_title: mod.ar_title || c?.ar_title,
+    description: mod.description || c?.description,
+    ar_description: mod.ar_description || c?.ar_description,
+    thumbnail: c?.thumbnail,
+    color: ((c?.color as string | undefined) ?? 'blue').toLowerCase(),
+    difficulty: c?.difficulty,
+    access: c?.access ?? 'FREE',
+    contentType: c?.contentType,
+    totalTopics: c?.totalTopics,
+    estimatedHours: mod.estimatedHours ?? c?.duration,
+    state: mod.status === 'coming_soon' ? 'COMING_SOON' : 'PUBLISHED',
+  };
+}
+
+// ── State-based styles ────────────────────────────────────────────────
+const STATE_TOP_BORDER: Record<ModuleState, string> = {
+  done: 'border-t-emerald-500',
+  active: 'border-t-primary',
+  locked: 'border-t-border/30',
+  soon: 'border-t-border/20',
+};
+const STATE_BADGE: Record<ModuleState, string> = {
+  done: 'border-emerald-500 bg-background text-emerald-500',
+  active: 'border-primary   bg-background text-primary',
+  locked: 'border-border    bg-muted      text-muted-foreground/60',
+  soon: 'border-border/50 bg-muted/60   text-muted-foreground/40',
+};
+
+// ── Module Type label ─────────────────────────────────────────────────
+const TYPE_LABEL: Record<ModuleType, string> = {
+  course: 'detail.course',
+  lab: 'detail.lab',
+  quiz: 'detail.quiz',
+  project: 'detail.project',
+};
 
 // ── Props ─────────────────────────────────────────────────────────────
 interface PathRoadmapProps {
@@ -105,23 +84,22 @@ interface PathRoadmapProps {
   completedIds?: string[];
 }
 
+// ═════════════════════════════════════════════════════════════════════
 export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
   const { t, i18n } = useTranslation('paths');
   const isAr = i18n.language === 'ar';
-  const [expanded, setExpanded] = useState<string | null>(null);
 
-  const toggle = (id: string) =>
-    setExpanded((prev) => (prev === id ? null : id));
-
-  const doneCount = completedIds.length;
+  const doneCount = modules.filter(
+    (m) => completedIds.includes(m.id) || !!m.userProgress?.isCompleted,
+  ).length;
   const totalCount = modules.length;
   const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
   const totalHours = modules.reduce((s, m) => s + (m.estimatedHours ?? 0), 0);
 
   return (
     <section className='container mx-auto px-4 py-10'>
-      {/* ── Section header ─────────────────────────────────────────── */}
-      <div className='mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between'>
+      {/* ── Progress Header ──────────────────────────────────────── */}
+      <div className='mb-10 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between'>
         <div>
           <h2 className='text-xl font-bold tracking-tight sm:text-2xl'>
             {t('detail.pathRoadmap')}
@@ -131,284 +109,155 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
           </p>
         </div>
 
-        <div className='flex shrink-0 items-center gap-4 rounded-xl border border-border/50 bg-muted/30 px-4 py-2.5'>
-          <div className='text-right'>
-            <p className='text-[11px] text-muted-foreground'>
-              {t('detail.yourProgress')}
-            </p>
-            <p className='text-lg font-black leading-none text-foreground'>
-              {pct}%
-            </p>
+        {/* Stats strip */}
+        <div className='flex flex-wrap items-center gap-3'>
+          <div className='flex items-center gap-2.5 rounded-xl border border-border/50 bg-muted/30 px-4 py-2.5'>
+            <BarChart3 className='h-4 w-4 text-primary' />
+            <div>
+              <p className='text-[11px] text-muted-foreground leading-none mb-0.5'>
+                {t('detail.yourProgress')}
+              </p>
+              <div className='flex items-center gap-2'>
+                <Progress value={pct} className='h-1.5 w-20 bg-muted' />
+                <span className='text-sm font-black text-foreground leading-none'>
+                  {pct}%
+                </span>
+              </div>
+            </div>
           </div>
-          <Progress value={pct} className='h-2 w-24 bg-muted' />
-          <div className='text-right'>
-            <p className='text-[11px] text-muted-foreground'>
-              {t('detail.estTime')}
-            </p>
-            <p className='text-lg font-black leading-none text-foreground'>
-              {totalHours}h
-            </p>
+
+          <div className='flex items-center gap-2 rounded-xl border border-border/50 bg-muted/30 px-4 py-2.5'>
+            <Clock className='h-4 w-4 text-primary' />
+            <div>
+              <p className='text-[11px] text-muted-foreground leading-none mb-0.5'>
+                {t('detail.estTime')}
+              </p>
+              <p className='text-sm font-black text-foreground leading-none'>
+                {totalHours}h
+              </p>
+            </div>
+          </div>
+
+          <div className='flex items-center gap-2 rounded-xl border border-border/50 bg-muted/30 px-4 py-2.5'>
+            <Trophy className='h-4 w-4 text-amber-400' />
+            <div>
+              <p className='text-[11px] text-muted-foreground leading-none mb-0.5'>
+                Completed
+              </p>
+              <p className='text-sm font-black text-foreground leading-none'>
+                {doneCount}/{totalCount}
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* ── Module list with timeline ────────────────────────────────── */}
-      <div className='relative'>
-        <div
-          aria-hidden='true'
-          className={cn(
-            'absolute top-5 bottom-5 w-px bg-border/40',
-            isAr ? 'end-[27px]' : 'start-[27px]',
-          )}
-        />
+      {/* ── Cards Grid ───────────────────────────────────────────── */}
+      <div className='grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-3'>
+        {modules.map((mod, idx) => {
+          const state = getModuleState(mod, completedIds);
+          const cardData = toCardData(mod);
+          const href = resolveHref(mod);
+          const isInteractive = state !== 'locked' && state !== 'soon';
+          const modTitle = isAr && mod.ar_title ? mod.ar_title : mod.title;
 
-        <ol className='space-y-2'>
-          {modules.map((mod, idx) => {
-            const cfg = MODULE_CFG[mod.type] ?? MODULE_CFG.course;
-            const state = getModuleState(mod, idx, completedIds);
-            const isOpen = expanded === mod.id;
-            const modTitle = isAr && mod.ar_title ? mod.ar_title : mod.title;
-            const modDesc = isAr && mod.ar_description ? mod.ar_description : mod.description;
-            const isLast = idx === modules.length - 1;
-            const href = resolveModuleHref(mod);
-            const isInteractive = state !== 'locked' && state !== 'soon';
+          return (
+            <motion.div
+              key={mod.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: idx * 0.07 }}
+              className='relative pt-4' // pt-4 → space for the step badge that pokes up
+            >
+              {/* ── Step badge (pokes above the card border-t) ──── */}
+              <div
+                className={cn(
+                  'absolute top-0.5 start-4 z-20',
+                  'flex h-8 w-8 items-center justify-center',
+                  'rounded-full border-2 shadow-sm text-xs font-black',
+                  STATE_BADGE[state],
+                )}>
+                {state === 'done' ? (
+                  <CheckCircle2 className='h-4 w-4' />
+                ) : state === 'locked' ? (
+                  <Lock className='h-3.5 w-3.5' />
+                ) : state === 'soon' ? (
+                  <Sparkles className='h-3.5 w-3.5' />
+                ) : (
+                  <span>{idx + 1}</span>
+                )}
+              </div>
 
-            return (
-              <motion.li
-                key={mod.id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: idx * 0.04 }}
-                className='relative'>
-                <div className={cn('flex gap-4', isAr && 'flex-row-reverse')}>
-                  {/* ── Timeline dot ──────────────────────────────── */}
-                  <div className='relative flex shrink-0 flex-col items-center'>
-                    <TimelineDot state={state} cfg={cfg} number={idx + 1} />
-                    {!isLast && (
-                      <div
-                        className={cn(
-                          'mt-1 flex-1 w-px min-h-[8px]',
-                          state === 'done'
-                            ? 'bg-emerald-500/40'
-                            : 'bg-border/0',
-                        )}
-                      />
-                    )}
+              {/* ── Module type label (top-end of card) ─────────── */}
+              <div
+                className={cn(
+                  'absolute top-1 end-4 z-20',
+                  'rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide',
+                  !isInteractive
+                    ? 'border-border/30 bg-muted/60 text-muted-foreground/40'
+                    : 'border-border/50 bg-background/80 text-muted-foreground',
+                )}>
+                {t(TYPE_LABEL[mod.type] ?? TYPE_LABEL.course)}
+              </div>
+
+              {/* ── Card wrapper: top-color-border + state ring ── */}
+              <div
+                className={cn(
+                  'relative rounded-2xl border-t-[3px] overflow-hidden',
+                  'ring-1 ring-transparent transition-all duration-300',
+                  STATE_TOP_BORDER[state],
+                  state === 'done' && 'ring-emerald-500/20',
+                  state === 'active' && 'ring-primary/15',
+                  !isInteractive && 'opacity-65',
+                )}>
+                {/* ── Locked overlay ──────────────────────────── */}
+                {state === 'locked' && (
+                  <div className='absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-2xl bg-background/75 backdrop-blur-[3px]'>
+                    <Lock className='h-9 w-9 text-muted-foreground/40' />
+                    <p className='text-xs text-muted-foreground/70 px-4 text-center'>
+                      Complete previous modules to unlock
+                    </p>
                   </div>
+                )}
 
-                  {/* ── Card ──────────────────────────────────────── */}
-                  <div
-                    className={cn(
-                      'mb-2 flex-1 min-w-0 rounded-xl border bg-card',
-                      'transition-all duration-200',
-                      !isInteractive
-                        ? 'border-border/25 opacity-60'
-                        : cn('border-border/50 cursor-pointer', cfg.bg),
-                      isOpen && 'border-border shadow-sm',
-                    )}>
-                    {/* ── Card header ───────────────────────────── */}
-                    <button
-                      type='button'
-                      onClick={() => isInteractive && toggle(mod.id)}
-                      disabled={!isInteractive}
-                      className='flex w-full items-center gap-3 px-4 py-3 text-start'
-                      aria-expanded={isOpen}>
-                      <span
-                        className={cn(
-                          'flex shrink-0 items-center justify-center',
-                          'h-8 w-8 rounded-lg border',
-                          state === 'done' &&
-                            'border-emerald-500/30 bg-emerald-500/10 text-emerald-500',
-                          state === 'active' && cn('border', cfg.badge),
-                          (state === 'locked' || state === 'soon') &&
-                            'border-border bg-muted text-muted-foreground',
-                        )}>
-                        {state === 'done' ? (
-                          <CheckCircle2 className='h-4 w-4' />
-                        ) : state === 'locked' ? (
-                          <Lock className='h-3.5 w-3.5' />
-                        ) : state === 'soon' ? (
-                          <Clock3 className='h-3.5 w-3.5' />
-                        ) : (
-                          cfg.icon
-                        )}
-                      </span>
+                {/* ── Shared Course Card ───────────────────────── */}
+                <SharedCourseCard
+                  course={cardData}
+                  variant='full'
+                  href={href}
+                  enrolled={!!mod.userProgress?.isCompleted}
+                  index={idx}
+                />
+              </div>
 
-                      <div className='min-w-0 flex-1'>
-                        <div className='flex flex-wrap items-center gap-1.5'>
-                          <span
-                            className={cn(
-                              'inline-flex items-center gap-1 rounded-full border',
-                              'px-1.5 py-px text-[9px] font-bold uppercase tracking-wide',
-                              !isInteractive
-                                ? 'border-border bg-muted text-muted-foreground'
-                                : cfg.badge,
-                            )}>
-                            {t(cfg.labelKey)}
-                          </span>
-
-                          {state === 'soon' && (
-                            <span className='inline-flex items-center gap-1 rounded-full border border-zinc-500/20 bg-zinc-500/10 px-1.5 py-px text-[9px] font-bold uppercase tracking-wide text-zinc-500'>
-                              <Sparkles className='h-2 w-2' />
-                              {t('detail.soon')}
-                            </span>
-                          )}
-
-                          {state === 'done' && (
-                            <Badge
-                              variant='outline'
-                              className='rounded-full border-emerald-500/25 bg-emerald-500/10 px-1.5 py-px text-[9px] font-bold uppercase text-emerald-500'>
-                              ✓ Done
-                            </Badge>
-                          )}
-                        </div>
-
-                        <p
-                          className={cn(
-                            'mt-0.5 text-sm font-semibold leading-snug',
-                            state === 'done'
-                              ? 'text-muted-foreground line-through decoration-muted-foreground/50'
-                              : 'text-foreground',
-                          )}>
-                          {modTitle}
-                        </p>
-                      </div>
-
-                      <div
-                        className={cn(
-                          'flex shrink-0 items-center gap-2 text-xs text-muted-foreground',
-                          isAr && 'flex-row-reverse',
-                        )}>
-                        <span className='flex items-center gap-1'>
-                          <Clock className='h-3 w-3' />
-                          {mod.estimatedHours ?? 0}h
-                        </span>
-                        {isInteractive && (
-                          <ChevronDown
-                            className={cn(
-                              'h-4 w-4 transition-transform duration-200',
-                              isOpen && 'rotate-180',
-                            )}
-                          />
-                        )}
-                      </div>
-                    </button>
-
-                    {/* ── Expanded body ──────────────────────────── */}
-                    <AnimatePresence initial={false}>
-                      {isOpen && (
-                        <motion.div
-                          key='body'
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.22, ease: 'easeInOut' }}
-                          className='overflow-hidden'>
-                          <div className='border-t border-border/40 px-4 pb-4 pt-3'>
-                            {modDesc && (
-                              <p className='mb-3 text-sm leading-relaxed text-muted-foreground'>
-                                {modDesc}
-                              </p>
-                            )}
-
-                            <div className='mb-3 flex flex-wrap gap-3 text-xs text-muted-foreground'>
-                              <span className='flex items-center gap-1'>
-                                <Clock className='h-3 w-3 text-primary' />
-                                <strong className='text-foreground'>
-                                  {mod.estimatedHours ?? 0}
-                                </strong>{' '}
-                                hours
-                              </span>
-                              <span className='flex items-center gap-1'>
-                                {cfg.icon}
-                                <span className='text-foreground'>
-                                  {t(cfg.labelKey)}
-                                </span>
-                              </span>
-                            </div>
-
-                            {/* ── CTA: Navigate to course or lab ── */}
-                            {href ? (
-                              <Button
-                                asChild
-                                size='sm'
-                                className='h-7 gap-1.5 px-4 text-xs'>
-                                <Link to={href}>
-                                  <Play className='h-3 w-3' />
-                                  {state === 'done'
-                                    ? t('detail.continueLearning')
-                                    : t('detail.startThisPath')}
-                                  <ExternalLink className='h-2.5 w-2.5 opacity-60' />
-                                </Link>
-                              </Button>
-                            ) : (
-                              <Button
-                                size='sm'
-                                variant='outline'
-                                disabled
-                                className='h-7 gap-1.5 px-4 text-xs opacity-50'>
-                                <Play className='h-3 w-3' />
-                                {t('detail.startThisPath')}
-                              </Button>
-                            )}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
+              {/* ── Step connector: arrow between cards (mobile only) */}
+              {idx < modules.length - 1 && (
+                <div className='absolute -bottom-5 start-1/2 -translate-x-1/2 flex flex-col items-center gap-0.5 sm:hidden'>
+                  <div className='h-3 w-px bg-border/40' />
+                  <div className='h-2 w-2 rounded-full border border-border/40 bg-muted' />
                 </div>
-              </motion.li>
-            );
-          })}
-        </ol>
+              )}
+            </motion.div>
+          );
+        })}
       </div>
+
+      {/* ── Completion banner (100%) ──────────────────────────────── */}
+      {pct === 100 && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3, duration: 0.4 }}
+          className='mt-10 flex items-center justify-center gap-3 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-5 text-emerald-400'>
+          <Trophy className='h-6 w-6' />
+          <div>
+            <p className='font-bold'>Path Complete! 🎉</p>
+            <p className='text-sm text-emerald-500/70'>
+              You've completed all modules in this path.
+            </p>
+          </div>
+        </motion.div>
+      )}
     </section>
   );
-}
-
-// ── File-private: Timeline Dot ────────────────────────────────────────
-
-interface DotProps {
-  state: ModuleState;
-  cfg: (typeof MODULE_CFG)[ModuleType];
-  number: number;
-}
-
-function TimelineDot({ state, cfg, number }: DotProps) {
-  return (
-    <div
-      className={cn(
-        'relative z-10 flex h-[55px] w-[55px] shrink-0 items-center justify-center',
-        'rounded-full border-2 text-sm font-bold transition-all',
-        state === 'done' &&
-          'border-emerald-500 bg-emerald-500/15 text-emerald-500',
-        state === 'active' && cn('border-2 shadow-lg', activeDotClass(cfg)),
-        state === 'locked' &&
-          'border-border/40 bg-muted/50 text-muted-foreground/50',
-        state === 'soon' &&
-          'border-dashed border-border/40 bg-muted/30 text-muted-foreground/40',
-      )}>
-      {state === 'done' ? (
-        <CheckCircle2 className='h-5 w-5' />
-      ) : state === 'locked' ? (
-        <Lock className='h-4 w-4' />
-      ) : state === 'soon' ? (
-        <Clock3 className='h-4 w-4' />
-      ) : (
-        <span>{number}</span>
-      )}
-    </div>
-  );
-}
-
-function activeDotClass(cfg: (typeof MODULE_CFG)[ModuleType]): string {
-  if (cfg.badge.includes('blue-500'))
-    return 'border-blue-500 bg-blue-500/15 text-blue-500 shadow-blue-500/25';
-  if (cfg.badge.includes('emerald-500'))
-    return 'border-emerald-500 bg-emerald-500/15 text-emerald-500 shadow-emerald-500/25';
-  if (cfg.badge.includes('amber-500'))
-    return 'border-amber-500 bg-amber-500/15 text-amber-500 shadow-amber-500/25';
-  if (cfg.badge.includes('violet-500'))
-    return 'border-violet-500 bg-violet-500/15 text-violet-500 shadow-violet-500/25';
-  return 'border-primary bg-primary/15 text-primary shadow-primary/25';
 }

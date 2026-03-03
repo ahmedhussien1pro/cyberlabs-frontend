@@ -1,5 +1,5 @@
 // src/features/pricing/pages/pricing-page.tsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -26,29 +26,35 @@ export default function PricingPage() {
   const checkout = useCheckout();
 
   // ── Handle Stripe redirect result ───────────────────────────────────
-  useEffect(() => {
-    if (searchParams.get('success') === 'true') {
+  const handleStripeReturn = useCallback(() => {
+    const success = searchParams.get('success');
+    const canceled = searchParams.get('canceled');
+
+    if (success === 'true') {
       toast.success(
         t(
           'pricing.paymentSuccess',
           '🎉 Subscription activated! Welcome aboard.',
         ),
-        {
-          duration: 6000,
-        },
+        { duration: 6000 },
       );
-      // Invalidate subscription cache to reflect new plan immediately
+      // Invalidate + refetch immediately لإظهار الـ badge فوراً
       queryClient.invalidateQueries({ queryKey: ['pricing', 'subscription'] });
+      queryClient.refetchQueries({ queryKey: ['pricing', 'subscription'] });
       navigate('/pricing', { replace: true });
     }
 
-    if (searchParams.get('canceled') === 'true') {
+    if (canceled === 'true') {
       toast.info(
         t('pricing.paymentCanceled', 'Payment canceled. No charges were made.'),
       );
       navigate('/pricing', { replace: true });
     }
-  }, []);
+  }, [searchParams, t, queryClient, navigate]);
+
+  useEffect(() => {
+    handleStripeReturn();
+  }, [handleStripeReturn]);
 
   return (
     <MainLayout>

@@ -133,5 +133,13 @@
       "buddyTitle": "Buddy System",
       "buddyDesc": "Partner with another member for accountability"
     }
+  },
+  "subscription": {
+    "upgradeTitle": "Unlock Premium Features",
+    "upgradeDesc": "Get unlimited labs, certificates, and priority support with Pro",
+    "upgradeCTA": "Upgrade to Pro",
+    "activeTitle": "Welcome back,",
+    "member": "member",
+    "activeDesc": "You have full access to all premium features"
   }
 }

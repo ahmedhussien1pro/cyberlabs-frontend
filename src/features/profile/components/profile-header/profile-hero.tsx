@@ -1,11 +1,20 @@
 import { motion } from 'framer-motion';
-import { MapPin, Calendar, Shield, Trophy } from 'lucide-react';
+import {
+  MapPin,
+  Calendar,
+  Shield,
+  Trophy,
+  Crown,
+  Building2,
+  Sparkles,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { UserProfile, UserPoints } from '../../types/profile.types';
 import { ProfileAvatar } from './profile-avatar';
 import { ProfileSocialLinks } from './profile-social-links';
+import { useMySubscription } from '@/features/pricing/hooks/use-pricing';
 
 const ROLE_STYLE: Record<string, string> = {
   ADMIN: 'bg-red-500/10 text-red-500 border-red-500/20',
@@ -25,6 +34,31 @@ const INTERNAL_ICON: Record<string, string> = {
   STUDENT: '🎓',
 };
 
+// Subscription badge config
+const SUBSCRIPTION_CONFIG = {
+  pro: {
+    icon: Crown,
+    label: 'Pro',
+    className:
+      'bg-gradient-to-r from-yellow-500/10 to-amber-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/30',
+    iconClassName: 'text-yellow-500',
+  },
+  team: {
+    icon: Building2,
+    label: 'Team',
+    className:
+      'bg-gradient-to-r from-purple-500/10 to-pink-500/10 text-purple-600 dark:text-purple-400 border-purple-500/30',
+    iconClassName: 'text-purple-500',
+  },
+  enterprise: {
+    icon: Sparkles,
+    label: 'Enterprise',
+    className:
+      'bg-gradient-to-r from-cyan-500/10 to-blue-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/30',
+    iconClassName: 'text-cyan-500',
+  },
+};
+
 interface Props {
   profile: UserProfile;
   points?: UserPoints;
@@ -34,12 +68,21 @@ interface Props {
 
 export function ProfileHero({ profile, points, isOwner, onEdit }: Props) {
   const { t } = useTranslation('profile');
+  const { data: subscription } = useMySubscription();
 
   const level = points?.level ?? 1;
   const xpInLevel = level * 1000;
   const xpProgress = points
     ? ((points.totalXP % xpInLevel) / xpInLevel) * 100
     : 0;
+
+  // Get subscription badge config
+  const subscriptionBadge =
+    subscription?.planId && subscription.planId !== 'free'
+      ? SUBSCRIPTION_CONFIG[
+          subscription.planId as keyof typeof SUBSCRIPTION_CONFIG
+        ]
+      : null;
 
   return (
     <div className='relative overflow-hidden rounded-2xl border border-border/40 bg-card shadow-sm'>
@@ -85,6 +128,7 @@ export function ProfileHero({ profile, points, isOwner, onEdit }: Props) {
                 {profile.name}
               </h1>
               <div className='mt-1 flex flex-wrap items-center gap-1.5'>
+                {/* Role badge */}
                 {profile.role && (
                   <span
                     className={cn(
@@ -94,6 +138,25 @@ export function ProfileHero({ profile, points, isOwner, onEdit }: Props) {
                     {profile.role}
                   </span>
                 )}
+
+                {/* Subscription Badge */}
+                {subscriptionBadge && (
+                  <motion.span
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
+                    className={cn(
+                      'flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-bold',
+                      subscriptionBadge.className,
+                    )}>
+                    <subscriptionBadge.icon
+                      className={cn('h-3 w-3', subscriptionBadge.iconClassName)}
+                    />
+                    {subscriptionBadge.label}
+                  </motion.span>
+                )}
+
+                {/* Internal role badge */}
                 {profile.internalRole && (
                   <span className='rounded-full border border-border/40 bg-muted px-2.5 py-0.5 text-xs text-muted-foreground'>
                     {INTERNAL_ICON[profile.internalRole]}{' '}

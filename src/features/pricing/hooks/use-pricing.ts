@@ -1,3 +1,4 @@
+// src/features/pricing/hooks/use-pricing.ts
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
@@ -9,13 +10,15 @@ import {
   cancelSubscription,
 } from '../api/pricing.api';
 import type { BillingCycle, PlanId } from '../types/pricing.types';
+import { isSubscribed, PLAN_BADGE_CONFIG } from '../types/pricing.types';
 import { useAuthStore } from '@/core/store';
+
 const KEYS = {
   plans: ['pricing', 'plans'] as const,
   subscription: ['pricing', 'subscription'] as const,
 };
 
-// ── Plans (falls back to mock while backend is not ready) ─────────────
+// ── Plans ─────────────────────────────────────────────────────────────
 export function usePlans() {
   return useQuery({
     queryKey: KEYS.plans,
@@ -32,9 +35,11 @@ export function useMySubscription() {
     queryKey: KEYS.subscription,
     queryFn: fetchMySubscription,
     retry: 1,
-
     throwOnError: false,
     enabled: isAuthenticated,
+    // refetch كل دقيقتين لضمان انعكاس Stripe webhook
+    refetchInterval: 1000 * 60 * 2,
+    refetchIntervalInBackground: false,
   });
 }
 
@@ -102,4 +107,19 @@ export function useIsPro(): boolean {
     data?.planId === 'team' ||
     data?.planId === 'enterprise'
   );
+}
+
+// ── Badge hook: يُستخدم في Nav/Profile ──────────────────────────────
+export function useSubscriptionBadge() {
+  const { data: sub, isLoading } = useMySubscription();
+  const planId = sub?.planId ?? 'free';
+  const subscribed = isSubscribed(sub);
+  const badgeCfg = PLAN_BADGE_CONFIG[planId];
+
+  return {
+    planId,
+    isSubscribed: subscribed,
+    badgeLabel: badgeCfg.label,
+    isLoading,
+  };
 }

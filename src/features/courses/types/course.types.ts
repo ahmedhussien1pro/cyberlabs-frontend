@@ -163,6 +163,8 @@ export interface PathCourseItem {
   order: number;
 }
 
+// ── Learning Path Types ──────────────────────────────────────────────
+
 export interface PathModule {
   id: string;
   order: number;
@@ -176,6 +178,7 @@ export interface PathModule {
   isLocked: boolean;
   courseId: string | null;
   labId: string | null;
+
   course: {
     id: string;
     slug: string;
@@ -183,10 +186,40 @@ export interface PathModule {
     ar_title: string | null;
     description: string | null;
     ar_description: string | null;
+    longDescription: string | null;
+    ar_longDescription: string | null;
     thumbnail: string | null;
-    difficulty: Difficulty | null;
-    duration: number | null;
+    image: string | null;
+    color: CourseColor;
+    access: CourseAccess;
+    state: CourseState;
+    difficulty: CourseDifficulty;
+    ar_difficulty: string | null;
+    category: CourseCategory;
+    ar_category: string | null;
+    contentType: CourseContentType;
+    isNew: boolean;
+    isFeatured: boolean;
+    totalTopics: number;
+    estimatedHours: number;
+    enrollmentCount: number;
+    averageRating: number;
+    reviewCount: number;
+    tags: string[];
+    skills: string[];
+    ar_skills: string[];
+    topics: string[];
+    ar_topics: string[];
+    prerequisites: string[];
+    ar_prerequisites: string[];
+    sections: { id: string; order: number }[];
+    labsCount: number;
+    userProgress: {
+      progress: number;
+      isCompleted: boolean;
+    } | null;
   } | null;
+
   lab: {
     id: string;
     title: string;
@@ -194,6 +227,7 @@ export interface PathModule {
     difficulty: Difficulty | null;
     duration: number | null;
   } | null;
+
   userProgress: {
     progress: number;
     isCompleted: boolean;

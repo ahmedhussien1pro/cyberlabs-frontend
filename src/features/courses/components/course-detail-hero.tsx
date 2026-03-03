@@ -16,6 +16,7 @@ import {
   Loader2,
   CheckCircle2,
   RotateCcw,
+  ScrollText,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -73,10 +74,12 @@ export interface CourseDetailHeroProps {
   progress: number;
   done: number;
   fav: boolean;
+  hasLabs?: boolean; // ✅ جديد
   onEnroll: () => void;
   onToggleFav: () => void;
-  onReset?: () => void; // ✅
-  onContinue?: () => void; // ✅ scroll للأول topic
+  onReset?: () => void; // ✅ جديد
+  onContinue?: () => void; // ✅ جديد - scroll لأول topic ناقص
+  onGoToLabs?: () => void; // ✅ جديد - scroll للـ labs
 }
 
 export function CourseDetailHero({
@@ -86,10 +89,12 @@ export function CourseDetailHero({
   progress,
   done,
   fav,
+  hasLabs = false,
   onEnroll,
   onToggleFav,
   onReset,
   onContinue,
+  onGoToLabs,
 }: CourseDetailHeroProps) {
   const { i18n, t } = useTranslation('courses');
   const lang = i18n.language === 'ar' ? 'ar' : 'en';
@@ -105,7 +110,7 @@ export function CourseDetailHero({
   const hasTopics = topics.length > 0;
   const imgSrc = course.image ?? course.thumbnail;
 
-  // ✅ 3 حالات: غير مسجّل / مسجّل ناقص / مسجّل مكتمل
+  // ✅ 3 حالات للـ CTA
   const isCompleted = enrolled && progress >= 100;
 
   return (
@@ -155,7 +160,6 @@ export function CourseDetailHero({
                     Coming Soon
                   </Badge>
                 )}
-                {/* ✅ Completed badge */}
                 {isCompleted && (
                   <Badge className='text-xs gap-1 border-emerald-500/40 bg-emerald-500/10 text-emerald-400'>
                     <CheckCircle2 className='h-3 w-3' />
@@ -276,8 +280,8 @@ export function CourseDetailHero({
                 )}
               </div>
 
-              {/* Skills + prereqs + CTA */}
               <div className='flex-1 p-4 flex flex-col sm:flex-row gap-4 min-w-0'>
+                {/* Skills + prereqs */}
                 <div className='flex-1 min-w-0 flex flex-col gap-2.5 justify-center'>
                   {skills.length > 0 && (
                     <div>
@@ -314,53 +318,77 @@ export function CourseDetailHero({
                   )}
                 </div>
 
-                {/* ✅ CTA — 3 حالات واضحة */}
+                {/* ✅ CTA — 3 حالات */}
                 <div className='flex flex-row sm:flex-col gap-2 sm:w-44 shrink-0 sm:justify-center'>
                   {enrolled ? (
                     isCompleted ? (
-                      /* ✅ حالة 3: مكتمل → Reset بلون برتقالي + AlertDialog */
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button
-                            variant='outline'
-                            className={cn(
-                              'sm:flex-none sm:w-full gap-2',
-                              'border-orange-500/40 bg-orange-500/5 text-orange-400',
-                              'hover:bg-orange-500/15 hover:border-orange-500/60',
-                            )}>
-                            <RotateCcw className='h-4 w-4' />
-                            {t('detail.resetProgress', 'Reset Progress')}
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              {t(
-                                'detail.resetConfirmTitle',
-                                'Reset course progress?',
-                              )}
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                              {t(
-                                'detail.resetConfirmDesc',
-                                'Your completed topics will be cleared locally. You can start fresh from the beginning.',
-                              )}
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>
-                              {t('common.cancel', 'Cancel')}
-                            </AlertDialogCancel>
-                            <AlertDialogAction
-                              className='bg-orange-500 hover:bg-orange-600 text-white'
-                              onClick={onReset}>
-                              {t('detail.resetConfirm', 'Yes, Reset')}
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                      /*
+                       * ✅ حالة 3: مكتمل
+                       * زرّين:
+                       *   1. "View Curriculum" → scroll للكورس (للوصول للـ labs)
+                       *   2. "Reset Progress"  → AlertDialog
+                       */
+                      <>
+                        <Button
+                          className='sm:flex-none sm:w-full gap-2'
+                          onClick={hasLabs ? onGoToLabs : onContinue}>
+                          {hasLabs ? (
+                            <>
+                              <FlaskConical className='h-4 w-4' />
+                              {t('detail.goToLabs', 'Go to Labs')}
+                            </>
+                          ) : (
+                            <>
+                              <ScrollText className='h-4 w-4' />
+                              {t('detail.viewCurriculum', 'View Curriculum')}
+                            </>
+                          )}
+                        </Button>
+
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant='outline'
+                              size='sm'
+                              className={cn(
+                                'sm:flex-none sm:w-full gap-2 text-xs',
+                                'border-orange-500/40 bg-orange-500/5 text-orange-400',
+                                'hover:bg-orange-500/15 hover:border-orange-500/60',
+                              )}>
+                              <RotateCcw className='h-3.5 w-3.5' />
+                              {t('detail.resetProgress', 'Reset Progress')}
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                {t(
+                                  'detail.resetConfirmTitle',
+                                  'Reset course progress?',
+                                )}
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                {t(
+                                  'detail.resetConfirmDesc',
+                                  'Your completed topics will be cleared locally. You can start fresh — your enrollment stays active.',
+                                )}
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>
+                                {t('common.cancel', 'Cancel')}
+                              </AlertDialogCancel>
+                              <AlertDialogAction
+                                className='bg-orange-500 hover:bg-orange-600 text-white'
+                                onClick={onReset}>
+                                {t('detail.resetConfirm', 'Yes, Reset')}
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </>
                     ) : (
-                      /* ✅ حالة 2: مسجّل ناقص → Continue Learning يعمل scroll */
+                      /* ✅ حالة 2: مسجّل + ناقص → Continue Learning */
                       <Button
                         className='sm:flex-none sm:w-full'
                         onClick={onContinue}>
@@ -399,7 +427,7 @@ export function CourseDetailHero({
                     </Button>
                   )}
 
-                  {/* Favorite — ثابت */}
+                  {/* Favorite — دايماً ثابت */}
                   <button
                     onClick={onToggleFav}
                     className={cn(

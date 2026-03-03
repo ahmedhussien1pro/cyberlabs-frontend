@@ -1,3 +1,4 @@
+// src/shared/components/layout/navbar.tsx
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +13,6 @@ import {
   ShieldAlert,
   FileText,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { useProfile } from '../../../features/profile/hooks/use-profile';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -34,7 +34,7 @@ import { NavDropdown } from './nav-dropdown';
 import { useAuthStore } from '@/core/store';
 import { ROUTES } from '@/shared/constants';
 import { useSubscriptionBadge } from '@/features/pricing/hooks/use-pricing';
-import { PLAN_BADGE_CONFIG } from '@/features/pricing/types/pricing.types';
+import { SubscriptionBadge } from '@/shared/components/common/subscription-badge';
 
 export function Navbar() {
   const { t } = useTranslation('common');
@@ -45,7 +45,6 @@ export function Navbar() {
   const { planId, isSubscribed } = useSubscriptionBadge();
   const { data: profile } = useProfile();
   const userAvatar = profile?.avatarUrl;
-  const cfg = PLAN_BADGE_CONFIG[planId];
 
   const learningItems = [
     {
@@ -89,16 +88,13 @@ export function Navbar() {
       label: t('navigation.about', 'About Us'),
       href: ROUTES.ABOUT,
       icon: <Info className='w-4 h-4' />,
-      description: t(
-        'navigation.aboutDesc',
-        'Learn about our mission and team',
-      ),
+      description: t('navigation.aboutDesc', 'Learn about our mission'),
     },
     {
       label: t('navigation.contact', 'Contact'),
       href: ROUTES.CONTACT,
       icon: <Mail className='w-4 h-4' />,
-      description: t('navigation.contactDesc', 'Get in touch with support'),
+      description: t('navigation.contactDesc', 'Get in touch'),
     },
     {
       label: t('navigation.privacy', 'Privacy Policy'),
@@ -110,7 +106,7 @@ export function Navbar() {
       label: t('navigation.terms', 'Terms of Service'),
       href: ROUTES.TERMS,
       icon: <FileText className='w-4 h-4' />,
-      description: t('navigation.termsDesc', 'Rules and guidelines for usage'),
+      description: t('navigation.termsDesc', 'Rules and guidelines'),
     },
   ];
 
@@ -120,6 +116,7 @@ export function Navbar() {
         <div className='container flex h-16 items-center justify-between gap-4 mx-auto'>
           <Logo size='sm' />
 
+          {/* Desktop nav */}
           <div className='hidden lg:flex items-center gap-6 flex-1 justify-center'>
             <Link
               to={ROUTES.HOME}
@@ -141,6 +138,7 @@ export function Navbar() {
             </Link>
           </div>
 
+          {/* Right */}
           <div className='flex items-center gap-2'>
             <div className='hidden lg:block'>
               <SearchButton onClick={() => setSearchOpen(true)} />
@@ -153,16 +151,13 @@ export function Navbar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   {/*
-                   * ── Avatar trigger ──────────────────────────────────
-                   * للـ subscribers: pill صغير أسفل الـ avatar (bottom pill)
-                   * مثل الصورة المرفقة
+                   * ── Avatar wrapper ─────────────────────────────────
+                   * pb-3 فقط لو في badge عشان تعمل مساحة للـ pill
                    */}
                   <Button
                     variant='ghost'
-                    className={cn(
-                      'relative rounded-full p-1 h-auto w-auto',
-                      isSubscribed && 'mb-2',
-                    )}>
+                    className='relative rounded-full p-1 h-auto w-auto focus-visible:ring-0'
+                    style={{ paddingBottom: isSubscribed ? '14px' : '4px' }}>
                     <Avatar className='h-9 w-9 overflow-hidden'>
                       <AvatarImage
                         src={userAvatar}
@@ -174,41 +169,27 @@ export function Navbar() {
                       </AvatarFallback>
                     </Avatar>
 
-                    {/* ── Bottom pill badge ── */}
+                    {/* ── Badge: مرتكز تحت الـ avatar ── */}
                     {isSubscribed && (
-                      <span
-                        className={cn(
-                          'absolute -bottom-3 left-1/2 -translate-x-1/2',
-                          'text-[9px] font-bold uppercase leading-tight',
-                          'px-1.5 py-px rounded-full border shadow-sm whitespace-nowrap',
-                          cfg.bgClass,
-                          cfg.colorClass,
-                          cfg.borderClass,
-                        )}>
-                        {cfg.label}
-                      </span>
+                      <SubscriptionBadge
+                        planId={planId}
+                        variant='pill'
+                        className='absolute bottom-0 left-1/2 -translate-x-1/2'
+                      />
                     )}
                   </Button>
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent align='end' className='w-56'>
                   <DropdownMenuLabel>
-                    <div className='flex flex-col space-y-1'>
+                    <div className='flex flex-col space-y-1.5'>
+                      {/* Name + badge pill في نفس السطر */}
                       <div className='flex items-center justify-between gap-2'>
                         <p className='text-sm font-medium truncate'>
                           {user?.name}
                         </p>
                         {isSubscribed && (
-                          <span
-                            className={cn(
-                              'shrink-0 text-[10px] uppercase font-semibold',
-                              'px-2 py-0.5 rounded-full border',
-                              cfg.bgClass,
-                              cfg.colorClass,
-                              cfg.borderClass,
-                            )}>
-                            {cfg.label}
-                          </span>
+                          <SubscriptionBadge planId={planId} variant='pill' />
                         )}
                       </div>
                       <p className='text-xs text-muted-foreground'>
@@ -216,6 +197,7 @@ export function Navbar() {
                       </p>
                     </div>
                   </DropdownMenuLabel>
+
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link to={ROUTES.DASHBOARD.DashboardPage}>
@@ -251,6 +233,7 @@ export function Navbar() {
               </div>
             )}
 
+            {/* Mobile menu */}
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild className='lg:hidden'>
                 <Button variant='ghost' size='icon'>

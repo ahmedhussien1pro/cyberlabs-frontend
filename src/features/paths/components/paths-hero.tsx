@@ -86,12 +86,12 @@ interface ContentProps {
 function HeroContent({ t, search, onSearchChange, totalCount }: ContentProps) {
   return (
     <>
-      <EyebrowBadge label={t('hero.eyebrow')} />
+      {/* <EyebrowBadge label={t('hero.eyebrow')} /> */}
 
       {/* Title */}
       <h1
         className={cn(
-          'mt-3 text-2xl md:text-3xl lg:text-4xl font-extrabold leading-tight mb-1',
+          ' text-2xl md:text-3xl lg:text-4xl font-extrabold leading-tight mb-1',
           'text-primary',
         )}>
         {t('hero.title')}

@@ -22,13 +22,14 @@ export default function CourseDetailPage() {
 
   const { data: course, isLoading, isError } = useCourse(slug);
   const { mutate: enroll, isPending: enrolling } = useEnrollment();
+
   const {
     isEnrolled,
     getProgress,
     getCompletedCount,
     toggleFavorite,
     isFavorite,
-    resetProgress, // ✅ أُضيف
+    resetProgress, // ✅ مُضاف
   } = useCourseProgressStore();
 
   const { data: labsData } = useQuery<{ labs: any[] }>({
@@ -81,25 +82,27 @@ export default function CourseDetailPage() {
     enroll(course.id);
   };
 
-  // ✅ Reset: امسح التوبيكات المكتملة بس — الـ enrollment يفضل
-  const handleReset = () => {
-    resetProgress(course.id);
-  };
+  // ✅ Reset: يمسح التوبيكات بس — الـ enrollment يفضل
+  const handleReset = () => resetProgress(course.id);
 
-  // ✅ Continue: اسكرول لأول topic مش مكتمل
+  // ✅ Continue: اسكرول لأول topic مش مكتمل بعد الـ id اللي حطيناه على كل <li>
   const handleContinue = () => {
-    const completedCount = getCompletedCount(course.id);
-    // كل topic ليه id="topic-row-{index}" في الـ curriculum
-    const targetId = `topic-row-${completedCount}`;
-    const el = document.getElementById(targetId);
+    const firstIncomplete = getCompletedCount(course.id); // index أول topic مكملهوش
+    const el = document.getElementById(`topic-row-${firstIncomplete}`);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } else {
-      // fallback: اسكرول للـ curriculum section
       document
         .getElementById('course-curriculum')
         ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+  };
+
+  // ✅ Go to Labs scroll
+  const handleGoToLabs = () => {
+    document
+      .getElementById('course-labs-section')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (
@@ -112,10 +115,12 @@ export default function CourseDetailPage() {
           progress={progress}
           done={done}
           fav={fav}
+          hasLabs={hasLabs} // ✅ مُضاف
           onEnroll={handleEnroll}
           onToggleFav={() => toggleFavorite(course.id)}
-          onReset={handleReset} // ✅
-          onContinue={handleContinue} // ✅
+          onReset={handleReset} // ✅ مُضاف
+          onContinue={handleContinue} // ✅ مُضاف
+          onGoToLabs={handleGoToLabs} // ✅ مُضاف
         />
 
         <div className='container mx-auto px-4 py-10'>
@@ -128,9 +133,8 @@ export default function CourseDetailPage() {
           <CourseCurriculum
             course={course}
             isEnrolled={enrolled}
-            hasLabs={hasLabs} // ✅ دايماً يتبعت حتى لو false
+            hasLabs={hasLabs}
           />
-
           <CourseLabsSection courseSlug={slug} courseId={course.id} />
         </div>
       </div>

@@ -14,7 +14,6 @@ import type {
 
 const { COURSES, PATHS, ENROLLMENTS } = API_ENDPOINTS;
 
-// ── Types ─────────────────────────────────────────────────────────────
 export interface MyProgressResponse {
   enrolled: string[];
   completed: Record<string, string[]>;
@@ -32,8 +31,12 @@ export interface CurriculumData {
   landingData?: Record<string, unknown> | null;
 }
 
-// ── Normalizer ────────────────────────────────────────────────────────
 export function normalizeCourse(raw: any): Course {
+  if (!raw || typeof raw !== 'object') {
+    throw new Error(
+      `normalizeCourse: invalid data received: ${JSON.stringify(raw)}`,
+    );
+  }
   return {
     ...raw,
     color: (raw.color as string)?.toLowerCase() as CourseColor,
@@ -58,22 +61,20 @@ function normalizeCourseList(raw: any): PaginatedCourses {
   };
 }
 
-// ── Courses API ───────────────────────────────────────────────────────
 export const coursesApi = {
   list: (filters: CourseFilters = {}): Promise<PaginatedCourses> =>
     apiClient
       .get(COURSES.BASE, { params: filters })
-      .then((r) => normalizeCourseList(r.data)),
+      .then((r) => normalizeCourseList(r?.data ?? r)),
 
   get: (slug: string): Promise<Course> =>
     apiClient
       .get(COURSES.BY_SLUG(slug))
-      .then((r) => normalizeCourse(r.data?.data ?? r.data)),
+      .then((r) => normalizeCourse(r?.data ?? r)),
 
-  // GET /courses/:slug/curriculum — topics from JSON file
   getCurriculum: (slug: string): Promise<CurriculumData> =>
     apiClient.get(COURSES.CURRICULUM(slug)).then((r) => {
-      const payload = r.data?.data ?? r.data;
+      const payload = r?.data ?? r;
       return {
         topics: Array.isArray(payload?.topics) ? payload.topics : [],
         totalTopics: Number(payload?.totalTopics) || 0,
@@ -84,12 +85,12 @@ export const coursesApi = {
   getSections: (slug: string): Promise<CourseSection[]> =>
     apiClient
       .get(COURSES.SECTIONS(slug))
-      .then((r) => (Array.isArray(r.data) ? r.data : (r.data?.data ?? []))),
+      .then((r) => (Array.isArray(r) ? r : (r?.data ?? []))),
 
   enroll: (
     courseId: string,
   ): Promise<{ success: boolean; enrolledAt: string; courseId?: string }> =>
-    apiClient.post(COURSES.ENROLL(courseId)).then((r) => r.data),
+    apiClient.post(COURSES.ENROLL(courseId)).then((r) => r?.data ?? r),
 
   markTopicComplete: (
     courseId: string,
@@ -97,10 +98,10 @@ export const coursesApi = {
   ): Promise<{ success: boolean; progress: number; isCompleted: boolean }> =>
     apiClient
       .post(`/courses/${courseId}/topics/${topicId}/complete`)
-      .then((r) => r.data),
+      .then((r) => r?.data ?? r),
 
   getMyProgress: (): Promise<MyProgressResponse> =>
-    apiClient.get(COURSES.MY_PROGRESS).then((r) => r.data),
+    apiClient.get(COURSES.MY_PROGRESS).then((r) => r?.data ?? r),
 
   syncFavorite: (
     courseId: string,
@@ -108,12 +109,12 @@ export const coursesApi = {
   ): Promise<{ success: boolean }> =>
     apiClient
       .put(COURSES.MY_FAVORITES, { courseId, action })
-      .then((r) => r.data),
+      .then((r) => r?.data ?? r),
 
   getMyEnrollments: (): Promise<Enrollment[]> =>
     apiClient
       .get(ENROLLMENTS.MY)
-      .then((r) => (Array.isArray(r.data) ? r.data : (r.data?.data ?? []))),
+      .then((r) => (Array.isArray(r) ? r : (r?.data ?? []))),
 
   listPaths: (filters?: {
     page?: number;
@@ -121,13 +122,13 @@ export const coursesApi = {
     difficulty?: string;
     search?: string;
   }): Promise<PathsListResponse> =>
-    apiClient.get(PATHS.BASE, { params: filters }).then((r) => r.data),
+    apiClient.get(PATHS.BASE, { params: filters }).then((r) => r?.data ?? r),
 
   getPath: (slug: string): Promise<PathDetail> =>
-    apiClient.get(PATHS.BY_SLUG(slug)).then((r) => r.data),
+    apiClient.get(PATHS.BY_SLUG(slug)).then((r) => r?.data ?? r),
 
   enrollPath: (
     slug: string,
   ): Promise<{ success: boolean; enrolledAt: string }> =>
-    apiClient.post(PATHS.ENROLL(slug)).then((r) => r.data),
+    apiClient.post(PATHS.ENROLL(slug)).then((r) => r?.data ?? r),
 };

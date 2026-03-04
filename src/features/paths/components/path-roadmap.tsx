@@ -74,7 +74,7 @@ const TYPE_LABEL: Record<ModuleType, string> = {
 interface PathRoadmapProps {
   modules: PathModule[];
   completedIds?: string[];
-  sectionRef?: React.RefObject<HTMLElement>;
+  sectionRef?: React.RefObject<HTMLElement | null>;
 }
 
 export function PathRoadmap({

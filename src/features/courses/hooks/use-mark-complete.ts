@@ -14,10 +14,12 @@ export function useMarkLessonComplete() {
 
   return useMutation({
     mutationFn: ({ courseId, lessonId }: Params) =>
-      coursesApi.markLessonComplete(courseId, lessonId),
+      coursesApi.markTopicComplete(courseId, lessonId),
+
     onMutate: ({ courseId, lessonId }) => {
       markTopicComplete(courseId, lessonId);
     },
+
     onSuccess: (_data, { courseId }) => {
       queryClient.invalidateQueries({ queryKey: ['enrollments', 'me'] });
       queryClient.invalidateQueries({
@@ -25,6 +27,7 @@ export function useMarkLessonComplete() {
       });
       toast.success('Lesson complete!', { duration: 1500 });
     },
+
     onError: () => {
       toast.error('Could not mark lesson as complete. Try again.');
     },

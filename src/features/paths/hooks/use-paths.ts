@@ -18,7 +18,6 @@ export const pathsQueryKeys = {
   detail: (slug: string) => ['paths', 'detail', slug] as const,
 };
 
-// ── Normalize backend UPPERCASE enums to frontend lowercase ──────────
 const normalizeType = (t?: string): ModuleType => {
   const map: Record<string, ModuleType> = {
     COURSE: 'course',
@@ -65,18 +64,15 @@ const mapBackendPathToFrontend = (path: any): LearningPath => ({
   modules: Array.isArray(path.modules) ? path.modules.map(normalizeModule) : [],
 });
 
-// ── All paths (list) ─────────────────────────────────────────────────
 export function usePaths(filters: PathFilters = {}) {
   return useQuery({
     queryKey: pathsQueryKeys.list(filters),
     queryFn: async (): Promise<LearningPath[]> => {
       const params: Record<string, string> = {};
-      if (filters.difficulty && filters.difficulty !== 'all') {
+      if (filters.difficulty && filters.difficulty !== 'all')
         params.difficulty = filters.difficulty.toUpperCase();
-      }
       if (filters.search) params.search = filters.search;
 
-      // res = HTTP body = { data: [...paths], meta: {...} }
       const res = await apiClient.get(API_ENDPOINTS.PATHS.BASE, { params });
       const items = res.data?.data || res.data || [];
       return items.map(mapBackendPathToFrontend);
@@ -86,14 +82,13 @@ export function usePaths(filters: PathFilters = {}) {
   });
 }
 
-// ── Single path (detail with full modules) ───────────────────────────
 export function usePath(slug: string) {
   return useQuery({
     queryKey: pathsQueryKeys.detail(slug),
     queryFn: async (): Promise<LearningPath | null> => {
-      // res = HTTP body = path object directly (no { data: } wrapper)
-      // ✅ FIX: use `res` not `res.data`
-      const res = await apiClient.get(API_ENDPOINTS.PATHS.BY_SLUG(slug));
+      const response = await apiClient.get(API_ENDPOINTS.PATHS.BY_SLUG(slug));
+      // ✅ Fix: الـ data في response.data لا في response نفسها
+      const res = response?.data ?? response;
       if (!res || !res.id) return null;
       return mapBackendPathToFrontend(res);
     },

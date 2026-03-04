@@ -1,6 +1,11 @@
+// src/features/profile/api/profile.api.ts
 import { apiClient } from '@/core/api/client';
 import axios from 'axios';
-import type { UserProfile, UpdateProfilePayload } from '../types/profile.types';
+import type {
+  UserProfile,
+  UpdateProfilePayload,
+  UserCareerPath,
+} from '../types/profile.types';
 import type {
   UserStats,
   UserPoints,
@@ -9,7 +14,6 @@ import type {
   UserActivity,
 } from '@/shared/types/user.types';
 
-// Depending on backend structure, sometimes it wraps arrays in { data: [...] }
 const extractData = <T>(res: any): T => {
   return (res?.data !== undefined ? res.data : res) as T;
 };
@@ -17,16 +21,29 @@ const extractData = <T>(res: any): T => {
 // ─── GET ─────────────────────────────────────────────────────────────────────
 export const getMyProfile = () =>
   apiClient.get('/users/me').then(extractData<UserProfile>);
+
 export const getMyStats = () =>
   apiClient.get('/users/me/stats').then(extractData<UserStats>);
+
 export const getMyPoints = () =>
   apiClient.get('/users/me/points').then(extractData<UserPoints>);
+
 export const getMyLabs = () =>
   apiClient.get('/users/me/labs').then(extractData<CompletedLab[]>);
+
 export const getMyCourses = () =>
   apiClient.get('/users/me/courses').then(extractData<EnrolledCourse[]>);
+
 export const getMyActivity = () =>
   apiClient.get('/users/me/activity').then(extractData<UserActivity[]>);
+
+// ✅ Paths: يجلب الـ profile ويستخرج careerPaths
+// لو البيكند أضاف /users/me/paths في المستقبل، غيّر السطر ده فقط
+export const getMyPaths = (): Promise<UserCareerPath[]> =>
+  apiClient.get('/users/me').then((res) => {
+    const profile = extractData<UserProfile>(res);
+    return profile.careerPaths ?? [];
+  });
 
 // ─── Public ──────────────────────────────────────────────────────────────────
 export const getPublicProfile = (id: string) =>

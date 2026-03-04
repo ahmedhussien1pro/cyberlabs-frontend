@@ -1,10 +1,12 @@
 export type UserRole = 'admin' | 'trainee' | 'content-creator';
+export type UserSubscription = 'FREE' | 'PRO' | 'PREMIUM';
 
 export interface User {
   id: string;
   email: string;
   name: string;
   role: UserRole;
+  subscription?: UserSubscription;
   emailVerified?: boolean;
   twoFactorEnabled?: boolean;
   avatar?: string;
@@ -116,7 +118,6 @@ export type AuthFormField =
   | 'token';
 
 export type AuthPageRoute =
-  | '/auth'
   | '/auth'
   | '/forgot-password'
   | '/reset-password'

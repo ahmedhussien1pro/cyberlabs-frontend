@@ -13,6 +13,7 @@ import { CourseLabsSection } from '../components/course-labs-section';
 import { useCourse } from '../hooks/use-course';
 import { useEnrollment } from '../hooks/use-enrollment';
 import { useCourseProgressStore } from '../store/course-progress.store';
+import { useIsPro } from '@/features/pricing/hooks/use-pricing'; // ← الصح
 import { ROUTES } from '@/shared/constants';
 
 export default function CourseDetailPage() {
@@ -29,8 +30,11 @@ export default function CourseDetailPage() {
     getCompletedCount,
     toggleFavorite,
     isFavorite,
-    resetProgress, // ✅ مُضاف
+    resetProgress,
   } = useCourseProgressStore();
+
+  // ── subscription الصح: من pricing API لا auth store ──────────────
+  const isPro = useIsPro();
 
   const { data: labsData } = useQuery<{ labs: any[] }>({
     queryKey: ['courses', slug, 'labs'],
@@ -74,20 +78,22 @@ export default function CourseDetailPage() {
   const longDesc =
     lang === 'ar' ? course.ar_longDescription : course.longDescription;
 
+  // ── canProAccess: PRO يقدر يدخل كورسات PRO و FREE ────────────────
+  // PREMIUM يحتاج subscription = team | enterprise
+  const canProAccess =
+    isPro && (course.access === 'PRO' || course.access === 'FREE');
+
   const handleEnroll = () => {
-    if (course.access !== 'FREE') {
-      window.location.href = ROUTES.PRICING;
+    if (course.access === 'FREE' || canProAccess) {
+      enroll(course.id);
       return;
     }
-    enroll(course.id);
+    window.location.href = ROUTES.PRICING;
   };
 
-  // ✅ Reset: يمسح التوبيكات بس — الـ enrollment يفضل
   const handleReset = () => resetProgress(course.id);
-
-  // ✅ Continue: اسكرول لأول topic مش مكتمل بعد الـ id اللي حطيناه على كل <li>
   const handleContinue = () => {
-    const firstIncomplete = getCompletedCount(course.id); // index أول topic مكملهوش
+    const firstIncomplete = getCompletedCount(course.id);
     const el = document.getElementById(`topic-row-${firstIncomplete}`);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -97,8 +103,6 @@ export default function CourseDetailPage() {
         ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
-
-  // ✅ Go to Labs scroll
   const handleGoToLabs = () => {
     document
       .getElementById('course-labs-section')
@@ -115,12 +119,13 @@ export default function CourseDetailPage() {
           progress={progress}
           done={done}
           fav={fav}
-          hasLabs={hasLabs} // ✅ مُضاف
+          isPro={canProAccess} // ← من useIsPro() الحقيقي
+          hasLabs={hasLabs}
           onEnroll={handleEnroll}
           onToggleFav={() => toggleFavorite(course.id)}
-          onReset={handleReset} // ✅ مُضاف
-          onContinue={handleContinue} // ✅ مُضاف
-          onGoToLabs={handleGoToLabs} // ✅ مُضاف
+          onReset={handleReset}
+          onContinue={handleContinue}
+          onGoToLabs={handleGoToLabs}
         />
 
         <div className='container mx-auto px-4 py-10'>
@@ -129,7 +134,6 @@ export default function CourseDetailPage() {
               <p className='text-sm text-foreground/70 leading-7'>{longDesc}</p>
             </div>
           )}
-
           <CourseCurriculum
             course={course}
             isEnrolled={enrolled}

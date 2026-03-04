@@ -1,3 +1,4 @@
+// src/shared/types/user.types.ts
 export interface UserStats {
   id: string;
   name: string;
@@ -58,6 +59,10 @@ export interface EnrolledCourse {
   isCompleted: boolean;
   enrolledAt: string;
   lastAccessedAt?: string;
+  // ✅ added: backend يرجعهم عند الإكمال
+  completedAt?: string;
+  xpReward?: number;
+  pointsReward?: number;
   course: {
     id: string;
     title: string;

@@ -1,5 +1,4 @@
 // src/features/courses/components/course-card.tsx
-// Wrapper: adds store (favorites/enrollment) + CourseInfoDialog on top of SharedCourseCard
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
@@ -21,9 +20,22 @@ export function CourseCard({
 }: CourseCardProps) {
   const { t } = useTranslation('courses');
   const [infoOpen, setInfoOpen] = useState(false);
-  const { toggleFavorite, isFavorite, isEnrolled } = useCourseProgressStore();
+
+  const {
+    toggleFavorite,
+    isFavorite,
+    isEnrolled,
+    completedTopics,
+    resetProgress,
+  } = useCourseProgressStore();
+
   const fav = isFavorite(course.id);
   const enrolled = isEnrolled(course.id);
+
+  // ── isCompleted: عدد الـ topics المكتملة >= إجمالي الـ topics ──
+  const doneCnt = completedTopics[course.id]?.length ?? 0;
+  const isCompleted =
+    enrolled && course.totalTopics > 0 && doneCnt >= course.totalTopics;
 
   const handleFav = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -37,6 +49,8 @@ export function CourseCard({
     );
   };
 
+  const handleReset = () => resetProgress(course.id);
+
   return (
     <>
       <SharedCourseCard
@@ -44,6 +58,8 @@ export function CourseCard({
         variant={view === 'list' ? 'mini' : 'full'}
         index={index}
         enrolled={enrolled}
+        isCompleted={isCompleted} // ← جديد
+        onReset={handleReset} // ← جديد
         isFavorite={fav}
         onFavoriteToggle={handleFav}
         onInfoClick={() => setInfoOpen(true)}

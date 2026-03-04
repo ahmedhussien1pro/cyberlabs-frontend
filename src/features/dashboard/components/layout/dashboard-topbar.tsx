@@ -1,3 +1,4 @@
+// src/features/dashboard/components/layout/dashboard-topbar.tsx
 import { Menu } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +16,10 @@ import { LanguageSwitcher } from '@/shared/components/common/language-switcher';
 import { ROUTES } from '@/shared/constants';
 import useAuthStore from '@/features/auth/store/auth.store';
 import { NotificationBell } from '@/features/notifications/components/notification-bell';
+import { useProfile } from '@/features/profile/hooks/use-profile';
+import { useSubscriptionBadge } from '@/features/pricing/hooks/use-pricing';
+import { SubscriptionBadge } from '@/shared/components/common/subscription-badge';
+import { cn } from '@/lib/utils';
 
 interface Props {
   onMenuClick: () => void;
@@ -23,6 +28,11 @@ interface Props {
 export function DashboardTopbar({ onMenuClick }: Props) {
   const { t } = useTranslation('dashboard');
   const { user, logout } = useAuthStore();
+  const { data: profile } = useProfile();
+  const { planId, isSubscribed } = useSubscriptionBadge();
+
+  // ✅ Fix: use profile.avatarUrl not user.avatar
+  const avatarUrl = profile?.avatarUrl;
 
   const initials = user?.name
     ? user.name
@@ -47,22 +57,38 @@ export function DashboardTopbar({ onMenuClick }: Props) {
         <Menu size={20} />
       </Button>
 
-      {/* Desktop spacer */}
       <div className='hidden md:block' />
 
       {/* ── Right controls ───────────────────────── */}
       <div className='flex items-center gap-1'>
         <LanguageSwitcher />
         <ThemeToggle />
-
         <NotificationBell />
 
-        {/* User dropdown */}
+        {/* User dropdown with subscription crown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant='ghost' size='icon' className='rounded-full'>
+            <Button
+              variant='ghost'
+              className={cn(
+                'relative rounded-full h-auto w-auto px-1 pb-1',
+                'focus-visible:ring-0 focus-visible:ring-offset-0 overflow-visible',
+                isSubscribed ? 'pt-3' : 'pt-1',
+              )}>
+              {/* Crown badge on top */}
+              {isSubscribed && (
+                <SubscriptionBadge
+                  planId={planId}
+                  variant='crown'
+                  className='absolute top-0 left-1/2 -translate-x-1/2'
+                />
+              )}
               <Avatar className='h-8 w-8'>
-                <AvatarImage src={user?.avatar} alt={user?.name} />
+                <AvatarImage
+                  src={avatarUrl}
+                  alt={user?.name}
+                  className='object-cover'
+                />
                 <AvatarFallback className='bg-primary/10 text-xs font-bold text-primary'>
                   {initials}
                 </AvatarFallback>
@@ -70,10 +96,15 @@ export function DashboardTopbar({ onMenuClick }: Props) {
             </Button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align='end' className='w-48'>
-            <div className='px-2 py-1.5'>
-              <p className='text-sm font-semibold'>{user?.name}</p>
-              <p className='truncate text-xs text-muted-foreground'>
+          <DropdownMenuContent align='end' className='w-56'>
+            <div className='px-3 py-2.5'>
+              <div className='flex items-center gap-2'>
+                <p className='text-sm font-semibold truncate'>{user?.name}</p>
+                {isSubscribed && (
+                  <SubscriptionBadge planId={planId} variant='pill' />
+                )}
+              </div>
+              <p className='truncate text-xs text-muted-foreground mt-0.5'>
                 {user?.email}
               </p>
             </div>
@@ -88,7 +119,7 @@ export function DashboardTopbar({ onMenuClick }: Props) {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              className='text-destructive focus:text-destructive'
+              className='text-destructive focus:text-destructive focus:bg-destructive/10'
               onClick={() => logout()}>
               {t('nav.logout')}
             </DropdownMenuItem>

@@ -1,3 +1,4 @@
+// src/features/dashboard/components/layout/dashboard-sidebar.tsx
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -6,15 +7,18 @@ import {
   Target,
   Users,
   Settings,
-  User,
   LogOut,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Logo } from '@/shared/components/common/Logo';
 import { ROUTES } from '@/shared/constants';
 import useAuthStore from '@/features/auth/store/auth.store';
+import { useProfile } from '@/features/profile/hooks/use-profile';
+import { useSubscriptionBadge } from '@/features/pricing/hooks/use-pricing';
+import { SubscriptionBadge } from '@/shared/components/common/subscription-badge';
 
 interface Props {
   onClose?: () => void;
@@ -36,6 +40,17 @@ const NAV = [
 export function DashboardSidebar({ onClose }: Props) {
   const { t } = useTranslation('dashboard');
   const { user, logout } = useAuthStore();
+  const { data: profile } = useProfile();
+  const { planId, isSubscribed } = useSubscriptionBadge();
+
+  const initials = user?.name
+    ? user.name
+        .split(' ')
+        .map((w) => w[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2)
+    : 'CL';
 
   return (
     <aside className='flex h-full w-60 flex-col border-r border-border/40 bg-background'>
@@ -83,23 +98,60 @@ export function DashboardSidebar({ onClose }: Props) {
         </NavLink>
       </nav>
 
-      {/* User footer */}
-      <div className='shrink-0 space-y-0.5 border-t border-border/40 p-3'>
+      {/* ── User footer — احترافية ── */}
+      <div className='shrink-0 border-t border-border/40 p-3 space-y-1'>
+        {/* Profile link with avatar + plan badge */}
         <NavLink
           to={ROUTES.PROFILE.VIEW}
           onClick={onClose}
-          className='flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium
-                     text-muted-foreground transition-colors hover:bg-muted hover:text-foreground'>
-          <User size={18} />
-          <span className='truncate'>{user?.name ?? t('nav.profile')}</span>
+          className={({ isActive }) =>
+            cn(
+              'flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors',
+              isActive ? 'bg-primary/10' : 'hover:bg-muted',
+            )
+          }>
+          {/* Avatar مع crown للـ subscribed users */}
+          <div className='relative shrink-0'>
+            {isSubscribed && (
+              <SubscriptionBadge
+                planId={planId}
+                variant='crown'
+                className='absolute -top-2 left-1/2 -translate-x-1/2 z-10'
+              />
+            )}
+            <Avatar className={cn('h-8 w-8', isSubscribed && 'mt-1.5')}>
+              <AvatarImage
+                src={profile?.avatarUrl}
+                alt={user?.name}
+                className='object-cover'
+              />
+              <AvatarFallback className='bg-primary/10 text-[10px] font-bold text-primary'>
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+
+          <div className='min-w-0 flex-1'>
+            <div className='flex items-center gap-1.5'>
+              <p className='truncate text-sm font-semibold text-foreground'>
+                {user?.name ?? t('nav.profile')}
+              </p>
+              {isSubscribed && (
+                <SubscriptionBadge planId={planId} variant='pill' />
+              )}
+            </div>
+            <p className='truncate text-[11px] text-muted-foreground'>
+              {user?.email}
+            </p>
+          </div>
         </NavLink>
 
         <Button
           variant='ghost'
           size='sm'
-          className='w-full justify-start gap-3 px-3 text-muted-foreground hover:text-destructive'
+          className='w-full justify-start gap-3 px-3 text-muted-foreground hover:text-destructive hover:bg-destructive/5'
           onClick={() => logout()}>
-          <LogOut size={18} />
+          <LogOut size={16} />
           {t('nav.logout')}
         </Button>
       </div>

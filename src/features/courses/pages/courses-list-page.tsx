@@ -1,7 +1,26 @@
 // src/features/courses/pages/courses-list-page.tsx
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { LayoutGrid, List, SlidersHorizontal, X, Shield } from 'lucide-react';
+import {
+  LayoutGrid,
+  List,
+  SlidersHorizontal,
+  X,
+  Shield,
+  SearchX,
+  Heart,
+  BookOpen,
+  BookCheck,
+  TrendingUp,
+  Gauge,
+  Flame,
+  Unlock,
+  Crown,
+  Gem,
+  Clock3,
+  FlaskConical,
+  BookMarked,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import MainLayout from '@/shared/components/layout/main-layout';
@@ -17,6 +36,136 @@ import type { CourseFilters } from '../types/course.types';
 type ViewMode = 'grid' | 'list';
 const PAGE_SIZE = 9;
 
+// ── Active filter chips ───────────────────────────────────────────────
+interface ActiveFilterChip {
+  key: string;
+  label: string;
+  icon: React.ElementType;
+  color: string;
+  onRemove: () => void;
+}
+
+function useActiveFilterChips(
+  filters: CourseFilters,
+  onChange: (f: CourseFilters) => void,
+): ActiveFilterChip[] {
+  const { t } = useTranslation('courses');
+  const chips: ActiveFilterChip[] = [];
+
+  if (filters.search) {
+    chips.push({
+      key: 'search',
+      label: `"${filters.search}"`,
+      icon: SearchX,
+      color: 'text-foreground',
+      onRemove: () => onChange({ ...filters, search: '' }),
+    });
+  }
+  if (filters.onlyFavorites) {
+    chips.push({
+      key: 'fav',
+      label: t('filters.favorites', 'Favorites'),
+      icon: Heart,
+      color: 'text-rose-400',
+      onRemove: () => onChange({ ...filters, onlyFavorites: false }),
+    });
+  }
+  if (filters.onlyEnrolled) {
+    chips.push({
+      key: 'enrolled',
+      label: t('filters.enrolled', 'Enrolled'),
+      icon: BookOpen,
+      color: 'text-blue-400',
+      onRemove: () => onChange({ ...filters, onlyEnrolled: false }),
+    });
+  }
+  if (filters.onlyCompleted) {
+    chips.push({
+      key: 'completed',
+      label: t('filters.completed', 'Completed'),
+      icon: BookCheck,
+      color: 'text-emerald-400',
+      onRemove: () => onChange({ ...filters, onlyCompleted: false }),
+    });
+  }
+  const DIFF_MAP: Record<
+    string,
+    { label: string; icon: React.ElementType; color: string }
+  > = {
+    BEGINNER: {
+      label: 'Beginner',
+      icon: TrendingUp,
+      color: 'text-emerald-500',
+    },
+    INTERMEDIATE: {
+      label: 'Intermediate',
+      icon: Gauge,
+      color: 'text-yellow-500',
+    },
+    ADVANCED: { label: 'Advanced', icon: Flame, color: 'text-red-500' },
+  };
+  if (filters.difficulty && DIFF_MAP[filters.difficulty]) {
+    const d = DIFF_MAP[filters.difficulty];
+    chips.push({
+      key: 'diff',
+      label: d.label,
+      icon: d.icon,
+      color: d.color,
+      onRemove: () => onChange({ ...filters, difficulty: undefined }),
+    });
+  }
+  const ACCESS_MAP: Record<
+    string,
+    { label: string; icon: React.ElementType; color: string }
+  > = {
+    FREE: { label: 'Free', icon: Unlock, color: 'text-emerald-500' },
+    PRO: { label: 'Pro', icon: Crown, color: 'text-blue-500' },
+    PREMIUM: { label: 'Premium', icon: Gem, color: 'text-violet-500' },
+  };
+  if (filters.access && ACCESS_MAP[filters.access]) {
+    const a = ACCESS_MAP[filters.access];
+    chips.push({
+      key: 'access',
+      label: a.label,
+      icon: a.icon,
+      color: a.color,
+      onRemove: () => onChange({ ...filters, access: undefined }),
+    });
+  }
+  const CT_MAP: Record<string, { label: string; icon: React.ElementType }> = {
+    PRACTICAL: {
+      label: t('filters.practical', 'Practical'),
+      icon: FlaskConical,
+    },
+    THEORETICAL: {
+      label: t('filters.theoretical', 'Theoretical'),
+      icon: BookMarked,
+    },
+    MIXED: { label: t('filters.mixed', 'Mixed'), icon: BookOpen },
+  };
+  if (filters.contentType && CT_MAP[filters.contentType]) {
+    const ct = CT_MAP[filters.contentType];
+    chips.push({
+      key: 'ct',
+      label: ct.label,
+      icon: ct.icon,
+      color: 'text-muted-foreground',
+      onRemove: () => onChange({ ...filters, contentType: undefined }),
+    });
+  }
+  if (filters.state === 'COMING_SOON') {
+    chips.push({
+      key: 'state',
+      label: t('filters.comingSoon', 'Coming Soon'),
+      icon: Clock3,
+      color: 'text-zinc-400',
+      onRemove: () => onChange({ ...filters, state: undefined }),
+    });
+  }
+  return chips;
+}
+
+// ─────────────────────────────────────────────────────────────────────
 export default function CoursesListPage() {
   const { t } = useTranslation('courses');
   const [filters, setFilters] = useState<CourseFilters>({});
@@ -26,20 +175,37 @@ export default function CoursesListPage() {
 
   const { favoriteCourses, enrolledCourses, completedTopics } =
     useCourseProgressStore();
+
   const { data, isLoading, isError } = useCourses(filters);
 
   const filteredData = useMemo(() => {
     if (!data?.data) return [];
     let result = [...data.data];
+
+    // ── client-side search fallback ───────────────────────────────
+    if (filters.search?.trim()) {
+      const q = filters.search.toLowerCase();
+      result = result.filter(
+        (c) =>
+          c.title.toLowerCase().includes(q) ||
+          (c.ar_title ?? '').toLowerCase().includes(q) ||
+          (c.description ?? '').toLowerCase().includes(q),
+      );
+    }
+
+    // ── local store filters ───────────────────────────────────────
     if (filters.onlyFavorites)
       result = result.filter((c) => favoriteCourses.includes(c.id));
+
     if (filters.onlyEnrolled)
       result = result.filter((c) => enrolledCourses.includes(c.id));
+
     if (filters.onlyCompleted)
       result = result.filter((c) => {
         const done = completedTopics[c.id]?.length ?? 0;
         return c.totalTopics > 0 && done >= c.totalTopics;
       });
+
     return result;
   }, [data, filters, favoriteCourses, enrolledCourses, completedTopics]);
 
@@ -53,16 +219,16 @@ export default function CoursesListPage() {
     setFilters(f);
     setPage(1);
   };
-
   const handleReset = () => {
     setFilters({});
     setPage(1);
   };
 
+  const activeChips = useActiveFilterChips(filters, handleFiltersChange);
+
   return (
     <MainLayout>
       <div className='min-h-screen bg-background'>
-        {/* ── Hero — نفس شكل الباسيز بدون search ── */}
         <PageHero
           title={t('list.title', 'Master Cybersecurity')}
           subtitle={t('list.subtitle', 'Theory-first courses')}
@@ -73,10 +239,9 @@ export default function CoursesListPage() {
           showSearch={false}
         />
 
-        {/* ── Body: Sidebar + Grid ── */}
         <div className='container mx-auto px-4 py-8'>
           <div className='flex gap-7 relative'>
-            {/* Sidebar — Desktop */}
+            {/* ── Sidebar Desktop ── */}
             <aside className='hidden lg:block w-60 shrink-0'>
               <div className='sticky top-20'>
                 <CourseFilterSidebar
@@ -88,7 +253,7 @@ export default function CoursesListPage() {
               </div>
             </aside>
 
-            {/* Mobile sidebar drawer */}
+            {/* ── Mobile Drawer ── */}
             {sidebarOpen && (
               <div
                 className='fixed inset-0 z-40 lg:hidden'
@@ -116,7 +281,7 @@ export default function CoursesListPage() {
               </div>
             )}
 
-            {/* Main content */}
+            {/* ── Main ── */}
             <div className='flex-1 min-w-0 space-y-5'>
               {/* Toolbar */}
               <div className='flex items-center gap-3 flex-wrap'>
@@ -136,6 +301,25 @@ export default function CoursesListPage() {
                     </span>
                     {' courses found'}
                   </p>
+                )}
+
+                {/* Active chips في الـ toolbar */}
+                {activeChips.length > 0 && (
+                  <div className='flex flex-wrap items-center gap-1.5'>
+                    {activeChips.map((chip) => (
+                      <span
+                        key={chip.key}
+                        className='inline-flex items-center gap-1 rounded-full border border-border/60 bg-muted/50 px-2 py-0.5 text-[11px] font-medium'>
+                        <chip.icon className={cn('h-3 w-3', chip.color)} />
+                        {chip.label}
+                        <button
+                          onClick={chip.onRemove}
+                          className='ms-0.5 text-muted-foreground hover:text-foreground transition-colors'>
+                          <X className='h-3 w-3' />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
                 )}
 
                 <div className='flex-1' />
@@ -191,21 +375,57 @@ export default function CoursesListPage() {
                     ))}
               </div>
 
-              {/* Empty state */}
+              {/* Empty State */}
               {!isLoading && filteredData.length === 0 && (
-                <div className='flex flex-col items-center justify-center py-24 gap-4 text-center'>
-                  <div className='h-14 w-14 rounded-2xl bg-muted flex items-center justify-center border border-border/40'>
-                    <Shield className='h-7 w-7 text-muted-foreground' />
+                <div className='flex flex-col items-center justify-center min-h-[480px] gap-5 text-center py-16 rounded-2xl border border-dashed border-border/50 bg-muted/10'>
+                  <div className='h-16 w-16 rounded-2xl bg-muted flex items-center justify-center border border-border/40'>
+                    <Shield className='h-8 w-8 text-muted-foreground/50' />
                   </div>
-                  <p className='font-semibold text-foreground'>
-                    {t('list.empty', 'No courses match your filters')}
-                  </p>
-                  <p className='text-sm text-muted-foreground'>
-                    {t('list.emptyHint', 'Try resetting the filters')}
-                  </p>
-                  <Button variant='outline' size='sm' onClick={handleReset}>
-                    {t('filters.reset', 'Reset Filters')}
-                  </Button>
+                  <div className='space-y-1.5'>
+                    <p className='font-bold text-base text-foreground'>
+                      {t('list.empty', 'No courses found')}
+                    </p>
+                    <p className='text-sm text-muted-foreground max-w-xs'>
+                      {activeChips.length > 0
+                        ? t(
+                            'list.emptyWithFilters',
+                            'No courses match the selected filters',
+                          )
+                        : t(
+                            'list.emptyHint',
+                            'Try adjusting or resetting the filters',
+                          )}
+                    </p>
+                  </div>
+                  {activeChips.length > 0 && (
+                    <div className='flex flex-wrap justify-center gap-2 max-w-sm'>
+                      {activeChips.map((chip) => (
+                        <span
+                          key={chip.key}
+                          className='inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/60 px-3 py-1 text-xs font-medium'>
+                          <chip.icon
+                            className={cn('h-3.5 w-3.5', chip.color)}
+                          />
+                          {chip.label}
+                          <button
+                            onClick={chip.onRemove}
+                            className='ms-0.5 text-muted-foreground hover:text-destructive transition-colors'>
+                            <X className='h-3 w-3' />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {activeChips.length > 0 && (
+                    <Button
+                      variant='outline'
+                      size='sm'
+                      onClick={handleReset}
+                      className='gap-1.5'>
+                      <X className='h-3.5 w-3.5' />
+                      {t('filters.resetAll', 'Clear all filters')}
+                    </Button>
+                  )}
                 </div>
               )}
 

@@ -1,3 +1,4 @@
+// src/shared/components/shared-course-card.tsx
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import {
@@ -15,6 +16,7 @@ import {
   Zap,
   Sparkles,
   RotateCcw,
+  CheckCircle2,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -37,7 +39,6 @@ export interface CourseCardData {
   id: string;
   slug: string;
   title: string;
-  topic: string;
   ar_title?: string;
   description?: string;
   ar_description?: string;
@@ -60,8 +61,8 @@ export interface SharedCourseCardProps {
   course: CourseCardData;
   variant?: 'full' | 'mini';
   enrolled?: boolean;
-  isCompleted?: boolean; // ✅ جديد
-  onReset?: () => void; // ✅ جديد
+  isCompleted?: boolean;
+  onReset?: () => void;
   isFavorite?: boolean;
   onFavoriteToggle?: (e: React.MouseEvent) => void;
   onInfoClick?: () => void;
@@ -116,6 +117,7 @@ function normalizeDiff(d?: string) {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
+// ── Thumbnail ─────────────────────────────────────────────────────────
 function CourseThumbnail({
   course,
   className,
@@ -155,7 +157,7 @@ function CourseThumbnail({
   );
 }
 
-// ─── Reset Confirm AlertDialog ────────────────────────────────────────
+// ── Reset Confirm Dialog ──────────────────────────────────────────────
 function ResetConfirmDialog({
   onReset,
   trigger,
@@ -237,7 +239,7 @@ function FullCard({
         HOVER_RING[color],
         comingSoon ? 'opacity-80' : 'hover:shadow-xl hover:-translate-y-0.5',
       )}>
-      {/* Thumbnail */}
+      {/* ── Thumbnail ── */}
       <div className='relative aspect-video overflow-hidden bg-muted'>
         <CourseThumbnail
           course={course}
@@ -245,13 +247,26 @@ function FullCard({
           className='transition-transform duration-500 group-hover:scale-105'
         />
 
-        {comingSoon ? (
+        {/* Coming Soon overlay */}
+        {comingSoon && (
           <div className='absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm'>
             <span className='flex items-center gap-1.5 rounded-full border border-white/20 px-3 py-1 text-xs font-bold uppercase tracking-widest text-white/80'>
               <Sparkles className='h-3 w-3' /> Coming Soon
             </span>
           </div>
-        ) : (
+        )}
+
+        {/* Completed overlay — نفس فكرة coming soon بس emerald */}
+        {!comingSoon && isCompleted && (
+          <div className='absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-[2px]'>
+            <span className='flex items-center gap-1.5 rounded-full border border-emerald-500/60 bg-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-400 shadow-lg'>
+              <CheckCircle2 className='h-3.5 w-3.5' /> Completed
+            </span>
+          </div>
+        )}
+
+        {/* Available badge — فقط لو مش coming soon ومش completed */}
+        {!comingSoon && !isCompleted && (
           <div className='absolute top-3 start-3'>
             <span className='inline-flex items-center gap-1 rounded-full bg-emerald-500 px-2.5 py-1 text-[11px] font-bold text-white shadow-md'>
               <span className='h-1.5 w-1.5 rounded-full bg-white' /> Available
@@ -259,6 +274,7 @@ function FullCard({
           </div>
         )}
 
+        {/* Favorite button */}
         {onFavoriteToggle && (
           <button
             onClick={onFavoriteToggle}
@@ -277,7 +293,7 @@ function FullCard({
         )}
       </div>
 
-      {/* Body */}
+      {/* ── Body ── */}
       <div className='flex flex-col flex-1 p-4 gap-3'>
         <div className='flex items-start justify-between gap-2'>
           <h3 className='text-sm font-bold text-foreground leading-snug line-clamp-2 flex-1'>
@@ -330,6 +346,7 @@ function FullCard({
           )}
         </div>
 
+        {/* ── CTA Row ── */}
         <div className='flex gap-2 mt-auto pt-1'>
           {onInfoClick && (
             <Button
@@ -341,25 +358,45 @@ function FullCard({
             </Button>
           )}
 
-          {/* ✅ زر واحد بـ 3 حالات */}
-          {enrolled && isCompleted && onReset ? (
-            /* حالة: خلّص الكورس → Reset مع Confirm */
-            <ResetConfirmDialog
-              onReset={onReset}
-              trigger={
-                <Button
-                  size='sm'
-                  className={cn(
-                    'flex-1 h-9 text-xs gap-1.5',
-                    'bg-orange-500/10 border border-orange-500/30 text-orange-400',
-                    'hover:bg-orange-500/20 hover:border-orange-500/50',
-                  )}
-                  variant='outline'>
-                  <RotateCcw className='h-3.5 w-3.5' /> Reset Progress
-                </Button>
-              }
-            />
+          {/* Completed: Review + Reset */}
+          {enrolled && isCompleted ? (
+            <div className='flex flex-1 gap-1.5'>
+              {/* Review Course — يدخل للكورس عادي */}
+              <Button
+                size='sm'
+                className={cn(
+                  'flex-1 h-9 text-xs gap-1.5',
+                  'border border-emerald-500/40 bg-emerald-500/10 text-emerald-400',
+                  'hover:bg-emerald-500/20 hover:border-emerald-500/60',
+                )}
+                variant='outline'
+                asChild>
+                <Link to={destHref}>
+                  <CheckCircle2 className='h-3.5 w-3.5' /> Review
+                </Link>
+              </Button>
+
+              {/* Reset — icon فقط مع confirm */}
+              {onReset && (
+                <ResetConfirmDialog
+                  onReset={onReset}
+                  trigger={
+                    <Button
+                      size='sm'
+                      variant='outline'
+                      className={cn(
+                        'h-9 w-9 p-0 shrink-0',
+                        'border-orange-500/30 bg-orange-500/5 text-orange-400',
+                        'hover:bg-orange-500/15 hover:border-orange-500/50',
+                      )}>
+                      <RotateCcw className='h-3.5 w-3.5' />
+                    </Button>
+                  }
+                />
+              )}
+            </div>
           ) : (
+            /* Not completed: Start / Continue / Coming Soon */
             <Button
               size='sm'
               className='flex-1 h-9 text-xs'
@@ -427,6 +464,7 @@ function MiniCard({
               HOVER_RING[color],
             ),
       )}>
+      {/* Thumbnail */}
       <div className='relative h-24 w-36 shrink-0 overflow-hidden bg-muted'>
         <CourseThumbnail course={course} textSize='text-xs' />
         {comingSoon && (
@@ -434,7 +472,15 @@ function MiniCard({
             <Sparkles className='h-4 w-4 text-white/70' />
           </div>
         )}
+        {/* Completed indicator على الـ mini thumbnail */}
+        {!comingSoon && isCompleted && (
+          <div className='absolute inset-0 flex items-center justify-center bg-black/50'>
+            <CheckCircle2 className='h-5 w-5 text-emerald-400' />
+          </div>
+        )}
       </div>
+
+      {/* Text */}
       <div className='flex min-w-0 flex-1 flex-col justify-center gap-1.5 py-3 pe-3'>
         <h4 className='line-clamp-1 text-sm font-bold text-foreground transition-colors group-hover:text-primary'>
           {title}
@@ -464,7 +510,8 @@ function MiniCard({
           )}
         </div>
       </div>
-      {/* ✅ Icon state */}
+
+      {/* State icon */}
       <div className='flex shrink-0 items-center pe-3'>
         <div
           className={cn(
@@ -472,13 +519,13 @@ function MiniCard({
             comingSoon
               ? 'border-border/30 text-muted-foreground/30'
               : enrolled && isCompleted
-                ? 'border-orange-500/30 bg-orange-500/10 text-orange-400'
+                ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400'
                 : enrolled
                   ? 'border-border/50 bg-muted/50 text-muted-foreground group-hover:border-primary/40 group-hover:bg-primary/10 group-hover:text-primary'
                   : 'border-border/50 bg-muted/50 text-muted-foreground group-hover:border-primary/40 group-hover:bg-primary/10 group-hover:text-primary',
           )}>
           {enrolled && isCompleted ? (
-            <RotateCcw className='h-3.5 w-3.5' />
+            <CheckCircle2 className='h-3.5 w-3.5' />
           ) : enrolled ? (
             <Zap className='h-3.5 w-3.5' />
           ) : (
@@ -491,16 +538,7 @@ function MiniCard({
 
   if (comingSoon) return inner;
 
-  // ✅ Mini: لو completed → AlertDialog للـ reset
-  if (enrolled && isCompleted && onReset) {
-    return (
-      <ResetConfirmDialog
-        onReset={onReset}
-        trigger={<div className='block cursor-pointer'>{inner}</div>}
-      />
-    );
-  }
-
+  // Mini completed → يدخل للكورس للـ review (لا يفتح reset dialog)
   return (
     <Link to={destHref} className='block'>
       {inner}

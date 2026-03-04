@@ -74,7 +74,7 @@ const TYPE_LABEL: Record<ModuleType, string> = {
 interface PathRoadmapProps {
   modules: PathModule[];
   completedIds?: string[];
-  sectionRef?: React.RefObject<HTMLElement>; // ← جديد
+  sectionRef?: React.RefObject<HTMLElement>;
 }
 
 export function PathRoadmap({
@@ -82,8 +82,8 @@ export function PathRoadmap({
   completedIds = [],
   sectionRef,
 }: PathRoadmapProps) {
-  const { t, i18n } = useTranslation('paths');
-  const isAr = i18n.language === 'ar';
+  const { t } = useTranslation('paths');
+  // const isAr = i18n.language === 'ar';
   const { isEnrolled, resetProgress } = useCourseProgressStore();
 
   const doneCount = modules.filter(
@@ -154,15 +154,12 @@ export function PathRoadmap({
           const isInteractive = state !== 'locked' && state !== 'soon';
 
           const courseId = (mod.course as any)?.id ?? '';
-
           const enrolledInCourse =
             (courseId && isEnrolled(courseId)) ||
             !!mod.userProgress?.isCompleted;
-
           const courseComplete =
             !!mod.userProgress?.isCompleted ||
             (mod.userProgress?.progress ?? 0) >= 100;
-
           const handleReset = courseId
             ? () => resetProgress(courseId)
             : undefined;
@@ -170,6 +167,7 @@ export function PathRoadmap({
           return (
             <motion.div
               key={mod.id}
+              id={`module-${mod.id}`} // ← للسكرول من الهيرو
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35, delay: idx * 0.07 }}
@@ -205,7 +203,7 @@ export function PathRoadmap({
                 {t(TYPE_LABEL[mod.type] ?? TYPE_LABEL.course)}
               </div>
 
-              {/* Card wrapper */}
+              {/* Card */}
               <div
                 className={cn(
                   'relative rounded-2xl border-t-[3px] overflow-hidden',

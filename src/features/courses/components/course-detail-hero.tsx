@@ -2,7 +2,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-  BookOpen,
   Clock,
   Users,
   Star,
@@ -19,11 +18,11 @@ import {
   ScrollText,
   ChevronRight,
   ChevronLeft,
+  BookOpen,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,7 +39,7 @@ import { DetailPageHero } from '@/shared/components/common/detail-page-hero';
 import { ROUTES } from '@/shared/constants';
 import type { Course } from '../types/course.types';
 
-// ── Color maps (نفس نظام الباث) ──────────────────────────────────────
+// ── Color maps ────────────────────────────────────────────────────────
 const MATRIX_COLOR: Record<string, string> = {
   emerald: '#10b981',
   blue: '#3b82f6',
@@ -73,14 +72,7 @@ const TEXT_COLOR: Record<string, string> = {
   orange: 'text-orange-400',
   cyan: 'text-cyan-400',
 };
-const BAR_COLOR: Record<string, string> = {
-  emerald: '[&>div]:bg-emerald-500',
-  blue: '[&>div]:bg-blue-500',
-  violet: '[&>div]:bg-violet-500',
-  rose: '[&>div]:bg-rose-500',
-  orange: '[&>div]:bg-orange-500',
-  cyan: '[&>div]:bg-cyan-500',
-};
+
 const FALLBACK_BG: Record<string, string> = {
   emerald: 'from-emerald-950 to-emerald-900',
   blue: 'from-blue-950 to-blue-900',
@@ -102,6 +94,7 @@ export interface CourseDetailHeroProps {
   progress: number;
   done: number;
   fav: boolean;
+  isPro?: boolean; // ← المستخدم عنده subscription تشمل هذا الكورس
   hasLabs?: boolean;
   onEnroll: () => void;
   onToggleFav: () => void;
@@ -117,6 +110,7 @@ export function CourseDetailHero({
   progress,
   done,
   fav,
+  isPro = false,
   hasLabs = false,
   onEnroll,
   onToggleFav,
@@ -133,11 +127,16 @@ export function CourseDetailHero({
   const diff = isAr ? course.ar_difficulty : course.difficulty;
   const imgSrc = course.image ?? course.thumbnail;
   const comingSoon = course.state === 'COMING_SOON';
-  const isCompleted = enrolled && progress >= 100;
-
   const col = course.color ?? 'blue';
 
-  // ── badge label (نفس منطق الباث) ────────────────────────────────
+  // ── Access logic ──────────────────────────────────────────────────
+  // canAccess: enrolled عادي، أو عنده pro subscription تغطي الكورس
+  const canAccess = enrolled || (isPro && course.access !== 'FREE');
+  // showProIndicator: يظهر badge إن الكورس مدفوع وعنده pro
+  const showProIndicator = isPro && !enrolled && course.access !== 'FREE';
+  const isCompleted = canAccess && progress >= 100;
+
+  // ── Status badge (نفس منطق الباث) ────────────────────────────────
   const statusBadge = course.isNew
     ? { label: t('card.new', 'New'), cls: 'bg-amber-500 text-white' }
     : comingSoon
@@ -164,6 +163,7 @@ export function CourseDetailHero({
           <span className='truncate text-white/65'>{title}</span>
         </>
       }
+      /* ── Icon: thumbnail مصغّر (نفس شكل icon box الباث) ── */
       iconSlot={
         <div className='h-14 w-14 shrink-0 overflow-hidden rounded-2xl ring-1 ring-white/10'>
           {imgSrc ? (
@@ -180,7 +180,7 @@ export function CourseDetailHero({
               )}>
               <p
                 className={cn(
-                  'text-[8px] font-black text-center px-1.5 leading-tight',
+                  'text-[10px] font-black text-center px-1.5 leading-tight',
                   TEXT_COLOR[col] ?? 'text-zinc-400',
                 )}>
                 {title}
@@ -199,7 +199,7 @@ export function CourseDetailHero({
           {title}
         </motion.h1>
       }
-      /* ── Badges — نفس تنسيق الباث ── */
+      /* ── Badges — نفس تنسيق الباث تماماً ── */
       badgesSlot={
         <>
           {/* Access */}
@@ -221,8 +221,7 @@ export function CourseDetailHero({
           <Badge
             variant='outline'
             className='rounded-full border-white/20 text-[11px] text-white/65 gap-1'>
-            <Shield className='h-2.5 w-2.5' />
-            {diff}
+            <Shield className='h-2.5 w-2.5' /> {diff}
           </Badge>
 
           {/* Category */}
@@ -232,7 +231,7 @@ export function CourseDetailHero({
             {isAr ? course.ar_category : course.category}
           </Badge>
 
-          {/* Status badge */}
+          {/* Status badge (New / Coming Soon) */}
           {statusBadge && (
             <span
               className={cn(
@@ -240,6 +239,14 @@ export function CourseDetailHero({
                 statusBadge.cls,
               )}>
               {statusBadge.label}
+            </span>
+          )}
+
+          {/* PRO indicator — عنده pro subscription والكورس مدفوع */}
+          {showProIndicator && (
+            <span className='inline-flex items-center gap-1 rounded-full border border-blue-500/40 bg-blue-500/10 px-2 py-0.5 text-[10px] font-bold text-blue-400'>
+              <Crown className='h-2.5 w-2.5' />
+              {t('detail.proContent', 'PRO Unlocked')}
             </span>
           )}
 
@@ -258,7 +265,7 @@ export function CourseDetailHero({
           {desc}
         </p>
       }
-      /* ── Bottom bar: stats + progress + CTA ── */
+      /* ── Bottom bar: stats + progress + CTA في سطر واحد ── */
       bottomBarSlot={
         <motion.div
           initial={{ opacity: 0 }}
@@ -304,132 +311,158 @@ export function CourseDetailHero({
           </div>
 
           {/* CTA */}
-          <div className='flex items-center gap-2'>
-            {/* Favorite */}
-            <button
-              onClick={onToggleFav}
-              className={cn(
-                'flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all',
-                fav
-                  ? 'border-rose-500/50 bg-rose-500/10 text-rose-500 hover:bg-rose-500/15'
-                  : 'border-white/15 text-white/50 hover:border-rose-500/30 hover:text-rose-500',
-              )}>
-              <Heart
-                className={cn('h-3.5 w-3.5 shrink-0', fav && 'fill-current')}
-              />
-              <span className='hidden sm:inline'>
-                {fav
-                  ? t('detail.removeFav', 'Saved')
-                  : t('detail.addFav', 'Save')}
-              </span>
-            </button>
+          <div className='flex flex-col items-start gap-1.5'>
+            <div className='flex items-center gap-2'>
+              {/* Favorite */}
+              <button
+                onClick={onToggleFav}
+                className={cn(
+                  'flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all',
+                  fav
+                    ? 'border-rose-500/50 bg-rose-500/10 text-rose-500 hover:bg-rose-500/15'
+                    : 'border-white/15 text-white/50 hover:border-rose-500/30 hover:text-rose-500',
+                )}>
+                <Heart
+                  className={cn('h-3.5 w-3.5 shrink-0', fav && 'fill-current')}
+                />
+                <span className='hidden sm:inline'>
+                  {fav
+                    ? t('detail.removeFav', 'Saved')
+                    : t('detail.addFav', 'Save')}
+                </span>
+              </button>
 
-            {/* Main CTA */}
-            {comingSoon ? (
-              <div className='flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-4 py-1.5 text-xs text-white/50'>
-                <Clock className='h-3.5 w-3.5' />
-                {t('card.comingSoon', 'Coming Soon')}
-              </div>
-            ) : enrolled ? (
-              isCompleted ? (
-                <>
+              {/* Main CTA */}
+              {comingSoon ? (
+                <div className='flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-4 py-1.5 text-xs text-white/50'>
+                  <Clock className='h-3.5 w-3.5' />
+                  {t('card.comingSoon', 'Coming Soon')}
+                </div>
+              ) : canAccess ? (
+                isCompleted ? (
+                  <>
+                    <Button
+                      size='sm'
+                      className='h-8 gap-1.5 px-5 text-xs font-semibold'
+                      onClick={hasLabs ? onGoToLabs : onContinue}>
+                      {hasLabs ? (
+                        <>
+                          <FlaskConical className='h-3.5 w-3.5' />
+                          {t('detail.goToLabs', 'Go to Labs')}
+                        </>
+                      ) : (
+                        <>
+                          <ScrollText className='h-3.5 w-3.5' />
+                          {t('detail.viewCurriculum', 'Review Course')}
+                        </>
+                      )}
+                    </Button>
+                    {onReset && (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant='outline'
+                            size='sm'
+                            className={cn(
+                              'h-8 w-8 p-0',
+                              'border-orange-500/40 bg-orange-500/5 text-orange-400',
+                              'hover:bg-orange-500/15 hover:border-orange-500/60',
+                            )}>
+                            <RotateCcw className='h-3.5 w-3.5' />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              {t(
+                                'detail.resetConfirmTitle',
+                                'Reset course progress?',
+                              )}
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              {t(
+                                'detail.resetConfirmDesc',
+                                'Your completed topics will be cleared locally.',
+                              )}
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>
+                              {t('common.cancel', 'Cancel')}
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              className='bg-orange-500 hover:bg-orange-600 text-white'
+                              onClick={onReset}>
+                              {t('detail.resetConfirm', 'Yes, Reset')}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    )}
+                  </>
+                ) : (
                   <Button
                     size='sm'
-                    className='h-8 gap-1.5 px-5 text-xs font-semibold'
-                    onClick={hasLabs ? onGoToLabs : onContinue}>
-                    {hasLabs ? (
+                    className={cn(
+                      'h-8 gap-1.5 px-5 text-xs font-semibold',
+                      !enrolled && isPro && course.access !== 'FREE'
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                        : '',
+                    )}
+                    onClick={enrolled ? onContinue : onEnroll}>
+                    {enrolled ? (
                       <>
-                        <FlaskConical className='h-3.5 w-3.5' />
-                        {t('detail.goToLabs', 'Go to Labs')}
+                        <Zap className='h-3.5 w-3.5' />
+                        {t('detail.continueLearning', 'Continue')}
+                        <BreadcrumbChevron className='h-3.5 w-3.5' />
                       </>
                     ) : (
                       <>
-                        <ScrollText className='h-3.5 w-3.5' />
-                        {t('detail.viewCurriculum', 'View Curriculum')}
+                        <Crown className='h-3.5 w-3.5' />
+                        {t('detail.unlockAndStart', 'Unlock & Start')}
+                        <BreadcrumbChevron className='h-3.5 w-3.5' />
                       </>
                     )}
                   </Button>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        variant='outline'
-                        size='sm'
-                        className={cn(
-                          'h-8 gap-1.5 px-3 text-xs',
-                          'border-orange-500/40 bg-orange-500/5 text-orange-400',
-                          'hover:bg-orange-500/15 hover:border-orange-500/60',
-                        )}>
-                        <RotateCcw className='h-3.5 w-3.5' />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          {t(
-                            'detail.resetConfirmTitle',
-                            'Reset course progress?',
-                          )}
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                          {t(
-                            'detail.resetConfirmDesc',
-                            'Your completed topics will be cleared locally.',
-                          )}
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>
-                          {t('common.cancel', 'Cancel')}
-                        </AlertDialogCancel>
-                        <AlertDialogAction
-                          className='bg-orange-500 hover:bg-orange-600 text-white'
-                          onClick={onReset}>
-                          {t('detail.resetConfirm', 'Yes, Reset')}
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </>
+                )
               ) : (
+                /* لا enrolled ولا pro */
                 <Button
                   size='sm'
                   className='h-8 gap-1.5 px-5 text-xs font-semibold'
-                  onClick={onContinue}>
-                  <Zap className='h-3.5 w-3.5' />
-                  {t('detail.continueLearning', 'Continue')}
-                  <BreadcrumbChevron className='h-3.5 w-3.5' />
+                  onClick={onEnroll}
+                  disabled={enrolling}>
+                  {enrolling ? (
+                    <>
+                      <Loader2 className='h-3.5 w-3.5 animate-spin' />
+                      {t('detail.enrolling', 'Enrolling...')}
+                    </>
+                  ) : course.access === 'FREE' ? (
+                    <>
+                      <Rocket className='h-3.5 w-3.5' />
+                      {t('detail.startFree', 'Start Free')}
+                      <BreadcrumbChevron className='h-3.5 w-3.5' />
+                    </>
+                  ) : (
+                    <>
+                      <Crown className='h-3.5 w-3.5' />
+                      {t('detail.upgrade', 'Upgrade to {{plan}}', {
+                        plan: course.access,
+                      })}
+                      <BreadcrumbChevron className='h-3.5 w-3.5' />
+                    </>
+                  )}
                 </Button>
-              )
-            ) : course.access === 'FREE' ? (
-              <Button
-                size='sm'
-                className='h-8 gap-1.5 px-5 text-xs font-semibold'
-                onClick={onEnroll}
-                disabled={enrolling}>
-                {enrolling ? (
-                  <>
-                    <Loader2 className='h-3.5 w-3.5 animate-spin' />
-                    {t('detail.enrolling', 'Enrolling...')}
-                  </>
-                ) : (
-                  <>
-                    <Rocket className='h-3.5 w-3.5' />
-                    {t('detail.startFree', 'Start Free')}
-                    <BreadcrumbChevron className='h-3.5 w-3.5' />
-                  </>
-                )}
-              </Button>
-            ) : (
-              <Button
-                size='sm'
-                className='h-8 gap-1.5 px-5 text-xs font-semibold'
-                onClick={onEnroll}>
-                <Crown className='h-3.5 w-3.5' />
-                {t('detail.upgrade', 'Upgrade to {{plan}}', {
+              )}
+            </div>
+
+            {!comingSoon && !enrolled && isPro && course.access !== 'FREE' && (
+              <p className='flex items-center gap-1 text-[10px] text-blue-400/80 ps-1'>
+                <Crown className='h-2.5 w-2.5' />
+                {t('detail.proIncluded', 'Included in your {{plan}} plan', {
                   plan: course.access,
                 })}
-                <BreadcrumbChevron className='h-3.5 w-3.5' />
-              </Button>
+              </p>
             )}
           </div>
         </motion.div>
@@ -438,7 +471,7 @@ export function CourseDetailHero({
   );
 }
 
-// ── Stat pill (نفس شكل الباث) ─────────────────────────────────────────
+// ── Stat pill ─────────────────────────────────────────────────────────
 function Stat({
   icon,
   value,
@@ -446,7 +479,7 @@ function Stat({
   textClass,
 }: {
   icon: React.ReactNode;
-  value: number | string;
+  value?: number | string;
   label?: string;
   textClass: string;
 }) {

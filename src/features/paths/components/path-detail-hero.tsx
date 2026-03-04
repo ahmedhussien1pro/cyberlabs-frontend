@@ -13,6 +13,7 @@ import {
   Lock,
   Trophy,
   LayoutGrid,
+  CheckCircle2,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -20,6 +21,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ROUTES } from '@/shared/constants';
 import { DetailPageHero } from '@/shared/components/common/detail-page-hero';
+import { useCourseProgressStore } from '@/features/courses/store/course-progress.store';
 import { resolvePathIcon } from '../utils/path-icon';
 import { getPathColors } from '../utils/path-color';
 import type { LearningPath, PathColor } from '../types/path.types';
@@ -43,14 +45,41 @@ const BLOOM_BG: Record<string, string> = {
 
 interface PathDetailHeroProps {
   path: LearningPath;
+  onStartPath?: () => void; // ← جديد
 }
 
-export function PathDetailHero({ path }: PathDetailHeroProps) {
+export function PathDetailHero({ path, onStartPath }: PathDetailHeroProps) {
   const { t, i18n } = useTranslation('paths');
   const isAr = i18n.language === 'ar';
   const c = getPathColors(path.color);
   const BreadcrumbChevron = isAr ? ChevronLeft : ChevronRight;
 
+  // ── حالة الـ enrollment من الـ store ──────────────────────────────
+  const { isEnrolled, completedTopics } = useCourseProgressStore();
+
+  // نحسب كم كورس في الباث اتبدأ فعلاً
+  const enrolledModulesCount = path.modules.filter((m) => {
+    const courseId = (m.course as any)?.id ?? '';
+    return courseId ? isEnrolled(courseId) : false;
+  }).length;
+
+  const completedModulesCount = path.modules.filter((m) => {
+    const courseId = (m.course as any)?.id ?? '';
+    if (!courseId) return !!m.userProgress?.isCompleted;
+    const topicsDone = completedTopics[courseId]?.length ?? 0;
+    const totalTopics = (m.course as any)?.totalTopics ?? 0;
+    return totalTopics > 0 && topicsDone >= totalTopics;
+  }).length;
+
+  const totalModules = path.modules.length;
+  const hasStarted = enrolledModulesCount > 0 || (path.enrolled ?? false);
+  const isCompleted = completedModulesCount >= totalModules && totalModules > 0;
+  const progressPct =
+    totalModules > 0
+      ? Math.round((completedModulesCount / totalModules) * 100)
+      : (path.progress ?? 0);
+
+  // ── بقية data ──────────────────────────────────────────────────────
   const title = isAr ? path.ar_title : path.title;
   const desc = isAr ? path.ar_description : path.description;
   const tags = isAr ? path.ar_tags : path.tags;
@@ -129,6 +158,13 @@ export function PathDetailHero({ path }: PathDetailHeroProps) {
               {badge.label}
             </span>
           )}
+          {/* Completed badge */}
+          {isCompleted && (
+            <span className='inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400'>
+              <CheckCircle2 className='h-2.5 w-2.5' />
+              {t('detail.completedPath', 'Completed')}
+            </span>
+          )}
           {tags.slice(0, 3).map((tag) => (
             <span
               key={tag}
@@ -189,31 +225,32 @@ export function PathDetailHero({ path }: PathDetailHeroProps) {
             </div>
           </div>
 
-          {/* Progress */}
-          {path.enrolled && typeof path.progress === 'number' && (
+          {/* Progress — يظهر لو بدأ فعلاً */}
+          {hasStarted && (
             <div className='flex items-center gap-2.5 min-w-[160px]'>
               <Progress
-                value={path.progress}
+                value={progressPct}
                 className={cn('h-1.5 flex-1 bg-white/10', c.bar)}
               />
               <span className={cn('text-xs font-bold shrink-0', c.text)}>
-                {path.progress}%
+                {completedModulesCount}/{totalModules}
               </span>
             </div>
           )}
 
           {/* CTA */}
           <div className='flex items-center gap-2'>
-            {path.completedAt && (
+            {isCompleted && (
               <span
                 className={cn(
                   'hidden sm:flex items-center gap-1 text-[11px] font-semibold',
                   c.text,
                 )}>
                 <Trophy className='h-3.5 w-3.5' />
-                {t('detail.completedPath')}
+                {t('detail.completedPath', 'Path Completed!')}
               </span>
             )}
+
             {path.isComingSoon ? (
               <div className='flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-4 py-1.5 text-xs text-white/50'>
                 <Clock3 className='h-3.5 w-3.5' />
@@ -222,11 +259,28 @@ export function PathDetailHero({ path }: PathDetailHeroProps) {
             ) : (
               <Button
                 size='sm'
-                className='h-8 gap-1.5 px-5 text-xs font-semibold'>
-                {path.enrolled
-                  ? t('detail.continueLearning')
-                  : t('detail.startThisPath')}
-                <BreadcrumbChevron className='h-3.5 w-3.5' />
+                className='h-8 gap-1.5 px-5 text-xs font-semibold'
+                onClick={onStartPath}>
+                {isCompleted ? (
+                  /* مكتمل → Review Path */
+                  <>
+                    <Trophy className='h-3.5 w-3.5' />
+                    {t('detail.reviewPath', 'Review Path')}
+                    <BreadcrumbChevron className='h-3.5 w-3.5' />
+                  </>
+                ) : hasStarted ? (
+                  /* بدأ ولسه ناقص → Continue */
+                  <>
+                    {t('detail.continueLearning', 'Continue')}
+                    <BreadcrumbChevron className='h-3.5 w-3.5' />
+                  </>
+                ) : (
+                  /* لم يبدأ → Start */
+                  <>
+                    {t('detail.startThisPath', 'Start This Path')}
+                    <BreadcrumbChevron className='h-3.5 w-3.5' />
+                  </>
+                )}
               </Button>
             )}
           </div>

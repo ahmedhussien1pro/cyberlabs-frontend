@@ -1,3 +1,4 @@
+// src/features/profile/pages/profile-page.tsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
@@ -22,6 +23,8 @@ import { ProfileStatsGrid } from '../components/profile-stats/profile-stats-grid
 import { XpProgressBar } from '../components/profile-activity/xp-progress-bar';
 import { ActivityHeatmap } from '../components/profile-activity/activity-heatmap';
 import { ProfileBadgesSection } from '../components/profile-badges/profile-badges-section';
+import { ProfileAchievementsSection } from '../components/profile-achievements/profile-achievements-section';
+import { ProfileCertificationsSection } from '../components/profile-certifications/profile-certifications-section';
 import { ProfileSkillsSection } from '../components/profile-skills/profile-skills-section';
 import { ProfileLabsSection } from '../components/profile-labs/profile-labs-section';
 import { CareerPathCard } from '../components/profile-career/career-path-card';
@@ -57,7 +60,7 @@ export default function ProfilePage(): React.ReactElement {
       {/* Topbar */}
       <header
         className='sticky top-0 z-40 flex items-center justify-between
-                         border-b border-border/40 bg-background/80 px-4 py-2 backdrop-blur-md'>
+                   border-b border-border/40 bg-background/80 px-4 py-2 backdrop-blur-md'>
         <Button
           variant='ghost'
           size='sm'
@@ -81,6 +84,7 @@ export default function ProfilePage(): React.ReactElement {
           <ShareProfileButton userId={profile.id} />
         </div>
 
+        {/* ① Hero */}
         <ProfileHero
           profile={profile}
           points={points}
@@ -88,31 +92,49 @@ export default function ProfilePage(): React.ReactElement {
           onEdit={() => setEditOpen(true)}
         />
 
-        {/* Profile completion bar (hidden if 100%) */}
+        {/* ② Completion bar (hidden if 100%) */}
         <ProfileCompletionBar
           percentage={percentage}
           checks={checks}
           onEdit={() => setEditOpen(true)}
         />
 
+        {/* ③ Stats + XP */}
         <ProfileStatsGrid stats={stats} points={points} />
-
         {points && <XpProgressBar points={points} />}
 
+        {/* ④ Activity heatmap */}
         <ActivityHeatmap activities={activity} />
 
+        {/* ⑤ Badges */}
         <ProfileBadgesSection badges={profile.badges ?? []} />
+
+        {/* ⑥ Achievements — NEW */}
+        <ProfileAchievementsSection achievements={profile.achievements ?? []} />
+
+        {/* ⑦ Certifications — NEW */}
+        <ProfileCertificationsSection
+          certifications={profile.certifications ?? []}
+        />
+
+        {/* ⑧ Skills */}
         <ProfileSkillsSection skills={profile.skills ?? []} />
+
+        {/* ⑨ Completed Labs */}
         <ProfileLabsSection />
 
-        {/* Active courses (reused from Dashboard) */}
+        {/* ⑩ Courses (Active + Completed tabs) */}
         <ActiveCoursesCard />
 
+        {/* ⑪ Career Paths — data from profile (no extra API call) */}
         {(profile.careerPaths ?? []).length > 0 && (
           <section className='space-y-3'>
             <h2 className='flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground'>
-              <span className='h-1.5 w-1.5 rounded-full bg-primary' />
+              <span className='h-1.5 w-1.5 rounded-full bg-violet-500' />
               {t('sections.careerPaths', 'Career Paths')}
+              <span className='rounded-full bg-violet-500/10 px-2 py-0.5 text-xs font-semibold text-violet-500'>
+                {(profile.careerPaths ?? []).length}
+              </span>
             </h2>
             <div className='grid gap-2 sm:grid-cols-2'>
               {(profile.careerPaths ?? []).map((cp, i) => (
@@ -135,9 +157,7 @@ export default function ProfilePage(): React.ReactElement {
 function ProfilePageSkeleton(): React.ReactElement {
   return (
     <>
-      <header
-        className='sticky top-0 z-40 flex items-center justify-between
-                         border-b border-border/40 bg-background/80 px-4 py-2 backdrop-blur-md'>
+      <header className='sticky top-0 z-40 flex items-center justify-between border-b border-border/40 bg-background/80 px-4 py-2 backdrop-blur-md'>
         <Skeleton className='h-7 w-16 rounded-md' />
         <Skeleton className='h-4 w-16' />
         <div className='flex gap-1'>
@@ -155,6 +175,8 @@ function ProfilePageSkeleton(): React.ReactElement {
         </div>
         <Skeleton className='h-16 w-full rounded-xl' />
         <Skeleton className='h-40 w-full rounded-xl' />
+        <Skeleton className='h-32 w-full rounded-xl' />
+        <Skeleton className='h-32 w-full rounded-xl' />
       </div>
     </>
   );

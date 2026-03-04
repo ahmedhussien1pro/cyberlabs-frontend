@@ -1,4 +1,12 @@
-import { FlaskConical, ChevronRight, Check } from 'lucide-react';
+// src/features/dashboard/components/overview/recent-labs-card.tsx
+import {
+  FlaskConical,
+  ChevronRight,
+  CheckCircle2,
+  PlayCircle,
+  Circle,
+  ArrowRight,
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -6,6 +14,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useUserLabs } from '@/shared/hooks/use-user-data';
 import { ROUTES } from '@/shared/constants';
+import type { LabStatus } from '../../types/dashboard.types';
+import { cn } from '@/lib/utils';
 
 const DIFF: Record<string, string> = {
   EASY: 'text-green-500  border-green-500/30  bg-green-500/5',
@@ -13,11 +23,42 @@ const DIFF: Record<string, string> = {
   HARD: 'text-red-500    border-red-500/30    bg-red-500/5',
 };
 
+/* ── Status icon + color ─────────────────── */
+function StatusIcon({ status }: { status: LabStatus }) {
+  if (status === 'completed')
+    return <CheckCircle2 size={16} className='text-green-500' />;
+  if (status === 'active')
+    return <PlayCircle size={16} className='text-primary' />;
+  return <Circle size={16} className='text-muted-foreground/50' />;
+}
+
+const STATUS_LABEL: Record<LabStatus, string> = {
+  completed: 'Completed',
+  active: 'In Progress',
+  not_started: 'Not Started',
+};
+
+const STATUS_BADGE: Record<LabStatus, string> = {
+  completed: 'border-green-500/20 bg-green-500/5 text-green-500',
+  active: 'border-primary/20 bg-primary/5 text-primary',
+  not_started: 'border-border/40 bg-muted/30 text-muted-foreground',
+};
+
 export function RecentLabsCard() {
   const { t, i18n } = useTranslation('dashboard');
   const isAr = i18n.language === 'ar';
   const { data, isLoading } = useUserLabs();
-  const recent = data?.slice(0, 5) ?? [];
+
+  // أحدث 5 labs — مرتبة بـ startedAt أو completedAt (الأحدث أولاً)
+  const recent =
+    data
+      ?.slice()
+      .sort((a, b) => {
+        const aDate = a.completedAt ?? a.startedAt ?? '';
+        const bDate = b.completedAt ?? b.startedAt ?? '';
+        return bDate.localeCompare(aDate);
+      })
+      .slice(0, 5) ?? [];
 
   return (
     <section className='space-y-3'>
@@ -46,6 +87,7 @@ export function RecentLabsCard() {
                 <Skeleton className='h-3.5 w-2/3' />
                 <Skeleton className='h-3 w-1/3' />
               </div>
+              <Skeleton className='h-4 w-4 rounded-full' />
             </div>
           ))
         ) : recent.length === 0 ? (
@@ -59,29 +101,60 @@ export function RecentLabsCard() {
         ) : (
           recent.map((entry) => {
             const title = isAr
-              ? (entry.lab.ar_title ?? entry.lab.title)
-              : entry.lab.title;
-            const diff = DIFF[entry.lab.difficulty] ?? 'text-muted-foreground';
+              ? (entry.lab?.ar_title ?? entry.lab?.title ?? entry.title)
+              : (entry.lab?.title ?? entry.title);
+            const difficulty = entry.lab?.difficulty ?? entry.difficulty;
+            const xpReward = entry.lab?.xpReward ?? entry.xpReward;
+            const status: LabStatus = entry.status;
+            const diff = DIFF[difficulty] ?? 'text-muted-foreground';
+
             return (
-              <div key={entry.id} className='flex items-center gap-3 p-3'>
+              <div
+                key={entry.id}
+                className={cn(
+                  'flex items-center gap-3 p-3 transition-colors',
+                  status === 'active' && 'bg-primary/[0.02]',
+                )}>
+                {/* Icon */}
                 <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10'>
                   <FlaskConical size={15} className='text-primary' />
                 </div>
+
+                {/* Info */}
                 <div className='min-w-0 flex-1'>
                   <p className='truncate text-sm font-medium'>{title}</p>
-                  <div className='mt-0.5 flex items-center gap-1.5'>
+                  <div className='mt-0.5 flex items-center gap-1.5 flex-wrap'>
                     <Badge
                       variant='outline'
                       className={`border px-1.5 py-0 text-[10px] ${diff}`}>
-                      {entry.lab.difficulty}
+                      {difficulty}
                     </Badge>
-                    <span className='text-[10px] text-muted-foreground'>
-                      +{entry.lab.xpReward} XP
-                    </span>
+                    {xpReward > 0 && (
+                      <span className='text-[10px] text-muted-foreground'>
+                        +{xpReward} XP
+                      </span>
+                    )}
+                    {/* Progress bar لو active */}
+                    {status === 'active' && entry.progress != null && (
+                      <span className='text-[10px] text-primary'>
+                        {entry.progress}%
+                      </span>
+                    )}
                   </div>
                 </div>
-                <div className='flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-500/10'>
-                  <Check size={12} className='text-green-500' />
+
+                {/* Status icon + link */}
+                <div className='flex shrink-0 items-center gap-2'>
+                  <span title={STATUS_LABEL[status]}>
+                    <StatusIcon status={status} />
+                  </span>
+                  {status !== 'not_started' && (
+                    <Link
+                      to={ROUTES.LABS.DETAIL(entry.lab?.id ?? entry.id)}
+                      className='text-muted-foreground hover:text-foreground transition-colors'>
+                      <ArrowRight size={13} />
+                    </Link>
+                  )}
                 </div>
               </div>
             );

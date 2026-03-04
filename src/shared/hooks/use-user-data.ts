@@ -5,6 +5,7 @@ import {
   getMyLabs,
   getMyCourses,
   getMyActivity,
+  getMyPaths,
 } from '@/features/profile/api/profile.api';
 import { USER_QUERY_KEYS } from '@/shared/constants/query-keys';
 
@@ -26,4 +27,12 @@ export const useUserActivity = () =>
     queryFn: getMyActivity,
     retry: false,
     staleTime: 1000 * 60 * 5,
+  });
+
+export const useUserPaths = () =>
+  useQuery({
+    queryKey: USER_QUERY_KEYS.paths,
+    queryFn: getMyPaths,
+    retry: false,
+    staleTime: 1000 * 60 * 10,
   });

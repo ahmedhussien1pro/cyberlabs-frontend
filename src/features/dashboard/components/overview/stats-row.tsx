@@ -1,3 +1,4 @@
+// src/features/dashboard/components/overview/stats-row.tsx
 import {
   FlaskConical,
   BookOpen,
@@ -18,7 +19,8 @@ export function StatsRow() {
 
   if (sl || pl) {
     return (
-      <div className='grid grid-cols-3 gap-3 sm:grid-cols-6'>
+      // ✅ 2 cols on xs → 3 on sm → 6 on lg
+      <div className='grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6'>
         {Array.from({ length: 6 }).map((_, i) => (
           <Skeleton key={i} className='h-24 rounded-xl' />
         ))}
@@ -72,7 +74,7 @@ export function StatsRow() {
   ];
 
   return (
-    <div className='grid grid-cols-3 gap-3 sm:grid-cols-6'>
+    <div className='grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6'>
       {items.map((item) => (
         <StatCard key={item.label} {...item} />
       ))}

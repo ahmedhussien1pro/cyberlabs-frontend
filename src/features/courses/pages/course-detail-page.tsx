@@ -1,4 +1,3 @@
-// src/features/courses/pages/course-detail-page.tsx
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
@@ -12,9 +11,13 @@ import { CourseDetailHero } from '../components/course-detail-hero';
 import { CourseLabsSection } from '../components/course-labs-section';
 import { useCourse } from '../hooks/use-course';
 import { useEnrollment } from '../hooks/use-enrollment';
-import { useCourseProgressStore } from '../store/course-progress.store';
-import { useIsPro } from '@/features/pricing/hooks/use-pricing'; // ← الصح
+import {
+  useUserProgress,
+  useFavoriteMutation,
+} from '../hooks/use-user-progress';
+import { useIsPro } from '@/features/pricing/hooks/use-pricing';
 import { ROUTES } from '@/shared/constants';
+import { toast } from 'sonner';
 
 export default function CourseDetailPage() {
   const { slug = '' } = useParams<{ slug: string }>();
@@ -24,16 +27,10 @@ export default function CourseDetailPage() {
   const { data: course, isLoading, isError } = useCourse(slug);
   const { mutate: enroll, isPending: enrolling } = useEnrollment();
 
-  const {
-    isEnrolled,
-    getProgress,
-    getCompletedCount,
-    toggleFavorite,
-    isFavorite,
-    resetProgress,
-  } = useCourseProgressStore();
+  const { isEnrolled, getProgress, getCompletedCount, isFavorite } =
+    useUserProgress();
 
-  // ── subscription الصح: من pricing API لا auth store ──────────────
+  const favMutation = useFavoriteMutation();
   const isPro = useIsPro();
 
   const { data: labsData } = useQuery<{ labs: any[] }>({
@@ -52,7 +49,6 @@ export default function CourseDetailPage() {
         <CourseDetailSkeleton />
       </MainLayout>
     );
-
   if (isError || !course) {
     return (
       <MainLayout>
@@ -72,41 +68,43 @@ export default function CourseDetailPage() {
   }
 
   const enrolled = isEnrolled(course.id);
-  const progress = getProgress(course.id, course.totalTopics);
+  const progress = getProgress(course.id);
   const done = getCompletedCount(course.id);
   const fav = isFavorite(course.id);
   const longDesc =
     lang === 'ar' ? course.ar_longDescription : course.longDescription;
 
-  // ── canProAccess: PRO يقدر يدخل كورسات PRO و FREE ────────────────
-  // PREMIUM يحتاج subscription = team | enterprise
   const canProAccess =
     isPro && (course.access === 'PRO' || course.access === 'FREE');
 
   const handleEnroll = () => {
     if (course.access === 'FREE' || canProAccess) {
       enroll(course.id);
-      return;
+    } else {
+      window.location.href = ROUTES.PRICING;
     }
-    window.location.href = ROUTES.PRICING;
   };
 
-  const handleReset = () => resetProgress(course.id);
+  const handleToggleFav = () => {
+    favMutation.mutate(
+      { courseId: course.id, isFav: fav },
+      {
+        onSuccess: () =>
+          toast(fav ? 'Removed from favorites' : 'Added to favorites', {
+            duration: 1500,
+          }),
+        onError: () => toast.error('Failed to update favorites'),
+      },
+    );
+  };
+
   const handleContinue = () => {
-    const firstIncomplete = getCompletedCount(course.id);
-    const el = document.getElementById(`topic-row-${firstIncomplete}`);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    } else {
+    const el = document.getElementById(`topic-row-${done}`);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    else
       document
         .getElementById('course-curriculum')
         ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
-  const handleGoToLabs = () => {
-    document
-      .getElementById('course-labs-section')
-      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (
@@ -119,13 +117,17 @@ export default function CourseDetailPage() {
           progress={progress}
           done={done}
           fav={fav}
-          isPro={canProAccess} // ← من useIsPro() الحقيقي
+          isPro={canProAccess}
           hasLabs={hasLabs}
           onEnroll={handleEnroll}
-          onToggleFav={() => toggleFavorite(course.id)}
-          onReset={handleReset}
+          onToggleFav={handleToggleFav}
+          onReset={undefined}
           onContinue={handleContinue}
-          onGoToLabs={handleGoToLabs}
+          onGoToLabs={() =>
+            document
+              .getElementById('course-labs-section')
+              ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          }
         />
 
         <div className='container mx-auto px-4 py-10'>
@@ -169,7 +171,7 @@ function CourseDetailSkeleton() {
           <Skeleton className='h-44 w-full' />
           <div className='p-5 space-y-3'>
             <Skeleton className='h-11 w-full rounded-xl' />
-            <Skeleton className='h-9  w-full rounded-xl' />
+            <Skeleton className='h-9 w-full rounded-xl' />
             <div className='grid grid-cols-2 gap-2 pt-2'>
               {Array.from({ length: 4 }).map((_, i) => (
                 <Skeleton key={i} className='h-4 w-full' />

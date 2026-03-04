@@ -1,10 +1,12 @@
-// src/features/courses/components/course-card.tsx
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { SharedCourseCard } from '@/shared/components/shared-course-card';
 import { CourseInfoDialog } from './course-info-dialog';
-import { useCourseProgressStore } from '../store/course-progress.store';
+import {
+  useUserProgress,
+  useFavoriteMutation,
+} from '../hooks/use-user-progress';
 import type { Course } from '../types/course.types';
 
 interface CourseCardProps {
@@ -21,35 +23,31 @@ export function CourseCard({
   const { t } = useTranslation('courses');
   const [infoOpen, setInfoOpen] = useState(false);
 
-  const {
-    toggleFavorite,
-    isFavorite,
-    isEnrolled,
-    completedTopics,
-    resetProgress,
-  } = useCourseProgressStore();
+  const { isEnrolled, isCourseCompleted, isFavorite } = useUserProgress();
 
-  const fav = isFavorite(course.id);
+  const favMutation = useFavoriteMutation();
+
   const enrolled = isEnrolled(course.id);
-
-  // ── isCompleted: عدد الـ topics المكتملة >= إجمالي الـ topics ──
-  const doneCnt = completedTopics[course.id]?.length ?? 0;
-  const isCompleted =
-    enrolled && course.totalTopics > 0 && doneCnt >= course.totalTopics;
+  const isCompleted = isCourseCompleted(course.id, course.totalTopics);
+  const fav = isFavorite(course.id);
 
   const handleFav = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    toggleFavorite(course.id);
-    toast(
-      fav
-        ? t('card.removedFav', 'Removed from favorites')
-        : t('card.addedFav', 'Added to favorites'),
-      { duration: 1500 },
+    favMutation.mutate(
+      { courseId: course.id, isFav: fav },
+      {
+        onSuccess: () =>
+          toast(
+            fav
+              ? t('card.removedFav', 'Removed from favorites')
+              : t('card.addedFav', 'Added to favorites'),
+            { duration: 1500 },
+          ),
+        onError: () => toast.error('Failed to update favorites'),
+      },
     );
   };
-
-  const handleReset = () => resetProgress(course.id);
 
   return (
     <>
@@ -58,8 +56,8 @@ export function CourseCard({
         variant={view === 'list' ? 'mini' : 'full'}
         index={index}
         enrolled={enrolled}
-        isCompleted={isCompleted} // ← جديد
-        onReset={handleReset} // ← جديد
+        isCompleted={isCompleted}
+        onReset={undefined}
         isFavorite={fav}
         onFavoriteToggle={handleFav}
         onInfoClick={() => setInfoOpen(true)}

@@ -20,7 +20,7 @@ import { PaywallOverlay } from '../components/paywall-overlay';
 import CourseElementRenderer from '../components/CourseElementRenderer';
 import { useCourse } from '../hooks/use-course';
 import { useCourseContent, useMarkTopicComplete } from '../hooks/use-topic';
-import { useCourseProgressStore } from '../store/course-progress.store';
+import { useUserProgress } from '../hooks/use-user-progress';
 
 export default function LessonPage() {
   const { slug = '', topicId = '' } = useParams<{
@@ -32,29 +32,24 @@ export default function LessonPage() {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // ── Data ──────────────────────────────────────────────
   const { data: course, isLoading: courseLoading } = useCourse(slug);
   const { data: content, isLoading: contentLoading } = useCourseContent(slug);
   const { mutate: markComplete, isPending: marking } = useMarkTopicComplete();
-  const { isEnrolled, isTopicCompleted } = useCourseProgressStore();
+
+  // ── الـ progress من DB — لا localStorage ──
+  const { isEnrolled, isTopicCompleted } = useUserProgress();
 
   const isLoading = courseLoading || contentLoading;
   const enrolled = course ? isEnrolled(course.id) : false;
   const isCompleted = course ? isTopicCompleted(course.id, topicId) : false;
 
-  // ── Navigation between topics ──────────────────────────
   const sections = course?.sections ?? [];
   const currentIdx = sections.findIndex((s) => s.id === topicId);
   const prevSection = currentIdx > 0 ? sections[currentIdx - 1] : null;
   const nextSection =
     currentIdx < sections.length - 1 ? sections[currentIdx + 1] : null;
-
-  // ── Current topic content (matched by section order index) ─
-  // sections[i] ↔ content.topics[i] — same order, seeded together
   const topicContent = content?.topics?.[currentIdx] ?? null;
 
-  // ── Topic title: prefer DB section title (localised), fallback to JSON ──
-  // topic.title is TranslatedText ({ en, ar }), so we pick the right lang
   const topicTitle =
     lang === 'ar'
       ? (sections[currentIdx]?.ar_title ??
@@ -63,7 +58,6 @@ export default function LessonPage() {
         '')
       : (sections[currentIdx]?.title ?? topicContent?.title?.en ?? '');
 
-  // ── courseTitle: ar_title may be null — always fall back to title ──
   const courseDisplayTitle =
     lang === 'ar'
       ? (course?.ar_title ?? course?.title ?? '')
@@ -81,16 +75,13 @@ export default function LessonPage() {
       { courseId: course.id, topicId },
       {
         onSuccess: () => {
-          if (nextSection) {
+          if (nextSection)
             setTimeout(() => navigate_topic(nextSection.id), 600);
-          }
         },
       },
     );
   };
 
-  // ── Access check ───────────────────────────────────────
-  // First topic (index 0) is always accessible as preview
   const isLocked =
     !!course &&
     !enrolled &&
@@ -100,7 +91,6 @@ export default function LessonPage() {
 
   return (
     <div className='flex h-[calc(100vh-56px)] overflow-hidden bg-background'>
-      {/* Backdrop (mobile) */}
       {sidebarOpen && (
         <div
           className='fixed inset-0 z-20 bg-background/80 backdrop-blur-sm lg:hidden'
@@ -108,7 +98,6 @@ export default function LessonPage() {
         />
       )}
 
-      {/* ── Sidebar ──────────────────────────────────── */}
       <aside
         className={cn(
           'fixed inset-y-0 start-0 z-30 w-72 border-e border-border/50 bg-card flex flex-col',
@@ -129,7 +118,6 @@ export default function LessonPage() {
             <X className='h-4 w-4' />
           </button>
         </div>
-
         <div className='flex-1 overflow-hidden'>
           {course && (
             <TopicSidebar
@@ -143,16 +131,13 @@ export default function LessonPage() {
         </div>
       </aside>
 
-      {/* ── Main content area ────────────────────────── */}
       <main className='flex-1 flex flex-col overflow-hidden'>
-        {/* Top bar */}
         <div className='flex items-center gap-3 px-4 py-3 border-b border-border/50 bg-card shrink-0'>
           <button
             onClick={() => setSidebarOpen(true)}
             className='lg:hidden text-muted-foreground hover:text-foreground transition-colors'>
             <Menu className='h-5 w-5' />
           </button>
-
           <div className='flex-1 flex items-center gap-1.5 text-sm text-muted-foreground min-w-0'>
             <Link
               to={ROUTES.COURSES.LIST}
@@ -168,7 +153,6 @@ export default function LessonPage() {
             <ChevronRight className='h-3.5 w-3.5 shrink-0 rtl:rotate-180' />
             <span className='text-foreground truncate'>{topicTitle}</span>
           </div>
-
           <div className='flex items-center gap-1 shrink-0'>
             <Button
               variant='ghost'
@@ -198,22 +182,16 @@ export default function LessonPage() {
           </div>
         </div>
 
-        {/* Scrollable content */}
         <div className='flex-1 overflow-y-auto'>
           <div className='max-w-3xl mx-auto px-4 py-8'>
-            {/* Loading */}
             {isLoading && <TopicSkeleton />}
-
-            {/* Locked */}
             {!isLoading && isLocked && course && (
               <PaywallOverlay
                 access={course.access}
-                courseTitle={courseDisplayTitle} // ← string guaranteed (no null)
+                courseTitle={courseDisplayTitle}
                 onUpgrade={() => navigate('/pricing')}
               />
             )}
-
-            {/* Not found */}
             {!isLoading && !topicContent && !isLocked && (
               <div className='flex flex-col items-center justify-center py-24 gap-4'>
                 <AlertTriangle className='h-10 w-10 text-muted-foreground' />
@@ -222,18 +200,12 @@ export default function LessonPage() {
                 </p>
               </div>
             )}
-
-            {/* Topic content */}
             {!isLoading && !isLocked && topicContent && (
               <>
                 <h1 className='text-2xl md:text-3xl font-black text-foreground mb-8 leading-tight'>
                   {topicTitle}
                 </h1>
-
-                {/* elements is CourseElement[] — type-safe ✅ */}
                 <CourseElementRenderer elements={topicContent.elements} />
-
-                {/* ── Bottom Actions ─────────────────────── */}
                 <div className='mt-12 pt-8 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-4'>
                   <Button
                     variant='outline'
@@ -245,7 +217,6 @@ export default function LessonPage() {
                     <ChevronLeft className='h-4 w-4 me-1 rtl:rotate-180' />
                     {t('nav.prev', 'Previous')}
                   </Button>
-
                   <div className='flex gap-2'>
                     {!isCompleted ? (
                       <Button
@@ -268,7 +239,6 @@ export default function LessonPage() {
                         {t('topic.completed', 'Completed!')}
                       </Button>
                     )}
-
                     {nextSection && (
                       <Button
                         variant='default'

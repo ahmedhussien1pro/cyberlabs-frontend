@@ -1,8 +1,7 @@
-// src/features/courses/hooks/use-topic.ts
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/core/api/client';
-import { useCourseProgressStore } from '../store/course-progress.store';
 import { toast } from 'sonner';
+import { PROGRESS_KEY, ENROLLMENTS_KEY } from './use-user-progress';
 import type { Topic } from '@/core/types/curriculumCourses.types';
 
 export type { Topic };
@@ -39,8 +38,7 @@ export function useTopic(courseSlug: string, _sectionId: string) {
 }
 
 export function useMarkTopicComplete() {
-  const queryClient = useQueryClient();
-  const { markTopicComplete } = useCourseProgressStore();
+  const qc = useQueryClient();
 
   return useMutation({
     mutationFn: ({
@@ -54,21 +52,12 @@ export function useMarkTopicComplete() {
         .post(`/courses/${courseId}/topics/${topicId}/complete`)
         .then((r) => r.data),
 
-    onMutate: ({ courseId, topicId }) => {
-      markTopicComplete(courseId, topicId);
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: PROGRESS_KEY });
+      void qc.invalidateQueries({ queryKey: ENROLLMENTS_KEY });
+      void qc.invalidateQueries({ queryKey: ['user', 'activity'] });
     },
 
-    // ✅ Fix: حذف { courseId } غير المستخدم
-    onSuccess: (_data, _vars) => {
-      queryClient.invalidateQueries({
-        queryKey: ['courses', 'me', 'progress'],
-      });
-      queryClient.invalidateQueries({ queryKey: ['enrollments', 'me'] });
-      queryClient.invalidateQueries({ queryKey: ['user', 'activity'] });
-    },
-
-    onError: () => {
-      toast.error('تعذر حفظ التقدم، حاول مجدداً.');
-    },
+    onError: () => toast.error('تعذر حفظ التقدم، حاول مجدداً.'),
   });
 }

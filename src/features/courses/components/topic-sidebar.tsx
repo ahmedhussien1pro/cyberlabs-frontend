@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { CheckCircle2, Circle, Lock, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ROUTES } from '@/shared/constants';
-import { useCourseProgressStore } from '../store/course-progress.store';
+import { useUserProgress } from '../hooks/use-user-progress';
 import type { CourseSection, CourseAccess } from '../types/course.types';
 import type { Language } from '@/core/types/common.types';
 
@@ -25,9 +25,11 @@ export function TopicSidebar({
   const { topicId: activeId } = useParams<{ topicId: string }>();
   const { i18n, t } = useTranslation('courses');
   const lang: Language = i18n.language === 'ar' ? 'ar' : 'en';
-  const { isTopicCompleted, getProgress, getCompletedCount } =
-    useCourseProgressStore();
-  const progress = getProgress(courseId, sections.length);
+
+  const { getProgress, getCompletedCount, isTopicCompleted } =
+    useUserProgress();
+
+  const progress = getProgress(courseId);
   const done = getCompletedCount(courseId);
 
   return (

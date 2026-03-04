@@ -63,10 +63,21 @@ function normalizeCourseList(raw: any): PaginatedCourses {
 
 export const coursesApi = {
   list: (filters: CourseFilters = {}): Promise<PaginatedCourses> => {
-    // ── ترجمة state → status (الـ backend يستنى "status") ──────────
-    const { state, ...rest } = filters;
+    // ── نشيل الـ params اللي بيتفلتروا client-side فقط ────────────────
+    const {
+      state,
+      onlyFavorites: _f,
+      onlyEnrolled: _e,
+      onlyCompleted: _c,
+      ...rest
+    } = filters;
 
-    const params: Record<string, any> = { ...rest };
+    const params: Record<string, any> = {
+      ...rest,
+      limit: 50, // ← نجيب كل الكورسات عشان نفلتر client-side
+    };
+
+    // ── ترجمة state → status (الـ backend يستنى "status") ──────────
     if (state && state !== 'all') params.status = state;
 
     return apiClient

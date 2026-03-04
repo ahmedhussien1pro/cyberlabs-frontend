@@ -1,4 +1,3 @@
-// src/features/courses/pages/courses-list-page.tsx
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -30,13 +29,11 @@ import { CourseCard } from '../components/course-card';
 import { CourseCardSkeleton } from '../components/course-card-skeleton';
 import { CourseFilterSidebar } from '../components/course-filters';
 import { useCourses } from '../hooks/use-courses';
-import { useCourseProgressStore } from '../store/course-progress.store';
 import type { CourseFilters } from '../types/course.types';
 
 type ViewMode = 'grid' | 'list';
 const PAGE_SIZE = 9;
 
-// ── Active filter chips ───────────────────────────────────────────────
 interface ActiveFilterChip {
   key: string;
   label: string;
@@ -170,7 +167,6 @@ function useActiveFilterChips(
   return chips;
 }
 
-// ─────────────────────────────────────────────────────────────────────
 export default function CoursesListPage() {
   const { t } = useTranslation('courses');
   const [filters, setFilters] = useState<CourseFilters>({});
@@ -178,14 +174,15 @@ export default function CoursesListPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [page, setPage] = useState(1);
 
-  const { completedTopics } = useCourseProgressStore();
+  // ── onlyCompleted/onlyFavorites/onlyEnrolled → server-side (JWT) ──
+  // لا يحتاج local store
   const { data, isLoading, isError } = useCourses(filters);
 
   const filteredData = useMemo(() => {
     if (!data?.data) return [];
     let result = [...data.data];
 
-    // ── search: client-side fallback (backend بيعملها كمان) ──────────
+    // search client-side fallback فقط
     if (filters.search?.trim()) {
       const q = filters.search.toLowerCase();
       result = result.filter(
@@ -196,17 +193,8 @@ export default function CoursesListPage() {
       );
     }
 
-    // ── onlyCompleted: client-side فقط (من الـ local store) ──────────
-    // onlyFavorites + onlyEnrolled → server-side via JWT (backend يتولاهم)
-    if (filters.onlyCompleted) {
-      result = result.filter((c) => {
-        const done = completedTopics[c.id]?.length ?? 0;
-        return c.totalTopics > 0 && done >= c.totalTopics;
-      });
-    }
-
     return result;
-  }, [data, filters.search, filters.onlyCompleted, completedTopics]);
+  }, [data, filters.search]);
 
   const totalPages = Math.ceil(filteredData.length / PAGE_SIZE);
   const displayedData = filteredData.slice(
@@ -222,7 +210,6 @@ export default function CoursesListPage() {
     setFilters({});
     setPage(1);
   };
-
   const activeChips = useActiveFilterChips(filters, handleFiltersChange);
 
   return (
@@ -240,7 +227,6 @@ export default function CoursesListPage() {
 
         <div className='container mx-auto px-4 py-8'>
           <div className='flex gap-7 relative'>
-            {/* ── Sidebar Desktop ── */}
             <aside className='hidden lg:block w-60 shrink-0'>
               <div className='sticky top-20'>
                 <CourseFilterSidebar
@@ -252,7 +238,6 @@ export default function CoursesListPage() {
               </div>
             </aside>
 
-            {/* ── Mobile Drawer ── */}
             {sidebarOpen && (
               <div
                 className='fixed inset-0 z-40 lg:hidden'
@@ -280,9 +265,7 @@ export default function CoursesListPage() {
               </div>
             )}
 
-            {/* ── Main Content ── */}
             <div className='flex-1 min-w-0 space-y-5'>
-              {/* Toolbar */}
               <div className='flex items-center gap-3 flex-wrap'>
                 <Button
                   variant='outline'
@@ -302,7 +285,6 @@ export default function CoursesListPage() {
                   </p>
                 )}
 
-                {/* Active chips */}
                 {activeChips.length > 0 && (
                   <div className='flex flex-wrap items-center gap-1.5'>
                     {activeChips.map((chip) => (
@@ -345,14 +327,12 @@ export default function CoursesListPage() {
                 </div>
               </div>
 
-              {/* Error */}
               {isError && (
                 <div className='rounded-xl border border-destructive/30 bg-destructive/10 p-6 text-center text-sm text-destructive'>
                   {t('list.error', 'Failed to load courses. Please try again.')}
                 </div>
               )}
 
-              {/* Grid / List */}
               <div
                 className={cn(
                   'grid gap-5',
@@ -374,7 +354,6 @@ export default function CoursesListPage() {
                     ))}
               </div>
 
-              {/* Empty State */}
               {!isLoading && filteredData.length === 0 && (
                 <div className='flex flex-col items-center justify-center min-h-[480px] gap-5 text-center py-16 rounded-2xl border border-dashed border-border/50 bg-muted/10'>
                   <div className='h-16 w-16 rounded-2xl bg-muted flex items-center justify-center border border-border/40'>
@@ -397,38 +376,37 @@ export default function CoursesListPage() {
                     </p>
                   </div>
                   {activeChips.length > 0 && (
-                    <div className='flex flex-wrap justify-center gap-2 max-w-sm'>
-                      {activeChips.map((chip) => (
-                        <span
-                          key={chip.key}
-                          className='inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/60 px-3 py-1 text-xs font-medium'>
-                          <chip.icon
-                            className={cn('h-3.5 w-3.5', chip.color)}
-                          />
-                          {chip.label}
-                          <button
-                            onClick={chip.onRemove}
-                            className='ms-0.5 text-muted-foreground hover:text-destructive transition-colors'>
-                            <X className='h-3 w-3' />
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                  {activeChips.length > 0 && (
-                    <Button
-                      variant='outline'
-                      size='sm'
-                      onClick={handleReset}
-                      className='gap-1.5'>
-                      <X className='h-3.5 w-3.5' />
-                      {t('filters.resetAll', 'Clear all filters')}
-                    </Button>
+                    <>
+                      <div className='flex flex-wrap justify-center gap-2 max-w-sm'>
+                        {activeChips.map((chip) => (
+                          <span
+                            key={chip.key}
+                            className='inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/60 px-3 py-1 text-xs font-medium'>
+                            <chip.icon
+                              className={cn('h-3.5 w-3.5', chip.color)}
+                            />
+                            {chip.label}
+                            <button
+                              onClick={chip.onRemove}
+                              className='ms-0.5 text-muted-foreground hover:text-destructive transition-colors'>
+                              <X className='h-3 w-3' />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                      <Button
+                        variant='outline'
+                        size='sm'
+                        onClick={handleReset}
+                        className='gap-1.5'>
+                        <X className='h-3.5 w-3.5' />
+                        {t('filters.resetAll', 'Clear all filters')}
+                      </Button>
+                    </>
                   )}
                 </div>
               )}
 
-              {/* Pagination */}
               {!isLoading && totalPages > 1 && (
                 <Pagination
                   page={page}

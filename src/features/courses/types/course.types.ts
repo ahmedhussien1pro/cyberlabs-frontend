@@ -1,5 +1,4 @@
-// ── Enums match Prisma schema (UPPERCASE) ────────────────────────────
-// Exception: CourseColor stays lowercase — Tailwind class names require it
+// src/features/courses/types/course.types.ts
 export type CourseAccess = 'FREE' | 'PRO' | 'PREMIUM';
 export type CourseDifficulty =
   | 'BEGINNER'
@@ -27,10 +26,8 @@ export type CourseCategory =
   | 'TOOLS_AND_TECHNIQUES'
   | 'CAREER_AND_INDUSTRY';
 
-// Unified alias — used by LearningPath/PathModule models
 export type Difficulty = CourseDifficulty;
 
-// ── Lesson & Section ─────────────────────────────────────────────────
 export interface CourseLesson {
   id: string;
   order: number;
@@ -49,14 +46,12 @@ export interface CourseSection {
   lessons: CourseLesson[];
 }
 
-// ── Instructor ───────────────────────────────────────────────────────
 export interface CourseInstructor {
   name: string;
   title: string;
   avatar?: string;
 }
 
-// ── Course ───────────────────────────────────────────────────────────
 export interface Course {
   id: string;
   slug: string;
@@ -93,9 +88,10 @@ export interface Course {
   labsLink?: string;
   isNew?: boolean;
   isFeatured?: boolean;
+  // ✅ من الـ backend عبر toCourseCard transformer
+  userProgress?: { progress: number; isCompleted: boolean } | null;
 }
 
-// ── Filters ──────────────────────────────────────────────────────────
 export interface CourseFilters {
   search?: string;
   difficulty?: CourseDifficulty | 'all';
@@ -114,7 +110,6 @@ export interface PaginatedCourses {
   meta: { total: number; page: number; limit: number; totalPages: number };
 }
 
-// ── Enrollment ───────────────────────────────────────────────────────
 export interface Enrollment {
   id: string;
   userId: string;
@@ -130,7 +125,6 @@ export interface Enrollment {
   >;
 }
 
-// ── Learning Path Types ──────────────────────────────────────────────
 export interface LearningPath {
   id: string;
   slug: string;
@@ -163,8 +157,6 @@ export interface PathCourseItem {
   order: number;
 }
 
-// ── Learning Path Types ──────────────────────────────────────────────
-
 export interface PathModule {
   id: string;
   order: number;
@@ -178,7 +170,6 @@ export interface PathModule {
   isLocked: boolean;
   courseId: string | null;
   labId: string | null;
-
   course: {
     id: string;
     slug: string;
@@ -214,12 +205,8 @@ export interface PathModule {
     ar_prerequisites: string[];
     sections: { id: string; order: number }[];
     labsCount: number;
-    userProgress: {
-      progress: number;
-      isCompleted: boolean;
-    } | null;
+    userProgress: { progress: number; isCompleted: boolean } | null;
   } | null;
-
   lab: {
     id: string;
     title: string;
@@ -227,11 +214,7 @@ export interface PathModule {
     difficulty: Difficulty | null;
     duration: number | null;
   } | null;
-
-  userProgress: {
-    progress: number;
-    isCompleted: boolean;
-  };
+  userProgress: { progress: number; isCompleted: boolean };
 }
 
 export interface PathDetail {
@@ -292,7 +275,6 @@ export interface PathsListResponse {
   meta: { total: number; page: number; limit: number; totalPages: number };
 }
 
-// ── Curriculum JSON Types ─────────────────────────────────────────────
 export interface CurriculumElement {
   id: string | number;
   type:

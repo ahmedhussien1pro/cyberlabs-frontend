@@ -1,35 +1,39 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { coursesApi } from '../services/courses.api';
-import { useCourseProgressStore } from '../store/course-progress.store';
+import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import type { Enrollment } from '../types/course.types';
+import {
+  useEnrollMutation,
+  ENROLLMENTS_KEY,
+  PROGRESS_KEY,
+} from './use-user-progress';
 
-// GET /enrollments/me  — used on Dashboard
-export function useMyEnrollments() {
-  return useQuery<Enrollment[]>({
-    queryKey: ['enrollments', 'me'],
-    queryFn: () => coursesApi.getMyEnrollments(),
-    staleTime: 1000 * 60 * 5,
-  });
-}
-
-// POST /courses/:courseId/enroll
 export function useEnrollment() {
-  const queryClient = useQueryClient();
-  const { enrollCourse } = useCourseProgressStore();
+  const qc = useQueryClient();
+  const mutation = useEnrollMutation();
 
-  return useMutation({
-    mutationFn: (courseId: string) => coursesApi.enroll(courseId),
-    onMutate: (courseId) => {
-      enrollCourse(courseId);
+  const invalidate = () => {
+    void qc.invalidateQueries({ queryKey: ENROLLMENTS_KEY });
+    void qc.invalidateQueries({ queryKey: PROGRESS_KEY });
+  };
+
+  return {
+    ...mutation,
+    isPending: mutation.isPending,
+
+    mutate: (courseId: string) => {
+      mutation.mutate(courseId, {
+        onSuccess: () => {
+          invalidate();
+          toast.success('Enrolled! Start learning now.', { duration: 2000 });
+        },
+        onError: () => toast.error('Enrollment failed. Please try again.'),
+      });
     },
-    onSuccess: (_data, courseId) => {
-      enrollCourse(courseId);
-      queryClient.invalidateQueries({ queryKey: ['enrollments', 'me'] });
+
+    mutateAsync: async (courseId: string) => {
+      const result = await mutation.mutateAsync(courseId);
+      invalidate();
       toast.success('Enrolled! Start learning now.', { duration: 2000 });
+      return result;
     },
-    onError: () => {
-      toast.error('Enrollment failed. Please try again.');
-    },
-  });
+  };
 }

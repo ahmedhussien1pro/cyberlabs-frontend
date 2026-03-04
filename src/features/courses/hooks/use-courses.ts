@@ -1,3 +1,4 @@
+// src/features/courses/hooks/use-courses.ts
 import { useQuery } from '@tanstack/react-query';
 import { coursesApi } from '../services/courses.api';
 import type { CourseFilters, PaginatedCourses } from '../types/course.types';
@@ -13,5 +14,7 @@ export function useCourses(filters: CourseFilters = {}) {
     queryKey: coursesQueryKeys.list(filters),
     queryFn: () => coursesApi.list(filters),
     staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+    placeholderData: (prev) => prev,
   });
 }

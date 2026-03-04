@@ -18,7 +18,6 @@ export default function PathDetailPage() {
   return (
     <MainLayout>
       <div className='min-h-screen bg-background'>
-        {/* Loading */}
         {isLoading && (
           <div className='container mx-auto grid grid-cols-1 gap-6 px-4 py-12 lg:grid-cols-3'>
             {Array.from({ length: 7 }).map((_, i) => (
@@ -27,7 +26,6 @@ export default function PathDetailPage() {
           </div>
         )}
 
-        {/* Error / Not found */}
         {!isLoading && (isError || !path) && (
           <div className='flex flex-col items-center justify-center gap-4 py-32'>
             <p className='text-muted-foreground'>{t('detail.notFound')}</p>
@@ -40,7 +38,6 @@ export default function PathDetailPage() {
           </div>
         )}
 
-        {/* Content */}
         {!isLoading && path && (
           <>
             <PathDetailHero path={path} />

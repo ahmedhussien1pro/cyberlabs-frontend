@@ -26,7 +26,6 @@ export default function PathsPage() {
   });
   const { data: allPaths } = usePaths();
 
-  // Count per difficulty for filter tab badges
   const diffCounts = useMemo(() => {
     if (!allPaths) return {} as Record<string, number>;
     return allPaths.reduce<Record<string, number>>((acc, p) => {
@@ -38,16 +37,14 @@ export default function PathsPage() {
   return (
     <MainLayout>
       <div className='min-h-screen bg-background'>
-        {/* Hero */}
+        {/* Hero — PathsHero هو wrapper على PageHero بـ showSearch={true} */}
         <PathsHero
           search={search}
           onSearchChange={setSearch}
           totalCount={allPaths?.length}
         />
 
-        {/* Content */}
         <div className='container mx-auto px-4 py-10'>
-          {/* Filter tabs */}
           <PathsFilterTabs
             active={difficulty}
             onChange={setDifficulty}
@@ -55,9 +52,7 @@ export default function PathsPage() {
             loading={isLoading}
           />
 
-          {/* Grid */}
           <div className='mt-8'>
-            {/* Error state */}
             {isError && (
               <div className='flex items-center justify-center gap-2 py-16 text-sm text-destructive'>
                 <AlertCircle className='h-4 w-4' />
@@ -65,7 +60,6 @@ export default function PathsPage() {
               </div>
             )}
 
-            {/* Loading skeleton */}
             {isLoading && !isError && (
               <div className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'>
                 {Array.from({ length: 6 }).map((_, i) => (
@@ -74,7 +68,6 @@ export default function PathsPage() {
               </div>
             )}
 
-            {/* Empty state */}
             {!isLoading && !isError && (!paths || paths.length === 0) && (
               <div className='py-20 text-center'>
                 <p className='text-lg font-semibold text-foreground'>
@@ -86,7 +79,6 @@ export default function PathsPage() {
               </div>
             )}
 
-            {/* Cards */}
             {!isLoading && !isError && paths && paths.length > 0 && (
               <div className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'>
                 {paths.map((path, i) => (

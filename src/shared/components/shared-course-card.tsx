@@ -37,6 +37,7 @@ export interface CourseCardData {
   id: string;
   slug: string;
   title: string;
+  topic: string;
   ar_title?: string;
   description?: string;
   ar_description?: string;

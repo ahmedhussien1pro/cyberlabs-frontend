@@ -1,7 +1,7 @@
+// src/features/courses/components/course-detail-hero.tsx
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-  ChevronLeft,
   BookOpen,
   Clock,
   Users,
@@ -17,7 +17,10 @@ import {
   CheckCircle2,
   RotateCcw,
   ScrollText,
+  ChevronRight,
+  ChevronLeft,
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -33,22 +36,50 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { cn } from '@/lib/utils';
-import { MatrixRain } from '@/shared/components/common/landing/matrix-rain';
+import { DetailPageHero } from '@/shared/components/common/detail-page-hero';
 import { ROUTES } from '@/shared/constants';
 import type { Course } from '../types/course.types';
 
-const ACCESS_BADGE: Record<string, string> = {
-  FREE: 'border-emerald-500/40 text-emerald-400 bg-emerald-500/10',
-  PRO: 'border-blue-500/40    text-blue-400    bg-blue-500/10',
-  PREMIUM: 'border-violet-500/40  text-violet-400  bg-violet-500/10',
+// ── Color maps (نفس نظام الباث) ──────────────────────────────────────
+const MATRIX_COLOR: Record<string, string> = {
+  emerald: '#10b981',
+  blue: '#3b82f6',
+  violet: '#8b5cf6',
+  rose: '#f43f5e',
+  orange: '#f97316',
+  cyan: '#06b6d4',
 };
-const GLOW: Record<string, string> = {
-  emerald: 'shadow-emerald-500/15',
-  blue: 'shadow-blue-500/15',
-  violet: 'shadow-violet-500/15',
-  orange: 'shadow-orange-500/15',
-  rose: 'shadow-rose-500/15',
-  cyan: 'shadow-cyan-500/15',
+const STRIPE: Record<string, string> = {
+  emerald: 'bg-emerald-500',
+  blue: 'bg-blue-500',
+  violet: 'bg-violet-500',
+  rose: 'bg-rose-500',
+  orange: 'bg-orange-500',
+  cyan: 'bg-cyan-500',
+};
+const BLOOM: Record<string, string> = {
+  emerald: 'bg-emerald-500',
+  blue: 'bg-blue-500',
+  violet: 'bg-violet-500',
+  rose: 'bg-rose-500',
+  orange: 'bg-orange-500',
+  cyan: 'bg-cyan-500',
+};
+const TEXT_COLOR: Record<string, string> = {
+  emerald: 'text-emerald-400',
+  blue: 'text-blue-400',
+  violet: 'text-violet-400',
+  rose: 'text-rose-400',
+  orange: 'text-orange-400',
+  cyan: 'text-cyan-400',
+};
+const BAR_COLOR: Record<string, string> = {
+  emerald: '[&>div]:bg-emerald-500',
+  blue: '[&>div]:bg-blue-500',
+  violet: '[&>div]:bg-violet-500',
+  rose: '[&>div]:bg-rose-500',
+  orange: '[&>div]:bg-orange-500',
+  cyan: '[&>div]:bg-cyan-500',
 };
 const FALLBACK_BG: Record<string, string> = {
   emerald: 'from-emerald-950 to-emerald-900',
@@ -58,13 +89,10 @@ const FALLBACK_BG: Record<string, string> = {
   rose: 'from-rose-950 to-rose-900',
   cyan: 'from-cyan-950 to-cyan-900',
 };
-const FALLBACK_TEXT: Record<string, string> = {
-  emerald: 'text-emerald-400',
-  blue: 'text-blue-400',
-  violet: 'text-violet-400',
-  orange: 'text-orange-400',
-  rose: 'text-rose-400',
-  cyan: 'text-cyan-400',
+const ACCESS_BADGE: Record<string, string> = {
+  FREE: 'border-emerald-500/40 text-emerald-400 bg-emerald-500/10',
+  PRO: 'border-blue-500/40    text-blue-400    bg-blue-500/10',
+  PREMIUM: 'border-violet-500/40  text-violet-400  bg-violet-500/10',
 };
 
 export interface CourseDetailHeroProps {
@@ -74,12 +102,12 @@ export interface CourseDetailHeroProps {
   progress: number;
   done: number;
   fav: boolean;
-  hasLabs?: boolean; // ✅ جديد
+  hasLabs?: boolean;
   onEnroll: () => void;
   onToggleFav: () => void;
-  onReset?: () => void; // ✅ جديد
-  onContinue?: () => void; // ✅ جديد - scroll لأول topic ناقص
-  onGoToLabs?: () => void; // ✅ جديد - scroll للـ labs
+  onReset?: () => void;
+  onContinue?: () => void;
+  onGoToLabs?: () => void;
 }
 
 export function CourseDetailHero({
@@ -97,414 +125,336 @@ export function CourseDetailHero({
   onGoToLabs,
 }: CourseDetailHeroProps) {
   const { i18n, t } = useTranslation('courses');
-  const lang = i18n.language === 'ar' ? 'ar' : 'en';
+  const isAr = i18n.language === 'ar';
+  const BreadcrumbChevron = isAr ? ChevronLeft : ChevronRight;
 
-  const title = lang === 'ar' ? course.ar_title : course.title;
-  const desc = lang === 'ar' ? course.ar_description : course.description;
-  const diff = lang === 'ar' ? course.ar_difficulty : course.difficulty;
-  const skills = lang === 'ar' ? course.ar_skills : course.skills;
-  const prereqs =
-    lang === 'ar' ? course.ar_prerequisites : course.prerequisites;
-  const topics = lang === 'ar' ? course.ar_topics : course.topics;
-  const comingSoon = course.state === 'COMING_SOON';
-  const hasTopics = topics.length > 0;
+  const title = isAr ? course.ar_title : course.title;
+  const desc = isAr ? course.ar_description : course.description;
+  const diff = isAr ? course.ar_difficulty : course.difficulty;
   const imgSrc = course.image ?? course.thumbnail;
-
-  // ✅ 3 حالات للـ CTA
+  const comingSoon = course.state === 'COMING_SOON';
   const isCompleted = enrolled && progress >= 100;
 
+  const col = course.color ?? 'blue';
+
+  // ── badge label (نفس منطق الباث) ────────────────────────────────
+  const statusBadge = course.isNew
+    ? { label: t('card.new', 'New'), cls: 'bg-amber-500 text-white' }
+    : comingSoon
+      ? {
+          label: t('card.comingSoon', 'Coming Soon'),
+          cls: 'bg-zinc-600/80 border border-white/10 text-white',
+        }
+      : null;
+
   return (
-    <div className='relative overflow-hidden border-b border-border/50'>
-      <div className='absolute inset-0 bg-background' />
-      <div className='absolute inset-0 bg-gradient-to-b from-muted/80 via-muted/30 to-transparent dark:from-zinc-950 dark:via-zinc-900/50 dark:to-transparent' />
-      <MatrixRain className='absolute inset-0 opacity-[0.03] dark:opacity-[0.06]' />
-
-      <div className='relative z-10 container mx-auto px-4 py-6'>
-        <div
-          className={cn(
-            'gap-6 items-stretch',
-            hasTopics ? 'grid lg:grid-cols-[1fr_260px]' : 'flex flex-col',
-          )}>
-          <div className='flex flex-col gap-5 min-w-0'>
-            <div className='space-y-3.5 flex-1'>
-              {/* Badges */}
-              <div className='flex flex-wrap items-center gap-2'>
-                <Badge
-                  variant='outline'
-                  className={cn(
-                    'text-xs font-bold gap-1.5',
-                    ACCESS_BADGE[course.access],
-                  )}>
-                  {course.access === 'FREE' ? (
-                    <Unlock className='h-3 w-3' />
-                  ) : (
-                    <Crown className='h-3 w-3' />
-                  )}
-                  {course.access}
-                </Badge>
-                <Badge variant='secondary' className='text-xs'>
-                  {lang === 'ar' ? course.ar_category : course.category}
-                </Badge>
-                <Badge variant='secondary' className='text-xs gap-1'>
-                  <Shield className='h-3 w-3' /> {diff}
-                </Badge>
-                {course.isNew && (
-                  <Badge className='text-xs bg-primary text-primary-foreground'>
-                    NEW
-                  </Badge>
-                )}
-                {comingSoon && (
-                  <Badge
-                    variant='outline'
-                    className='text-xs border-zinc-500/40 text-zinc-500'>
-                    Coming Soon
-                  </Badge>
-                )}
-                {isCompleted && (
-                  <Badge className='text-xs gap-1 border-emerald-500/40 bg-emerald-500/10 text-emerald-400'>
-                    <CheckCircle2 className='h-3 w-3' />
-                    {t('detail.completed', 'Completed')}
-                  </Badge>
-                )}
-              </div>
-
-              <h1 className='text-3xl md:text-4xl font-black tracking-tight text-foreground leading-tight'>
-                {title}
-              </h1>
-              <p className='text-foreground/70 text-[15px] leading-relaxed'>
-                {desc}
-              </p>
-
-              {/* Stats */}
-              <div className='flex flex-wrap gap-x-5 gap-y-2 text-sm text-foreground/60'>
-                <span className='flex items-center gap-1.5'>
-                  <BookOpen className='h-4 w-4 text-primary/80' />
-                  <strong className='text-foreground/80 font-semibold'>
-                    {course.totalTopics}
-                  </strong>{' '}
-                  {t('detail.topics', 'Topics')}
-                </span>
-                <span className='flex items-center gap-1.5'>
-                  <Clock className='h-4 w-4 text-primary/80' />
-                  <strong className='text-foreground/80 font-semibold'>
-                    {course.estimatedHours}h
-                  </strong>
-                </span>
-                <span className='flex items-center gap-1.5'>
-                  <FlaskConical className='h-4 w-4 text-primary/80' />
-                  <span className='text-foreground/70'>
-                    {t('detail.labsIncluded', 'Labs included')}
-                  </span>
-                </span>
-                {(course.enrollmentCount ?? 0) > 0 && (
-                  <span className='flex items-center gap-1.5'>
-                    <Users className='h-4 w-4 text-primary/80' />
-                    <strong className='text-foreground/80 font-semibold'>
-                      {course.enrollmentCount.toLocaleString()}
-                    </strong>
-                  </span>
-                )}
-                {(course.averageRating ?? 0) > 0 && (
-                  <span className='flex items-center gap-1.5'>
-                    <Star className='h-4 w-4 fill-yellow-500 text-yellow-500' />
-                    <strong className='text-foreground/80 font-semibold'>
-                      {course.averageRating}
-                    </strong>
-                    <span className='text-foreground/40'>
-                      ({course.reviewCount})
-                    </span>
-                  </span>
-                )}
-                <Link
-                  to={ROUTES.COURSES.LIST}
-                  className='flex items-center gap-1.5 text-sm font-medium h-4 w-36 text-primary hover:text-foreground transition-colors'>
-                  <ChevronLeft className='h-4 w-4 rtl:rotate-180' />
-                  {t('detail.backToList', 'All Courses')}
-                </Link>
-              </div>
-
-              {enrolled && !hasTopics && course.totalTopics > 0 && (
-                <div className='max-w-xs space-y-1.5'>
-                  <div className='flex justify-between text-xs text-foreground/60'>
-                    <span>
-                      {done}/{course.totalTopics} {t('detail.done', 'done')}
-                    </span>
-                    <span
-                      className={cn(
-                        'font-bold',
-                        isCompleted ? 'text-emerald-400' : 'text-primary',
-                      )}>
-                      {progress}%
-                    </span>
-                  </div>
-                  <Progress
-                    value={progress}
-                    className={cn(
-                      'h-1.5',
-                      isCompleted && '[&>div]:bg-emerald-500',
-                    )}
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* CTA Box */}
+    <DetailPageHero
+      matrixColor={MATRIX_COLOR[col] ?? '#3b82f6'}
+      stripeClass={STRIPE[col]}
+      bloomClass={BLOOM[col]}
+      /* ── Breadcrumb: Courses → title ── */
+      breadcrumb={
+        <>
+          <Link
+            to={ROUTES.COURSES.LIST}
+            className='transition-colors hover:text-white/70'>
+            {t('detail.breadcrumbCourses', 'Courses')}
+          </Link>
+          <BreadcrumbChevron className='h-3 w-3 shrink-0' />
+          <span className='truncate text-white/65'>{title}</span>
+        </>
+      }
+      iconSlot={
+        <div className='h-14 w-14 shrink-0 overflow-hidden rounded-2xl ring-1 ring-white/10'>
+          {imgSrc ? (
+            <img
+              src={imgSrc}
+              alt={title ?? ''}
+              className='h-full w-full object-cover'
+            />
+          ) : (
             <div
               className={cn(
-                'rounded-2xl border border-border/60 bg-card overflow-hidden',
-                'shadow-lg ring-1 ring-border/20 flex flex-col sm:flex-row',
-                GLOW[course.color] && `shadow-xl ${GLOW[course.color]}`,
+                'h-full w-full flex items-center justify-center bg-gradient-to-br border',
+                FALLBACK_BG[col] ?? 'from-zinc-900 to-zinc-800 border-zinc-700',
               )}>
-              {/* Thumbnail */}
-              <div className='sm:w-48 h-40 sm:h-auto shrink-0 overflow-hidden bg-muted'>
-                {imgSrc ? (
-                  <img
-                    src={imgSrc}
-                    alt={title ?? ''}
-                    className='w-full h-full object-cover'
-                  />
-                ) : (
-                  <div
-                    className={cn(
-                      'w-full h-full flex items-center justify-center bg-gradient-to-br',
-                      FALLBACK_BG[course.color] ?? 'from-zinc-900 to-zinc-800',
-                    )}>
-                    <p
-                      className={cn(
-                        'text-base font-black text-center px-3 leading-tight',
-                        FALLBACK_TEXT[course.color] ?? 'text-zinc-400',
-                      )}>
-                      {title}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              <div className='flex-1 p-4 flex flex-col sm:flex-row gap-4 min-w-0'>
-                {/* Skills + prereqs */}
-                <div className='flex-1 min-w-0 flex flex-col gap-2.5 justify-center'>
-                  {skills.length > 0 && (
-                    <div>
-                      <p className='text-[10px] font-bold uppercase tracking-wider text-foreground/40 mb-1.5'>
-                        {t('detail.skillsLabel', "Skills you'll gain")}
-                      </p>
-                      <div className='flex flex-wrap gap-1'>
-                        {skills.slice(0, 5).map((s, i) => (
-                          <span
-                            key={i}
-                            className='text-xs px-2 py-0.5 rounded-full border border-border/40 bg-muted/50 text-foreground/60'>
-                            {s}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {prereqs.length > 0 && (
-                    <div>
-                      <p className='text-[10px] font-bold uppercase tracking-wider text-foreground/40 mb-1.5'>
-                        {t('detail.prereqLabel', 'Prerequisites')}
-                      </p>
-                      <ul className='flex flex-wrap gap-x-4 gap-y-1'>
-                        {prereqs.map((p, i) => (
-                          <li
-                            key={i}
-                            className='flex items-center gap-1.5 text-xs text-foreground/55'>
-                            <CheckCircle2 className='h-3 w-3 text-muted-foreground shrink-0' />{' '}
-                            {p}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-
-                {/* ✅ CTA — 3 حالات */}
-                <div className='flex flex-row sm:flex-col gap-2 sm:w-44 shrink-0 sm:justify-center'>
-                  {enrolled ? (
-                    isCompleted ? (
-                      /*
-                       * ✅ حالة 3: مكتمل
-                       * زرّين:
-                       *   1. "View Curriculum" → scroll للكورس (للوصول للـ labs)
-                       *   2. "Reset Progress"  → AlertDialog
-                       */
-                      <>
-                        <Button
-                          className='sm:flex-none sm:w-full gap-2'
-                          onClick={hasLabs ? onGoToLabs : onContinue}>
-                          {hasLabs ? (
-                            <>
-                              <FlaskConical className='h-4 w-4' />
-                              {t('detail.goToLabs', 'Go to Labs')}
-                            </>
-                          ) : (
-                            <>
-                              <ScrollText className='h-4 w-4' />
-                              {t('detail.viewCurriculum', 'View Curriculum')}
-                            </>
-                          )}
-                        </Button>
-
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              variant='outline'
-                              size='sm'
-                              className={cn(
-                                'sm:flex-none sm:w-full gap-2 text-xs',
-                                'border-orange-500/40 bg-orange-500/5 text-orange-400',
-                                'hover:bg-orange-500/15 hover:border-orange-500/60',
-                              )}>
-                              <RotateCcw className='h-3.5 w-3.5' />
-                              {t('detail.resetProgress', 'Reset Progress')}
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                {t(
-                                  'detail.resetConfirmTitle',
-                                  'Reset course progress?',
-                                )}
-                              </AlertDialogTitle>
-                              <AlertDialogDescription>
-                                {t(
-                                  'detail.resetConfirmDesc',
-                                  'Your completed topics will be cleared locally. You can start fresh — your enrollment stays active.',
-                                )}
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>
-                                {t('common.cancel', 'Cancel')}
-                              </AlertDialogCancel>
-                              <AlertDialogAction
-                                className='bg-orange-500 hover:bg-orange-600 text-white'
-                                onClick={onReset}>
-                                {t('detail.resetConfirm', 'Yes, Reset')}
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </>
-                    ) : (
-                      /* ✅ حالة 2: مسجّل + ناقص → Continue Learning */
-                      <Button
-                        className='sm:flex-none sm:w-full'
-                        onClick={onContinue}>
-                        <Zap className='h-4 w-4 me-2' />
-                        {t('detail.continueLearning', 'Continue Learning')}
-                      </Button>
-                    )
-                  ) : course.access === 'FREE' ? (
-                    /* حالة 1a: غير مسجّل FREE */
-                    <Button
-                      className='sm:flex-none sm:w-full'
-                      onClick={onEnroll}
-                      disabled={enrolling || comingSoon}>
-                      {enrolling ? (
-                        <>
-                          <Loader2 className='h-4 w-4 me-2 animate-spin' />
-                          {t('detail.enrolling', 'Enrolling...')}
-                        </>
-                      ) : (
-                        <>
-                          <Rocket className='h-4 w-4 me-2' />
-                          {t('detail.startFree', 'Start for Free')}
-                        </>
-                      )}
-                    </Button>
-                  ) : (
-                    /* حالة 1b: غير مسجّل PRO/PREMIUM */
-                    <Button
-                      className='flex-1 sm:flex-none sm:w-full'
-                      onClick={onEnroll}
-                      disabled={comingSoon}>
-                      <Crown className='h-4 w-4 me-2' />
-                      {t('detail.upgrade', 'Upgrade to {{plan}}', {
-                        plan: course.access,
-                      })}
-                    </Button>
-                  )}
-
-                  {/* Favorite — دايماً ثابت */}
-                  <button
-                    onClick={onToggleFav}
-                    className={cn(
-                      'sm:flex-none sm:w-full flex items-center justify-center gap-2',
-                      'rounded border py-2 px-3 text-xs font-medium transition-all',
-                      fav
-                        ? 'border-rose-500/50 bg-rose-500/10 text-rose-500 hover:bg-rose-500/15'
-                        : 'border-border/60 text-foreground/60 hover:border-rose-500/30 hover:text-rose-500',
-                    )}>
-                    <Heart
-                      className={cn('h-4 w-4 shrink-0', fav && 'fill-current')}
-                    />
-                    <span className='truncate'>
-                      {fav
-                        ? t('detail.removeFav', 'Remove from Favorites')
-                        : t('detail.addFav', 'Add to Favorites')}
-                    </span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Topics sidebar */}
-          {hasTopics && (
-            <div className='rounded-xl border border-border/40 bg-muted/20 dark:bg-white/[0.03] p-4 flex flex-col gap-3 self-stretch'>
-              {enrolled && course.totalTopics > 0 ? (
-                <div className='space-y-1.5 pb-3 border-b border-border/30'>
-                  <div className='flex justify-between items-center'>
-                    <span className='text-xs text-foreground/55'>
-                      {done}/{course.totalTopics} {t('detail.done', 'done')}
-                    </span>
-                    <span
-                      className={cn(
-                        'font-bold text-sm',
-                        isCompleted ? 'text-emerald-400' : 'text-primary',
-                      )}>
-                      {progress}%
-                      {isCompleted && (
-                        <CheckCircle2 className='inline h-3.5 w-3.5 ms-1' />
-                      )}
-                    </span>
-                  </div>
-                  <Progress
-                    value={progress}
-                    className={cn(
-                      'h-1.5',
-                      isCompleted && '[&>div]:bg-emerald-500',
-                    )}
-                  />
-                </div>
-              ) : (
-                <div className='pb-2 border-b border-border/30'>
-                  <p className='text-[10px] font-bold uppercase tracking-widest text-foreground/40'>
-                    {t('detail.willLearn', "What you'll learn")}
-                  </p>
-                </div>
-              )}
-              {enrolled && (
-                <p className='text-[10px] font-bold uppercase tracking-widest text-foreground/35 -mb-1'>
-                  {t('detail.willLearn', "What you'll learn")}
-                </p>
-              )}
-              <div className='flex flex-col gap-1.5 flex-1'>
-                {topics.map((topic, i) => (
-                  <div
-                    key={i}
-                    className='flex items-center gap-2.5 rounded-lg bg-background/60 dark:bg-white/[0.04] border border-border/30 px-3 py-2 text-xs text-foreground/75 hover:border-primary/30 hover:text-foreground transition-colors duration-150 cursor-default'>
-                    <Zap className='h-3.5 w-3.5 shrink-0 text-primary' />
-                    <span className='leading-snug'>{topic}</span>
-                  </div>
-                ))}
-              </div>
+              <p
+                className={cn(
+                  'text-[8px] font-black text-center px-1.5 leading-tight',
+                  TEXT_COLOR[col] ?? 'text-zinc-400',
+                )}>
+                {title}
+              </p>
             </div>
           )}
         </div>
-      </div>
+      }
+      /* ── Title ── */
+      titleSlot={
+        <motion.h1
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className='text-xl font-black leading-tight tracking-tight text-white sm:text-2xl lg:text-3xl'>
+          {title}
+        </motion.h1>
+      }
+      /* ── Badges — نفس تنسيق الباث ── */
+      badgesSlot={
+        <>
+          {/* Access */}
+          <Badge
+            variant='outline'
+            className={cn(
+              'rounded-full text-[11px] font-bold gap-1',
+              ACCESS_BADGE[course.access],
+            )}>
+            {course.access === 'FREE' ? (
+              <Unlock className='h-2.5 w-2.5' />
+            ) : (
+              <Crown className='h-2.5 w-2.5' />
+            )}
+            {course.access}
+          </Badge>
+
+          {/* Difficulty */}
+          <Badge
+            variant='outline'
+            className='rounded-full border-white/20 text-[11px] text-white/65 gap-1'>
+            <Shield className='h-2.5 w-2.5' />
+            {diff}
+          </Badge>
+
+          {/* Category */}
+          <Badge
+            variant='outline'
+            className='rounded-full border-white/15 text-[11px] text-white/50'>
+            {isAr ? course.ar_category : course.category}
+          </Badge>
+
+          {/* Status badge */}
+          {statusBadge && (
+            <span
+              className={cn(
+                'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold',
+                statusBadge.cls,
+              )}>
+              {statusBadge.label}
+            </span>
+          )}
+
+          {/* Completed */}
+          {isCompleted && (
+            <span className='inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400'>
+              <CheckCircle2 className='h-2.5 w-2.5' />
+              {t('detail.completed', 'Completed')}
+            </span>
+          )}
+        </>
+      }
+      /* ── Description ── */
+      descriptionSlot={
+        <p className='mt-2 max-w-2xl text-sm leading-relaxed text-white/60'>
+          {desc}
+        </p>
+      }
+      /* ── Bottom bar: stats + progress + CTA ── */
+      bottomBarSlot={
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.35, delay: 0.2 }}
+          className='contents'>
+          {/* Stats */}
+          <div className='flex flex-wrap items-center gap-x-5 gap-y-1.5'>
+            <Stat
+              icon={<BookOpen className='h-3.5 w-3.5' />}
+              value={course.totalTopics}
+              label={t('detail.topics', 'Topics')}
+              textClass={TEXT_COLOR[col]}
+            />
+            <Stat
+              icon={<Clock className='h-3.5 w-3.5' />}
+              value={`${course.estimatedHours}h`}
+              label={t('detail.estTime', 'est.')}
+              textClass={TEXT_COLOR[col]}
+            />
+            <Stat
+              icon={<FlaskConical className='h-3.5 w-3.5' />}
+              value={t('detail.labsIncluded', 'Labs')}
+              textClass={TEXT_COLOR[col]}
+            />
+            {(course.enrollmentCount ?? 0) > 0 && (
+              <Stat
+                icon={<Users className='h-3.5 w-3.5' />}
+                value={course.enrollmentCount.toLocaleString()}
+                label={t('detail.enrolled', 'enrolled')}
+                textClass={TEXT_COLOR[col]}
+              />
+            )}
+            {(course.averageRating ?? 0) > 0 && (
+              <div className='flex items-center gap-1.5 text-xs'>
+                <Star className='h-3.5 w-3.5 fill-yellow-500 text-yellow-500' />
+                <span className='font-bold text-white'>
+                  {course.averageRating}
+                </span>
+                <span className='text-white/45'>({course.reviewCount})</span>
+              </div>
+            )}
+          </div>
+
+          {/* CTA */}
+          <div className='flex items-center gap-2'>
+            {/* Favorite */}
+            <button
+              onClick={onToggleFav}
+              className={cn(
+                'flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all',
+                fav
+                  ? 'border-rose-500/50 bg-rose-500/10 text-rose-500 hover:bg-rose-500/15'
+                  : 'border-white/15 text-white/50 hover:border-rose-500/30 hover:text-rose-500',
+              )}>
+              <Heart
+                className={cn('h-3.5 w-3.5 shrink-0', fav && 'fill-current')}
+              />
+              <span className='hidden sm:inline'>
+                {fav
+                  ? t('detail.removeFav', 'Saved')
+                  : t('detail.addFav', 'Save')}
+              </span>
+            </button>
+
+            {/* Main CTA */}
+            {comingSoon ? (
+              <div className='flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-4 py-1.5 text-xs text-white/50'>
+                <Clock className='h-3.5 w-3.5' />
+                {t('card.comingSoon', 'Coming Soon')}
+              </div>
+            ) : enrolled ? (
+              isCompleted ? (
+                <>
+                  <Button
+                    size='sm'
+                    className='h-8 gap-1.5 px-5 text-xs font-semibold'
+                    onClick={hasLabs ? onGoToLabs : onContinue}>
+                    {hasLabs ? (
+                      <>
+                        <FlaskConical className='h-3.5 w-3.5' />
+                        {t('detail.goToLabs', 'Go to Labs')}
+                      </>
+                    ) : (
+                      <>
+                        <ScrollText className='h-3.5 w-3.5' />
+                        {t('detail.viewCurriculum', 'View Curriculum')}
+                      </>
+                    )}
+                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant='outline'
+                        size='sm'
+                        className={cn(
+                          'h-8 gap-1.5 px-3 text-xs',
+                          'border-orange-500/40 bg-orange-500/5 text-orange-400',
+                          'hover:bg-orange-500/15 hover:border-orange-500/60',
+                        )}>
+                        <RotateCcw className='h-3.5 w-3.5' />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          {t(
+                            'detail.resetConfirmTitle',
+                            'Reset course progress?',
+                          )}
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          {t(
+                            'detail.resetConfirmDesc',
+                            'Your completed topics will be cleared locally.',
+                          )}
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>
+                          {t('common.cancel', 'Cancel')}
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          className='bg-orange-500 hover:bg-orange-600 text-white'
+                          onClick={onReset}>
+                          {t('detail.resetConfirm', 'Yes, Reset')}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </>
+              ) : (
+                <Button
+                  size='sm'
+                  className='h-8 gap-1.5 px-5 text-xs font-semibold'
+                  onClick={onContinue}>
+                  <Zap className='h-3.5 w-3.5' />
+                  {t('detail.continueLearning', 'Continue')}
+                  <BreadcrumbChevron className='h-3.5 w-3.5' />
+                </Button>
+              )
+            ) : course.access === 'FREE' ? (
+              <Button
+                size='sm'
+                className='h-8 gap-1.5 px-5 text-xs font-semibold'
+                onClick={onEnroll}
+                disabled={enrolling}>
+                {enrolling ? (
+                  <>
+                    <Loader2 className='h-3.5 w-3.5 animate-spin' />
+                    {t('detail.enrolling', 'Enrolling...')}
+                  </>
+                ) : (
+                  <>
+                    <Rocket className='h-3.5 w-3.5' />
+                    {t('detail.startFree', 'Start Free')}
+                    <BreadcrumbChevron className='h-3.5 w-3.5' />
+                  </>
+                )}
+              </Button>
+            ) : (
+              <Button
+                size='sm'
+                className='h-8 gap-1.5 px-5 text-xs font-semibold'
+                onClick={onEnroll}>
+                <Crown className='h-3.5 w-3.5' />
+                {t('detail.upgrade', 'Upgrade to {{plan}}', {
+                  plan: course.access,
+                })}
+                <BreadcrumbChevron className='h-3.5 w-3.5' />
+              </Button>
+            )}
+          </div>
+        </motion.div>
+      }
+    />
+  );
+}
+
+// ── Stat pill (نفس شكل الباث) ─────────────────────────────────────────
+function Stat({
+  icon,
+  value,
+  label,
+  textClass,
+}: {
+  icon: React.ReactNode;
+  value: number | string;
+  label?: string;
+  textClass: string;
+}) {
+  return (
+    <div className='flex items-center gap-1.5 text-xs'>
+      <span className={textClass}>{icon}</span>
+      <span className='font-bold text-white'>{value}</span>
+      {label && <span className='text-white/45'>{label}</span>}
     </div>
   );
 }

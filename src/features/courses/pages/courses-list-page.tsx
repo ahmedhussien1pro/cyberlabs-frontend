@@ -1,10 +1,12 @@
+// src/features/courses/pages/courses-list-page.tsx
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LayoutGrid, List, SlidersHorizontal, X, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import MainLayout from '@/shared/components/layout/main-layout';
-import { MatrixRain } from '@/shared/components/common/landing/matrix-rain';
+import { PageHero } from '@/shared/components/common/page-hero';
+import { Pagination } from '@/shared/components/common/pagination';
 import { CourseCard } from '../components/course-card';
 import { CourseCardSkeleton } from '../components/course-card-skeleton';
 import { CourseFilterSidebar } from '../components/course-filters';
@@ -13,22 +15,22 @@ import { useCourseProgressStore } from '../store/course-progress.store';
 import type { CourseFilters } from '../types/course.types';
 
 type ViewMode = 'grid' | 'list';
+const PAGE_SIZE = 9;
 
 export default function CoursesListPage() {
   const { t } = useTranslation('courses');
   const [filters, setFilters] = useState<CourseFilters>({});
   const [view, setView] = useState<ViewMode>('grid');
-  const [sidebarOpen, setSidebarOpen] = useState(false); // mobile drawer
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [page, setPage] = useState(1);
 
   const { favoriteCourses, enrolledCourses, completedTopics } =
     useCourseProgressStore();
   const { data, isLoading, isError } = useCourses(filters);
 
-  // Client-side favorite / enrolled / completed filter
   const filteredData = useMemo(() => {
     if (!data?.data) return [];
     let result = [...data.data];
-
     if (filters.onlyFavorites)
       result = result.filter((c) => favoriteCourses.includes(c.id));
     if (filters.onlyEnrolled)
@@ -38,51 +40,55 @@ export default function CoursesListPage() {
         const done = completedTopics[c.id]?.length ?? 0;
         return c.totalTopics > 0 && done >= c.totalTopics;
       });
-
     return result;
   }, [data, filters, favoriteCourses, enrolledCourses, completedTopics]);
 
-  const handleReset = () => setFilters({});
+  const totalPages = Math.ceil(filteredData.length / PAGE_SIZE);
+  const displayedData = filteredData.slice(
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE,
+  );
+
+  const handleFiltersChange = (f: CourseFilters) => {
+    setFilters(f);
+    setPage(1);
+  };
+
+  const handleReset = () => {
+    setFilters({});
+    setPage(1);
+  };
 
   return (
     <MainLayout>
       <div className='min-h-screen bg-background'>
-        {/* ── Hero ───────────────────────────────────────── */}
-        <div className='relative overflow-hidden border-b border-border/50 bg-background/80'>
-          <MatrixRain className='absolute inset-0 opacity-[0.07]' />
-          <div className='relative z-10 container mx-auto px-4 py-14 text-center space-y-3'>
-            <span className='inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-xs font-bold text-primary uppercase tracking-wider'>
-              <Shield className='h-3.5 w-3.5' />
-              {t('list.eyebrow', 'All Courses')}
-            </span>
-            <h1 className='text-4xl md:text-5xl font-black tracking-tight text-foreground'>
-              {t('list.title', 'Master Cybersecurity')}
-            </h1>
-            <p className='text-muted-foreground text-lg max-w-xl mx-auto'>
-              {t(
-                'list.subtitle',
-                'Theory-first courses packed with visuals, code, and hands-on labs.',
-              )}
-            </p>
-          </div>
-        </div>
+        {/* ── Hero — نفس شكل الباسيز بدون search ── */}
+        <PageHero
+          title={t('list.title', 'Master Cybersecurity')}
+          subtitle={t('list.subtitle', 'Theory-first courses')}
+          description={t(
+            'list.description',
+            'Packed with visuals, code, and hands-on labs.',
+          )}
+          showSearch={false}
+        />
 
-        {/* ── Body: Sidebar + Grid ────────────────────────── */}
+        {/* ── Body: Sidebar + Grid ── */}
         <div className='container mx-auto px-4 py-8'>
           <div className='flex gap-7 relative'>
-            {/* ── Sidebar — Desktop (always visible) ─────── */}
+            {/* Sidebar — Desktop */}
             <aside className='hidden lg:block w-60 shrink-0'>
               <div className='sticky top-20'>
                 <CourseFilterSidebar
                   filters={filters}
-                  onChange={setFilters}
+                  onChange={handleFiltersChange}
                   onReset={handleReset}
                   totalCount={filteredData.length}
                 />
               </div>
             </aside>
 
-            {/* ── Mobile sidebar drawer ───────────────────── */}
+            {/* Mobile sidebar drawer */}
             {sidebarOpen && (
               <div
                 className='fixed inset-0 z-40 lg:hidden'
@@ -103,20 +109,17 @@ export default function CoursesListPage() {
                   </div>
                   <CourseFilterSidebar
                     filters={filters}
-                    onChange={(f) => {
-                      setFilters(f);
-                    }}
+                    onChange={handleFiltersChange}
                     onReset={handleReset}
                   />
                 </div>
               </div>
             )}
 
-            {/* ── Main content ────────────────────────────── */}
+            {/* Main content */}
             <div className='flex-1 min-w-0 space-y-5'>
-              {/* Toolbar: mobile filter btn + view toggle + count */}
+              {/* Toolbar */}
               <div className='flex items-center gap-3 flex-wrap'>
-                {/* Mobile filter btn */}
                 <Button
                   variant='outline'
                   size='sm'
@@ -126,7 +129,6 @@ export default function CoursesListPage() {
                   {t('filters.title', 'Filters')}
                 </Button>
 
-                {/* Result count */}
                 {!isLoading && (
                   <p className='text-sm text-muted-foreground'>
                     <span className='font-bold text-foreground'>
@@ -136,10 +138,8 @@ export default function CoursesListPage() {
                   </p>
                 )}
 
-                {/* Spacer */}
                 <div className='flex-1' />
 
-                {/* View toggle */}
                 <div className='flex rounded-lg border border-border/60 overflow-hidden'>
                   {(['grid', 'list'] as ViewMode[]).map((v) => (
                     <button
@@ -181,7 +181,7 @@ export default function CoursesListPage() {
                   ? Array.from({ length: 6 }).map((_, i) => (
                       <CourseCardSkeleton key={i} view={view} />
                     ))
-                  : filteredData.map((course, i) => (
+                  : displayedData.map((course, i) => (
                       <CourseCard
                         key={course.id}
                         course={course}
@@ -207,6 +207,19 @@ export default function CoursesListPage() {
                     {t('filters.reset', 'Reset Filters')}
                   </Button>
                 </div>
+              )}
+
+              {/* Pagination */}
+              {!isLoading && totalPages > 1 && (
+                <Pagination
+                  page={page}
+                  totalPages={totalPages}
+                  onChange={(p) => {
+                    setPage(p);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className='py-6'
+                />
               )}
             </div>
           </div>

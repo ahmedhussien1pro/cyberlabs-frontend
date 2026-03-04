@@ -13,6 +13,7 @@ import {
   ShieldAlert,
   FileText,
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { useProfile } from '../../../features/profile/hooks/use-profile';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -88,13 +89,16 @@ export function Navbar() {
       label: t('navigation.about', 'About Us'),
       href: ROUTES.ABOUT,
       icon: <Info className='w-4 h-4' />,
-      description: t('navigation.aboutDesc', 'Learn about our mission'),
+      description: t(
+        'navigation.aboutDesc',
+        'Learn about our mission and team',
+      ),
     },
     {
       label: t('navigation.contact', 'Contact'),
       href: ROUTES.CONTACT,
       icon: <Mail className='w-4 h-4' />,
-      description: t('navigation.contactDesc', 'Get in touch'),
+      description: t('navigation.contactDesc', 'Get in touch with support'),
     },
     {
       label: t('navigation.privacy', 'Privacy Policy'),
@@ -106,7 +110,7 @@ export function Navbar() {
       label: t('navigation.terms', 'Terms of Service'),
       href: ROUTES.TERMS,
       icon: <FileText className='w-4 h-4' />,
-      description: t('navigation.termsDesc', 'Rules and guidelines'),
+      description: t('navigation.termsDesc', 'Rules and guidelines for usage'),
     },
   ];
 
@@ -138,7 +142,7 @@ export function Navbar() {
             </Link>
           </div>
 
-          {/* Right */}
+          {/* Right section */}
           <div className='flex items-center gap-2'>
             <div className='hidden lg:block'>
               <SearchButton onClick={() => setSearchOpen(true)} />
@@ -151,13 +155,29 @@ export function Navbar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   {/*
-                   * ── Avatar wrapper ─────────────────────────────────
-                   * pb-3 فقط لو في badge عشان تعمل مساحة للـ pill
+                   * ── المبدأ ────────────────────────────────────────────
+                   * لما في تاج: pt-3 يعمل مساحة فوق الـ avatar.
+                   * التاج في top-0 داخل هذه المساحة.
+                   * الـ button نفسه overflow-visible عشان التاج ما يتقطعش.
+                   * النتيجة: avatar لابس تاج فوق رأسه مباشرةً.
                    */}
                   <Button
                     variant='ghost'
-                    className='relative rounded-full p-1 h-auto w-auto focus-visible:ring-0'
-                    style={{ paddingBottom: isSubscribed ? '14px' : '4px' }}>
+                    className={cn(
+                      'relative rounded-full h-auto w-auto px-1 pb-1',
+                      'focus-visible:ring-0 focus-visible:ring-offset-0',
+                      'overflow-visible',
+                      isSubscribed ? 'pt-3' : 'pt-1',
+                    )}>
+                    {/* ── التاج: فوق رأس الـ avatar مباشرةً ── */}
+                    {isSubscribed && (
+                      <SubscriptionBadge
+                        planId={planId}
+                        variant='crown'
+                        className='absolute top-0 left-1/2 -translate-x-1/2'
+                      />
+                    )}
+
                     <Avatar className='h-9 w-9 overflow-hidden'>
                       <AvatarImage
                         src={userAvatar}
@@ -168,33 +188,24 @@ export function Navbar() {
                         {user?.name?.charAt(0).toUpperCase() || 'U'}
                       </AvatarFallback>
                     </Avatar>
-
-                    {/* ── Badge: مرتكز تحت الـ avatar ── */}
-                    {isSubscribed && (
-                      <SubscriptionBadge
-                        planId={planId}
-                        variant='pill'
-                        className='absolute bottom-0 left-1/2 -translate-x-1/2'
-                      />
-                    )}
                   </Button>
                 </DropdownMenuTrigger>
 
-                <DropdownMenuContent align='end' className='w-56'>
-                  <DropdownMenuLabel>
-                    <div className='flex flex-col space-y-1.5'>
-                      {/* Name + badge pill في نفس السطر */}
-                      <div className='flex items-center justify-between gap-2'>
-                        <p className='text-sm font-medium truncate'>
+                <DropdownMenuContent align='end' className='w-60'>
+                  <DropdownMenuLabel className='py-2.5 px-3'>
+                    <div className='flex flex-col gap-1'>
+                      {/* اسم + pill badge صغير بجانبه */}
+                      <div className='flex items-center gap-2'>
+                        <span className='text-sm font-semibold truncate'>
                           {user?.name}
-                        </p>
+                        </span>
                         {isSubscribed && (
                           <SubscriptionBadge planId={planId} variant='pill' />
                         )}
                       </div>
-                      <p className='text-xs text-muted-foreground'>
+                      <span className='text-xs text-muted-foreground font-normal'>
                         {user?.email}
-                      </p>
+                      </span>
                     </div>
                   </DropdownMenuLabel>
 
@@ -215,7 +226,9 @@ export function Navbar() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={logout}>
+                  <DropdownMenuItem
+                    onClick={logout}
+                    className='text-destructive focus:text-destructive focus:bg-destructive/10'>
                     {t('navigation.logout')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>

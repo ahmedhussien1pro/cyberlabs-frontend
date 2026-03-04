@@ -15,7 +15,7 @@ export function LandingLayout({
 }: LandingLayoutProps) {
   const contentSpan = 12 - imageColSpan;
   return (
-    <div className='relative min-h-[40vh] flex items-center overflow-hidden py-6 md:py-8'>
+    <div className='relative  flex items-center overflow-hidden py-6 md:py-8'>
       {/* Matrix Background */}
       <MatrixRain opacity={0.15} />
 

@@ -1,3 +1,4 @@
+// src/features/paths/components/path-roadmap.tsx
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import {
@@ -73,9 +74,14 @@ const TYPE_LABEL: Record<ModuleType, string> = {
 interface PathRoadmapProps {
   modules: PathModule[];
   completedIds?: string[];
+  sectionRef?: React.RefObject<HTMLElement>; // ← جديد
 }
 
-export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
+export function PathRoadmap({
+  modules,
+  completedIds = [],
+  sectionRef,
+}: PathRoadmapProps) {
   const { t, i18n } = useTranslation('paths');
   const isAr = i18n.language === 'ar';
   const { isEnrolled, resetProgress } = useCourseProgressStore();
@@ -88,7 +94,7 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
   const totalHours = modules.reduce((s, m) => s + (m.estimatedHours ?? 0), 0);
 
   return (
-    <section className='container mx-auto px-4 py-10'>
+    <section ref={sectionRef} className='container mx-auto px-4 py-10'>
       {/* Progress Header */}
       <div className='mb-10 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between'>
         <div>
@@ -148,19 +154,15 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
           const isInteractive = state !== 'locked' && state !== 'soon';
 
           const courseId = (mod.course as any)?.id ?? '';
-          // const courseTopics = (mod.course as any)?.totalTopics ?? 0;
 
-          // ✅ enrolled: من الـ store الحقيقي
           const enrolledInCourse =
             (courseId && isEnrolled(courseId)) ||
             !!mod.userProgress?.isCompleted;
 
-          // ✅ isCompleted: store أو backend
           const courseComplete =
             !!mod.userProgress?.isCompleted ||
             (mod.userProgress?.progress ?? 0) >= 100;
 
-          // ✅ onReset: يمسح local store
           const handleReset = courseId
             ? () => resetProgress(courseId)
             : undefined;
@@ -227,8 +229,8 @@ export function PathRoadmap({ modules, completedIds = [] }: PathRoadmapProps) {
                   variant='full'
                   href={href}
                   enrolled={enrolledInCourse}
-                  isCompleted={courseComplete} // ✅
-                  onReset={handleReset} // ✅
+                  isCompleted={courseComplete}
+                  onReset={handleReset}
                   index={idx}
                 />
               </div>

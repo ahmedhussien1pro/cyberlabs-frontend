@@ -6,7 +6,6 @@ import {
   X,
   Heart,
   BookOpen,
-  // CheckCircle2,
   Clock3,
   FlaskConical,
   BookMarked,
@@ -32,7 +31,6 @@ import type {
   CourseAccess,
 } from '../types/course.types';
 
-// ── Collapsible section ───────────────────────────────────────────────
 function FilterSection({
   title,
   children,
@@ -62,7 +60,6 @@ function FilterSection({
           )}
         />
       </button>
-
       <AnimatePresence initial={false}>
         {open && (
           <motion.div
@@ -79,7 +76,6 @@ function FilterSection({
   );
 }
 
-// ── Chip button ───────────────────────────────────────────────────────
 function Chip({
   active,
   onClick,
@@ -104,7 +100,6 @@ function Chip({
   );
 }
 
-// ── Main Sidebar ─────────────────────────────────────────────────────
 export function CourseFilterSidebar({
   filters,
   onChange,
@@ -124,7 +119,7 @@ export function CourseFilterSidebar({
     filters.difficulty && filters.difficulty !== 'all',
     filters.access && filters.access !== 'all',
     filters.contentType && filters.contentType !== 'all',
-    filters.status && filters.status !== 'all',
+    filters.state && filters.state !== 'all',
     filters.onlyFavorites,
     filters.onlyEnrolled,
     filters.onlyCompleted,
@@ -152,8 +147,7 @@ export function CourseFilterSidebar({
           <button
             type='button'
             onClick={() => set({ search: '' })}
-            className='absolute end-3 top-1/2 -translate-y-1/2
-                       text-muted-foreground hover:text-foreground'>
+            className='absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground'>
             <X className='h-3.5 w-3.5' />
           </button>
         )}
@@ -176,7 +170,6 @@ export function CourseFilterSidebar({
         </div>
       )}
 
-      {/* Divider */}
       <div className='h-px bg-border/40 my-2' />
 
       {/* MY LIBRARY */}
@@ -224,7 +217,7 @@ export function CourseFilterSidebar({
 
       <div className='h-px bg-border/40' />
 
-      {/* LEVEL */}
+      {/* LEVEL — ✅ UPPERCASE يطابق الـ API */}
       <FilterSection title={t('filters.level', 'Level')} defaultOpen>
         {[
           {
@@ -234,19 +227,19 @@ export function CourseFilterSidebar({
             cls: 'text-muted-foreground',
           },
           {
-            v: 'Beginner',
+            v: 'BEGINNER',
             Icon: TrendingUp,
             label: 'Beginner',
             cls: 'text-emerald-500',
           },
           {
-            v: 'Intermediate',
+            v: 'INTERMEDIATE',
             Icon: Gauge,
             label: 'Intermediate',
             cls: 'text-yellow-500',
           },
           {
-            v: 'Advanced',
+            v: 'ADVANCED',
             Icon: Flame,
             label: 'Advanced',
             cls: 'text-red-500',
@@ -258,7 +251,9 @@ export function CourseFilterSidebar({
               (!filters.difficulty && v === 'all') || filters.difficulty === v
             }
             onClick={() =>
-              set({ difficulty: v === 'all' ? 'all' : (v as CourseDifficulty) })
+              set({
+                difficulty: v === 'all' ? undefined : (v as CourseDifficulty),
+              })
             }>
             <Icon className={cn('h-4 w-4 shrink-0', cls)} />
             {label}
@@ -268,7 +263,7 @@ export function CourseFilterSidebar({
 
       <div className='h-px bg-border/40' />
 
-      {/* ACCESS */}
+      {/* ACCESS — ✅ UPPERCASE */}
       <FilterSection title={t('filters.access', 'Access')} defaultOpen>
         {[
           {
@@ -277,14 +272,16 @@ export function CourseFilterSidebar({
             label: t('filters.allAccess', 'All Access'),
             cls: 'text-muted-foreground',
           },
-          { v: 'free', Icon: Unlock, label: 'Free', cls: 'text-emerald-500' },
-          { v: 'pro', Icon: Crown, label: 'Pro', cls: 'text-blue-500' },
-          { v: 'premium', Icon: Gem, label: 'Premium', cls: 'text-violet-500' },
+          { v: 'FREE', Icon: Unlock, label: 'Free', cls: 'text-emerald-500' },
+          { v: 'PRO', Icon: Crown, label: 'Pro', cls: 'text-blue-500' },
+          { v: 'PREMIUM', Icon: Gem, label: 'Premium', cls: 'text-violet-500' },
         ].map(({ v, Icon, label, cls }) => (
           <Chip
             key={v}
             active={(!filters.access && v === 'all') || filters.access === v}
-            onClick={() => set({ access: v as CourseAccess | 'all' })}>
+            onClick={() =>
+              set({ access: v === 'all' ? undefined : (v as CourseAccess) })
+            }>
             <Icon className={cn('h-4 w-4 shrink-0', cls)} />
             {label}
           </Chip>
@@ -293,23 +290,23 @@ export function CourseFilterSidebar({
 
       <div className='h-px bg-border/40' />
 
-      {/* TYPE — collapsed by default */}
+      {/* TYPE */}
       <FilterSection
         title={t('filters.contentType', 'Type')}
         defaultOpen={false}>
         {[
           { v: 'all', Icon: BookOpen, label: t('filters.all', 'All Types') },
           {
-            v: 'practical',
+            v: 'PRACTICAL',
             Icon: FlaskConical,
             label: t('filters.practical', 'Practical'),
           },
           {
-            v: 'theoretical',
+            v: 'THEORETICAL',
             Icon: BookMarked,
             label: t('filters.theoretical', 'Theoretical'),
           },
-          { v: 'mixed', Icon: BookOpen, label: t('filters.mixed', 'Mixed') },
+          { v: 'MIXED', Icon: BookOpen, label: t('filters.mixed', 'Mixed') },
         ].map(({ v, Icon, label }) => (
           <Chip
             key={v}
@@ -317,7 +314,10 @@ export function CourseFilterSidebar({
               (!filters.contentType && v === 'all') || filters.contentType === v
             }
             onClick={() =>
-              set({ contentType: v as CourseFilters['contentType'] })
+              set({
+                contentType:
+                  v === 'all' ? undefined : (v as CourseFilters['contentType']),
+              })
             }>
             <Icon className='h-4 w-4 shrink-0 text-muted-foreground' />
             {label}
@@ -327,13 +327,14 @@ export function CourseFilterSidebar({
 
       <div className='h-px bg-border/40' />
 
-      {/* STATUS — collapsed by default */}
+      {/* STATUS */}
       <FilterSection title={t('filters.status', 'Status')} defaultOpen={false}>
         <Chip
-          active={filters.status === 'coming_soon'}
+          active={filters.state === 'COMING_SOON'}
           onClick={() =>
             set({
-              status: filters.status === 'coming_soon' ? 'all' : 'coming_soon',
+              state:
+                filters.state === 'COMING_SOON' ? undefined : 'COMING_SOON',
             })
           }>
           <Clock3 className='h-4 w-4 shrink-0 text-zinc-400' />

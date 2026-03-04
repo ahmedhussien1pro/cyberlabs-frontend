@@ -88,6 +88,7 @@ function useActiveFilterChips(
       onRemove: () => onChange({ ...filters, onlyCompleted: false }),
     });
   }
+
   const DIFF_MAP: Record<
     string,
     { label: string; icon: React.ElementType; color: string }
@@ -114,6 +115,7 @@ function useActiveFilterChips(
       onRemove: () => onChange({ ...filters, difficulty: undefined }),
     });
   }
+
   const ACCESS_MAP: Record<
     string,
     { label: string; icon: React.ElementType; color: string }
@@ -132,6 +134,7 @@ function useActiveFilterChips(
       onRemove: () => onChange({ ...filters, access: undefined }),
     });
   }
+
   const CT_MAP: Record<string, { label: string; icon: React.ElementType }> = {
     PRACTICAL: {
       label: t('filters.practical', 'Practical'),
@@ -153,6 +156,7 @@ function useActiveFilterChips(
       onRemove: () => onChange({ ...filters, contentType: undefined }),
     });
   }
+
   if (filters.state === 'COMING_SOON') {
     chips.push({
       key: 'state',
@@ -162,6 +166,7 @@ function useActiveFilterChips(
       onRemove: () => onChange({ ...filters, state: undefined }),
     });
   }
+
   return chips;
 }
 
@@ -173,16 +178,14 @@ export default function CoursesListPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [page, setPage] = useState(1);
 
-  const { favoriteCourses, enrolledCourses, completedTopics } =
-    useCourseProgressStore();
-
+  const { completedTopics } = useCourseProgressStore();
   const { data, isLoading, isError } = useCourses(filters);
 
   const filteredData = useMemo(() => {
     if (!data?.data) return [];
     let result = [...data.data];
 
-    // ── client-side search fallback ───────────────────────────────
+    // ── search: client-side fallback (backend بيعملها كمان) ──────────
     if (filters.search?.trim()) {
       const q = filters.search.toLowerCase();
       result = result.filter(
@@ -193,21 +196,17 @@ export default function CoursesListPage() {
       );
     }
 
-    // ── local store filters ───────────────────────────────────────
-    if (filters.onlyFavorites)
-      result = result.filter((c) => favoriteCourses.includes(c.id));
-
-    if (filters.onlyEnrolled)
-      result = result.filter((c) => enrolledCourses.includes(c.id));
-
-    if (filters.onlyCompleted)
+    // ── onlyCompleted: client-side فقط (من الـ local store) ──────────
+    // onlyFavorites + onlyEnrolled → server-side via JWT (backend يتولاهم)
+    if (filters.onlyCompleted) {
       result = result.filter((c) => {
         const done = completedTopics[c.id]?.length ?? 0;
         return c.totalTopics > 0 && done >= c.totalTopics;
       });
+    }
 
     return result;
-  }, [data, filters, favoriteCourses, enrolledCourses, completedTopics]);
+  }, [data, filters.search, filters.onlyCompleted, completedTopics]);
 
   const totalPages = Math.ceil(filteredData.length / PAGE_SIZE);
   const displayedData = filteredData.slice(
@@ -281,7 +280,7 @@ export default function CoursesListPage() {
               </div>
             )}
 
-            {/* ── Main ── */}
+            {/* ── Main Content ── */}
             <div className='flex-1 min-w-0 space-y-5'>
               {/* Toolbar */}
               <div className='flex items-center gap-3 flex-wrap'>
@@ -303,7 +302,7 @@ export default function CoursesListPage() {
                   </p>
                 )}
 
-                {/* Active chips في الـ toolbar */}
+                {/* Active chips */}
                 {activeChips.length > 0 && (
                   <div className='flex flex-wrap items-center gap-1.5'>
                     {activeChips.map((chip) => (

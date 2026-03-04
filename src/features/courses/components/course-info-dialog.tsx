@@ -1,3 +1,4 @@
+// src/features/courses/components/course-info-dialog.tsx
 import { useTranslation } from 'react-i18next';
 import {
   Dialog,
@@ -23,6 +24,10 @@ import { useNavigate } from 'react-router-dom';
 import type { Course } from '../types/course.types';
 
 const ACCESS_STYLE: Record<string, string> = {
+  FREE: 'border-emerald-500/40 text-emerald-400 bg-emerald-500/10',
+  PRO: 'border-blue-500/40    text-blue-400    bg-blue-500/10',
+  PREMIUM: 'border-violet-500/40  text-violet-400  bg-violet-500/10',
+  // fallback للـ lowercase القديم في حال وجد في الـ cache
   free: 'border-emerald-500/40 text-emerald-400 bg-emerald-500/10',
   pro: 'border-blue-500/40    text-blue-400    bg-blue-500/10',
   premium: 'border-violet-500/40  text-violet-400  bg-violet-500/10',
@@ -66,7 +71,7 @@ export function CourseInfoDialog({
               {course.image ? (
                 <img
                   src={course.image}
-                  alt={title}
+                  alt={title ?? ''}
                   className='w-full h-full object-cover'
                 />
               ) : (
@@ -86,7 +91,7 @@ export function CourseInfoDialog({
                     'text-[10px] font-bold',
                     ACCESS_STYLE[course.access],
                   )}>
-                  {course.access.toUpperCase()}
+                  {course.access}
                 </Badge>
                 <Badge variant='secondary' className='text-[10px]'>
                   {category}
@@ -111,15 +116,18 @@ export function CourseInfoDialog({
           <span className='flex items-center gap-1.5 text-muted-foreground'>
             <Clock className='h-4 w-4' /> {course.estimatedHours}h
           </span>
-          {course.enrolledCount > 0 && (
+          {/* ✅ fix: enrolledCount → enrollmentCount */}
+          {(course.enrollmentCount ?? 0) > 0 && (
             <span className='flex items-center gap-1.5 text-muted-foreground'>
               <Users className='h-4 w-4' />{' '}
-              {course.enrolledCount.toLocaleString()}
+              {course.enrollmentCount.toLocaleString()}
             </span>
           )}
-          {course.rating > 0 && (
+          {/* ✅ fix: rating → averageRating */}
+          {(course.averageRating ?? 0) > 0 && (
             <span className='flex items-center gap-1.5 text-yellow-500'>
-              <Star className='h-4 w-4 fill-yellow-500' /> {course.rating}
+              <Star className='h-4 w-4 fill-yellow-500' />{' '}
+              {course.averageRating}
             </span>
           )}
         </div>

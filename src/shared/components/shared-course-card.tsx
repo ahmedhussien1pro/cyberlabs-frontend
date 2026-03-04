@@ -39,18 +39,18 @@ export interface CourseCardData {
   id: string;
   slug: string;
   title: string;
-  ar_title?: string;
-  description?: string;
-  ar_description?: string;
-  thumbnail?: string;
-  image?: string;
+  ar_title?: string | null; // ✅ null allowed
+  description?: string | null; // ✅ null allowed
+  ar_description?: string | null; // ✅ null allowed
+  thumbnail?: string | null; // ✅ null allowed
+  image?: string | null; // ✅ null allowed
   color?: string;
-  difficulty?: string;
-  ar_difficulty?: string;
+  difficulty?: string | null; // ✅ null allowed
+  ar_difficulty?: string | null; // ✅ null allowed
   access?: string;
   contentType?: string;
-  category?: string;
-  ar_category?: string;
+  category?: string | null; // ✅ null allowed
+  ar_category?: string | null; // ✅ null allowed
   totalTopics?: number;
   estimatedHours?: number;
   state?: string;
@@ -111,7 +111,7 @@ const CONTENT_ICON: Record<string, { Icon: React.ElementType; label: string }> =
     MIXED: { Icon: BookOpen, label: 'Mixed' },
   };
 
-function normalizeDiff(d?: string) {
+function normalizeDiff(d?: string | null) {
   if (!d) return null;
   const s = d.toLowerCase();
   return s.charAt(0).toUpperCase() + s.slice(1);
@@ -222,6 +222,7 @@ function FullCard({
       ? course.ar_difficulty
       : course.difficulty,
   );
+
   const cat = lang === 'ar' ? course.ar_category : course.category;
   const ct = CONTENT_ICON[course.contentType ?? 'MIXED'];
   const AccessIcon = ACCESS_ICON[course.access ?? 'FREE'] ?? Unlock;
@@ -431,7 +432,7 @@ function MiniCard({
   course,
   enrolled,
   isCompleted,
-  onReset,
+  onReset: _onReset,
   href,
 }: SharedCourseCardProps) {
   const { i18n } = useTranslation('courses');

@@ -62,10 +62,17 @@ function normalizeCourseList(raw: any): PaginatedCourses {
 }
 
 export const coursesApi = {
-  list: (filters: CourseFilters = {}): Promise<PaginatedCourses> =>
-    apiClient
-      .get(COURSES.BASE, { params: filters })
-      .then((r) => normalizeCourseList(r?.data ?? r)),
+  list: (filters: CourseFilters = {}): Promise<PaginatedCourses> => {
+    // ── ترجمة state → status (الـ backend يستنى "status") ──────────
+    const { state, ...rest } = filters;
+
+    const params: Record<string, any> = { ...rest };
+    if (state && state !== 'all') params.status = state;
+
+    return apiClient
+      .get(COURSES.BASE, { params })
+      .then((r) => normalizeCourseList(r?.data ?? r));
+  },
 
   get: (slug: string): Promise<Course> =>
     apiClient

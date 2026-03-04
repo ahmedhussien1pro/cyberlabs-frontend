@@ -108,7 +108,7 @@ export function CourseDetailHero({
   enrolled,
   enrolling,
   progress,
-  done,
+  done: _done,
   fav,
   isPro = false,
   hasLabs = false,

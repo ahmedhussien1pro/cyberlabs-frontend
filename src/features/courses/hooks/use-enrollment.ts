@@ -5,6 +5,7 @@ import {
   ENROLLMENTS_KEY,
   PROGRESS_KEY,
 } from './use-user-progress';
+import { pathsQueryKeys } from '@/features/paths/hooks/use-paths';
 
 export function useEnrollment() {
   const qc = useQueryClient();
@@ -13,6 +14,9 @@ export function useEnrollment() {
   const invalidate = () => {
     void qc.invalidateQueries({ queryKey: ENROLLMENTS_KEY });
     void qc.invalidateQueries({ queryKey: PROGRESS_KEY });
+    void qc.invalidateQueries({ queryKey: ['user', 'courses'] });
+    void qc.invalidateQueries({ queryKey: ['user', 'stats'] });
+    void qc.invalidateQueries({ queryKey: pathsQueryKeys.all });
   };
 
   return {

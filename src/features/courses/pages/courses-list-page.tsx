@@ -1,3 +1,4 @@
+// src/features/courses/pages/courses-list-page.tsx
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -29,6 +30,7 @@ import { CourseCard } from '../components/course-card';
 import { CourseCardSkeleton } from '../components/course-card-skeleton';
 import { CourseFilterSidebar } from '../components/course-filters';
 import { useCourses } from '../hooks/use-courses';
+import { useUserProgress } from '../hooks/use-user-progress';
 import type { CourseFilters } from '../types/course.types';
 
 type ViewMode = 'grid' | 'list';
@@ -174,15 +176,21 @@ export default function CoursesListPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [page, setPage] = useState(1);
 
-  // ── onlyCompleted/onlyFavorites/onlyEnrolled → server-side (JWT) ──
-  // لا يحتاج local store
   const { data, isLoading, isError } = useCourses(filters);
+
+  // ── progress من الـ DB — لفلترة client-side (المشكلة #2) ─────────
+  const {
+    isFavorite,
+    isEnrolled,
+    isCompleted,
+    isLoading: progressLoading,
+  } = useUserProgress();
 
   const filteredData = useMemo(() => {
     if (!data?.data) return [];
     let result = [...data.data];
 
-    // search client-side fallback فقط
+    // ── بحث نصي ─────────────────────────────────────────────────────
     if (filters.search?.trim()) {
       const q = filters.search.toLowerCase();
       result = result.filter(
@@ -193,8 +201,13 @@ export default function CoursesListPage() {
       );
     }
 
+    // ── فلترة بالـ progress من DB (المشكلة #2 — كانت مكسورة) ────────
+    if (filters.onlyFavorites) result = result.filter((c) => isFavorite(c.id));
+    if (filters.onlyEnrolled) result = result.filter((c) => isEnrolled(c.id));
+    if (filters.onlyCompleted) result = result.filter((c) => isCompleted(c.id));
+
     return result;
-  }, [data, filters.search]);
+  }, [data, filters, isFavorite, isEnrolled, isCompleted]);
 
   const totalPages = Math.ceil(filteredData.length / PAGE_SIZE);
   const displayedData = filteredData.slice(
@@ -212,6 +225,8 @@ export default function CoursesListPage() {
   };
   const activeChips = useActiveFilterChips(filters, handleFiltersChange);
 
+  const showLoading = isLoading || progressLoading;
+
   return (
     <MainLayout>
       <div className='min-h-screen bg-background'>
@@ -227,6 +242,7 @@ export default function CoursesListPage() {
 
         <div className='container mx-auto px-4 py-8'>
           <div className='flex gap-7 relative'>
+            {/* Desktop sidebar */}
             <aside className='hidden lg:block w-60 shrink-0'>
               <div className='sticky top-20'>
                 <CourseFilterSidebar
@@ -238,6 +254,7 @@ export default function CoursesListPage() {
               </div>
             </aside>
 
+            {/* Mobile sidebar drawer */}
             {sidebarOpen && (
               <div
                 className='fixed inset-0 z-40 lg:hidden'
@@ -266,6 +283,7 @@ export default function CoursesListPage() {
             )}
 
             <div className='flex-1 min-w-0 space-y-5'>
+              {/* Toolbar */}
               <div className='flex items-center gap-3 flex-wrap'>
                 <Button
                   variant='outline'
@@ -276,7 +294,7 @@ export default function CoursesListPage() {
                   {t('filters.title', 'Filters')}
                 </Button>
 
-                {!isLoading && (
+                {!showLoading && (
                   <p className='text-sm text-muted-foreground'>
                     <span className='font-bold text-foreground'>
                       {filteredData.length}
@@ -333,6 +351,7 @@ export default function CoursesListPage() {
                 </div>
               )}
 
+              {/* Grid / List */}
               <div
                 className={cn(
                   'grid gap-5',
@@ -340,7 +359,7 @@ export default function CoursesListPage() {
                     ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3'
                     : 'grid-cols-1',
                 )}>
-                {isLoading
+                {showLoading
                   ? Array.from({ length: 6 }).map((_, i) => (
                       <CourseCardSkeleton key={i} view={view} />
                     ))
@@ -354,7 +373,8 @@ export default function CoursesListPage() {
                     ))}
               </div>
 
-              {!isLoading && filteredData.length === 0 && (
+              {/* Empty state */}
+              {!showLoading && filteredData.length === 0 && (
                 <div className='flex flex-col items-center justify-center min-h-[480px] gap-5 text-center py-16 rounded-2xl border border-dashed border-border/50 bg-muted/10'>
                   <div className='h-16 w-16 rounded-2xl bg-muted flex items-center justify-center border border-border/40'>
                     <Shield className='h-8 w-8 text-muted-foreground/50' />
@@ -407,7 +427,7 @@ export default function CoursesListPage() {
                 </div>
               )}
 
-              {!isLoading && totalPages > 1 && (
+              {!showLoading && totalPages > 1 && (
                 <Pagination
                   page={page}
                   totalPages={totalPages}

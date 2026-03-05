@@ -66,7 +66,7 @@ export const API_ENDPOINTS = {
 
   ENROLLMENTS: {
     BASE: '/enrollments',
-    MY: '/enrollments/me',
+    MY: '/enrollments',
   },
 
   DASHBOARD: {

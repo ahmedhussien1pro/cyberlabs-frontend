@@ -1,4 +1,3 @@
-// src/features/paths/hooks/use-paths.ts
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/core/api/client';
 import { API_ENDPOINTS } from '@/core/api/endpoints';
@@ -9,8 +8,6 @@ import type {
   ModuleType,
   ModuleStatus,
 } from '../types/path.types';
-
-const BACKEND_READY = import.meta.env.VITE_PATHS_ENABLED === 'true';
 
 export const pathsQueryKeys = {
   all: ['paths'] as const,
@@ -38,8 +35,8 @@ const normalizeStatus = (s?: string): ModuleStatus => {
 };
 
 const normalizeModule = (mod: any): PathModule => ({
-  id: mod.id,
-  order: mod.order,
+  id: mod.id ?? mod._id ?? '',
+  order: mod.order ?? 0,
   title: mod.title ?? mod.course?.title ?? mod.lab?.title ?? '',
   ar_title: mod.ar_title ?? mod.course?.ar_title ?? mod.lab?.ar_title ?? '',
   description: mod.description ?? mod.course?.description ?? '',
@@ -50,15 +47,26 @@ const normalizeModule = (mod: any): PathModule => ({
     mod.estimatedHours ?? mod.course?.duration ?? mod.lab?.duration ?? 0,
   isLocked: mod.isLocked ?? false,
   slug: mod.course?.slug ?? mod.lab?.slug ?? undefined,
-  course: mod.course,
-  lab: mod.lab,
-  userProgress: mod.userProgress,
+  course: mod.course
+    ? {
+        ...mod.course,
+        id: mod.course.id ?? mod.course._id ?? '',
+      }
+    : undefined,
+  lab: mod.lab
+    ? {
+        ...mod.lab,
+        id: mod.lab.id ?? mod.lab._id ?? '',
+      }
+    : undefined,
+  userProgress: mod.userProgress ?? undefined,
 });
 
-const mapBackendPathToFrontend = (path: any): LearningPath => ({
+const mapBackendPath = (path: any): LearningPath => ({
   ...path,
   difficulty: path.difficulty
-    ? path.difficulty.charAt(0) + path.difficulty.slice(1).toLowerCase()
+    ? path.difficulty.charAt(0).toUpperCase() +
+      path.difficulty.slice(1).toLowerCase()
     : 'Beginner',
   color: path.color ? path.color.toLowerCase() : 'blue',
   modules: Array.isArray(path.modules) ? path.modules.map(normalizeModule) : [],
@@ -74,25 +82,24 @@ export function usePaths(filters: PathFilters = {}) {
       if (filters.search) params.search = filters.search;
 
       const res = await apiClient.get(API_ENDPOINTS.PATHS.BASE, { params });
-      const items = res.data?.data || res.data || [];
-      return items.map(mapBackendPathToFrontend);
+      const items: any[] = res.data?.data ?? res.data ?? [];
+      return items.map(mapBackendPath);
     },
     staleTime: 1000 * 60 * 10,
-    enabled: BACKEND_READY,
   });
 }
 
+// ── Detail ────────────────────────────────────────────────────────
 export function usePath(slug: string) {
   return useQuery({
     queryKey: pathsQueryKeys.detail(slug),
     queryFn: async (): Promise<LearningPath | null> => {
       const response = await apiClient.get(API_ENDPOINTS.PATHS.BY_SLUG(slug));
-      // ✅ Fix: الـ data في response.data لا في response نفسها
       const res = response?.data ?? response;
       if (!res || !res.id) return null;
-      return mapBackendPathToFrontend(res);
+      return mapBackendPath(res);
     },
-    enabled: !!slug && BACKEND_READY,
+    enabled: !!slug,
     staleTime: 1000 * 60 * 5,
   });
 }

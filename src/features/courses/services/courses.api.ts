@@ -1,4 +1,3 @@
-// src/features/courses/services/courses.api.ts
 import apiClient from '@/core/api/client';
 import { API_ENDPOINTS } from '@/core/api/endpoints';
 import type {
@@ -61,9 +60,16 @@ function normalizeCourseList(raw: any): PaginatedCourses {
   };
 }
 
+function normalizeEnrollment(raw: any): Enrollment {
+  return {
+    courseId: raw.courseId ?? raw.course?.id ?? '',
+    progress: raw.progress ?? 0,
+    isCompleted: raw.isCompleted ?? false,
+  };
+}
+
 export const coursesApi = {
   list: (filters: CourseFilters = {}): Promise<PaginatedCourses> => {
-    // ── نشيل الـ params اللي بيتفلتروا client-side فقط ────────────────
     const {
       state,
       onlyFavorites: _f,
@@ -74,10 +80,9 @@ export const coursesApi = {
 
     const params: Record<string, any> = {
       ...rest,
-      limit: 50, // ← نجيب كل الكورسات عشان نفلتر client-side
+      limit: 50,
     };
 
-    // ── ترجمة state → status (الـ backend يستنى "status") ──────────
     if (state && state !== 'all') params.status = state;
 
     return apiClient
@@ -130,9 +135,15 @@ export const coursesApi = {
       .then((r) => r?.data ?? r),
 
   getMyEnrollments: (): Promise<Enrollment[]> =>
-    apiClient
-      .get(ENROLLMENTS.MY)
-      .then((r) => (Array.isArray(r) ? r : (r?.data ?? []))),
+    apiClient.get(ENROLLMENTS.MY, { params: { limit: 200 } }).then((r) => {
+      const body = r?.data ?? r;
+      const arr: any[] = Array.isArray(body)
+        ? body
+        : Array.isArray(body?.data)
+          ? body.data
+          : [];
+      return arr.map(normalizeEnrollment);
+    }),
 
   listPaths: (filters?: {
     page?: number;

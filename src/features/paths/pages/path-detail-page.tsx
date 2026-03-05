@@ -1,4 +1,3 @@
-// src/features/paths/pages/path-detail-page.tsx
 import { useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +7,7 @@ import { PathDetailHero } from '../components/path-detail-hero';
 import { PathRoadmap } from '../components/path-roadmap';
 import { PathCardSkeleton } from '../components/path-card-skeleton';
 import { usePath } from '../hooks/use-paths';
-// import { useCourseProgressStore } from '@/features/courses/store/course-progress.store';
+import { useUserProgress } from '@/features/courses/hooks/use-user-progress';
 import { ROUTES } from '@/shared/constants';
 import MainLayout from '@/shared/components/layout/main-layout';
 
@@ -16,34 +15,36 @@ export default function PathDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const { t } = useTranslation('paths');
   const { data: path, isLoading, isError } = usePath(slug ?? '');
-  // const { isEnrolled } = useCourseProgressStore();
 
-  // ref للـ roadmap section — نسكرول إليه لما يضغط Start/Continue
+  const { isCompleted: isCourseCompleted } = useUserProgress();
+
   const roadmapRef = useRef<HTMLElement>(null);
 
-  // أول module لم يكتمل بعد (active وليس done)
+  const completedIds =
+    path?.modules
+      .filter((m) => {
+        const courseId = m.course?.id ?? '';
+        if (courseId) return isCourseCompleted(courseId);
+        return !!m.userProgress?.isCompleted;
+      })
+      .map((m) => m.id) ?? [];
+
   const firstActiveModuleId =
     path?.modules.find((m) => {
-      // const courseId = (m.course as any)?.id ?? '';
-      // const done = courseId
-      //   ? isEnrolled(courseId) && false //
-      //   : false;
-      return (
-        !m.isLocked &&
-        m.status !== 'coming_soon' &&
-        !m.userProgress?.isCompleted
-      );
+      const courseId = m.course?.id ?? '';
+      const done = courseId
+        ? isCourseCompleted(courseId)
+        : !!m.userProgress?.isCompleted;
+      return !m.isLocked && m.status !== 'coming_soon' && !done;
     })?.id ?? null;
 
   const handleStartPath = () => {
     if (!roadmapRef.current) return;
 
     if (firstActiveModuleId) {
-      // سكرول لأول كارد غير مكتمل
       const el = document.getElementById(`module-${firstActiveModuleId}`);
       if (el) {
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        // highlight مؤقت
         el.classList.add('ring-2', 'ring-primary', 'ring-offset-2');
         setTimeout(
           () => el.classList.remove('ring-2', 'ring-primary', 'ring-offset-2'),
@@ -53,7 +54,6 @@ export default function PathDetailPage() {
       }
     }
 
-    // fallback: سكرول للـ roadmap section
     roadmapRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
@@ -83,7 +83,11 @@ export default function PathDetailPage() {
         {!isLoading && path && (
           <>
             <PathDetailHero path={path} onStartPath={handleStartPath} />
-            <PathRoadmap modules={path.modules} sectionRef={roadmapRef} />
+            <PathRoadmap
+              modules={path.modules}
+              completedIds={completedIds}
+              sectionRef={roadmapRef}
+            />
           </>
         )}
       </div>

@@ -24,17 +24,18 @@ export interface PathModule {
   status: ModuleStatus;
   estimatedHours: number;
   isLocked: boolean;
-  // slug is extracted from linked course.slug or lab.slug for navigation
   slug?: string;
-  // raw nested resources from backend (used for extra display info)
   course?: {
     id: string;
     title: string;
     ar_title?: string;
     slug: string;
     thumbnail?: string;
+    color?: string;
     difficulty?: string;
+    access?: 'FREE' | 'PRO' | 'PREMIUM';
     duration?: number;
+    totalTopics?: number;
   };
   lab?: {
     id: string;
@@ -59,7 +60,6 @@ export interface LearningPath {
   ar_description: string;
   longDescription: string;
   ar_longDescription: string;
-
   iconName: string;
   color: PathColor;
   difficulty: PathDifficulty;
@@ -79,7 +79,7 @@ export interface LearningPath {
   isFeatured?: boolean;
   isComingSoon?: boolean;
   enrolled?: boolean;
-  progress?: number; // 0-100
+  progress?: number;
   completedAt?: string | null;
 }
 

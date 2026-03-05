@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/core/api/client';
 import { toast } from 'sonner';
 import { PROGRESS_KEY, ENROLLMENTS_KEY } from './use-user-progress';
+import { pathsQueryKeys } from '@/features/paths/hooks/use-paths';
 import type { Topic } from '@/core/types/curriculumCourses.types';
 
 export type { Topic };
@@ -56,6 +57,9 @@ export function useMarkTopicComplete() {
       void qc.invalidateQueries({ queryKey: PROGRESS_KEY });
       void qc.invalidateQueries({ queryKey: ENROLLMENTS_KEY });
       void qc.invalidateQueries({ queryKey: ['user', 'activity'] });
+      void qc.invalidateQueries({ queryKey: ['user', 'stats'] });
+      void qc.invalidateQueries({ queryKey: ['user', 'courses'] });
+      void qc.invalidateQueries({ queryKey: pathsQueryKeys.all });
     },
 
     onError: () => toast.error('تعذر حفظ التقدم، حاول مجدداً.'),

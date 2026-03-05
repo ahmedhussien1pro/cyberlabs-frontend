@@ -24,7 +24,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { useCourseProgressStore } from '../store/course-progress.store';
+import { useUserProgress } from '../hooks/use-user-progress';
 import type {
   CourseFilters,
   CourseDifficulty,
@@ -111,7 +111,10 @@ export function CourseFilterSidebar({
   totalCount?: number;
 }) {
   const { t } = useTranslation('courses');
-  const { favoriteCourses, enrolledCourses } = useCourseProgressStore();
+
+  // ── بيانات حقيقية من DB ──────────────────────────────────────────
+  const { favorites, enrollments } = useUserProgress();
+
   const set = (patch: Partial<CourseFilters>) =>
     onChange({ ...filters, ...patch });
 
@@ -186,11 +189,11 @@ export function CourseFilterSidebar({
             )}
           />
           <span className='flex-1'>{t('filters.favorites', 'Favorites')}</span>
-          {favoriteCourses.length > 0 && (
+          {favorites.length > 0 && (
             <Badge
               variant='secondary'
               className='text-[10px] h-4 px-1.5 shrink-0'>
-              {favoriteCourses.length}
+              {favorites.length}
             </Badge>
           )}
         </Chip>
@@ -199,11 +202,11 @@ export function CourseFilterSidebar({
           onClick={() => set({ onlyEnrolled: !filters.onlyEnrolled })}>
           <BookOpen className='h-4 w-4 shrink-0 text-blue-400' />
           <span className='flex-1'>{t('filters.enrolled', 'Enrolled')}</span>
-          {enrolledCourses.length > 0 && (
+          {enrollments.length > 0 && (
             <Badge
               variant='secondary'
               className='text-[10px] h-4 px-1.5 shrink-0'>
-              {enrolledCourses.length}
+              {enrollments.length}
             </Badge>
           )}
         </Chip>
@@ -217,7 +220,7 @@ export function CourseFilterSidebar({
 
       <div className='h-px bg-border/40' />
 
-      {/* LEVEL — ✅ UPPERCASE يطابق الـ API */}
+      {/* LEVEL */}
       <FilterSection title={t('filters.level', 'Level')} defaultOpen>
         {[
           {
@@ -263,7 +266,7 @@ export function CourseFilterSidebar({
 
       <div className='h-px bg-border/40' />
 
-      {/* ACCESS — ✅ UPPERCASE */}
+      {/* ACCESS */}
       <FilterSection title={t('filters.access', 'Access')} defaultOpen>
         {[
           {

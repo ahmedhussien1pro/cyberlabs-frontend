@@ -15,7 +15,7 @@ import { ROUTES } from '@/shared/constants';
 import { SharedCourseCard } from '@/shared/components/shared-course-card';
 import type { CourseCardData } from '@/shared/components/shared-course-card';
 import type { PathModule, ModuleType } from '../types/path.types';
-import { useCourseProgressStore } from '@/features/courses/store/course-progress.store';
+import { useUserProgress } from '@/features/courses/hooks/use-user-progress';
 
 type ModuleState = 'done' | 'active' | 'locked' | 'soon';
 
@@ -83,8 +83,7 @@ export function PathRoadmap({
   sectionRef,
 }: PathRoadmapProps) {
   const { t } = useTranslation('paths');
-  // const isAr = i18n.language === 'ar';
-  const { isEnrolled, resetProgress } = useCourseProgressStore();
+  const { isEnrolled } = useUserProgress(); // ← من DB
 
   const doneCount = modules.filter(
     (m) => completedIds.includes(m.id) || !!m.userProgress?.isCompleted,
@@ -160,14 +159,11 @@ export function PathRoadmap({
           const courseComplete =
             !!mod.userProgress?.isCompleted ||
             (mod.userProgress?.progress ?? 0) >= 100;
-          const handleReset = courseId
-            ? () => resetProgress(courseId)
-            : undefined;
 
           return (
             <motion.div
               key={mod.id}
-              id={`module-${mod.id}`} // ← للسكرول من الهيرو
+              id={`module-${mod.id}`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35, delay: idx * 0.07 }}
@@ -228,7 +224,7 @@ export function PathRoadmap({
                   href={href}
                   enrolled={enrolledInCourse}
                   isCompleted={courseComplete}
-                  onReset={handleReset}
+                  onReset={undefined} // لا reset للـ DB
                   index={idx}
                 />
               </div>

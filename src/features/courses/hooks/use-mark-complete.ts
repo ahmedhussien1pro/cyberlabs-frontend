@@ -1,7 +1,8 @@
+// src/features/courses/hooks/use-mark-complete.ts
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { coursesApi } from '../services/courses.api';
-import { useCourseProgressStore } from '../store/course-progress.store';
 import { toast } from 'sonner';
+import { PROGRESS_KEY, ENROLLMENTS_KEY } from './use-user-progress';
 
 interface Params {
   courseId: string;
@@ -10,19 +11,15 @@ interface Params {
 
 export function useMarkLessonComplete() {
   const queryClient = useQueryClient();
-  const { markTopicComplete } = useCourseProgressStore();
 
   return useMutation({
     mutationFn: ({ courseId, lessonId }: Params) =>
       coursesApi.markTopicComplete(courseId, lessonId),
 
-    onMutate: ({ courseId, lessonId }) => {
-      markTopicComplete(courseId, lessonId);
-    },
-
     onSuccess: (_data, { courseId }) => {
-      queryClient.invalidateQueries({ queryKey: ['enrollments', 'me'] });
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({ queryKey: PROGRESS_KEY });
+      void queryClient.invalidateQueries({ queryKey: ENROLLMENTS_KEY });
+      void queryClient.invalidateQueries({
         queryKey: ['courses', 'detail', courseId],
       });
       toast.success('Lesson complete!', { duration: 1500 });

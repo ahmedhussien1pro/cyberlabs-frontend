@@ -1,3 +1,4 @@
+// src/features/courses/components/course-curriculum.tsx
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
-import { useCourseProgressStore } from '../store/course-progress.store';
+import { useUserProgress } from '../hooks/use-user-progress';
 import { useCurriculum } from '../hooks/use-curriculum';
 import { useMarkTopicComplete } from '../hooks/use-topic';
 import type { Course } from '../types/course.types';
@@ -72,7 +73,9 @@ function TopicRow({
 }) {
   const { i18n, t } = useTranslation('courses');
   const lang = i18n.language === 'ar' ? 'ar' : 'en';
-  const { isTopicCompleted, isCourseCompleted } = useCourseProgressStore();
+
+  // ── من DB — لا localStorage ──────────────────────────────────────
+  const { isTopicCompleted, isCourseCompleted } = useUserProgress();
   const { mutate: markComplete, isPending: marking } = useMarkTopicComplete();
 
   const state = getTopicState(
@@ -104,7 +107,6 @@ function TopicRow({
   };
 
   return (
-    /* ✅ id للـ scroll من الهيرو */
     <motion.li
       id={`topic-row-${topicIndex}`}
       initial={{ opacity: 0, y: 8 }}
@@ -309,7 +311,7 @@ function CurriculumSkeleton() {
 interface CourseCurriculumProps {
   course: Course;
   isEnrolled: boolean;
-  hasLabs?: boolean; // ✅ undefined أو false → disabled, true → enabled
+  hasLabs?: boolean;
 }
 
 export function CourseCurriculum({
@@ -322,8 +324,8 @@ export function CourseCurriculum({
   const [openId, setOpenId] = useState<string | null>(null);
   const [celebrateOpen, setCelebrateOpen] = useState(false);
 
-  const { getProgress, getCompletedCount, resetProgress } =
-    useCourseProgressStore();
+  // ── من DB ─────────────────────────────────────────────────────────
+  const { getProgress, getCompletedCount } = useUserProgress();
 
   const { data: curriculumData, isLoading } = useCurriculum(course.slug);
   const topics = (curriculumData?.topics ?? []) as CurriculumTopic[];
@@ -332,15 +334,10 @@ export function CourseCurriculum({
   const toggle = (id: string) => setOpenId((p) => (p === id ? null : id));
   const total = topics.length;
   const doneCount = getCompletedCount(course.id);
-  const pct = getProgress(course.id, total);
+  const pct = getProgress(course.id); // DB already has the % value
 
   const courseTitle =
     lang === 'ar' ? (course.ar_title ?? course.title) : course.title;
-
-  const handleReset = () => {
-    resetProgress(course.id);
-    setOpenId(null);
-  };
 
   const handleScrollToLabs = () => {
     document
@@ -349,13 +346,12 @@ export function CourseCurriculum({
   };
 
   return (
-    /* ✅ id للـ scroll من الهيرو */
     <section id='course-curriculum' className='space-y-6'>
       <CourseCompletionModal
         open={celebrateOpen}
         courseTitle={courseTitle}
         onClose={() => setCelebrateOpen(false)}
-        onReset={handleReset}
+        onReset={undefined} // لا يوجد reset للـ DB — نخفي الزر
       />
 
       {/* Header */}
@@ -422,7 +418,7 @@ export function CourseCurriculum({
         </div>
       )}
 
-      {/* ✅ Labs button — دايماً موجود، disabled لو مفيش لابات */}
+      {/* Labs button */}
       <div className='flex justify-center pt-4'>
         <Button
           variant='outline'

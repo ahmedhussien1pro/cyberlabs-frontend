@@ -1,18 +1,18 @@
+// src/features/dashboard/components/layout/dashboard-layout.tsx
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { DashboardSidebar } from './dashboard-sidebar';
 import { DashboardTopbar } from './dashboard-topbar';
 import { useNotificationListener } from '@/features/notifications/hooks/use-notification-listener';
-import { useSyncProgress } from '@/features/courses/hooks/use-sync-progress';
+
 export function ProtectedLayout({ children }: { children: React.ReactNode }) {
-  useSyncProgress();
   return <>{children}</>;
 }
+
 export default function DashboardLayout(): React.ReactElement {
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // Activate global notification listener
   useNotificationListener();
 
   return (

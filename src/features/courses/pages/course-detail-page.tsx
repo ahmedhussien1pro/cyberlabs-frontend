@@ -1,3 +1,4 @@
+// src/features/courses/pages/course-detail-page.tsx
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
@@ -14,6 +15,7 @@ import { useEnrollment } from '../hooks/use-enrollment';
 import {
   useUserProgress,
   useFavoriteMutation,
+  useResetProgress, // ✅ إضافة
 } from '../hooks/use-user-progress';
 import { useIsPro } from '@/features/pricing/hooks/use-pricing';
 import { ROUTES } from '@/shared/constants';
@@ -26,6 +28,7 @@ export default function CourseDetailPage() {
 
   const { data: course, isLoading, isError } = useCourse(slug);
   const { mutate: enroll, isPending: enrolling } = useEnrollment();
+  const { mutate: resetProgress, isPending: resetting } = useResetProgress(); // ✅ إضافة
 
   const { isEnrolled, getProgress, getCompletedCount, isFavorite } =
     useUserProgress();
@@ -49,6 +52,7 @@ export default function CourseDetailPage() {
         <CourseDetailSkeleton />
       </MainLayout>
     );
+
   if (isError || !course) {
     return (
       <MainLayout>
@@ -107,13 +111,23 @@ export default function CourseDetailPage() {
         ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  // ✅ handleReset: بيمسح كل progress للكورس ده
+  const handleReset = () => {
+    resetProgress(course.id, {
+      onSuccess: () =>
+        toast.success(t('detail.resetSuccess', 'Progress reset successfully')),
+      onError: () =>
+        toast.error(t('detail.resetError', 'Failed to reset progress')),
+    });
+  };
+
   return (
     <MainLayout>
       <div className='min-h-screen bg-background'>
         <CourseDetailHero
           course={course}
           enrolled={enrolled}
-          enrolling={enrolling}
+          enrolling={enrolling || resetting}
           progress={progress}
           done={done}
           fav={fav}
@@ -121,7 +135,7 @@ export default function CourseDetailPage() {
           hasLabs={hasLabs}
           onEnroll={handleEnroll}
           onToggleFav={handleToggleFav}
-          onReset={undefined}
+          onReset={enrolled ? handleReset : undefined} // ✅ يظهر فقط لو enrolled
           onContinue={handleContinue}
           onGoToLabs={() =>
             document

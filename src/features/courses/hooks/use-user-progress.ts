@@ -1,3 +1,4 @@
+// src/features/courses/hooks/use-user-progress.ts
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { coursesApi, type MyProgressResponse } from '../services/courses.api';
 import type { Enrollment } from '../types/course.types';
@@ -29,20 +30,17 @@ export function useUserProgress() {
     isLoading: enrollmentsQ.isLoading || progressQ.isLoading,
     isError: enrollmentsQ.isError || progressQ.isError,
 
-    // Enrollment
     isEnrolled: (courseId: string) => enrollMap.has(courseId),
     isCompleted: (courseId: string) =>
       enrollMap.get(courseId)?.isCompleted ?? false,
     getProgress: (courseId: string) => enrollMap.get(courseId)?.progress ?? 0,
 
-    // Topics
     isTopicCompleted: (courseId: string, topicId: string) =>
       (completed[courseId] ?? []).includes(topicId),
     getCompletedCount: (courseId: string) => completed[courseId]?.length ?? 0,
     isCourseCompleted: (courseId: string, total: number) =>
       total > 0 && (completed[courseId]?.length ?? 0) >= total,
 
-    // Favorites
     isFavorite: (courseId: string) => favorites.includes(courseId),
 
     enrollments,
@@ -68,5 +66,16 @@ export function useFavoriteMutation() {
     mutationFn: ({ courseId, isFav }: { courseId: string; isFav: boolean }) =>
       coursesApi.syncFavorite(courseId, isFav ? 'remove' : 'add'),
     onSuccess: () => void qc.invalidateQueries({ queryKey: PROGRESS_KEY }),
+  });
+}
+
+export function useResetProgress() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (courseId: string) => coursesApi.resetProgress(courseId),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: PROGRESS_KEY });
+      void qc.invalidateQueries({ queryKey: ENROLLMENTS_KEY });
+    },
   });
 }

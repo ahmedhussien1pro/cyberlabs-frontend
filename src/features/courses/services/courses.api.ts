@@ -77,14 +77,8 @@ export const coursesApi = {
       onlyCompleted: _c,
       ...rest
     } = filters;
-
-    const params: Record<string, any> = {
-      ...rest,
-      limit: 50,
-    };
-
+    const params: Record<string, any> = { ...rest, limit: 50 };
     if (state && state !== 'all') params.status = state;
-
     return apiClient
       .get(COURSES.BASE, { params })
       .then((r) => normalizeCourseList(r?.data ?? r));
@@ -121,6 +115,12 @@ export const coursesApi = {
   ): Promise<{ success: boolean; progress: number; isCompleted: boolean }> =>
     apiClient
       .post(`/courses/${courseId}/topics/${topicId}/complete`)
+      .then((r) => r?.data ?? r),
+
+  // ✅ reset كل topic completions للـ user في هذا الكورس
+  resetProgress: (courseId: string): Promise<{ success: boolean }> =>
+    apiClient
+      .delete(`/enrollments/${courseId}/reset`)
       .then((r) => r?.data ?? r),
 
   getMyProgress: (): Promise<MyProgressResponse> =>

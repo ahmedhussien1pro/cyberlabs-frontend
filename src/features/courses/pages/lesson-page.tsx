@@ -18,9 +18,10 @@ import { ROUTES } from '@/shared/constants';
 import { TopicSidebar } from '../components/topic-sidebar';
 import { PaywallOverlay } from '../components/paywall-overlay';
 import CourseElementRenderer from '../components/CourseElementRenderer';
+import { CourseCompletionModal } from '../components/course-completion-modal'; // ✅
 import { useCourse } from '../hooks/use-course';
 import { useCourseContent, useMarkTopicComplete } from '../hooks/use-topic';
-import { useUserProgress } from '../hooks/use-user-progress';
+import { useUserProgress, useResetProgress } from '../hooks/use-user-progress'; // ✅
 
 export default function LessonPage() {
   const { slug = '', topicId = '' } = useParams<{
@@ -31,12 +32,13 @@ export default function LessonPage() {
   const lang = i18n.language === 'ar' ? 'ar' : 'en';
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showCompletionModal, setShowCompletionModal] = useState(false); // ✅
 
   const { data: course, isLoading: courseLoading } = useCourse(slug);
   const { data: content, isLoading: contentLoading } = useCourseContent(slug);
   const { mutate: markComplete, isPending: marking } = useMarkTopicComplete();
+  const { mutate: resetProgress } = useResetProgress(); // ✅
 
-  // ── الـ progress من DB — لا localStorage ──
   const { isEnrolled, isTopicCompleted } = useUserProgress();
 
   const isLoading = courseLoading || contentLoading;
@@ -69,17 +71,34 @@ export default function LessonPage() {
     window.scrollTo({ top: 0 });
   };
 
+  // ✅ إضافة: لو آخر topic → افتح مودال إكمال الكورس
   const handleMarkComplete = () => {
     if (!course) return;
     markComplete(
       { courseId: course.id, topicId },
       {
         onSuccess: () => {
-          if (nextSection)
+          if (!nextSection) {
+            setShowCompletionModal(true);
+          } else {
             setTimeout(() => navigate_topic(nextSection.id), 600);
+          }
         },
       },
     );
+  };
+
+  // ✅ إضافة: Reset يمسح progress ويرجع لأول section
+  const handleReset = () => {
+    if (!course) return;
+    resetProgress(course.id, {
+      onSuccess: () => {
+        setShowCompletionModal(false);
+        if (sections.length > 0) {
+          navigate_topic(sections[0].id);
+        }
+      },
+    });
   };
 
   const isLocked =
@@ -254,6 +273,14 @@ export default function LessonPage() {
           </div>
         </div>
       </main>
+
+      {/* ✅ Completion Modal — يظهر تلقائياً لما يتم آخر topic */}
+      <CourseCompletionModal
+        open={showCompletionModal}
+        courseTitle={courseDisplayTitle}
+        onClose={() => setShowCompletionModal(false)}
+        onReset={enrolled ? handleReset : undefined}
+      />
     </div>
   );
 }

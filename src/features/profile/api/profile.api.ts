@@ -14,7 +14,6 @@ import type {
   UserActivity,
 } from '@/shared/types/user.types';
 
-// ✅ Fix: typed extractor — no more `any` parameter
 function extract<T>(res: unknown): T {
   const r = res as Record<string, unknown>;
   return (r?.data !== undefined ? r.data : res) as T;
@@ -39,10 +38,16 @@ export const getMyCourses = async () =>
 export const getMyActivity = async () =>
   extract<UserActivity[]>(await apiClient.get('/users/me/activity'));
 
-// ✅ Paths: pulls from profile — switch to a dedicated endpoint once backend adds /users/me/paths
+/**
+ * ✅ Fix: Learning Paths now read directly from /users/me
+ *   /users/me already returns careerPaths[] with full careerPath data
+ *   (id, slug, name, ar_name, description, iconUrl) after backend fix.
+ *   No need for a separate endpoint.
+ */
 export const getMyPaths = async (): Promise<UserCareerPath[]> => {
   const profile = await getMyProfile();
-  return profile.careerPaths ?? [];
+  // Backend now includes careerPath.id + careerPath.slug in the select
+  return (profile.careerPaths ?? []) as UserCareerPath[];
 };
 
 // ─── Public ──────────────────────────────────────────────────────────────────

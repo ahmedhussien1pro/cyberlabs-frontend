@@ -81,17 +81,22 @@ export const API_ENDPOINTS = {
     HEATMAP: '/dashboard/heatmap',
   },
 
+  // ✅ Fix: was /labs/me — backend controller is @Controller('practice-labs')
   LABS: {
-    BASE: '/labs',
-    BY_ID: (id: string) => `/labs/${id}`,
-    BY_SLUG: (slug: string) => `/labs/${slug}`,
-    ALL: '/labs',
-    MY_LABS: '/labs/me',
-    ACTIVE: '/labs/active',
-    START: (id: string) => `/labs/${id}/start`,
-    COMPLETE: (id: string) => `/labs/${id}/complete`,
-    PROGRESS: (id: string) => `/labs/${id}/progress`,
-    SUBMIT: (id: string) => `/labs/${id}/submit`,
+    BASE: '/practice-labs',
+    BY_ID: (id: string) => `/practice-labs/${id}`,
+    BY_SLUG: (slug: string) => `/practice-labs/${slug}`,
+    ALL: '/practice-labs',
+    // ✅ MY_LABS now points to /practice-labs/progress (user's own progress list)
+    MY_LABS: '/practice-labs/progress',
+    ACTIVE: '/practice-labs/progress',
+    STATS: '/practice-labs/stats',
+    START: (id: string) => `/practice-labs/${id}/launch`,
+    COMPLETE: (id: string) => `/practice-labs/${id}/submit`,
+    PROGRESS: (id: string) => `/practice-labs/progress?labId=${id}`,
+    SUBMIT: (id: string) => `/practice-labs/${id}/submit`,
+    LAUNCH_CONSUME: '/practice-labs/launch/consume',
+    HINT: (id: string) => `/practice-labs/${id}/hint`,
   },
 
   GOALS: {

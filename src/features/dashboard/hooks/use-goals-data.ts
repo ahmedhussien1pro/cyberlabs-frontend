@@ -5,7 +5,6 @@ import { apiClient } from '@/core/api/client';
 import { API_ENDPOINTS } from '@/core/api/endpoints';
 import type { Goal, GoalCategory } from '../types/dashboard.types';
 
-// ✅ Fix: properly typed extractor — no more `any` leaking to callers
 function extract<T>(res: unknown): T {
   const r = res as Record<string, unknown>;
   return (r?.data !== undefined ? r.data : res) as T;
@@ -13,18 +12,16 @@ function extract<T>(res: unknown): T {
 
 const GOALS_KEY = ['goals', 'my'] as const;
 
-/** ── Read ─────────────────────────── */
+// ── Read ────────────────────────────────────────────────────────
 export const useMyGoals = () =>
   useQuery({
     queryKey: GOALS_KEY,
-    queryFn: async () =>
-      extract<Goal[]>(await apiClient.get(API_ENDPOINTS.GOALS.BASE)),
-    // ✅ Fix: retry once on transient failures
+    queryFn: async () => extract<Goal[]>(await apiClient.get(API_ENDPOINTS.GOALS.BASE)),
     retry: 1,
     staleTime: 1000 * 60 * 2,
   });
 
-/** ── Create ───────────────────────── */
+// ── Create ───────────────────────────────────────────────────────
 export interface CreateGoalInput {
   title: string;
   category: GoalCategory;
@@ -38,9 +35,7 @@ export function useCreateGoal() {
   const { t } = useTranslation('dashboard');
   return useMutation({
     mutationFn: async (input: CreateGoalInput) =>
-      extract<Goal>(
-        await apiClient.post(API_ENDPOINTS.GOALS.CREATE, input),
-      ),
+      extract<Goal>(await apiClient.post(API_ENDPOINTS.GOALS.CREATE, input)),
     onSuccess: (newGoal) => {
       qc.setQueryData<Goal[]>(GOALS_KEY, (prev) => [newGoal, ...(prev ?? [])]);
       toast.success(t('goals.createSuccess'));
@@ -49,16 +44,15 @@ export function useCreateGoal() {
   });
 }
 
-/** ── Complete ──────────────────────── */
+// ── Complete ─────────────────────────────────────────────────────
 export function useCompleteGoal() {
   const qc = useQueryClient();
   const { t } = useTranslation('dashboard');
   return useMutation({
+    // ✅ Fix: backend now accepts { isCompleted: true } via UpdateGoalDto
     mutationFn: async (id: string) =>
       extract<Goal>(
-        await apiClient.patch(API_ENDPOINTS.GOALS.UPDATE(id), {
-          isCompleted: true,
-        }),
+        await apiClient.patch(API_ENDPOINTS.GOALS.UPDATE(id), { isCompleted: true }),
       ),
     onSuccess: (updated) => {
       qc.setQueryData<Goal[]>(
@@ -71,13 +65,12 @@ export function useCompleteGoal() {
   });
 }
 
-/** ── Delete ────────────────────────── */
+// ── Delete ─────────────────────────────────────────────────────────
 export function useDeleteGoal() {
   const qc = useQueryClient();
   const { t } = useTranslation('dashboard');
   return useMutation({
-    mutationFn: (id: string) =>
-      apiClient.delete(API_ENDPOINTS.GOALS.DELETE(id)),
+    mutationFn: (id: string) => apiClient.delete(API_ENDPOINTS.GOALS.DELETE(id)),
     onSuccess: (_data, id) => {
       qc.setQueryData<Goal[]>(
         GOALS_KEY,

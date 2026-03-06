@@ -83,13 +83,11 @@ export const API_ENDPOINTS = {
     HEATMAP: '/dashboard/heatmap',
   },
 
-  // ✅ Fix: was /labs/me — backend controller is @Controller('practice-labs')
   LABS: {
     BASE: '/practice-labs',
     BY_ID: (id: string) => `/practice-labs/${id}`,
     BY_SLUG: (slug: string) => `/practice-labs/${slug}`,
     ALL: '/practice-labs',
-    // ✅ MY_LABS now points to /practice-labs/progress (user's own progress list)
     MY_LABS: '/practice-labs/progress',
     ACTIVE: '/practice-labs/progress',
     STATS: '/practice-labs/stats',
@@ -120,5 +118,19 @@ export const API_ENDPOINTS = {
     ACHIEVEMENTS: '/profile/achievements',
     CERTIFICATES: '/profile/certificates',
     ACTIVITY: '/profile/activity',
+  },
+
+  /** Gamification — Badges */
+  BADGES: {
+    BASE: '/badges',
+    ME: '/badges/me',  // full catalog + earned/locked status for dashboard
+    MY: '/badges/my', // earned badges only — for profile
+  },
+
+  /** Issued Certificates */
+  CERTIFICATES: {
+    MY: '/certificates/my',
+    BY_ID: (id: string) => `/certificates/${id}`,
+    VERIFY: (verificationId: string) => `/certificates/verify/${verificationId}`,
   },
 } as const;

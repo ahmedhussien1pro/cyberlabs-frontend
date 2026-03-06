@@ -1,5 +1,12 @@
 // src/features/dashboard/pages/dashboard-page.tsx
-import { Timer, Award, Swords, CalendarDays, Lock } from 'lucide-react';
+import {
+  Timer,
+  Award,
+  Swords,
+  CalendarDays,
+  Lock,
+  BrainCircuit,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { WelcomeBanner } from '../components/overview/welcome-banner';
 import { SubscriptionBanner } from '../components/overview/subscription-banner';
@@ -11,6 +18,7 @@ import { LeaderboardWidget } from '../components/overview/leaderboard-widget';
 import { QuickGoals } from '../components/overview/quick-goals';
 import { PathsCard } from '../components/overview/paths-card';
 import { LabsCard } from '../components/overview/labs-card';
+import { BadgesCard } from '../components/overview/badges-card';
 import { LevelProgressBar } from '../components/overview/level-progress-bar';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -34,7 +42,7 @@ function ComingSoonCard({
       className={cn(
         'relative flex flex-col items-center justify-center gap-2 rounded-xl',
         'border border-dashed border-border/50 bg-muted/20 p-6 text-center',
-        'select-none opacity-60',
+        'select-none opacity-55 transition-opacity hover:opacity-70',
       )}>
       <div className='flex h-10 w-10 items-center justify-center rounded-full bg-muted'>
         <Icon size={20} className={accent} />
@@ -88,10 +96,13 @@ export default function DashboardPage(): React.ReactElement {
       {/* Row 8: Learning Paths */}
       <PathsCard />
 
-      {/* Row 9: Leaderboard */}
+      {/* Row 9: Badges catalog (all earned + locked) */}
+      <BadgesCard />
+
+      {/* Row 10: Leaderboard */}
       <LeaderboardWidget />
 
-      {/* Row 10: Coming Soon */}
+      {/* Row 11: Coming Soon */}
       <section className='space-y-3'>
         <h2 className='flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground'>
           <span className='h-1.5 w-1.5 rounded-full bg-border' />
@@ -108,13 +119,13 @@ export default function DashboardPage(): React.ReactElement {
             accent='text-orange-500'
           />
           <ComingSoonCard
-            icon={Award}
-            title={t('comingSoon.certificates', 'Certificates')}
+            icon={CalendarDays}
+            title={t('comingSoon.schedule', 'Study Schedule')}
             description={t(
-              'comingSoon.certificatesDesc',
-              'Earn & share your achievements',
+              'comingSoon.scheduleDesc',
+              'Plan your weekly learning calendar',
             )}
-            accent='text-yellow-500'
+            accent='text-blue-500'
           />
           <ComingSoonCard
             icon={Swords}
@@ -126,13 +137,13 @@ export default function DashboardPage(): React.ReactElement {
             accent='text-red-500'
           />
           <ComingSoonCard
-            icon={CalendarDays}
-            title={t('comingSoon.schedule', 'Study Schedule')}
+            icon={BrainCircuit}
+            title={t('comingSoon.aiMentor', 'AI Mentor')}
             description={t(
-              'comingSoon.scheduleDesc',
-              'Plan your learning calendar',
+              'comingSoon.aiMentorDesc',
+              'Personalized learning recommendations',
             )}
-            accent='text-blue-500'
+            accent='text-purple-500'
           />
         </div>
       </section>

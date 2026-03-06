@@ -6,6 +6,7 @@ import {
   Flame,
   Trophy,
   Star,
+  AlertCircle,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -14,16 +15,30 @@ import { useUserStats, useUserPoints } from '@/shared/hooks/use-user-data';
 
 export function StatsRow() {
   const { t } = useTranslation('dashboard');
-  const { data: stats, isLoading: sl } = useUserStats();
-  const { data: points, isLoading: pl } = useUserPoints();
+  // ✅ Fix: destructure isError for both queries
+  const { data: stats, isLoading: sl, isError: se } = useUserStats();
+  const { data: points, isLoading: pl, isError: pe } = useUserPoints();
 
   if (sl || pl) {
     return (
-      // ✅ 2 cols on xs → 3 on sm → 6 on lg
       <div className='grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6'>
         {Array.from({ length: 6 }).map((_, i) => (
           <Skeleton key={i} className='h-24 rounded-xl' />
         ))}
+      </div>
+    );
+  }
+
+  // ✅ Fix: show error state instead of silent zeros
+  if (se || pe) {
+    return (
+      <div
+        className='flex items-center justify-center gap-2 rounded-xl border
+                      border-destructive/30 bg-destructive/5 py-6 text-destructive'>
+        <AlertCircle size={16} className='shrink-0 opacity-70' />
+        <p className='text-sm'>
+          {t('common.errorLoading', 'Failed to load stats')}
+        </p>
       </div>
     );
   }

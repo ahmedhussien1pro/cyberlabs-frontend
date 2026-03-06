@@ -1,4 +1,4 @@
-import { BookOpen, ChevronRight } from 'lucide-react';
+import { BookOpen, ChevronRight, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -9,7 +9,8 @@ import { useUserCourses } from '@/shared/hooks/use-user-data';
 export function CourseProgressList() {
   const { t, i18n } = useTranslation('dashboard');
   const isAr = i18n.language === 'ar';
-  const { data, isLoading } = useUserCourses();
+  // ✅ Fix: destructure isError
+  const { data, isLoading, isError } = useUserCourses();
   const active = data?.filter((c) => !c.isCompleted) ?? [];
 
   return (
@@ -38,6 +39,14 @@ export function CourseProgressList() {
               <Skeleton className='h-1.5 w-full rounded-full' />
             </div>
           ))
+        ) : isError ? (
+          // ✅ Fix: error state instead of blank/empty
+          <div className='flex flex-col items-center gap-2 py-8 text-destructive'>
+            <AlertCircle size={24} className='opacity-50' />
+            <p className='text-xs'>
+              {t('common.errorLoading', 'Failed to load courses')}
+            </p>
+          </div>
         ) : active.length === 0 ? (
           <div className='flex flex-col items-center gap-2 py-8 text-muted-foreground'>
             <BookOpen size={24} className='opacity-30' />

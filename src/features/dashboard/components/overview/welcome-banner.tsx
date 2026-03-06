@@ -23,7 +23,11 @@ export function WelcomeBanner() {
         ? t('greeting.afternoon')
         : t('greeting.evening');
 
-  const firstName = user?.name?.split(' ')[0] ?? user?.name ?? '';
+  // ✅ Fix: fallback to translated 'there' when name is missing
+  const rawName = user?.name?.trim();
+  const firstName = rawName
+    ? rawName.split(' ')[0]
+    : t('greeting.user', 'there');
 
   return (
     <motion.div

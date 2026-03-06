@@ -121,7 +121,12 @@ export function CreateGoalDialog({ open, onClose }: Props) {
             </div>
             <div className='space-y-1.5'>
               <Label htmlFor='g-unit'>{t('goals.form.unit')}</Label>
-              <Input id='g-unit' {...register('unit')} placeholder='labs' />
+              {/* ✅ Fix: was hardcoded 'labs' → now uses i18n key */}
+              <Input
+                id='g-unit'
+                {...register('unit')}
+                placeholder={t('goals.form.unitPlaceholder', 'e.g. labs')}
+              />
             </div>
           </div>
 

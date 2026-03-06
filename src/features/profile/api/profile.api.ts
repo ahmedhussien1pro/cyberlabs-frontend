@@ -14,50 +14,50 @@ import type {
   UserActivity,
 } from '@/shared/types/user.types';
 
-const extractData = <T>(res: any): T => {
-  return (res?.data !== undefined ? res.data : res) as T;
-};
+// ✅ Fix: typed extractor — no more `any` parameter
+function extract<T>(res: unknown): T {
+  const r = res as Record<string, unknown>;
+  return (r?.data !== undefined ? r.data : res) as T;
+}
 
 // ─── GET ─────────────────────────────────────────────────────────────────────
-export const getMyProfile = () =>
-  apiClient.get('/users/me').then(extractData<UserProfile>);
+export const getMyProfile = async () =>
+  extract<UserProfile>(await apiClient.get('/users/me'));
 
-export const getMyStats = () =>
-  apiClient.get('/users/me/stats').then(extractData<UserStats>);
+export const getMyStats = async () =>
+  extract<UserStats>(await apiClient.get('/users/me/stats'));
 
-export const getMyPoints = () =>
-  apiClient.get('/users/me/points').then(extractData<UserPoints>);
+export const getMyPoints = async () =>
+  extract<UserPoints>(await apiClient.get('/users/me/points'));
 
-export const getMyLabs = () =>
-  apiClient.get('/users/me/labs').then(extractData<CompletedLab[]>);
+export const getMyLabs = async () =>
+  extract<CompletedLab[]>(await apiClient.get('/users/me/labs'));
 
-export const getMyCourses = () =>
-  apiClient.get('/users/me/courses').then(extractData<EnrolledCourse[]>);
+export const getMyCourses = async () =>
+  extract<EnrolledCourse[]>(await apiClient.get('/users/me/courses'));
 
-export const getMyActivity = () =>
-  apiClient.get('/users/me/activity').then(extractData<UserActivity[]>);
+export const getMyActivity = async () =>
+  extract<UserActivity[]>(await apiClient.get('/users/me/activity'));
 
-// ✅ Paths: يجلب الـ profile ويستخرج careerPaths
-// لو البيكند أضاف /users/me/paths في المستقبل، غيّر السطر ده فقط
-export const getMyPaths = (): Promise<UserCareerPath[]> =>
-  apiClient.get('/users/me').then((res) => {
-    const profile = extractData<UserProfile>(res);
-    return profile.careerPaths ?? [];
-  });
+// ✅ Paths: pulls from profile — switch to a dedicated endpoint once backend adds /users/me/paths
+export const getMyPaths = async (): Promise<UserCareerPath[]> => {
+  const profile = await getMyProfile();
+  return profile.careerPaths ?? [];
+};
 
 // ─── Public ──────────────────────────────────────────────────────────────────
-export const getPublicProfile = (id: string) =>
-  apiClient.get(`/users/${id}`).then(extractData<UserProfile>);
+export const getPublicProfile = async (id: string) =>
+  extract<UserProfile>(await apiClient.get(`/users/${id}`));
 
 // ─── Mutations ───────────────────────────────────────────────────────────────
-export const updateMyProfile = (payload: UpdateProfilePayload) =>
-  apiClient.put('/users/me', payload).then(extractData<UserProfile>);
+export const updateMyProfile = async (payload: UpdateProfilePayload) =>
+  extract<UserProfile>(await apiClient.put('/users/me', payload));
 
 // ─── Avatar upload (R2 presign flow) ─────────────────────────────────────────
-const presignAvatar = (contentType: string) =>
-  apiClient
-    .post('/users/me/avatar/presign', { contentType })
-    .then(extractData<{ uploadUrl: string; key: string; publicUrl: string }>);
+const presignAvatar = async (contentType: string) =>
+  extract<{ uploadUrl: string; key: string; publicUrl: string }>(
+    await apiClient.post('/users/me/avatar/presign', { contentType }),
+  );
 
 const uploadToR2 = (uploadUrl: string, file: File) => {
   if (!uploadUrl?.startsWith('http')) {
@@ -70,10 +70,10 @@ const uploadToR2 = (uploadUrl: string, file: File) => {
   });
 };
 
-const confirmAvatar = (key: string) =>
-  apiClient
-    .post('/users/me/avatar/confirm', { key })
-    .then(extractData<{ avatarUrl: string }>);
+const confirmAvatar = async (key: string) =>
+  extract<{ avatarUrl: string }>(
+    await apiClient.post('/users/me/avatar/confirm', { key }),
+  );
 
 export const uploadAvatar = async (
   file: File,

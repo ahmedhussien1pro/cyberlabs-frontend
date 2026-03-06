@@ -5,9 +5,11 @@ import { apiClient } from '@/core/api/client';
 import { API_ENDPOINTS } from '@/core/api/endpoints';
 import type { Goal, GoalCategory } from '../types/dashboard.types';
 
-const extractData = <T>(res: any): T => {
-  return (res?.data !== undefined ? res.data : res) as T;
-};
+// ✅ Fix: properly typed extractor — no more `any` leaking to callers
+function extract<T>(res: unknown): T {
+  const r = res as Record<string, unknown>;
+  return (r?.data !== undefined ? r.data : res) as T;
+}
 
 const GOALS_KEY = ['goals', 'my'] as const;
 
@@ -15,8 +17,11 @@ const GOALS_KEY = ['goals', 'my'] as const;
 export const useMyGoals = () =>
   useQuery({
     queryKey: GOALS_KEY,
-    queryFn: () => apiClient.get(API_ENDPOINTS.GOALS.BASE).then(extractData<Goal[]>),
-    retry: false,
+    queryFn: async () =>
+      extract<Goal[]>(await apiClient.get(API_ENDPOINTS.GOALS.BASE)),
+    // ✅ Fix: retry once on transient failures
+    retry: 1,
+    staleTime: 1000 * 60 * 2,
   });
 
 /** ── Create ───────────────────────── */
@@ -32,8 +37,10 @@ export function useCreateGoal() {
   const qc = useQueryClient();
   const { t } = useTranslation('dashboard');
   return useMutation({
-    mutationFn: (input: CreateGoalInput) =>
-      apiClient.post(API_ENDPOINTS.GOALS.CREATE, input).then(extractData<Goal>),
+    mutationFn: async (input: CreateGoalInput) =>
+      extract<Goal>(
+        await apiClient.post(API_ENDPOINTS.GOALS.CREATE, input),
+      ),
     onSuccess: (newGoal) => {
       qc.setQueryData<Goal[]>(GOALS_KEY, (prev) => [newGoal, ...(prev ?? [])]);
       toast.success(t('goals.createSuccess'));
@@ -47,10 +54,12 @@ export function useCompleteGoal() {
   const qc = useQueryClient();
   const { t } = useTranslation('dashboard');
   return useMutation({
-    mutationFn: (id: string) =>
-      apiClient
-        .patch(API_ENDPOINTS.GOALS.UPDATE(id), { isCompleted: true })
-        .then(extractData<Goal>),
+    mutationFn: async (id: string) =>
+      extract<Goal>(
+        await apiClient.patch(API_ENDPOINTS.GOALS.UPDATE(id), {
+          isCompleted: true,
+        }),
+      ),
     onSuccess: (updated) => {
       qc.setQueryData<Goal[]>(
         GOALS_KEY,

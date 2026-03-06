@@ -16,7 +16,7 @@ const LazyPage = ({
 );
 
 export const routes: RouteObject[] = [
-  // ── Website (Public) ───────────────────────────
+  // ── Website (Public) ───────────────────────────────
   { path: ROUTES.HOME, element: <LazyPage Component={Pages.HomePage} /> },
   { path: ROUTES.ABOUT, element: <LazyPage Component={Pages.AboutPage} /> },
   { path: ROUTES.CONTACT, element: <LazyPage Component={Pages.ContactPage} /> },
@@ -24,7 +24,7 @@ export const routes: RouteObject[] = [
   { path: ROUTES.TERMS, element: <LazyPage Component={Pages.TermsPage} /> },
   { path: ROUTES.PRIVACY, element: <LazyPage Component={Pages.PrivacyPage} /> },
 
-  // ── Auth (Public) ──────────────────────────────
+  // ── Auth (Public) ─────────────────────────────────
   { path: ROUTES.AUTH.LOGIN, element: <LazyPage Component={Pages.AuthPage} /> },
   {
     path: ROUTES.AUTH.FORGOT_PASSWORD,
@@ -59,6 +59,12 @@ export const routes: RouteObject[] = [
     element: <LazyPage Component={Pages.OAuthCallbackPage} />,
   },
 
+  // ── Certificate Public Verification (no auth required) ────────
+  {
+    path: '/verify/:verificationId',
+    element: <LazyPage Component={Pages.VerifyCertificatePage} />,
+  },
+
   // ── Profile ────────────────────────────────────
   {
     path: ROUTES.PROFILE.VIEW,
@@ -83,7 +89,7 @@ export const routes: RouteObject[] = [
     ),
   },
 
-  // ── Dashboard (Protected) ──────────────────────
+  // ── Dashboard (Protected) ──────────────────────────
   {
     path: ROUTES.DASHBOARD.DashboardPage,
     element: (
@@ -109,10 +115,15 @@ export const routes: RouteObject[] = [
         path: 'settings',
         element: <LazyPage Component={Pages.SettingsPage} />,
       },
+      // ➕ Certificates tab inside dashboard
+      {
+        path: 'certificates',
+        element: <LazyPage Component={Pages.CertificatesPage} />,
+      },
     ],
   },
 
-  // ── Courses (Protected) ──────────────────────
+  // ── Courses (Protected) ──────────────────────────
   {
     path: '/courses',
     element: (
@@ -138,7 +149,7 @@ export const routes: RouteObject[] = [
     ),
   },
 
-  // ── Labs (Protected) ─────────────────────────
+  // ── Labs (Protected) ─────────────────────────────
   {
     path: '/labs',
     element: (
@@ -156,7 +167,7 @@ export const routes: RouteObject[] = [
     ),
   },
 
-  // ── Learning Paths (Protected) ───────────────
+  // ── Learning Paths (Protected) ─────────────────────
   {
     path: '/paths',
     element: (
@@ -185,7 +196,7 @@ export const routes: RouteObject[] = [
     element: <LazyPage Component={Pages.NotFoundPage} />,
   },
 
-  // ── Temporary Pages ─────────────────────────────────────
+  // ── Temporary Pages ───────────────────────────────
   {
     path: '/temp',
     element: <LazyPage Component={Pages.TempPage} />,

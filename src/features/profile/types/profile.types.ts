@@ -27,6 +27,8 @@ export type BadgeType =
   | 'CONTRIBUTION'
   | 'CUSTOM';
 
+export type CertType = 'COURSE' | 'PATH' | 'LAB' | 'CUSTOM';
+
 // ─── Full user profile ──────────────────────────────────────────────────
 export interface UserProfile {
   id: string;
@@ -78,7 +80,11 @@ export interface Education {
 export interface UserCertification {
   id: string;
   title: string;
+  /** Arabic title returned by the backend when available */
+  ar_title?: string;
   issuer: string;
+  /** Platform certificate type: COURSE | PATH | LAB | CUSTOM */
+  certType?: CertType;
   issueDate: string;
   expireDate?: string;
   credentialId?: string;

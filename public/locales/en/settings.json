@@ -1,7 +1,8 @@
 {
   "title": "Settings",
-  "subtitle": "Manage your account and preferences",
+  "subtitle": "Manage your account, security, and preferences.",
   "cancel": "Cancel",
+
   "tabs": {
     "account": "Account",
     "security": "Security",
@@ -11,13 +12,30 @@
     "billing": "Billing",
     "danger": "Danger Zone"
   },
+
   "account": {
+    "emailSection": "Email Address",
+    "verified": "Verified",
+    "changeEmail": "Change",
+    "changeEmailDesc": "We'll send a one-time code to your new email to confirm the change.",
+    "newEmailPlaceholder": "new@example.com",
+    "sendOtp": "Send Code",
+    "otpSent": "A 6-digit code was sent to",
+    "otpPlaceholder": "000000",
+    "verifyOtp": "Verify",
+    "resendOtp": "Resend code",
+    "emailChangeSuccess": "Email updated successfully",
+    "emailChangeFailed": "Failed to send verification code",
+    "emailChangeOtpFailed": "Invalid or expired code",
+    "profileInfo": "Profile Information",
+    "viewProfile": "View Profile",
     "name": "Display Name",
     "bio": "Bio",
     "address": "Address",
     "phone": "Phone Number",
     "save": "Save Changes"
   },
+
   "security": {
     "changePassword": "Change Password",
     "currentPassword": "Current Password",
@@ -36,8 +54,16 @@
     "disabled": "Disabled",
     "twoFactorEnabled": "Two-factor authentication enabled",
     "twoFactorDisabled": "Two-factor authentication disabled",
-    "twoFactorCodeInvalid": "Invalid authentication code"
+    "twoFactorCodeInvalid": "Invalid authentication code",
+    "strengthLevels": {
+      "veryWeak": "Very weak",
+      "weak": "Weak",
+      "fair": "Fair",
+      "good": "Good",
+      "strong": "Strong"
+    }
   },
+
   "2fa": {
     "enableTitle": "Set Up Two-Factor Authentication",
     "scanDesc": "Scan this QR code with your authenticator app (Google Authenticator, Authy, etc.)",
@@ -58,39 +84,59 @@
     "disableConfirm": "Disable 2FA",
     "generating": "Generating secure setup..."
   },
+
   "sessions": {
     "title": "Active Sessions",
-    "subtitle": "Devices currently signed in to your account",
-    "current": "Current",
+    "subtitle": "Devices currently signed in to your account.",
+    "current": "This device",
     "lastActive": "Last active",
-    "revokeAll": "Revoke All Others",
+    "createdAt": "Signed in",
+    "otherSessions": "Other devices",
+    "noOtherSessions": "No other active sessions. You're only signed in on this device.",
+    "revokeAll": "Sign out all others",
+    "revokeAllTitle": "Sign out all other sessions?",
+    "revokeAllDesc": "This will immediately revoke access from all other devices. You will remain signed in on this device.",
     "revokeSuccess": "Session revoked",
     "revokeAllSuccess": "All other sessions revoked",
     "revokeError": "Failed to revoke session",
-    "unavailable": "Sessions are not available yet"
+    "unavailable": "Could not load sessions. Please try again later."
   },
+
   "notifications": {
+    "groupEmail": "Email",
+    "groupPush": "Push",
+    "groupActivity": "Activity & Alerts",
     "email": "Email Notifications",
-    "emailDesc": "Receive important updates via email",
+    "emailDesc": "Receive important updates via email.",
+    "push": "Push Notifications",
+    "pushDesc": "Receive browser or mobile push notifications.",
     "labCompleted": "Lab Completed",
-    "labCompletedDesc": "Notify when a lab is completed",
+    "labCompletedDesc": "Notify when you finish a lab.",
     "courseUpdates": "Course Updates",
-    "courseUpdatesDesc": "New lessons and course announcements",
-    "achievement": "Achievements",
-    "achievementDesc": "When you unlock badges and achievements",
+    "courseUpdatesDesc": "New lessons and course announcements.",
+    "achievement": "Achievement Unlocked",
+    "achievementDesc": "When you earn a new achievement or badge.",
     "weeklyReport": "Weekly Progress Report",
-    "weeklyReportDesc": "Summary of your weekly activity",
+    "weeklyReportDesc": "Summary of your weekly learning activity.",
+    "monthlyDigest": "Monthly Digest",
+    "monthlyDigestDesc": "A monthly summary of your stats and highlights.",
     "security": "Security Alerts",
-    "securityDesc": "Login attempts and account changes",
+    "securityDesc": "Login attempts and account changes.",
+    "newCourses": "New Content",
+    "newCoursesDesc": "Notify when new courses or paths are available.",
+    "promotions": "Promotions & Offers",
+    "promotionsDesc": "Receive special offers and discount notifications.",
     "saveSuccess": "Preferences saved",
     "saveError": "Failed to save preferences"
   },
+
   "appearance": {
     "theme": "Theme",
     "themeDesc": "Toggle between light and dark mode",
     "language": "Language",
     "languageDesc": "Change the interface language"
   },
+
   "billing": {
     "title": "Subscription",
     "description": "Manage your active plan and billing",
@@ -110,6 +156,7 @@
       "canceled": "Canceled"
     }
   },
+
   "dangerZone": {
     "exportTitle": "Export My Data",
     "exportDesc": "Download a copy of all your data including profile, labs, and progress",

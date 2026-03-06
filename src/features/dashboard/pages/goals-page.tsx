@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Bell, Plus, Repeat, Target } from 'lucide-react';
+import { Bell, Plus, Repeat, Target, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ComingSoonBanner } from '@/shared/components/common/coming-soon-banner';
@@ -15,7 +15,8 @@ import { CreateGoalDialog } from '../components/goals/create-goal-dialog';
 export default function GoalsPage(): React.ReactElement {
   const { t } = useTranslation('dashboard');
   const [createOpen, setCreateOpen] = useState(false);
-  const { data, isLoading } = useMyGoals();
+  // ✅ Fix: destructure isError
+  const { data, isLoading, isError } = useMyGoals();
   const del = useDeleteGoal();
   const complete = useCompleteGoal();
 
@@ -24,7 +25,7 @@ export default function GoalsPage(): React.ReactElement {
 
   return (
     <div className='container max-w-3xl space-y-6 py-6'>
-      {/* ── Header ──────────────────────────────────── */}
+      {/* ── Header ──────────────────────────────────────────── */}
       <div className='flex items-start justify-between gap-4'>
         <div>
           <h1 className='text-xl font-black tracking-tight'>
@@ -43,12 +44,20 @@ export default function GoalsPage(): React.ReactElement {
         </Button>
       </div>
 
-      {/* ── Active Goals ────────────────────────────── */}
+      {/* ── Active Goals ─────────────────────────────────────── */}
       {isLoading ? (
         <div className='space-y-3'>
           {Array.from({ length: 3 }).map((_, i) => (
             <Skeleton key={i} className='h-24 rounded-xl' />
           ))}
+        </div>
+      ) : isError ? (
+        // ✅ Fix: error state instead of blank screen
+        <div className='flex flex-col items-center gap-3 rounded-xl border border-destructive/30 bg-destructive/5 py-14 text-center'>
+          <AlertCircle size={32} className='text-destructive opacity-60' />
+          <p className='text-sm font-medium text-destructive'>
+            {t('common.errorLoading', 'Failed to load data')}
+          </p>
         </div>
       ) : active.length === 0 ? (
         <div
@@ -73,6 +82,9 @@ export default function GoalsPage(): React.ReactElement {
               key={goal.id}
               goal={goal}
               index={i}
+              // ✅ Fix: pass isPending so GoalCard can disable buttons during mutation
+              isDeleting={del.isPending && del.variables === goal.id}
+              isCompleting={complete.isPending && complete.variables === goal.id}
               onDelete={(id) => del.mutate(id)}
               onComplete={(id) => complete.mutate(id)}
             />
@@ -80,8 +92,8 @@ export default function GoalsPage(): React.ReactElement {
         </div>
       )}
 
-      {/* ── Completed Goals ─────────────────────────── */}
-      {done.length > 0 && (
+      {/* ── Completed Goals ─────────────────────────────────────── */}
+      {!isError && done.length > 0 && (
         <section className='space-y-3'>
           <h2 className='text-sm font-bold uppercase tracking-wider text-muted-foreground'>
             {t('goals.completedSection')} ({done.length})
@@ -92,6 +104,8 @@ export default function GoalsPage(): React.ReactElement {
                 key={goal.id}
                 goal={goal}
                 index={i}
+                isDeleting={del.isPending && del.variables === goal.id}
+                isCompleting={false}
                 onDelete={(id) => del.mutate(id)}
                 onComplete={() => {}}
               />
@@ -100,7 +114,7 @@ export default function GoalsPage(): React.ReactElement {
         </section>
       )}
 
-      {/* ── Coming Soon ─────────────────────────────── */}
+      {/* ── Coming Soon ─────────────────────────────────────────── */}
       <div className='grid gap-3 sm:grid-cols-2'>
         <ComingSoonBanner
           icon={<Repeat size={15} className='text-primary' />}

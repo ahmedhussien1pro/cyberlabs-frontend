@@ -1,3 +1,4 @@
+// src/features/profile/components/profile-header/profile-hero.tsx
 import { motion } from 'framer-motion';
 import {
   MapPin,
@@ -17,11 +18,11 @@ import { ProfileSocialLinks } from './profile-social-links';
 import { useMySubscription } from '@/features/pricing/hooks/use-pricing';
 
 const ROLE_STYLE: Record<string, string> = {
-  ADMIN: 'bg-red-500/10 text-red-500 border-red-500/20',
+  ADMIN: 'bg-red-500/10    text-red-500    border-red-500/20',
   INSTRUCTOR: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
   CONTENT_CREATOR: 'bg-orange-500/10 text-orange-500 border-orange-500/20',
-  STUDENT: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-  USER: 'bg-primary/10 text-primary border-primary/20',
+  STUDENT: 'bg-blue-500/10   text-blue-500   border-blue-500/20',
+  USER: 'bg-primary/10    text-primary    border-primary/20',
 };
 
 const INTERNAL_ICON: Record<string, string> = {
@@ -34,25 +35,24 @@ const INTERNAL_ICON: Record<string, string> = {
   STUDENT: '🎓',
 };
 
-// Subscription badge config
 const SUBSCRIPTION_CONFIG = {
   pro: {
     icon: Crown,
-    label: 'Pro',
+    planKey: 'pro' as const,
     className:
       'bg-gradient-to-r from-yellow-500/10 to-amber-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/30',
     iconClassName: 'text-yellow-500',
   },
   team: {
     icon: Building2,
-    label: 'Team',
+    planKey: 'team' as const,
     className:
       'bg-gradient-to-r from-purple-500/10 to-pink-500/10 text-purple-600 dark:text-purple-400 border-purple-500/30',
     iconClassName: 'text-purple-500',
   },
   enterprise: {
     icon: Sparkles,
-    label: 'Enterprise',
+    planKey: 'enterprise' as const,
     className:
       'bg-gradient-to-r from-cyan-500/10 to-blue-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/30',
     iconClassName: 'text-cyan-500',
@@ -76,7 +76,6 @@ export function ProfileHero({ profile, points, isOwner, onEdit }: Props) {
     ? ((points.totalXP % xpInLevel) / xpInLevel) * 100
     : 0;
 
-  // Get subscription badge config
   const subscriptionBadge =
     subscription?.planId && subscription.planId !== 'free'
       ? SUBSCRIPTION_CONFIG[
@@ -89,7 +88,6 @@ export function ProfileHero({ profile, points, isOwner, onEdit }: Props) {
       {/* Cover */}
       <div className='relative h-28 overflow-hidden bg-gradient-to-br from-primary/20 via-primary/10 to-background md:h-44'>
         <div className='absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,hsl(var(--primary)/0.2),transparent_70%)]' />
-        {/* Scanning line */}
         <motion.div
           className='absolute inset-x-0 h-px bg-primary/30'
           animate={{ top: ['0%', '100%'] }}
@@ -100,7 +98,6 @@ export function ProfileHero({ profile, points, isOwner, onEdit }: Props) {
             repeatType: 'loop',
           }}
         />
-        {/* Grid pattern */}
         <div
           className='absolute inset-0 opacity-[0.03]'
           style={{
@@ -135,11 +132,11 @@ export function ProfileHero({ profile, points, isOwner, onEdit }: Props) {
                       'rounded-full border px-2.5 py-0.5 text-xs font-semibold',
                       ROLE_STYLE[profile.role] ?? ROLE_STYLE.USER,
                     )}>
-                    {profile.role}
+                    {t(`roles.${profile.role}`, profile.role)}
                   </span>
                 )}
 
-                {/* Subscription Badge */}
+                {/* Subscription badge */}
                 {subscriptionBadge && (
                   <motion.span
                     initial={{ scale: 0, opacity: 0 }}
@@ -152,22 +149,25 @@ export function ProfileHero({ profile, points, isOwner, onEdit }: Props) {
                     <subscriptionBadge.icon
                       className={cn('h-3 w-3', subscriptionBadge.iconClassName)}
                     />
-                    {subscriptionBadge.label}
+                    {t(`subscription.${subscriptionBadge.planKey}`)}
                   </motion.span>
                 )}
 
-                {/* Internal role badge */}
+                {/* Internal role */}
                 {profile.internalRole && (
                   <span className='rounded-full border border-border/40 bg-muted px-2.5 py-0.5 text-xs text-muted-foreground'>
                     {INTERNAL_ICON[profile.internalRole]}{' '}
-                    {profile.internalRole.replace(/_/g, ' ')}
+                    {t(
+                      `internalRoles.${profile.internalRole}`,
+                      profile.internalRole.replace(/_/g, ' '),
+                    )}
                   </span>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Action Buttons */}
+          {/* Actions */}
           <div className='flex gap-2 pb-1'>
             {points && (
               <div className='flex items-center gap-1.5 rounded-full border border-border/40 bg-muted/60 px-3 py-1.5 text-xs font-bold text-foreground'>
@@ -238,7 +238,6 @@ export function ProfileHero({ profile, points, isOwner, onEdit }: Props) {
           </div>
         )}
 
-        {/* Social Links */}
         <ProfileSocialLinks links={profile.socialLinks ?? []} />
       </div>
     </div>

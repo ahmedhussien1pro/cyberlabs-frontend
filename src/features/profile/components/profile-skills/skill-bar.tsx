@@ -1,4 +1,6 @@
+// src/features/profile/components/profile-skills/skill-bar.tsx
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import type { UserSkill } from '../../types/profile.types';
 
 const LEVEL_GRADIENT: Record<string, string> = {
@@ -22,23 +24,28 @@ export function SkillBar({
   skill: UserSkill;
   delay?: number;
 }) {
+  const { t, i18n } = useTranslation('profile');
+  const isAr = i18n.language === 'ar';
   const gradient = LEVEL_GRADIENT[skill.level] ?? LEVEL_GRADIENT.BEGINNER;
+
+  // اسم المهارة: ar_name لو موجود + اللغة عربي
+  const skillName = isAr
+    ? (skill.skill.ar_name ?? skill.skill.name)
+    : skill.skill.name;
+
   return (
     <motion.div
       initial={{ opacity: 0, x: -8 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay }}
-      className='space-y-1.5 rounded-xl border border-border/40 bg-card p-3 transition-all
-                 hover:border-primary/20'>
+      className='space-y-1.5 rounded-xl border border-border/40 bg-card p-3 transition-all hover:border-primary/20'>
       <div className='flex items-center justify-between text-xs'>
-        <span className='font-semibold text-foreground'>
-          {skill.skill.name}
-        </span>
+        <span className='font-semibold text-foreground'>{skillName}</span>
         <span className='flex items-center gap-1 text-muted-foreground'>
           <span
             className={`h-1.5 w-1.5 rounded-full ${LEVEL_DOT[skill.level]}`}
           />
-          {skill.level}
+          {t(`skillLevel.${skill.level}`, skill.level)}
         </span>
       </div>
       <div className='h-1.5 overflow-hidden rounded-full bg-muted'>

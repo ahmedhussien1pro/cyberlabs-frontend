@@ -15,7 +15,6 @@ import {
 } from '@/features/badges/constants/badge-registry';
 import type { UserBadge } from '../../types/profile.types';
 
-// hexagon عبر clip-path
 const HEX = 'polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)';
 
 interface BadgeCardProps {
@@ -47,7 +46,7 @@ export function BadgeCard({
   size = 'md',
   locked = false,
 }: BadgeCardProps) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation('profile');
   const isAr = i18n.language === 'ar';
 
   const slug = badge.badge.slug ?? '';
@@ -55,12 +54,10 @@ export function BadgeCard({
   const design = TIER_DESIGNS[config.tier];
   const sz = SIZES[size];
 
-  // العنوان: أولوية الـ registry → ثم badge.title من الباك
   const title = isAr
     ? (badge.badge.ar_title ?? config.label_ar ?? badge.badge.title)
     : (badge.badge.title ?? config.label_en);
 
-  // الوصف
   const desc = isAr
     ? (badge.badge.ar_description ?? config.desc_ar ?? '')
     : (badge.badge.description ?? config.desc_en ?? '');
@@ -77,18 +74,12 @@ export function BadgeCard({
         locked && 'opacity-35 grayscale',
       )}
       style={{ clipPath: HEX }}>
-      {/* Shine layer للـ GOLD+ */}
       {!locked &&
         (config.tier === 'GOLD' ||
           config.tier === 'PLATINUM' ||
           config.tier === 'DIAMOND') && (
-          <div
-            className='absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700
-                     bg-gradient-to-br from-white/15 via-white/5 to-transparent'
-          />
+          <div className='absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-gradient-to-br from-white/15 via-white/5 to-transparent' />
         )}
-
-      {/* Pulse ring للـ DIAMOND */}
       {!locked && config.tier === 'DIAMOND' && (
         <div
           className='absolute inset-0 animate-pulse opacity-20'
@@ -99,7 +90,6 @@ export function BadgeCard({
           }}
         />
       )}
-
       {locked ? (
         <Lock className={cn(sz.icon, 'text-zinc-500')} />
       ) : (
@@ -123,7 +113,6 @@ export function BadgeCard({
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay, type: 'spring', stiffness: 220, damping: 18 }}
             className='group flex flex-col items-center gap-1.5 cursor-default select-none'>
-            {/* Hexagon + outer ring */}
             <div
               className={cn(
                 'relative rounded-sm ring-2 ring-transparent transition-all duration-300',
@@ -138,7 +127,6 @@ export function BadgeCard({
               {hexagon}
             </div>
 
-            {/* Label */}
             <div className='text-center max-w-[72px]'>
               <p
                 className={cn(
@@ -154,7 +142,6 @@ export function BadgeCard({
               )}
             </div>
 
-            {/* Tier pill */}
             {!locked && size !== 'sm' && (
               <span
                 className={cn(
@@ -181,7 +168,7 @@ export function BadgeCard({
           side='top'
           className='max-w-[200px] text-center space-y-1 p-3'>
           <p className='font-bold text-sm'>
-            {locked ? (isAr ? 'مقفول' : 'Locked') : title}
+            {locked ? t('badgeLocked') : title}
           </p>
           {!locked && desc && (
             <p className='text-xs text-muted-foreground leading-relaxed'>
@@ -190,7 +177,7 @@ export function BadgeCard({
           )}
           {!locked && badge.awardedAt && (
             <p className='text-[10px] text-muted-foreground/60'>
-              {isAr ? 'حُصل عليه في' : 'Earned'}{' '}
+              {t('badgeEarnedAt')}{' '}
               {new Date(badge.awardedAt).toLocaleDateString(
                 isAr ? 'ar-EG' : 'en-US',
                 {

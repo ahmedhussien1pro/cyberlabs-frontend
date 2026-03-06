@@ -1,3 +1,4 @@
+// src/features/profile/components/profile-activity/activity-heatmap.tsx
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +19,6 @@ function buildGrid(activities: UserActivity[]) {
   const map = new Map(activities.map((a) => [a.date.slice(0, 10), a]));
   const today = new Date();
   const result: Array<{ date: string; count: number }> = [];
-
   for (let i = WEEKS * DAYS - 1; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
@@ -39,6 +39,8 @@ interface Props {
 export function ActivityHeatmap({ activities }: Props) {
   const { t } = useTranslation('profile');
 
+  const DAY_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const;
+
   const data = useMemo(
     () =>
       buildGrid(
@@ -48,11 +50,8 @@ export function ActivityHeatmap({ activities }: Props) {
   );
 
   const weeks: (typeof data)[] = [];
-  for (let w = 0; w < WEEKS; w++) {
+  for (let w = 0; w < WEEKS; w++)
     weeks.push(data.slice(w * DAYS, (w + 1) * DAYS));
-  }
-
-  const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   return (
     <section className='space-y-3'>
@@ -65,11 +64,11 @@ export function ActivityHeatmap({ activities }: Props) {
         <div className='flex gap-1' dir='ltr'>
           {/* Day labels */}
           <div className='flex flex-col gap-1 pt-5'>
-            {DAY_LABELS.map((d, i) => (
+            {DAY_KEYS.map((key, i) => (
               <div
-                key={d}
+                key={key}
                 className='h-3 w-6 text-right text-[9px] leading-3 text-muted-foreground'>
-                {i % 2 === 1 ? d : ''}
+                {i % 2 === 1 ? t(`activity.days.${key}`) : ''}
               </div>
             ))}
           </div>
@@ -84,7 +83,10 @@ export function ActivityHeatmap({ activities }: Props) {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: wi * 0.005 }}
-                  title={`${cell.date}: ${cell.count} activities`}
+                  title={t('activity.tooltip', {
+                    count: cell.count,
+                    date: cell.date,
+                  })}
                   className={`h-3 w-3 cursor-pointer rounded-[2px] transition-transform
                               hover:scale-125 ${getColorClass(cell.count)}`}
                 />

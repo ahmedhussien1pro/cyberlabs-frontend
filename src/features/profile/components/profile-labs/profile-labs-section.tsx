@@ -1,3 +1,4 @@
+// src/features/profile/components/profile-labs/profile-labs-section.tsx
 import { motion } from 'framer-motion';
 import { FlaskConical, CheckCircle2, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -45,7 +46,7 @@ export function ProfileLabsSection() {
                 <span
                   className={`rounded-full border px-1.5 py-0.5 text-[10px] font-medium
                   ${DIFF_COLOR[item.lab.difficulty] ?? DIFF_COLOR.BEGINNER}`}>
-                  {item.lab.difficulty}
+                  {t(`difficulty.${item.lab.difficulty}`, item.lab.difficulty)}
                 </span>
                 <span className='flex items-center gap-0.5 text-[11px] text-muted-foreground'>
                   <Clock className='h-3 w-3' />

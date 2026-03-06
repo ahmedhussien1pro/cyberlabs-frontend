@@ -5,6 +5,9 @@
   "linkCopied": "Profile link copied",
   "joinedAt": "Joined",
   "level": "Level",
+  "skills": "Skills",
+  "badges": "Badges",
+
   "stats": {
     "xp": "Total XP",
     "points": "Points",
@@ -13,14 +16,27 @@
     "streak": "Streak",
     "hours": "Hours"
   },
-  "badges": "Badges",
-  "skills": "Skills",
-  "labs": { "title": "Completed Labs" },
+
+  "labs": {
+    "title": "Completed Labs"
+  },
+
   "activity": {
     "title": "Activity",
     "less": "Less",
-    "more": "More"
+    "more": "More",
+    "days": {
+      "sun": "Sun",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat"
+    },
+    "tooltip": "{{count}} activities on {{date}}"
   },
+
   "edit": {
     "desc": "Update your public profile information",
     "name": "Username",
@@ -39,11 +55,116 @@
     "avatarInvalidType": "Only JPEG, PNG and WebP images are allowed",
     "avatarTooLarge": "Image must be less than 5 MB"
   },
+
   "nav": {
     "back": "Back",
     "title": "Profile"
   },
+
   "sections": {
     "careerPaths": "Career Paths"
+  },
+
+  "completion": {
+    "title": "Complete your profile",
+    "subtitle": "{{count}} items missing",
+    "complete": "Complete Profile",
+    "name": "Name",
+    "bio": "Bio",
+    "avatar": "Profile Photo",
+    "birthday": "Birthday",
+    "phone": "Phone Number",
+    "address": "Location",
+    "social": "Social Links",
+    "skills": "Skills",
+    "education": "Education"
+  },
+
+  "difficulty": {
+    "BEGINNER": "Beginner",
+    "INTERMEDIATE": "Intermediate",
+    "ADVANCED": "Advanced",
+    "EXPERT": "Expert"
+  },
+
+  "skillLevel": {
+    "BEGINNER": "Beginner",
+    "INTERMEDIATE": "Intermediate",
+    "ADVANCED": "Advanced",
+    "EXPERT": "Expert"
+  },
+
+  "roles": {
+    "ADMIN": "Admin",
+    "INSTRUCTOR": "Instructor",
+    "CONTENT_CREATOR": "Content Creator",
+    "STUDENT": "Student",
+    "USER": "User"
+  },
+
+  "internalRoles": {
+    "RED_TEAM": "Red Team",
+    "BLUE_TEAM": "Blue Team",
+    "PENTEST": "Pentest",
+    "SOC": "SOC",
+    "GRC": "GRC",
+    "SECURITY_ANALYST": "Security Analyst",
+    "STUDENT": "Student"
+  },
+
+  "subscription": {
+    "pro": "Pro",
+    "team": "Team",
+    "enterprise": "Enterprise"
+  },
+
+  "achievements": {
+    "title": "Achievements",
+    "locked": "Locked",
+    "categories": {
+      "COURSE_COMPLETION": "Course Completion",
+      "LAB_SOLVED": "Lab Solved",
+      "STREAK": "Streak",
+      "COMMUNITY": "Community",
+      "CONTRIBUTION": "Contribution",
+      "CUSTOM": "Custom"
+    }
+  },
+
+  "badgeTabs": {
+    "all": "All",
+    "learning": "Learning",
+    "labs": "Labs",
+    "paths": "Paths",
+    "streak": "Streak",
+    "xp": "XP",
+    "leaderboard": "Leaderboard",
+    "special": "Special"
+  },
+
+  "badgeEmpty": {
+    "title": "No badges earned yet",
+    "subtitle": "Complete courses, solve labs, and maintain streaks to earn badges."
+  },
+
+  "badgeLocked": "Locked",
+  "badgeEarnedAt": "Earned",
+
+  "certifications": {
+    "title": "Certifications",
+    "platformSection": "Platform Certificates",
+    "externalSection": "External Certifications",
+    "verifyLink": "Verify credential",
+    "expired": "Expired",
+    "expiresSoon": "Expires soon",
+    "valid": "Valid",
+    "noExpiry": "No expiry",
+    "viewDownload": "View & Download Certificate",
+    "downloadPdf": "Download PDF",
+    "shareLink": "Share Link",
+    "copied": "Copied!",
+    "completionCert": "Certificate of Completion",
+    "academy": "CyberLabs Academy",
+    "popupWarning": "Please allow popups to download the certificate."
   }
 }

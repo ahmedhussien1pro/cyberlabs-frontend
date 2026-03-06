@@ -1,3 +1,4 @@
+// src/features/profile/types/profile.types.ts
 export type {
   UserStats,
   UserPoints,
@@ -27,7 +28,7 @@ export type BadgeType =
   | 'CONTRIBUTION'
   | 'CUSTOM';
 
-// ─── Full user profile ────────────────────────────────────────────────────────
+// ─── Full user profile ───────────────────────────────────────────────────────
 export interface UserProfile {
   id: string;
   name: string;
@@ -78,7 +79,9 @@ export interface Education {
 export interface UserCertification {
   id: string;
   title: string;
-  issuer: string;
+  ar_title?: string; // ← جديد: العنوان العربي
+  issuer: string; // 'CyberLabs' للشهادات من المنصة
+  certType?: 'COURSE' | 'PATH' | 'LAB' | 'CUSTOM'; // ← جديد: نوع الشهادة
   issueDate: string;
   expireDate?: string;
   credentialId?: string;
@@ -90,7 +93,7 @@ export interface UserBadge {
   awardedAt: string;
   context?: string;
   badge: {
-    slug?: string; // ← الـ key للـ registry (optional للـ backward compat)
+    slug?: string;
     title: string;
     ar_title?: string;
     description?: string;

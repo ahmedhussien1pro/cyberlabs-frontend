@@ -5,6 +5,9 @@
   "linkCopied": "تم نسخ رابط الملف",
   "joinedAt": "انضم في",
   "level": "المستوى",
+  "skills": "المهارات",
+  "badges": "الشارات",
+
   "stats": {
     "xp": "إجمالي XP",
     "points": "النقاط",
@@ -13,14 +16,27 @@
     "streak": "السلسلة",
     "hours": "الساعات"
   },
-  "badges": "الشارات",
-  "skills": "المهارات",
-  "labs": { "title": "اللابات المنجزة" },
+
+  "labs": {
+    "title": "اللابات المنجزة"
+  },
+
   "activity": {
     "title": "النشاط",
     "less": "أقل",
-    "more": "أكثر"
+    "more": "أكثر",
+    "days": {
+      "sun": "أحد",
+      "mon": "إثن",
+      "tue": "ثلا",
+      "wed": "أرب",
+      "thu": "خمي",
+      "fri": "جمع",
+      "sat": "سبت"
+    },
+    "tooltip": "{{count}} نشاط في {{date}}"
   },
+
   "edit": {
     "desc": "تحديث بيانات ملفك الشخصي",
     "name": "اسم المستخدم",
@@ -39,11 +55,116 @@
     "avatarInvalidType": "يُسمح فقط بصور JPEG وPNG وWebP",
     "avatarTooLarge": "يجب أن يكون حجم الصورة أقل من 5 ميجابايت"
   },
+
   "nav": {
     "back": "رجوع",
     "title": "الملف الشخصي"
   },
+
   "sections": {
     "careerPaths": "المسارات المهنية"
+  },
+
+  "completion": {
+    "title": "أكمل ملفك الشخصي",
+    "subtitle": "{{count}} عناصر ناقصة",
+    "complete": "إكمال الملف",
+    "name": "الاسم",
+    "bio": "نبذة شخصية",
+    "avatar": "الصورة الشخصية",
+    "birthday": "تاريخ الميلاد",
+    "phone": "رقم الهاتف",
+    "address": "الموقع",
+    "social": "روابط التواصل",
+    "skills": "المهارات",
+    "education": "التعليم"
+  },
+
+  "difficulty": {
+    "BEGINNER": "مبتدئ",
+    "INTERMEDIATE": "متوسط",
+    "ADVANCED": "متقدم",
+    "EXPERT": "خبير"
+  },
+
+  "skillLevel": {
+    "BEGINNER": "مبتدئ",
+    "INTERMEDIATE": "متوسط",
+    "ADVANCED": "متقدم",
+    "EXPERT": "خبير"
+  },
+
+  "roles": {
+    "ADMIN": "مشرف",
+    "INSTRUCTOR": "مدرب",
+    "CONTENT_CREATOR": "منشئ محتوى",
+    "STUDENT": "طالب",
+    "USER": "مستخدم"
+  },
+
+  "internalRoles": {
+    "RED_TEAM": "الفريق الأحمر",
+    "BLUE_TEAM": "الفريق الأزرق",
+    "PENTEST": "اختبار الاختراق",
+    "SOC": "مركز العمليات",
+    "GRC": "الحوكمة والمخاطر",
+    "SECURITY_ANALYST": "محلل أمني",
+    "STUDENT": "طالب"
+  },
+
+  "subscription": {
+    "pro": "برو",
+    "team": "فريق",
+    "enterprise": "مؤسسي"
+  },
+
+  "achievements": {
+    "title": "الإنجازات",
+    "locked": "مقفول",
+    "categories": {
+      "COURSE_COMPLETION": "إتمام كورس",
+      "LAB_SOLVED": "حل لاب",
+      "STREAK": "انتظام",
+      "COMMUNITY": "مجتمع",
+      "CONTRIBUTION": "مساهمة",
+      "CUSTOM": "خاص"
+    }
+  },
+
+  "badgeTabs": {
+    "all": "الكل",
+    "learning": "التعلم",
+    "labs": "اللابات",
+    "paths": "المسارات",
+    "streak": "الانتظام",
+    "xp": "الـ XP",
+    "leaderboard": "المتصدرون",
+    "special": "خاص"
+  },
+
+  "badgeEmpty": {
+    "title": "لم تحصل على أي شارة بعد",
+    "subtitle": "أكمل كورسات، حل لابات، وحافظ على انتظامك لتحصل على شارات."
+  },
+
+  "badgeLocked": "مقفول",
+  "badgeEarnedAt": "حُصل عليه في",
+
+  "certifications": {
+    "title": "الشهادات",
+    "platformSection": "شهادات المنصة",
+    "externalSection": "شهادات خارجية",
+    "verifyLink": "التحقق من الشهادة",
+    "expired": "منتهية",
+    "expiresSoon": "تنتهي قريباً",
+    "valid": "سارية",
+    "noExpiry": "دائمة",
+    "viewDownload": "عرض وتنزيل الشهادة",
+    "downloadPdf": "تنزيل PDF",
+    "shareLink": "مشاركة الرابط",
+    "copied": "تم النسخ!",
+    "completionCert": "شهادة إتمام",
+    "academy": "أكاديمية CyberLabs",
+    "popupWarning": "يرجى السماح للنوافذ المنبثقة لتنزيل الشهادة."
   }
 }

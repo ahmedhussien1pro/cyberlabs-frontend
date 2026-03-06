@@ -112,9 +112,10 @@ export default function ProfilePage(): React.ReactElement {
         {/* ⑥ Achievements — NEW */}
         <ProfileAchievementsSection achievements={profile.achievements ?? []} />
 
-        {/* ⑦ Certifications — NEW */}
+        {/* ⑦ Certifications */}
         <ProfileCertificationsSection
           certifications={profile.certifications ?? []}
+          userName={profile.name}
         />
 
         {/* ⑧ Skills */}

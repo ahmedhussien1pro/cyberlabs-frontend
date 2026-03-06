@@ -36,7 +36,7 @@ export function ProfileAchievementsSection({ achievements }: Props) {
     <section className='space-y-3'>
       <h2 className='flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground'>
         <Trophy className='h-4 w-4 text-yellow-500' />
-        {t('achievements.title', 'Achievements')}
+        {t('achievements.title')}
         <span className='rounded-full bg-yellow-500/10 px-2 py-0.5 text-xs font-semibold text-yellow-500'>
           {achieved.length}/{achievements.length}
         </span>
@@ -50,8 +50,7 @@ export function ProfileAchievementsSection({ achievements }: Props) {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.04 }}
-            className='flex items-start gap-3 rounded-xl border border-border/40 bg-card p-3
-                       transition-all hover:border-primary/20'>
+            className='flex items-start gap-3 rounded-xl border border-border/40 bg-card p-3 transition-all hover:border-primary/20'>
             <div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-yellow-500/10'>
               {item.achievement.iconUrl ? (
                 <img
@@ -80,7 +79,10 @@ export function ProfileAchievementsSection({ achievements }: Props) {
                     CATEGORY_STYLE[item.achievement.category] ??
                       CATEGORY_STYLE.CUSTOM,
                   )}>
-                  {item.achievement.category.replace(/_/g, ' ')}
+                  {t(
+                    `achievements.categories.${item.achievement.category}`,
+                    item.achievement.category.replace(/_/g, ' '),
+                  )}
                 </Badge>
                 <span className='text-[10px] font-semibold text-primary'>
                   +{item.achievement.xpReward} XP
@@ -102,8 +104,7 @@ export function ProfileAchievementsSection({ achievements }: Props) {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: (achieved.length + i) * 0.04 }}
-            className='flex items-start gap-3 rounded-xl border border-border/30
-                       bg-card p-3 opacity-70 transition-all'>
+            className='flex items-start gap-3 rounded-xl border border-border/30 bg-card p-3 opacity-70 transition-all'>
             <div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted'>
               {item.achievement.iconUrl ? (
                 <img
@@ -137,7 +138,7 @@ export function ProfileAchievementsSection({ achievements }: Props) {
           </motion.div>
         ))}
 
-        {/* ── Locked (max 3) ── */}
+        {/* ── Locked ── */}
         {locked.map((item, i) => (
           <motion.div
             key={item.id}
@@ -146,8 +147,7 @@ export function ProfileAchievementsSection({ achievements }: Props) {
             transition={{
               delay: (achieved.length + inProgress.length + i) * 0.04,
             }}
-            className='flex items-start gap-3 rounded-xl border border-dashed border-border/30
-                       bg-muted/10 p-3 opacity-40 select-none'>
+            className='flex items-start gap-3 rounded-xl border border-dashed border-border/30 bg-muted/10 p-3 opacity-40 select-none'>
             <div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted'>
               <Lock className='h-4 w-4 text-muted-foreground' />
             </div>
@@ -156,7 +156,7 @@ export function ProfileAchievementsSection({ achievements }: Props) {
                 {item.achievement.title}
               </p>
               <p className='mt-0.5 text-[11px] text-muted-foreground'>
-                {t('achievements.locked', 'Locked')}
+                {t('achievements.locked')}
               </p>
             </div>
           </motion.div>

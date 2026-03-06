@@ -12,20 +12,15 @@ import {
 import type { UserBadge } from '../../types/profile.types';
 import type { BadgeCategory } from '@/features/badges/types/badge.types';
 
-// ── Filter tabs ───────────────────────────────────────────────────────────
-const TABS: {
-  key: BadgeCategory | 'all';
-  label_en: string;
-  label_ar: string;
-}[] = [
-  { key: 'all', label_en: 'All', label_ar: 'الكل' },
-  { key: 'learning', label_en: 'Learning', label_ar: 'التعلم' },
-  { key: 'labs', label_en: 'Labs', label_ar: 'اللابات' },
-  { key: 'paths', label_en: 'Paths', label_ar: 'المسارات' },
-  { key: 'streak', label_en: 'Streak', label_ar: 'الانتظام' },
-  { key: 'xp', label_en: 'XP', label_ar: 'الـ XP' },
-  { key: 'leaderboard', label_en: 'Leaderboard', label_ar: 'المتصدرون' },
-  { key: 'special', label_en: 'Special', label_ar: 'خاص' },
+const TAB_KEYS: Array<BadgeCategory | 'all'> = [
+  'all',
+  'learning',
+  'labs',
+  'paths',
+  'streak',
+  'xp',
+  'leaderboard',
+  'special',
 ];
 
 interface ProfileBadgesSectionProps {
@@ -41,22 +36,18 @@ export function ProfileBadgesSection({
   const isAr = i18n.language === 'ar';
   const [tab, setTab] = useState<BadgeCategory | 'all'>('all');
 
-  // الـ slugs اللي الـ user عنده
   const earnedSlugs = new Set(badges.map((b) => b.badge.slug ?? ''));
 
-  // الـ badges الـ user كسبها + فلترة بالـ tab
   const earnedFiltered = badges.filter((b) => {
     const cfg = b.badge.slug ? BADGE_REGISTRY[b.badge.slug] : null;
     return tab === 'all' || cfg?.category === tab;
   });
 
-  // الـ locked badges (موجودة في registry بس ما اتاخدتش)
   const lockedFiltered = showLocked
     ? ALL_BADGE_SLUGS.filter((slug) => !earnedSlugs.has(slug))
-        .filter((slug) => {
-          const cfg = BADGE_REGISTRY[slug];
-          return tab === 'all' || cfg?.category === tab;
-        })
+        .filter(
+          (slug) => tab === 'all' || BADGE_REGISTRY[slug]?.category === tab,
+        )
         .map(
           (slug) =>
             ({
@@ -81,9 +72,7 @@ export function ProfileBadgesSection({
       <div className='flex flex-wrap items-center justify-between gap-2'>
         <div className='flex items-center gap-2'>
           <ShieldCheck className='h-5 w-5 text-primary' />
-          <h2 className='font-bold text-base text-foreground'>
-            {t('badges', 'Badges')}
-          </h2>
+          <h2 className='font-bold text-base text-foreground'>{t('badges')}</h2>
           {badges.length > 0 && (
             <span className='text-xs font-bold text-primary bg-primary/10 border border-primary/20 rounded-full px-2 py-px'>
               {badges.length}
@@ -108,17 +97,17 @@ export function ProfileBadgesSection({
 
       {/* ── Category Tabs ── */}
       <div className='flex gap-1.5 flex-wrap'>
-        {TABS.map((t) => (
+        {TAB_KEYS.map((key) => (
           <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
+            key={key}
+            onClick={() => setTab(key)}
             className={cn(
               'text-xs px-3 py-1 rounded-full font-medium transition-all duration-200',
-              tab === t.key
+              tab === key
                 ? 'bg-primary text-primary-foreground shadow-sm'
                 : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground',
             )}>
-            {isAr ? t.label_ar : t.label_en}
+            {t(`badgeTabs.${key}`)}
           </button>
         ))}
       </div>
@@ -130,17 +119,14 @@ export function ProfileBadgesSection({
             <Lock className='h-5 w-5 text-muted-foreground/50' />
           </div>
           <p className='text-sm text-muted-foreground'>
-            {isAr ? 'لم تحصل على أي وسام بعد' : 'No badges earned yet'}
+            {t('badgeEmpty.title')}
           </p>
           <p className='text-xs text-muted-foreground/60 max-w-xs leading-relaxed'>
-            {isAr
-              ? 'أكمل كورسات، حل لابات، وحافظ على انتظامك لتحصل على أوسمة.'
-              : 'Complete courses, solve labs, and maintain streaks to earn badges.'}
+            {t('badgeEmpty.subtitle')}
           </p>
         </div>
       ) : (
         <div className='flex flex-wrap gap-4'>
-          {/* Earned first */}
           {earnedFiltered.map((badge, i) => (
             <BadgeCard
               key={badge.id}
@@ -150,7 +136,6 @@ export function ProfileBadgesSection({
               locked={false}
             />
           ))}
-          {/* Locked */}
           {lockedFiltered.map((badge, i) => (
             <BadgeCard
               key={badge.id}

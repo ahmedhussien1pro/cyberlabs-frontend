@@ -49,6 +49,12 @@ export function Navbar() {
 
   const learningItems = [
     {
+      label: t('navigation.paths', 'Career Paths'),
+      href: '/paths',
+      icon: <LayoutDashboard className='w-4 h-4' />,
+      description: t('navigation.pathsDesc', 'Guided roadmaps for your career'),
+    },
+    {
       label: t('navigation.courses', 'Courses'),
       href: '/courses',
       icon: <GraduationCap className='w-4 h-4' />,
@@ -66,12 +72,7 @@ export function Navbar() {
         'Practice in real-world environments',
       ),
     },
-    {
-      label: t('navigation.paths', 'Career Paths'),
-      href: '/paths',
-      icon: <LayoutDashboard className='w-4 h-4' />,
-      description: t('navigation.pathsDesc', 'Guided roadmaps for your career'),
-    },
+
     {
       label: t('navigation.challenges', 'CTF Challenges'),
       href: '/challenges',

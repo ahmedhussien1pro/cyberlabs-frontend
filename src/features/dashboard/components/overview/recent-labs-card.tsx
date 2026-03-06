@@ -5,6 +5,7 @@ import {
   CheckCircle2,
   Zap,
   Clock,
+  AlertCircle,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -26,10 +27,12 @@ const DIFF: Record<string, string> = {
 export function RecentLabsCard() {
   const { t, i18n } = useTranslation('dashboard');
   const isAr = i18n.language === 'ar';
-  const { data, isLoading } = useUserLabs();
+  // ✅ Fix: destructure isError
+  const { data, isLoading, isError } = useUserLabs();
 
-  // أحدث 5 labs مكتملة مرتبة بتاريخ الإكمال (الأحدث أولاً)
+  // ✅ Fix: guard against null completedAt before sorting to prevent NaN crash
   const recent = [...(data ?? [])]
+    .filter((entry) => !!entry.completedAt)
     .sort(
       (a, b) =>
         new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime(),
@@ -72,6 +75,12 @@ export function RecentLabsCard() {
               </div>
             </div>
           ))
+        ) : isError ? (
+          // ✅ Fix: error state
+          <div className='flex flex-col items-center gap-2 py-8 text-destructive'>
+            <AlertCircle size={28} className='opacity-50' />
+            <p className='text-sm'>{t('common.errorLoading', 'Failed to load data')}</p>
+          </div>
         ) : recent.length === 0 ? (
           <div className='flex flex-col items-center gap-2 py-8 text-muted-foreground'>
             <FlaskConical size={28} className='opacity-40' />
@@ -89,8 +98,9 @@ export function RecentLabsCard() {
             const title = isAr
               ? (entry.lab.ar_title ?? entry.lab.title)
               : entry.lab.title;
+            // ✅ Fix: normalize difficulty to uppercase before lookup
             const diff =
-              DIFF[entry.lab.difficulty?.toUpperCase()] ??
+              DIFF[entry.lab.difficulty?.toUpperCase() ?? ''] ??
               'text-muted-foreground bg-muted border-border/40';
 
             return (

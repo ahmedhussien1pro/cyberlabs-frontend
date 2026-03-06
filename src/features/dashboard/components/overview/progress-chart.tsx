@@ -1,7 +1,7 @@
 // src/features/dashboard/components/overview/progress-chart.tsx
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { FlaskConical, Zap } from 'lucide-react';
+import { FlaskConical, Zap, AlertCircle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useWeeklyProgress } from '../../hooks/use-dashboard-data';
 
@@ -23,7 +23,6 @@ function Bar({
 
   return (
     <div className='group flex flex-1 flex-col items-center gap-1'>
-      {/* XP value on hover / if active */}
       <span
         className={`font-mono text-[10px] transition-opacity ${
           hasActivity ? 'text-primary' : 'text-transparent'
@@ -31,7 +30,6 @@ function Bar({
         {xp > 0 ? `+${xp}` : ''}
       </span>
 
-      {/* Bar */}
       <div className='relative flex h-20 w-full max-w-[28px] items-end overflow-hidden rounded-full bg-muted'>
         <motion.div
           initial={{ height: 0 }}
@@ -39,7 +37,6 @@ function Bar({
           transition={{ delay, duration: 0.6, ease: 'easeOut' }}
           className='w-full rounded-full bg-gradient-to-t from-primary to-cyan-400'
         />
-        {/* Labs dot indicator — يشير لوجود lab هذا اليوم */}
         {labs > 0 && (
           <span className='absolute bottom-1 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-white/80' />
         )}
@@ -52,7 +49,8 @@ function Bar({
 
 export function ProgressChart() {
   const { t } = useTranslation('dashboard');
-  const { data, isLoading } = useWeeklyProgress();
+  // ✅ Fix: destructure isError to handle API failure state
+  const { data, isLoading, isError } = useWeeklyProgress();
 
   const maxXp = data ? Math.max(...data.map((d) => d.xp), 1) : 1;
   const totalXP = data?.reduce((s, d) => s + d.xp, 0) ?? 0;
@@ -66,16 +64,17 @@ export function ProgressChart() {
       </h2>
 
       <div className='rounded-xl border border-border/40 bg-card p-4 space-y-4'>
-        {/* Weekly summary */}
-        {!isLoading && (
+        {/* Weekly summary — hidden while loading or on error */}
+        {!isLoading && !isError && (
           <div className='flex items-center gap-4 pb-2 border-b border-border/30'>
             <div className='flex items-center gap-1.5'>
               <Zap size={13} className='text-primary' />
               <span className='font-mono text-sm font-bold text-foreground'>
                 {totalXP.toLocaleString()}
               </span>
+              {/* ✅ Fix: was hardcoded "XP this week" */}
               <span className='text-xs text-muted-foreground'>
-                XP this week
+                {t('chart.xpThisWeek', 'XP this week')}
               </span>
             </div>
             <div className='h-3 w-px bg-border/60' />
@@ -102,6 +101,12 @@ export function ProgressChart() {
               />
             ))}
           </div>
+        ) : isError ? (
+          // ✅ Fix: show error state instead of blank screen
+          <div className='flex h-28 items-center justify-center gap-2 text-sm text-destructive'>
+            <AlertCircle size={14} />
+            {t('common.errorLoading', 'Failed to load data')}
+          </div>
         ) : !data || data.length === 0 ? (
           <div className='flex h-28 items-center justify-center text-sm text-muted-foreground'>
             {t('chart.noData')}
@@ -122,18 +127,20 @@ export function ProgressChart() {
         )}
 
         {/* Legend */}
-        {!isLoading && data && data.length > 0 && (
+        {!isLoading && !isError && data && data.length > 0 && (
           <div className='flex items-center gap-3 pt-1 border-t border-border/20'>
             <div className='flex items-center gap-1.5'>
               <span className='h-2 w-2 rounded-full bg-gradient-to-t from-primary to-cyan-400' />
+              {/* ✅ Fix: was hardcoded "XP earned" */}
               <span className='text-[10px] text-muted-foreground'>
-                XP earned
+                {t('chart.xpEarned', 'XP earned')}
               </span>
             </div>
             <div className='flex items-center gap-1.5'>
               <span className='h-1.5 w-1.5 rounded-full bg-white/60 ring-1 ring-border' />
+              {/* ✅ Fix: was hardcoded "Lab completed" */}
               <span className='text-[10px] text-muted-foreground'>
-                Lab completed
+                {t('chart.labCompleted', 'Lab completed')}
               </span>
             </div>
           </div>

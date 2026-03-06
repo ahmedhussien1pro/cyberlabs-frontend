@@ -7,21 +7,21 @@
   "level": "المستوى",
   "skills": "المهارات",
   "badges": "الشارات",
-  "notFound": "الملف الشخصي غير موجود.",
-  "goHome": "الرئيسية",
-  "loadError": "فشل تحميل الملف الشخصي.",
+  "notFound": "الملف غير موجود.",
+  "goHome": "عودة للصفحة الرئيسية",
+  "loadError": "فشل تحميل الملف.",
 
   "stats": {
-    "xp": "إجمالي XP",
+    "xp": "إجمالي نقاط الخبرة",
     "points": "النقاط",
-    "labs": "لابات منجزة",
+    "labs": "اللابات المنجزة",
     "courses": "الكورسات",
-    "streak": "السلسلة",
+    "streak": "سلسلة النشاط",
     "hours": "الساعات"
   },
 
   "labs": {
-    "title": "اللابات المنجزة"
+    "title": "اللابات المكتملة"
   },
 
   "activity": {
@@ -29,39 +29,48 @@
     "less": "أقل",
     "more": "أكثر",
     "days": {
-      "sun": "أحد",
-      "mon": "إثن",
-      "tue": "ثلا",
-      "wed": "أرب",
-      "thu": "خمي",
-      "fri": "جمع",
-      "sat": "سبت"
+      "sun": "الأحد",
+      "mon": "الإثنين",
+      "tue": "الثلاثاء",
+      "wed": "الأربعاء",
+      "thu": "الخميس",
+      "fri": "الجمعة",
+      "sat": "السبت"
     },
     "tooltip": "{{count}} نشاط في {{date}}"
   },
 
   "edit": {
-    "desc": "تحديث بيانات ملفك الشخصي",
+    "desc": "تحديث معلومات ملفك العام",
     "name": "اسم المستخدم",
-    "bio": "نبذة",
+    "bio": "النبذة",
     "address": "الموقع",
     "phoneNumber": "الهاتف",
+    "birthday": "تاريخ الميلاد",
     "socialLinks": "روابط التواصل",
     "addLink": "إضافة رابط",
+    "noSocialLinks": "لا توجد روابط تواصل بعد. اضغط على \"إضافة رابط\" لربط حساباتك.",
     "changeAvatar": "تغيير الصورة",
+    "cropAvatar": "قص صورة الملف",
+    "applyCrop": "تطبيق ورفع",
+    "cancelPreview": "إلغاء",
+    "avatarHint": "اسحب وأفلت أو اضغط للرفع",
+    "avatarLimits": "JPEG, PNG, WebP • حد أقصى 5 ميغابايت",
     "save": "حفظ التغييرات",
     "cancel": "إلغاء",
-    "success": "تم تحديث الملف الشخصي",
-    "error": "فشل تحديث الملف الشخصي",
-    "avatarSuccess": "تم تحديث الصورة الشخصية",
+    "success": "تم تحديث الملف بنجاح",
+    "error": "فشل تحديث الملف",
+    "avatarSuccess": "تم تحديث الصورة بنجاح",
     "avatarError": "فشل رفع الصورة",
-    "avatarInvalidType": "يُسمح فقط بصور JPEG وPNG وWebP",
-    "avatarTooLarge": "يجب أن يكون حجم الصورة أقل من 5 ميجابايت"
+    "avatarInvalidType": "صيغ الصور المسموح بها: JPEG, PNG, WebP فقط",
+    "avatarTooLarge": "يجب أن تكون الصورة أقل من 5 ميغابايت",
+    "unsavedWarning": "لديك تغييرات غير محفوظة. هل أنت متأكد من المغادرة؟",
+    "unsavedChangesHint": "لديك تغييرات غير محفوظة. لا تنسَ الحفظ قبل الإغلاق."
   },
 
   "nav": {
     "back": "رجوع",
-    "title": "الملف الشخصي"
+    "title": "الملف"
   },
 
   "sections": {
@@ -70,11 +79,11 @@
 
   "completion": {
     "title": "أكمل ملفك الشخصي",
-    "subtitle": "{{count}} عناصر ناقصة",
+    "subtitle": "{{count}} عنصر ناقص",
     "complete": "إكمال الملف",
     "name": "الاسم",
-    "bio": "نبذة شخصية",
-    "avatar": "الصورة الشخصية",
+    "bio": "النبذة",
+    "avatar": "صورة الملف",
     "birthday": "تاريخ الميلاد",
     "phone": "رقم الهاتف",
     "address": "الموقع",
@@ -98,77 +107,77 @@
   },
 
   "roles": {
-    "ADMIN": "مشرف",
-    "INSTRUCTOR": "مدرب",
+    "ADMIN": "مسؤول",
+    "INSTRUCTOR": "محاضر",
     "CONTENT_CREATOR": "منشئ محتوى",
     "STUDENT": "طالب",
     "USER": "مستخدم"
   },
 
   "internalRoles": {
-    "RED_TEAM": "الفريق الأحمر",
-    "BLUE_TEAM": "الفريق الأزرق",
-    "PENTEST": "اختبار الاختراق",
-    "SOC": "مركز العمليات",
-    "GRC": "الحوكمة والمخاطر",
+    "RED_TEAM": "Red Team",
+    "BLUE_TEAM": "Blue Team",
+    "PENTEST": "Pentest",
+    "SOC": "SOC",
+    "GRC": "GRC",
     "SECURITY_ANALYST": "محلل أمني",
     "STUDENT": "طالب"
   },
 
   "subscription": {
-    "pro": "برو",
-    "team": "فريق",
-    "enterprise": "مؤسسي"
+    "pro": "Pro",
+    "team": "Team",
+    "enterprise": "Enterprise"
   },
 
   "achievements": {
     "title": "الإنجازات",
-    "locked": "مقفول",
+    "locked": "مقفل",
     "categories": {
       "COURSE_COMPLETION": "إتمام كورس",
       "LAB_SOLVED": "حل لاب",
-      "STREAK": "انتظام",
+      "STREAK": "سلسلة",
       "COMMUNITY": "مجتمع",
       "CONTRIBUTION": "مساهمة",
-      "CUSTOM": "خاص"
+      "CUSTOM": "مخصص"
     }
   },
 
   "badgeTabs": {
     "all": "الكل",
-    "learning": "التعلم",
+    "learning": "التعلّم",
     "labs": "اللابات",
     "paths": "المسارات",
-    "streak": "الانتظام",
-    "xp": "الـ XP",
-    "leaderboard": "المتصدرون",
-    "special": "خاص"
+    "streak": "السلسلة",
+    "xp": "نقاط الخبرة",
+    "leaderboard": "لوحة الصدارة",
+    "special": "خاصة"
   },
 
   "badgeEmpty": {
-    "title": "لم تحصل على أي شارة بعد",
-    "subtitle": "أكمل كورسات، حل لابات، وحافظ على انتظامك لتحصل على شارات."
+    "title": "لم تكسب شارات بعد",
+    "subtitle": "أكمل الكورسات واحل اللابات وحافظ على سلسلة نشاطك لكسب الشارات."
   },
 
-  "badgeLocked": "مقفول",
-  "badgeEarnedAt": "حُصل عليه في",
+  "badgeLocked": "مقفل",
+  "badgeEarnedAt": "حصلت عليها",
 
   "certifications": {
     "title": "الشهادات",
     "platformSection": "شهادات المنصة",
-    "externalSection": "شهادات خارجية",
-    "verifyLink": "التحقق من الشهادة",
+    "externalSection": "الشهادات الخارجية",
+    "verifyLink": "تحقّق من الهوية",
     "expired": "منتهية",
-    "expiresSoon": "تنتهي قريباً",
+    "expiresSoon": "تنتهي قريبًا",
     "valid": "سارية",
-    "noExpiry": "دائمة",
+    "noExpiry": "لا تنتهي",
     "viewDownload": "عرض وتنزيل الشهادة",
     "downloadPdf": "تنزيل PDF",
     "shareLink": "مشاركة الرابط",
     "copied": "تم النسخ!",
     "completionCert": "شهادة إتمام",
-    "academy": "أكاديمية CyberLabs",
-    "popupWarning": "يرجى السماح للنوافذ المنبثقة لتنزيل الشهادة.",
-    "copyPrompt": "انسخ الرابط:"
+    "academy": "CyberLabs Academy",
+    "popupWarning": "الرجاء السماح بالنوافذ لتنزيل الشهادة.",
+    "copyPrompt": "انسخ هذا الرابط:"
   }
 }

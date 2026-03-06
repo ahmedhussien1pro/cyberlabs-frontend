@@ -46,9 +46,16 @@
     "bio": "Bio",
     "address": "Location",
     "phoneNumber": "Phone",
+    "birthday": "Birthday",
     "socialLinks": "Social Links",
     "addLink": "Add Link",
+    "noSocialLinks": "No social links yet. Click \"Add Link\" to connect your profiles.",
     "changeAvatar": "Change Photo",
+    "cropAvatar": "Crop Profile Photo",
+    "applyCrop": "Apply & Upload",
+    "cancelPreview": "Cancel",
+    "avatarHint": "Drag & drop or click to upload",
+    "avatarLimits": "JPEG, PNG, WebP • Max 5 MB",
     "save": "Save Changes",
     "cancel": "Cancel",
     "success": "Profile updated successfully",
@@ -56,7 +63,9 @@
     "avatarSuccess": "Avatar updated successfully",
     "avatarError": "Failed to upload avatar",
     "avatarInvalidType": "Only JPEG, PNG and WebP images are allowed",
-    "avatarTooLarge": "Image must be less than 5 MB"
+    "avatarTooLarge": "Image must be less than 5 MB",
+    "unsavedWarning": "You have unsaved changes. Are you sure you want to leave?",
+    "unsavedChangesHint": "You have unsaved changes. Don't forget to save before closing."
   },
 
   "nav": {

@@ -1,3 +1,4 @@
+// src/features/courses/services/courses.api.ts
 import apiClient from '@/core/api/client';
 import { API_ENDPOINTS } from '@/core/api/endpoints';
 import type {
@@ -62,9 +63,24 @@ function normalizeCourseList(raw: any): PaginatedCourses {
 
 function normalizeEnrollment(raw: any): Enrollment {
   return {
+    id: raw.id ?? '',
+    userId: raw.userId ?? '',
     courseId: raw.courseId ?? raw.course?.id ?? '',
     progress: raw.progress ?? 0,
     isCompleted: raw.isCompleted ?? false,
+    enrolledAt: raw.enrolledAt ?? '',
+    completedAt: raw.completedAt ?? null,
+    lastAccessedAt: raw.lastAccessedAt ?? null,
+    course: {
+      id: raw.course?.id ?? raw.courseId ?? '',
+      slug: raw.course?.slug ?? '',
+      title: raw.course?.title ?? '',
+      ar_title: raw.course?.ar_title ?? null,
+      thumbnail: raw.course?.thumbnail ?? null,
+      color: ((raw.course?.color as string)?.toLowerCase() ??
+        'blue') as CourseColor,
+      difficulty: raw.course?.difficulty ?? 'BEGINNER',
+    },
   };
 }
 
@@ -117,7 +133,6 @@ export const coursesApi = {
       .post(`/courses/${courseId}/topics/${topicId}/complete`)
       .then((r) => r?.data ?? r),
 
-  // ✅ reset كل topic completions للـ user في هذا الكورس
   resetProgress: (courseId: string): Promise<{ success: boolean }> =>
     apiClient
       .delete(`/enrollments/${courseId}/reset`)

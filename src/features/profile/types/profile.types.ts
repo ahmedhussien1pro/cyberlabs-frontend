@@ -27,7 +27,7 @@ export type BadgeType =
   | 'CONTRIBUTION'
   | 'CUSTOM';
 
-// ─── Full user profile (private — owner only) ────────────────────────────────
+// ─── Full user profile ────────────────────────────────────────────────────────
 export interface UserProfile {
   id: string;
   name: string;
@@ -90,9 +90,11 @@ export interface UserBadge {
   awardedAt: string;
   context?: string;
   badge: {
+    slug?: string; // ← الـ key للـ registry (optional للـ backward compat)
     title: string;
     ar_title?: string;
     description?: string;
+    ar_description?: string;
     iconUrl?: string;
     type: BadgeType;
     xpReward: number;

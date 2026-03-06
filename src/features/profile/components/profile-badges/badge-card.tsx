@@ -1,51 +1,208 @@
+// src/features/profile/components/profile-badges/badge-card.tsx
 import { motion } from 'framer-motion';
-import { Award } from 'lucide-react';
+import { Lock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { cn } from '@/lib/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import {
+  getBadgeConfig,
+  TIER_DESIGNS,
+} from '@/features/badges/constants/badge-registry';
 import type { UserBadge } from '../../types/profile.types';
 
-const TYPE_COLOR: Record<string, string> = {
-  COURSE_COMPLETION: 'text-blue-500  bg-blue-500/10  border-blue-500/20',
-  LAB_SOLVED: 'text-primary   bg-primary/10   border-primary/20',
-  STREAK: 'text-orange-500 bg-orange-500/10 border-orange-500/20',
-  COMMUNITY: 'text-green-500 bg-green-500/10 border-green-500/20',
-  CONTRIBUTION: 'text-purple-500 bg-purple-500/10 border-purple-500/20',
-  CUSTOM: 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20',
+// hexagon عبر clip-path
+const HEX = 'polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)';
+
+interface BadgeCardProps {
+  badge: UserBadge;
+  delay?: number;
+  size?: 'sm' | 'md' | 'lg';
+  locked?: boolean;
+}
+
+const SIZES = {
+  sm: {
+    wrap: 'w-12 h-[54px]',
+    icon: 'h-4 w-4',
+    label: 'text-[9px]',
+    xp: false,
+  },
+  md: {
+    wrap: 'w-16 h-[72px]',
+    icon: 'h-5 w-5',
+    label: 'text-[10px]',
+    xp: true,
+  },
+  lg: { wrap: 'w-20 h-[90px]', icon: 'h-6 w-6', label: 'text-xs', xp: true },
 };
 
 export function BadgeCard({
   badge,
   delay = 0,
-}: {
-  badge: UserBadge;
-  delay?: number;
-}) {
-  const colors = TYPE_COLOR[badge.badge.type] ?? TYPE_COLOR.CUSTOM;
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay, type: 'spring', stiffness: 200 }}
-      title={badge.badge.description}
-      className='group flex flex-col items-center gap-2 rounded-xl border border-border/40
-                 bg-card p-3 text-center transition-all duration-200
-                 hover:border-primary/30 hover:shadow-md hover:shadow-primary/5'>
-      <div
-        className={`flex h-10 w-10 items-center justify-center rounded-full border ${colors}`}>
-        {badge.badge.iconUrl ? (
-          <img
-            src={badge.badge.iconUrl}
-            alt={badge.badge.title}
-            className='h-6 w-6 object-contain'
+  size = 'md',
+  locked = false,
+}: BadgeCardProps) {
+  const { i18n } = useTranslation();
+  const isAr = i18n.language === 'ar';
+
+  const slug = badge.badge.slug ?? '';
+  const config = getBadgeConfig(slug);
+  const design = TIER_DESIGNS[config.tier];
+  const sz = SIZES[size];
+
+  // العنوان: أولوية الـ registry → ثم badge.title من الباك
+  const title = isAr
+    ? (badge.badge.ar_title ?? config.label_ar ?? badge.badge.title)
+    : (badge.badge.title ?? config.label_en);
+
+  // الوصف
+  const desc = isAr
+    ? (badge.badge.ar_description ?? config.desc_ar ?? '')
+    : (badge.badge.description ?? config.desc_en ?? '');
+
+  const Icon = config.icon;
+
+  const hexagon = (
+    <div
+      className={cn(
+        sz.wrap,
+        'relative flex items-center justify-center',
+        'bg-gradient-to-b',
+        design.bg,
+        locked && 'opacity-35 grayscale',
+      )}
+      style={{ clipPath: HEX }}>
+      {/* Shine layer للـ GOLD+ */}
+      {!locked &&
+        (config.tier === 'GOLD' ||
+          config.tier === 'PLATINUM' ||
+          config.tier === 'DIAMOND') && (
+          <div
+            className='absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700
+                     bg-gradient-to-br from-white/15 via-white/5 to-transparent'
           />
-        ) : (
-          <Award className='h-5 w-5' />
         )}
-      </div>
-      <p className='text-[11px] font-semibold leading-tight text-foreground'>
-        {badge.badge.title}
-      </p>
-      <p className='text-[10px] text-muted-foreground'>
-        +{badge.badge.xpReward} XP
-      </p>
-    </motion.div>
+
+      {/* Pulse ring للـ DIAMOND */}
+      {!locked && config.tier === 'DIAMOND' && (
+        <div
+          className='absolute inset-0 animate-pulse opacity-20'
+          style={{
+            clipPath: HEX,
+            background:
+              'linear-gradient(135deg, rgba(167,139,250,0.5), transparent)',
+          }}
+        />
+      )}
+
+      {locked ? (
+        <Lock className={cn(sz.icon, 'text-zinc-500')} />
+      ) : (
+        <Icon
+          className={cn(
+            sz.icon,
+            design.iconColor,
+            'drop-shadow-sm relative z-10',
+          )}
+        />
+      )}
+    </div>
+  );
+
+  return (
+    <TooltipProvider delayDuration={250}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.75 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay, type: 'spring', stiffness: 220, damping: 18 }}
+            className='group flex flex-col items-center gap-1.5 cursor-default select-none'>
+            {/* Hexagon + outer ring */}
+            <div
+              className={cn(
+                'relative rounded-sm ring-2 ring-transparent transition-all duration-300',
+                !locked &&
+                  cn(
+                    design.ring,
+                    'group-hover:ring-offset-1 group-hover:ring-offset-background',
+                    `group-hover:shadow-lg group-hover:${design.glowColor}`,
+                  ),
+              )}
+              style={{ clipPath: HEX }}>
+              {hexagon}
+            </div>
+
+            {/* Label */}
+            <div className='text-center max-w-[72px]'>
+              <p
+                className={cn(
+                  sz.label,
+                  'font-semibold text-foreground leading-tight line-clamp-2',
+                )}>
+                {locked ? '???' : title}
+              </p>
+              {sz.xp && !locked && badge.badge.xpReward > 0 && (
+                <p className='text-[9px] text-primary/70 font-bold mt-px'>
+                  +{badge.badge.xpReward} XP
+                </p>
+              )}
+            </div>
+
+            {/* Tier pill */}
+            {!locked && size !== 'sm' && (
+              <span
+                className={cn(
+                  'text-[8px] font-black uppercase tracking-widest px-1.5 py-px rounded-sm',
+                  'bg-black/60 border',
+                  config.tier === 'BRONZE' &&
+                    'border-amber-600/40  text-amber-400',
+                  config.tier === 'SILVER' &&
+                    'border-zinc-400/40   text-zinc-300',
+                  config.tier === 'GOLD' &&
+                    'border-yellow-500/40 text-yellow-300',
+                  config.tier === 'PLATINUM' &&
+                    'border-cyan-400/40   text-cyan-200',
+                  config.tier === 'DIAMOND' &&
+                    'border-violet-400/50 text-violet-200',
+                )}>
+                {isAr ? design.label_ar : design.label_en}
+              </span>
+            )}
+          </motion.div>
+        </TooltipTrigger>
+
+        <TooltipContent
+          side='top'
+          className='max-w-[200px] text-center space-y-1 p-3'>
+          <p className='font-bold text-sm'>
+            {locked ? (isAr ? 'مقفول' : 'Locked') : title}
+          </p>
+          {!locked && desc && (
+            <p className='text-xs text-muted-foreground leading-relaxed'>
+              {desc}
+            </p>
+          )}
+          {!locked && badge.awardedAt && (
+            <p className='text-[10px] text-muted-foreground/60'>
+              {isAr ? 'حُصل عليه في' : 'Earned'}{' '}
+              {new Date(badge.awardedAt).toLocaleDateString(
+                isAr ? 'ar-EG' : 'en-US',
+                {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                },
+              )}
+            </p>
+          )}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

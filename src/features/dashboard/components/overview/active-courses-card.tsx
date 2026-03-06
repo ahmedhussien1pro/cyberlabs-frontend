@@ -6,6 +6,7 @@ import {
   ChevronRight,
   CheckCircle2,
   Zap,
+  AlertCircle,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -27,7 +28,8 @@ type Tab = 'active' | 'completed';
 export function ActiveCoursesCard() {
   const { t, i18n } = useTranslation('dashboard');
   const isAr = i18n.language === 'ar';
-  const { data, isLoading } = useUserCourses();
+  // ✅ Fix: destructure isError
+  const { data, isLoading, isError } = useUserCourses();
   const [tab, setTab] = useState<Tab>('active');
 
   const active = data?.filter((c) => !c.isCompleted).slice(0, 4) ?? [];
@@ -84,6 +86,12 @@ export function ActiveCoursesCard() {
               </div>
             </div>
           ))
+        ) : isError ? (
+          // ✅ Fix: error state
+          <div className='flex flex-col items-center gap-2 py-8 text-destructive'>
+            <AlertCircle size={28} className='opacity-50' />
+            <p className='text-sm'>{t('common.errorLoading', 'Failed to load data')}</p>
+          </div>
         ) : list.length === 0 ? (
           <div className='flex flex-col items-center gap-2 py-8 text-muted-foreground'>
             <BookOpen size={28} className='opacity-40' />
@@ -134,7 +142,6 @@ export function ActiveCoursesCard() {
                   </div>
 
                   {tab === 'active' ? (
-                    /* Progress bar للـ active */
                     <>
                       <div className='mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted'>
                         <div
@@ -147,19 +154,18 @@ export function ActiveCoursesCard() {
                       </p>
                     </>
                   ) : (
-                    /* XP reward للـ completed */
                     <div className='mt-1 flex items-center gap-1.5'>
                       <CheckCircle2 size={11} className='text-green-500' />
                       <span className='text-[10px] text-green-500 font-medium'>
                         {t('overview.completed', 'Completed')}
                       </span>
-                      {/* ✅ يظهر لو البيكند رجع xpReward */}
-                      {enrollment.xpReward != null &&
-                        enrollment.xpReward > 0 && (
-                          <span className='flex items-center gap-0.5 text-[10px] text-primary'>
-                            <Zap size={9} />+{enrollment.xpReward} XP
-                          </span>
-                        )}
+                      {enrollment.xpReward != null && enrollment.xpReward > 0 && (
+                        <span className='flex items-center gap-0.5 text-[10px] text-primary'>
+                          <Zap size={9} />+{enrollment.xpReward}{' '}
+                          {/* ✅ XP label kept as-is: it's a universal abbreviation */}
+                          XP
+                        </span>
+                      )}
                     </div>
                   )}
                 </div>

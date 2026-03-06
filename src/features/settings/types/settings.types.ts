@@ -17,5 +17,13 @@ export interface NotificationPrefs {
   courseUpdates: boolean;
   achievementUnlocked: boolean;
   weeklyReport: boolean;
+  monthlyDigest: boolean;
   securityAlerts: boolean;
+  newCoursesAvailable: boolean;
+  promotions: boolean;
+}
+
+export interface EmailChangeResponse {
+  token: string;
+  expiresIn: number;
 }

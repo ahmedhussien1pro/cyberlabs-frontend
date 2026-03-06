@@ -1,3 +1,4 @@
+// src/features/settings/components/security-tab.tsx
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,11 +9,72 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 import useAuthStore from '@/features/auth/store/auth.store';
 import { useChangePassword } from '../hooks/use-change-password';
 import { Enable2FADialog } from '@/features/auth/components/two-factor/enable-2fa-dialog';
 import { Disable2FADialog } from '@/features/auth/components/two-factor/disable-2fa-dialog';
 
+// ── Password strength ─────────────────────────────────────
+function calcStrength(password: string): number {
+  if (!password) return 0;
+  let score = 0;
+  if (password.length >= 8) score++;
+  if (password.length >= 12) score++;
+  if (/[A-Z]/.test(password) && /[a-z]/.test(password)) score++;
+  if (/[0-9]/.test(password)) score++;
+  if (/[^A-Za-z0-9]/.test(password)) score++;
+  return Math.min(4, score);
+}
+
+const STRENGTH_COLORS = [
+  'bg-red-500',
+  'bg-orange-500',
+  'bg-yellow-500',
+  'bg-blue-500',
+  'bg-green-500',
+];
+
+function PasswordStrength({
+  password,
+  labels,
+}: {
+  password: string;
+  labels: string[];
+}) {
+  const score = calcStrength(password);
+  if (!password) return null;
+  return (
+    <div className='space-y-1'>
+      <div className='flex gap-1'>
+        {[0, 1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className={cn(
+              'h-1 flex-1 rounded-full transition-all',
+              i < score ? STRENGTH_COLORS[score] : 'bg-muted',
+            )}
+          />
+        ))}
+      </div>
+      <p
+        className={cn(
+          'text-xs font-medium',
+          score <= 1
+            ? 'text-red-500'
+            : score === 2
+              ? 'text-yellow-500'
+              : score === 3
+                ? 'text-blue-500'
+                : 'text-green-500',
+        )}>
+        {labels[score]}
+      </p>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
 const schema = z
   .object({
     currentPassword: z.string().min(1),
@@ -37,8 +99,19 @@ export function SecurityTab() {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isDirty },
   } = useForm<FormData>({ resolver: zodResolver(schema) });
+
+  const newPasswordValue = watch('newPassword') ?? '';
+
+  const strengthLabels: string[] = [
+    t('security.strengthLevels.veryWeak'),
+    t('security.strengthLevels.weak'),
+    t('security.strengthLevels.fair'),
+    t('security.strengthLevels.good'),
+    t('security.strengthLevels.strong'),
+  ];
 
   const onSubmit = ({ currentPassword, newPassword }: FormData) => {
     mutate({ currentPassword, newPassword }, { onSuccess: () => reset() });
@@ -46,7 +119,7 @@ export function SecurityTab() {
 
   return (
     <div className='space-y-8'>
-      {/* ── Change Password ────────────────────────────── */}
+      {/* ── Change Password ──────────────────────────── */}
       <section className='space-y-4'>
         <h3 className='text-sm font-semibold text-foreground'>
           {t('security.changePassword')}
@@ -67,6 +140,10 @@ export function SecurityTab() {
             <div className='space-y-1.5'>
               <Label htmlFor='new'>{t('security.newPassword')}</Label>
               <Input id='new' type='password' {...register('newPassword')} />
+              <PasswordStrength
+                password={newPasswordValue}
+                labels={strengthLabels}
+              />
               {errors.newPassword && (
                 <p className='text-xs text-destructive'>
                   {errors.newPassword.message}
@@ -161,7 +238,6 @@ export function SecurityTab() {
         )}
       </section>
 
-      {/* Dialogs */}
       <Enable2FADialog open={enableOpen} onClose={() => setEnableOpen(false)} />
       <Disable2FADialog
         open={disableOpen}

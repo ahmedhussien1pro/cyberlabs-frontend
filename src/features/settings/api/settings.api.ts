@@ -1,10 +1,13 @@
 import { apiClient } from '@/core/api/client';
 import { API_ENDPOINTS } from '@/core/api/endpoints';
-import type { Session, NotificationPrefs } from '../types/settings.types';
+import type {
+  Session,
+  NotificationPrefs,
+  EmailChangeResponse,
+} from '../types/settings.types';
 
-const extractData = <T>(res: any): T => {
-  return (res?.data !== undefined ? res.data : res) as T;
-};
+const extractData = <T>(res: any): T =>
+  (res?.data !== undefined ? res.data : res) as T;
 
 export const getSessions = () =>
   apiClient.get(API_ENDPOINTS.USERS.SESSIONS).then(extractData<Session[]>);
@@ -32,3 +35,14 @@ export const exportMyData = () =>
 
 export const deleteAccount = (password: string) =>
   apiClient.delete(API_ENDPOINTS.USERS.DELETE_ACCOUNT, { data: { password } });
+
+// ── Email Change ─────────────────────────────────────────────
+export const requestEmailChange = (newEmail: string) =>
+  apiClient
+    .post(API_ENDPOINTS.USERS.REQUEST_EMAIL_CHANGE, { newEmail })
+    .then(extractData<EmailChangeResponse>);
+
+export const verifyEmailChange = (otp: string, token: string) =>
+  apiClient
+    .post(API_ENDPOINTS.USERS.VERIFY_EMAIL_CHANGE, { otp, token })
+    .then(extractData<{ email: string }>);

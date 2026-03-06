@@ -36,6 +36,8 @@ export const API_ENDPOINTS = {
     SESSIONS: '/users/me/sessions',
     REVOKE_SESSION: (id: string) => `/users/me/sessions/${id}`,
     NOTIFICATION_PREFS: '/users/me/notifications/preferences',
+    REQUEST_EMAIL_CHANGE: '/users/me/email/request',
+    VERIFY_EMAIL_CHANGE: '/users/me/email/verify',
   },
 
   NOTIFICATIONS: {

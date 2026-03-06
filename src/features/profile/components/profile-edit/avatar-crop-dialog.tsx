@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
-import Cropper, { Area } from 'react-easy-crop';
+import Cropper from 'react-easy-crop';
+import type { Area } from 'react-easy-crop';
 import { useTranslation } from 'react-i18next';
 import {
   Dialog,
@@ -54,14 +55,18 @@ const getCroppedImg = async (
   );
 
   return new Promise((resolve, reject) => {
-    canvas.toBlob((blob) => {
-      if (!blob) {
-        reject(new Error('Canvas is empty'));
-        return;
-      }
-      const file = new File([blob], fileName, { type: 'image/jpeg' });
-      resolve(file);
-    }, 'image/jpeg', 0.92);
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) {
+          reject(new Error('Canvas is empty'));
+          return;
+        }
+        const file = new File([blob], fileName, { type: 'image/jpeg' });
+        resolve(file);
+      },
+      'image/jpeg',
+      0.92,
+    );
   });
 };
 

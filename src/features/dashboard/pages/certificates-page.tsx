@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import {
   Award,
-  Share2,
   Download,
   CheckCircle2,
   Calendar,
@@ -26,7 +25,10 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { useMyCertificates, type IssuedCertificate } from '../hooks/use-certificates-data';
+import {
+  useMyCertificates,
+  type IssuedCertificate,
+} from '../hooks/use-certificates-data';
 import { ROUTES } from '@/shared/constants';
 
 const DIFF_COLORS: Record<string, string> = {
@@ -35,13 +37,7 @@ const DIFF_COLORS: Record<string, string> = {
   ADVANCED: 'text-red-500 bg-red-500/10 border-red-500/20',
 };
 
-function CertCard({
-  cert,
-  index,
-}: {
-  cert: IssuedCertificate;
-  index: number;
-}) {
+function CertCard({ cert, index }: { cert: IssuedCertificate; index: number }) {
   const { i18n } = useTranslation('dashboard');
   const [copied, setCopied] = useState(false);
   const isAr = i18n.language === 'ar';
@@ -107,7 +103,10 @@ function CertCard({
 
           <div className='min-w-0 flex-1'>
             <Link
-              to={ROUTES.COURSES?.DETAIL?.(cert.course.id) ?? `/courses/${cert.course.slug}`}
+              to={
+                ROUTES.COURSES?.DETAIL?.(cert.course.id) ??
+                `/courses/${cert.course.slug}`
+              }
               className='line-clamp-2 text-sm font-bold hover:text-primary transition-colors'>
               {courseTitle}
             </Link>
@@ -151,12 +150,17 @@ function CertCard({
                   onClick={handleCopy}
                   className={cn(
                     'h-8 gap-1.5 flex-1 text-xs',
-                    copied && 'bg-green-500 hover:bg-green-600 border-green-500',
+                    copied &&
+                      'bg-green-500 hover:bg-green-600 border-green-500',
                   )}>
                   {copied ? (
-                    <><CheckCircle2 size={12} /> Copied!</>
+                    <>
+                      <CheckCircle2 size={12} /> Copied!
+                    </>
                   ) : (
-                    <><Copy size={12} /> Share Link</>
+                    <>
+                      <Copy size={12} /> Share Link
+                    </>
                   )}
                 </Button>
               </TooltipTrigger>
@@ -287,7 +291,10 @@ export default function CertificatesPage(): React.ReactElement {
         <ShieldCheck size={16} className='mt-0.5 shrink-0 text-green-500' />
         <div className='space-y-0.5'>
           <p className='text-xs font-semibold text-foreground'>
-            {t('certificates.verifyTitle', 'All certificates are publicly verifiable')}
+            {t(
+              'certificates.verifyTitle',
+              'All certificates are publicly verifiable',
+            )}
           </p>
           <p className='text-xs text-muted-foreground'>
             {t(

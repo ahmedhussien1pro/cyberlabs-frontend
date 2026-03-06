@@ -66,7 +66,7 @@ interface Props {
 }
 
 export function EditProfileForm({ profile, open, onClose }: Props) {
-  const { t, i18n } = useTranslation('profile');
+  const { t } = useTranslation('profile');
   const { mutate: save, isPending } = useUpdateProfile();
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
@@ -127,7 +127,7 @@ export function EditProfileForm({ profile, open, onClose }: Props) {
 
   const bioValue = methods.watch('bio') ?? '';
   const arBioValue = methods.watch('ar_bio') ?? '';
-  const isAr = i18n.language === 'ar';
+  // const isAr = i18n.language === 'ar';
 
   return (
     <Sheet open={open} onOpenChange={(o) => !o && handleClose()}>

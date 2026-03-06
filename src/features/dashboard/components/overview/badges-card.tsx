@@ -1,13 +1,6 @@
 // src/features/dashboard/components/overview/badges-card.tsx
 import { useState } from 'react';
-import {
-  Award,
-  Lock,
-  Star,
-  Zap,
-  AlertCircle,
-  CheckCircle2,
-} from 'lucide-react';
+import { Award, Lock, Zap, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
@@ -41,8 +34,7 @@ function BadgeItem({
   const desc = isAr
     ? (badge.ar_description ?? badge.description)
     : badge.description;
-  const gradient =
-    TYPE_GRADIENT[badge.type] ?? 'from-gray-500 to-gray-400';
+  const gradient = TYPE_GRADIENT[badge.type] ?? 'from-gray-500 to-gray-400';
 
   return (
     <motion.div
@@ -61,9 +53,7 @@ function BadgeItem({
       <div
         className={cn(
           'relative flex h-14 w-14 items-center justify-center rounded-full',
-          badge.earned
-            ? `bg-gradient-to-br ${gradient} shadow-md`
-            : 'bg-muted',
+          badge.earned ? `bg-gradient-to-br ${gradient} shadow-md` : 'bg-muted',
         )}>
         {badge.iconUrl ? (
           <img
@@ -154,7 +144,9 @@ export function BadgesCard() {
             <div className='h-1.5 w-24 overflow-hidden rounded-full bg-muted'>
               <div
                 className='h-full rounded-full bg-yellow-500 transition-all duration-700'
-                style={{ width: `${(earned.length / allBadges.length) * 100}%` }}
+                style={{
+                  width: `${(earned.length / allBadges.length) * 100}%`,
+                }}
               />
             </div>
             <span className='text-[10px] text-muted-foreground'>

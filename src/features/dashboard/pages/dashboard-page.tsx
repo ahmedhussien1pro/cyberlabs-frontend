@@ -1,12 +1,5 @@
 // src/features/dashboard/pages/dashboard-page.tsx
-import {
-  Timer,
-  Award,
-  Swords,
-  CalendarDays,
-  Lock,
-  BrainCircuit,
-} from 'lucide-react';
+import { Timer, Swords, CalendarDays, Lock, BrainCircuit } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { WelcomeBanner } from '../components/overview/welcome-banner';
 import { SubscriptionBanner } from '../components/overview/subscription-banner';

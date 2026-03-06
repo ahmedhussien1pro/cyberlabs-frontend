@@ -1,6 +1,8 @@
 // src/features/dashboard/components/overview/paths-card.tsx
 import { useState } from 'react';
-import { Map, ChevronRight, CheckCircle2, Clock, Trophy, AlertCircle } from 'lucide-react';
+import {
+  Map, ChevronRight, CheckCircle2, Clock, Trophy, AlertCircle, Layers,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
@@ -13,18 +15,18 @@ import { motion } from 'framer-motion';
 
 type Tab = 'active' | 'completed';
 
-// ✅ Fix: resolve ROUTES.PATHS once — avoids repeated optional chaining and '/paths' fallback
 const PATHS_LIST_ROUTE: string = ROUTES.PATHS?.LIST ?? '/paths';
 
 export function PathsCard() {
   const { t, i18n } = useTranslation('dashboard');
   const isAr = i18n.language === 'ar';
-  // ✅ Fix: destructure isError
   const { data, isLoading, isError } = useUserPaths();
   const [tab, setTab] = useState<Tab>('active');
 
-  const active = data?.filter((p) => !p.completedAt).slice(0, 4) ?? [];
-  const completed = data?.filter((p) => p.completedAt).slice(0, 4) ?? [];
+  // ✅ Fix: previously data was from /users/me careerPaths (always []) —
+  //         now from GET /paths/me which returns real PathEnrollments
+  const active    = data?.filter((p) => !p.completedAt && !p.isCompleted).slice(0, 4) ?? [];
+  const completed = data?.filter((p) => !!p.completedAt || !!p.isCompleted).slice(0, 4) ?? [];
   const list = tab === 'active' ? active : completed;
 
   return (
@@ -35,11 +37,7 @@ export function PathsCard() {
           <span className='h-1.5 w-1.5 rounded-full bg-violet-500' />
           {t('overview.learningPaths', 'Learning Paths')}
         </h2>
-        <Button
-          asChild
-          variant='ghost'
-          size='sm'
-          className='h-7 gap-1 text-xs text-muted-foreground'>
+        <Button asChild variant='ghost' size='sm' className='h-7 gap-1 text-xs text-muted-foreground'>
           <Link to={PATHS_LIST_ROUTE}>
             {t('overview.viewAll')} <ChevronRight size={12} />
           </Link>
@@ -78,7 +76,6 @@ export function PathsCard() {
             </div>
           ))
         ) : isError ? (
-          // ✅ Fix: error state
           <div className='flex flex-col items-center gap-2 py-10 text-destructive'>
             <AlertCircle size={28} className='opacity-50' />
             <p className='text-sm'>{t('common.errorLoading', 'Failed to load data')}</p>
@@ -104,8 +101,11 @@ export function PathsCard() {
             const name = isAr
               ? (enrollment.careerPath.ar_name ?? enrollment.careerPath.name)
               : enrollment.careerPath.name;
-            const pct = Math.min(enrollment.progress, 100);
-            const isComplete = !!enrollment.completedAt;
+            const pct        = Math.min(enrollment.progress ?? 0, 100);
+            const isComplete = !!enrollment.completedAt || !!enrollment.isCompleted;
+            // ✅ New: link to path detail page via slug
+            const pathSlug   = (enrollment.careerPath as any).slug;
+            const pathHref   = pathSlug ? `/paths/${pathSlug}` : PATHS_LIST_ROUTE;
 
             return (
               <motion.div
@@ -121,11 +121,7 @@ export function PathsCard() {
                     isComplete ? 'bg-green-500/10' : 'bg-violet-500/10',
                   )}>
                   {enrollment.careerPath.iconUrl ? (
-                    <img
-                      src={enrollment.careerPath.iconUrl}
-                      alt=''
-                      className='h-6 w-6 object-contain'
-                    />
+                    <img src={enrollment.careerPath.iconUrl} alt='' className='h-6 w-6 object-contain' />
                   ) : isComplete ? (
                     <Trophy size={18} className='text-green-500' />
                   ) : (
@@ -136,7 +132,11 @@ export function PathsCard() {
                 {/* Info */}
                 <div className='min-w-0 flex-1'>
                   <div className='flex items-center justify-between gap-2'>
-                    <p className='truncate text-sm font-semibold'>{name}</p>
+                    <Link
+                      to={pathHref}
+                      className='truncate text-sm font-semibold hover:text-primary transition-colors'>
+                      {name}
+                    </Link>
                     {isComplete ? (
                       <Badge className='shrink-0 border-0 bg-green-500/10 text-[10px] text-green-500'>
                         <CheckCircle2 size={9} className='mr-1' />
@@ -159,10 +159,20 @@ export function PathsCard() {
                           className='h-full rounded-full bg-gradient-to-r from-violet-500 to-primary'
                         />
                       </div>
-                      <p className='mt-0.5 flex items-center gap-1 text-[10px] text-muted-foreground'>
-                        <Clock size={9} />
-                        {t('overview.startedAt', 'Started')}{' '}
-                        {new Date(enrollment.startedAt).toLocaleDateString()}
+                      {/* ✅ New: modules count + started date */}
+                      <p className='mt-0.5 flex items-center gap-2 text-[10px] text-muted-foreground'>
+                        <span className='flex items-center gap-1'>
+                          <Clock size={9} />
+                          {t('overview.startedAt', 'Started')}{' '}
+                          {new Date(enrollment.startedAt ?? enrollment.enrolledAt).toLocaleDateString()}
+                        </span>
+                        {(enrollment.careerPath as any).modulesCount != null && (
+                          <span className='flex items-center gap-1'>
+                            <Layers size={9} />
+                            {(enrollment.careerPath as any).modulesCount}{' '}
+                            {t('overview.modules', 'modules')}
+                          </span>
+                        )}
                       </p>
                     </>
                   ) : (

@@ -1,8 +1,6 @@
 // src/features/dashboard/pages/dashboard-page.tsx
 import { Timer, Award, Swords, CalendarDays, Lock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useUserPoints } from '@/shared/hooks/use-user-data';
-import { XpProgressBar } from '@/features/profile/components/profile-activity/xp-progress-bar';
 import { WelcomeBanner } from '../components/overview/welcome-banner';
 import { SubscriptionBanner } from '../components/overview/subscription-banner';
 import { StatsRow } from '../components/overview/stats-row';
@@ -12,6 +10,7 @@ import { ProgressChart } from '../components/overview/progress-chart';
 import { LeaderboardWidget } from '../components/overview/leaderboard-widget';
 import { QuickGoals } from '../components/overview/quick-goals';
 import { PathsCard } from '../components/overview/paths-card';
+import { LevelProgressBar } from '../components/overview/level-progress-bar';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
@@ -55,41 +54,41 @@ function ComingSoonCard({
 
 export default function DashboardPage(): React.ReactElement {
   const { t } = useTranslation('dashboard');
-  const { data: points } = useUserPoints();
 
   return (
     <div className='container max-w-5xl space-y-5 py-6'>
-      {/* ── Row 1: Welcome ── */}
+      {/* Row 1: Welcome */}
       <WelcomeBanner />
 
-      {/* ── Row 2: Subscription status ── */}
+      {/* Row 2: Subscription status */}
       <SubscriptionBanner />
 
-      {/* ── Row 3: 6 Stats cards ── */}
+      {/* Row 3: 6 Stats cards */}
       <StatsRow />
 
-      {/* ── Row 4: XP level bar ── */}
-      {points && <XpProgressBar points={points} />}
+      {/* Row 4: XP level bar — ✅ Fix: replaced XpProgressBar (was using stale level) */}
+      {/* with LevelProgressBar that reads xpIntoCurrentLevel from the new /me/points shape */}
+      <LevelProgressBar />
 
-      {/* ── Row 5: Weekly chart + Goals ── */}
+      {/* Row 5: Weekly chart + Goals */}
       <div className='grid gap-5 lg:grid-cols-2'>
         <ProgressChart />
         <QuickGoals />
       </div>
 
-      {/* ── Row 6: Courses (tabs: active / completed) + Labs ── */}
+      {/* Row 6: Courses + Labs */}
       <div className='grid gap-5 lg:grid-cols-2'>
         <ActiveCoursesCard />
         <RecentLabsCard />
       </div>
 
-      {/* ── Row 7: Learning Paths (tabs: active / completed) ── */}
+      {/* Row 7: Learning Paths — ✅ Fix: now reads from GET /paths/me */}
       <PathsCard />
 
-      {/* ── Row 8: Leaderboard ── */}
+      {/* Row 8: Leaderboard */}
       <LeaderboardWidget />
 
-      {/* ── Row 9: Coming Soon ── */}
+      {/* Row 9: Coming Soon */}
       <section className='space-y-3'>
         <h2 className='flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground'>
           <span className='h-1.5 w-1.5 rounded-full bg-border' />
@@ -99,37 +98,25 @@ export default function DashboardPage(): React.ReactElement {
           <ComingSoonCard
             icon={Timer}
             title={t('comingSoon.studyTimer', 'Study Timer')}
-            description={t(
-              'comingSoon.studyTimerDesc',
-              'Pomodoro focus sessions with XP rewards',
-            )}
+            description={t('comingSoon.studyTimerDesc', 'Pomodoro focus sessions with XP rewards')}
             accent='text-orange-500'
           />
           <ComingSoonCard
             icon={Award}
             title={t('comingSoon.certificates', 'Certificates')}
-            description={t(
-              'comingSoon.certificatesDesc',
-              'Earn & share your achievements',
-            )}
+            description={t('comingSoon.certificatesDesc', 'Earn & share your achievements')}
             accent='text-yellow-500'
           />
           <ComingSoonCard
             icon={Swords}
             title={t('comingSoon.ctf', 'CTF Challenges')}
-            description={t(
-              'comingSoon.ctfDesc',
-              'Compete in capture-the-flag events',
-            )}
+            description={t('comingSoon.ctfDesc', 'Compete in capture-the-flag events')}
             accent='text-red-500'
           />
           <ComingSoonCard
             icon={CalendarDays}
             title={t('comingSoon.schedule', 'Study Schedule')}
-            description={t(
-              'comingSoon.scheduleDesc',
-              'Plan your learning calendar',
-            )}
+            description={t('comingSoon.scheduleDesc', 'Plan your learning calendar')}
             accent='text-blue-500'
           />
         </div>

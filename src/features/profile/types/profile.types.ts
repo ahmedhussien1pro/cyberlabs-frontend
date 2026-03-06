@@ -1,4 +1,3 @@
-// src/features/profile/types/profile.types.ts
 export type {
   UserStats,
   UserPoints,
@@ -7,7 +6,7 @@ export type {
   EnrolledCourse,
 } from '@/shared/types/user.types';
 
-// ─── Profile-specific enums ──────────────────────────────────────────────────
+// ─── Profile-specific enums ──────────────────────────────────────────────
 export type SocialPlatform =
   | 'GITHUB'
   | 'LINKEDIN'
@@ -28,7 +27,7 @@ export type BadgeType =
   | 'CONTRIBUTION'
   | 'CUSTOM';
 
-// ─── Full user profile ───────────────────────────────────────────────────────
+// ─── Full user profile ──────────────────────────────────────────────────
 export interface UserProfile {
   id: string;
   name: string;
@@ -79,9 +78,7 @@ export interface Education {
 export interface UserCertification {
   id: string;
   title: string;
-  ar_title?: string; // ← جديد: العنوان العربي
-  issuer: string; // 'CyberLabs' للشهادات من المنصة
-  certType?: 'COURSE' | 'PATH' | 'LAB' | 'CUSTOM'; // ← جديد: نوع الشهادة
+  issuer: string;
   issueDate: string;
   expireDate?: string;
   credentialId?: string;
@@ -117,16 +114,29 @@ export interface UserAchievement {
   };
 }
 
+/**
+ * ✅ Fix: aligned with GET /paths/me response shape
+ *   careerPath now includes id, slug, difficulty, estimatedHours, modulesCount
+ *   so PathsCard can link to /paths/:slug and show module count
+ */
 export interface UserCareerPath {
-  id: string;
+  id: string;              // PathEnrollment.id
   progress: number;
-  startedAt: string;
-  completedAt?: string;
+  isCompleted?: boolean;
+  enrolledAt: string;
+  startedAt: string;       // alias of enrolledAt for backward compat
+  completedAt?: string | null;
   careerPath: {
+    id: string;
+    slug: string;
     name: string;
-    ar_name?: string;
-    description?: string;
-    iconUrl?: string;
+    ar_name?: string | null;
+    description?: string | null;
+    ar_description?: string | null;
+    iconUrl?: string | null;
+    difficulty?: string;
+    estimatedHours?: number | null;
+    modulesCount?: number;
   };
 }
 

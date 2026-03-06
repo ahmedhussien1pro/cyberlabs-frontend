@@ -1,4 +1,5 @@
-import { Target, Plus, ChevronRight } from 'lucide-react';
+// src/features/dashboard/components/overview/quick-goals.tsx
+import { Target, Plus, ChevronRight, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -17,7 +18,8 @@ const CATEGORY_COLOR: Record<string, string> = {
 
 export function QuickGoals() {
   const { t } = useTranslation('dashboard');
-  const { data, isLoading } = useMyGoals();
+  // ✅ Fix: destructure isError to handle API failure state
+  const { data, isLoading, isError } = useMyGoals();
   const active = data?.filter((g) => !g.isCompleted).slice(0, 3) ?? [];
 
   return (
@@ -48,6 +50,12 @@ export function QuickGoals() {
               <Skeleton className='h-1.5 w-full rounded-full' />
             </div>
           ))
+        ) : isError ? (
+          // ✅ Fix: show error state instead of blank screen
+          <div className='flex flex-col items-center gap-2 py-8 text-destructive'>
+            <AlertCircle size={28} className='opacity-50' />
+            <p className='text-sm'>{t('common.errorLoading', 'Failed to load data')}</p>
+          </div>
         ) : active.length === 0 ? (
           <div className='flex flex-col items-center gap-2 py-8 text-muted-foreground'>
             <Target size={28} className='opacity-30' />

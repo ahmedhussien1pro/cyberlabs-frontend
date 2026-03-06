@@ -22,23 +22,12 @@ import type { UserCertification } from '../../types/profile.types';
 
 const PLATFORM_ISSUER = 'CyberLabs';
 
-// Icon حسب نوع الشهادة
-function CertTypeIcon({
-  type,
-  className,
-}: {
-  type?: string;
-  className?: string;
-}) {
+function CertTypeIcon({ type, className }: { type?: string; className?: string }) {
   switch (type) {
-    case 'COURSE':
-      return <GraduationCap className={className} />;
-    case 'PATH':
-      return <Route className={className} />;
-    case 'LAB':
-      return <FlaskConical className={className} />;
-    default:
-      return <ScrollText className={className} />;
+    case 'COURSE': return <GraduationCap className={className} />;
+    case 'PATH':   return <Route className={className} />;
+    case 'LAB':    return <FlaskConical className={className} />;
+    default:       return <ScrollText className={className} />;
   }
 }
 
@@ -47,10 +36,7 @@ interface Props {
   userName: string;
 }
 
-export function ProfileCertificationsSection({
-  certifications,
-  userName,
-}: Props) {
+export function ProfileCertificationsSection({ certifications, userName }: Props) {
   const { t, i18n } = useTranslation('profile');
   const isAr = i18n.language === 'ar';
   const [selected, setSelected] = useState<UserCertification | null>(null);
@@ -59,10 +45,7 @@ export function ProfileCertificationsSection({
 
   const now = new Date();
 
-  // Platform certs = مصدرها CyberLabs / External = مصادر خارجية
-  const platformCerts = certifications.filter(
-    (c) => c.issuer === PLATFORM_ISSUER,
-  );
+  const platformCerts = certifications.filter((c) => c.issuer === PLATFORM_ISSUER);
   const externalCerts = certifications
     .filter((c) => c.issuer !== PLATFORM_ISSUER)
     .sort((a, b) => {
@@ -79,7 +62,7 @@ export function ProfileCertificationsSection({
         {/* ── Header ── */}
         <h2 className='flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground'>
           <FileText className='h-4 w-4 text-teal-500' />
-          {t('certifications.title', 'Certifications')}
+          {t('certifications.title')}
           <span className='rounded-full bg-teal-500/10 px-2 py-0.5 text-xs font-semibold text-teal-500'>
             {certifications.length}
           </span>
@@ -89,8 +72,8 @@ export function ProfileCertificationsSection({
         {platformCerts.length > 0 && (
           <div className='space-y-2'>
             {platformCerts.length > 0 && externalCerts.length > 0 && (
-              <p className='text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50 px-0.5'>
-                {isAr ? 'شهادات المنصة' : 'Platform Certificates'}
+              <p className='px-0.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50'>
+                {t('certifications.platformSection')}
               </p>
             )}
             <div className='grid gap-3 sm:grid-cols-2'>
@@ -117,17 +100,14 @@ export function ProfileCertificationsSection({
                     {/* Top */}
                     <div className='flex items-start gap-3'>
                       <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-500/10 border border-teal-500/20'>
-                        <CertTypeIcon
-                          type={cert.certType}
-                          className='h-5 w-5 text-teal-500'
-                        />
+                        <CertTypeIcon type={cert.certType} className='h-5 w-5 text-teal-500' />
                       </div>
                       <div className='min-w-0 flex-1'>
                         <p className='font-semibold text-sm text-foreground leading-snug line-clamp-2'>
                           {title}
                         </p>
                         <p className='text-xs text-teal-600/80 dark:text-teal-400/70 mt-0.5 font-medium'>
-                          CyberLabs Academy
+                          {t('certifications.academy')}
                         </p>
                       </div>
                     </div>
@@ -139,9 +119,7 @@ export function ProfileCertificationsSection({
                       {cert.credentialId && (
                         <>
                           <span className='opacity-30'>·</span>
-                          <span className='font-mono'>
-                            #{cert.credentialId}
-                          </span>
+                          <span className='font-mono'>#{cert.credentialId}</span>
                         </>
                       )}
                     </div>
@@ -153,9 +131,7 @@ export function ProfileCertificationsSection({
                       className='h-8 gap-1.5 w-full border-teal-500/30 text-teal-600 dark:text-teal-400 hover:bg-teal-500/10 hover:text-teal-500'
                       onClick={() => setSelected(cert)}>
                       <Award className='h-3.5 w-3.5' />
-                      {isAr
-                        ? 'عرض وتنزيل الشهادة'
-                        : 'View & Download Certificate'}
+                      {t('certifications.viewDownload')}
                     </Button>
                   </motion.div>
                 );
@@ -168,20 +144,18 @@ export function ProfileCertificationsSection({
         {externalCerts.length > 0 && (
           <div className='space-y-2'>
             {platformCerts.length > 0 && (
-              <p className='text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50 px-0.5'>
-                {isAr ? 'شهادات خارجية' : 'External Certifications'}
+              <p className='px-0.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50'>
+                {t('certifications.externalSection')}
               </p>
             )}
             <div className='grid gap-2 sm:grid-cols-2'>
               {externalCerts.map((cert, i) => {
-                const isExpired =
-                  !!cert.expireDate && new Date(cert.expireDate) < now;
+                const isExpired = !!cert.expireDate && new Date(cert.expireDate) < now;
                 const expireSoon =
                   !isExpired &&
                   !!cert.expireDate &&
                   (new Date(cert.expireDate).getTime() - now.getTime()) /
-                    (1000 * 60 * 60 * 24) <
-                    30;
+                    (1000 * 60 * 60 * 24) < 30;
 
                 return (
                   <motion.div
@@ -191,9 +165,7 @@ export function ProfileCertificationsSection({
                     transition={{ delay: i * 0.05 }}
                     className={cn(
                       'flex items-start gap-3 rounded-xl border bg-card p-4 transition-all hover:border-primary/20',
-                      isExpired
-                        ? 'border-border/20 opacity-60'
-                        : 'border-border/40',
+                      isExpired ? 'border-border/20 opacity-60' : 'border-border/40',
                     )}>
                     <div
                       className={cn(
@@ -223,9 +195,7 @@ export function ProfileCertificationsSection({
                           </a>
                         )}
                       </div>
-                      <p className='text-xs text-muted-foreground'>
-                        {cert.issuer}
-                      </p>
+                      <p className='text-xs text-muted-foreground'>{cert.issuer}</p>
                       <div className='flex flex-wrap items-center gap-1.5 pt-0.5'>
                         <span className='flex items-center gap-1 text-[10px] text-muted-foreground'>
                           <Calendar size={9} />
@@ -243,31 +213,18 @@ export function ProfileCertificationsSection({
                                   : 'border-green-500/20  bg-green-500/5  text-green-500',
                             )}>
                             {isExpired ? (
-                              <>
-                                <ShieldOff size={8} />{' '}
-                                {t('certifications.expired', 'Expired')}
-                              </>
+                              <><ShieldOff size={8} /> {t('certifications.expired')}</>
                             ) : expireSoon ? (
-                              <>
-                                <ShieldCheck size={8} />{' '}
-                                {t(
-                                  'certifications.expiresSoon',
-                                  'Expires soon',
-                                )}
-                              </>
+                              <><ShieldCheck size={8} /> {t('certifications.expiresSoon')}</>
                             ) : (
-                              <>
-                                <ShieldCheck size={8} />{' '}
-                                {t('certifications.valid', 'Valid')}
-                              </>
+                              <><ShieldCheck size={8} /> {t('certifications.valid')}</>
                             )}
                           </Badge>
                         ) : (
                           <Badge
                             variant='outline'
                             className='gap-1 border-green-500/20 bg-green-500/5 text-[10px] text-green-500'>
-                            <ShieldCheck size={8} />{' '}
-                            {t('certifications.noExpiry', 'No expiry')}
+                            <ShieldCheck size={8} /> {t('certifications.noExpiry')}
                           </Badge>
                         )}
                         {cert.credentialId && (
@@ -285,7 +242,6 @@ export function ProfileCertificationsSection({
         )}
       </section>
 
-      {/* Certificate Modal */}
       <CertificateModal
         cert={selected}
         userName={userName}

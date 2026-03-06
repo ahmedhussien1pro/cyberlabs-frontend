@@ -39,13 +39,13 @@ export default function ProfilePage(): React.ReactElement {
   const navigate = useNavigate();
   const [editOpen, setEditOpen] = useState(false);
 
-  const { data: profile, isLoading } = useProfile();
+  const { data: profile, isLoading, isError } = useProfile();
   const { data: stats } = useProfileStats();
   const { data: points } = useProfilePoints();
   const { data: activity } = useProfileActivity();
 
   if (isLoading) return <ProfilePageSkeleton />;
-  if (!profile) return <></>;
+  if (isError || !profile) return <ProfilePageError />;
 
   const { percentage, checks } = calcProfileCompletion(profile);
 
@@ -67,11 +67,9 @@ export default function ProfilePage(): React.ReactElement {
           className='gap-1.5 text-muted-foreground hover:text-foreground'
           onClick={() => navigate(ROUTES.DASHBOARD.DashboardPage)}>
           <ArrowLeft size={16} />
-          <span className='text-xs font-medium'>{t('nav.back', 'Back')}</span>
+          <span className='text-xs font-medium'>{t('nav.back')}</span>
         </Button>
-        <span className='text-sm font-semibold'>
-          {t('nav.title', 'Profile')}
-        </span>
+        <span className='text-sm font-semibold'>{t('nav.title')}</span>
         <div className='flex items-center gap-1'>
           <LanguageSwitcher />
           <ThemeToggle />
@@ -109,7 +107,7 @@ export default function ProfilePage(): React.ReactElement {
         {/* ⑤ Badges */}
         <ProfileBadgesSection badges={profile.badges ?? []} />
 
-        {/* ⑥ Achievements — NEW */}
+        {/* ⑥ Achievements */}
         <ProfileAchievementsSection achievements={profile.achievements ?? []} />
 
         {/* ⑦ Certifications */}
@@ -127,12 +125,12 @@ export default function ProfilePage(): React.ReactElement {
         {/* ⑩ Courses (Active + Completed tabs) */}
         <ActiveCoursesCard />
 
-        {/* ⑪ Career Paths — data from profile (no extra API call) */}
+        {/* ⑪ Career Paths */}
         {(profile.careerPaths ?? []).length > 0 && (
           <section className='space-y-3'>
             <h2 className='flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground'>
               <span className='h-1.5 w-1.5 rounded-full bg-violet-500' />
-              {t('sections.careerPaths', 'Career Paths')}
+              {t('sections.careerPaths')}
               <span className='rounded-full bg-violet-500/10 px-2 py-0.5 text-xs font-semibold text-violet-500'>
                 {(profile.careerPaths ?? []).length}
               </span>
@@ -180,5 +178,22 @@ function ProfilePageSkeleton(): React.ReactElement {
         <Skeleton className='h-32 w-full rounded-xl' />
       </div>
     </>
+  );
+}
+
+function ProfilePageError(): React.ReactElement {
+  const { t } = useTranslation('profile');
+  const navigate = useNavigate();
+  return (
+    <div className='container flex min-h-screen flex-col items-center justify-center gap-4'>
+      <p className='text-sm text-muted-foreground'>{t('loadError')}</p>
+      <Button
+        variant='outline'
+        className='gap-2 rounded-full'
+        onClick={() => navigate(ROUTES.DASHBOARD.DashboardPage)}>
+        <ArrowLeft className='h-4 w-4' />
+        {t('nav.back')}
+      </Button>
+    </div>
   );
 }

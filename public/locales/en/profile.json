@@ -7,6 +7,9 @@
   "level": "Level",
   "skills": "Skills",
   "badges": "Badges",
+  "notFound": "Profile not found.",
+  "goHome": "Go Home",
+  "loadError": "Failed to load profile.",
 
   "stats": {
     "xp": "Total XP",
@@ -165,6 +168,7 @@
     "copied": "Copied!",
     "completionCert": "Certificate of Completion",
     "academy": "CyberLabs Academy",
-    "popupWarning": "Please allow popups to download the certificate."
+    "popupWarning": "Please allow popups to download the certificate.",
+    "copyPrompt": "Copy this link:"
   }
 }

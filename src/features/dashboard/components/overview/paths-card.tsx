@@ -1,6 +1,6 @@
 // src/features/dashboard/components/overview/paths-card.tsx
 import { useState } from 'react';
-import { Map, ChevronRight, CheckCircle2, Clock, Trophy } from 'lucide-react';
+import { Map, ChevronRight, CheckCircle2, Clock, Trophy, AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
@@ -13,10 +13,14 @@ import { motion } from 'framer-motion';
 
 type Tab = 'active' | 'completed';
 
+// ✅ Fix: resolve ROUTES.PATHS once — avoids repeated optional chaining and '/paths' fallback
+const PATHS_LIST_ROUTE: string = ROUTES.PATHS?.LIST ?? '/paths';
+
 export function PathsCard() {
   const { t, i18n } = useTranslation('dashboard');
   const isAr = i18n.language === 'ar';
-  const { data, isLoading } = useUserPaths();
+  // ✅ Fix: destructure isError
+  const { data, isLoading, isError } = useUserPaths();
   const [tab, setTab] = useState<Tab>('active');
 
   const active = data?.filter((p) => !p.completedAt).slice(0, 4) ?? [];
@@ -36,7 +40,7 @@ export function PathsCard() {
           variant='ghost'
           size='sm'
           className='h-7 gap-1 text-xs text-muted-foreground'>
-          <Link to={ROUTES.PATHS?.LIST ?? '/paths'}>
+          <Link to={PATHS_LIST_ROUTE}>
             {t('overview.viewAll')} <ChevronRight size={12} />
           </Link>
         </Button>
@@ -73,6 +77,12 @@ export function PathsCard() {
               </div>
             </div>
           ))
+        ) : isError ? (
+          // ✅ Fix: error state
+          <div className='flex flex-col items-center gap-2 py-10 text-destructive'>
+            <AlertCircle size={28} className='opacity-50' />
+            <p className='text-sm'>{t('common.errorLoading', 'Failed to load data')}</p>
+          </div>
         ) : list.length === 0 ? (
           <div className='flex flex-col items-center gap-2 py-10 text-muted-foreground'>
             <Map size={28} className='opacity-40' />
@@ -83,7 +93,7 @@ export function PathsCard() {
             </p>
             {tab === 'active' && (
               <Button asChild variant='outline' size='sm' className='mt-1'>
-                <Link to={ROUTES.PATHS?.LIST ?? '/paths'}>
+                <Link to={PATHS_LIST_ROUTE}>
                   {t('overview.explorePaths', 'Explore Paths')}
                 </Link>
               </Button>

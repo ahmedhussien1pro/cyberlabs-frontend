@@ -63,12 +63,12 @@ export function ActivityHeatmap({ activities }: Props) {
       <div className='overflow-x-auto rounded-xl border border-border/40 bg-card p-4'>
         <div className='flex gap-1' dir='ltr'>
           {/* Day labels */}
-          <div className='flex flex-col gap-1 pt-5'>
-            {DAY_KEYS.map((key, i) => (
+          <div className='flex flex-col gap-1 '>
+            {DAY_KEYS.map((key) => (
               <div
                 key={key}
                 className='h-3 w-6 text-right text-[9px] leading-3 text-muted-foreground'>
-                {i % 2 === 1 ? t(`activity.days.${key}`) : ''}
+                {t(`activity.days.${key}`)}
               </div>
             ))}
           </div>
@@ -76,7 +76,7 @@ export function ActivityHeatmap({ activities }: Props) {
           {/* Grid */}
           {weeks.map((week, wi) => (
             <div key={wi} className='flex flex-col gap-1'>
-              {wi === 0 && <div className='h-4' />}
+              {/* {wi === 0 && <div className='h-4' />} */}
               {week.map((cell) => (
                 <motion.div
                   key={cell.date}

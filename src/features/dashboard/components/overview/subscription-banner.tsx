@@ -1,10 +1,10 @@
 // src/features/dashboard/components/overview/subscription-banner.tsx
 import { motion } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Crown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useMySubscription } from '@/features/pricing/hooks/use-pricing';
 import { PLAN_BADGE_CONFIG } from '@/features/pricing/types/pricing.types';
 import { SubscriptionBadge } from '@/shared/components/common/subscription-badge';
@@ -14,7 +14,10 @@ import type { PlanId } from '@/features/pricing/types/pricing.types';
 export function SubscriptionBanner() {
   const { t } = useTranslation('dashboard');
   const navigate = useNavigate();
-  const { data: subscription } = useMySubscription();
+  const { data: subscription, isLoading } = useMySubscription();
+
+  // ✅ Fix: prevent flash of "Upgrade" banner while subscription data is loading
+  if (isLoading) return <Skeleton className='h-20 rounded-xl' />;
 
   /* ── Free user: upgrade banner ── */
   if (!subscription || subscription.planId === 'free') {

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { MessageSquare, Swords, Users } from 'lucide-react';
+import { MessageSquare, Swords, Users, AlertCircle } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -16,12 +16,13 @@ const RANK_STYLE: Record<number, string> = {
 
 export default function CommunityPage(): React.ReactElement {
   const { t } = useTranslation('dashboard');
-  const { data, isLoading } = useLeaderboard();
+  // ✅ Fix: destructure isError
+  const { data, isLoading, isError } = useLeaderboard();
   const myEntry = data?.find((e) => e.isCurrentUser);
 
   return (
     <div className='container max-w-4xl space-y-6 py-6'>
-      {/* ── Header ──────────────────────────────────── */}
+      {/* ── Header ──────────────────────────────────────────── */}
       <div>
         <h1 className='text-xl font-black tracking-tight'>
           {t('community.title')}
@@ -31,8 +32,9 @@ export default function CommunityPage(): React.ReactElement {
         </p>
       </div>
 
-      {/* ── Your Rank Banner ────────────────────────── */}
-      {myEntry && (
+      {/* ── Your Rank Banner ───────────────────────────────────── */}
+      {/* Only render when data is ready and user is found — no flash during load */}
+      {!isLoading && !isError && myEntry && (
         <div
           className='flex items-center gap-4 rounded-xl border border-primary/30
                         bg-primary/5 p-4'>
@@ -48,7 +50,8 @@ export default function CommunityPage(): React.ReactElement {
               {myEntry.level}
             </p>
           </div>
-          {data && (
+          {/* ✅ Fix: guard against data.length === 0 to prevent Infinity% */}
+          {data && data.length > 0 && (
             <Badge
               variant='outline'
               className='shrink-0 border-primary/30 bg-primary/10 text-primary'>
@@ -58,7 +61,7 @@ export default function CommunityPage(): React.ReactElement {
         </div>
       )}
 
-      {/* ── Full Leaderboard ────────────────────────── */}
+      {/* ── Full Leaderboard ─────────────────────────────────────── */}
       <section className='space-y-3'>
         <h2 className='flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground'>
           <span className='h-1.5 w-1.5 rounded-full bg-yellow-400' />
@@ -77,6 +80,12 @@ export default function CommunityPage(): React.ReactElement {
                 <Skeleton className='h-3.5 w-20' />
               </div>
             ))
+          ) : isError ? (
+            // ✅ Fix: error state
+            <div className='flex flex-col items-center gap-3 py-12 text-destructive'>
+              <AlertCircle size={32} className='opacity-50' />
+              <p className='text-sm'>{t('common.errorLoading', 'Failed to load data')}</p>
+            </div>
           ) : !data?.length ? (
             <div className='flex items-center justify-center py-10 text-sm text-muted-foreground'>
               {t('leaderboard.empty')}
@@ -141,7 +150,7 @@ export default function CommunityPage(): React.ReactElement {
         </div>
       </section>
 
-      {/* ── Coming Soon ─────────────────────────────── */}
+      {/* ── Coming Soon ─────────────────────────────────────────── */}
       <div className='grid gap-3 sm:grid-cols-3'>
         <ComingSoonBanner
           icon={<Swords size={15} className='text-primary' />}

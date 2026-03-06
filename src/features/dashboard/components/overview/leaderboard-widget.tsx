@@ -1,5 +1,5 @@
 // src/features/dashboard/components/overview/leaderboard-widget.tsx
-import { Trophy } from 'lucide-react';
+import { Trophy, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -9,7 +9,6 @@ import { cn } from '@/lib/utils';
 import { useLeaderboard } from '../../hooks/use-dashboard-data';
 import { ROUTES } from '@/shared/constants';
 
-// ✅ consistent مع community-page.tsx
 const MEDAL: Record<number, string> = { 1: '🥇', 2: '🥈', 3: '🥉' };
 
 const RANK_STYLE: Record<number, string> = {
@@ -20,10 +19,10 @@ const RANK_STYLE: Record<number, string> = {
 
 export function LeaderboardWidget() {
   const { t } = useTranslation('dashboard');
-  const { data, isLoading } = useLeaderboard();
+  // ✅ Fix: destructure isError to handle API failure state
+  const { data, isLoading, isError } = useLeaderboard();
   const top5 = data?.slice(0, 5) ?? [];
 
-  // Find current user rank outside top 5
   const currentUser = data?.find((e) => e.isCurrentUser);
   const currentUserInTop5 = top5.some((e) => e.isCurrentUser);
   const showCurrentUserRow =
@@ -53,6 +52,12 @@ export function LeaderboardWidget() {
               <Skeleton className='h-3.5 w-16' />
             </div>
           ))
+        ) : isError ? (
+          // ✅ Fix: show error state instead of blank screen
+          <div className='flex flex-col items-center gap-2 py-8 text-destructive'>
+            <AlertCircle size={28} className='opacity-50' />
+            <p className='text-sm'>{t('common.errorLoading', 'Failed to load data')}</p>
+          </div>
         ) : top5.length === 0 ? (
           <div className='flex flex-col items-center gap-2 py-8 text-muted-foreground'>
             <Trophy size={28} className='opacity-30' />
@@ -67,7 +72,6 @@ export function LeaderboardWidget() {
                   'flex items-center gap-3 px-3 py-2.5 transition-colors',
                   entry.isCurrentUser ? 'bg-primary/5' : 'hover:bg-muted/20',
                 )}>
-                {/* ✅ Medal emoji للـ top 3 */}
                 <span
                   className={cn(
                     'w-6 shrink-0 text-center text-sm font-black',
@@ -92,8 +96,9 @@ export function LeaderboardWidget() {
                   )}>
                   {entry.name}
                   {entry.isCurrentUser && (
+                    // ✅ Fix: was hardcoded "(you)" — now translated
                     <span className='ms-1.5 text-[10px] font-normal text-muted-foreground'>
-                      (you)
+                      ({t('leaderboard.you', 'you')})
                     </span>
                   )}
                 </span>
@@ -111,7 +116,7 @@ export function LeaderboardWidget() {
               </div>
             ))}
 
-            {/* Current user rank — لو برّا الـ top 5 */}
+            {/* Current user rank — outside top 5 */}
             {showCurrentUserRow && currentUser && (
               <>
                 <div className='flex items-center justify-center py-1'>
@@ -131,8 +136,9 @@ export function LeaderboardWidget() {
                   </Avatar>
                   <span className='flex-1 truncate text-sm font-bold text-primary'>
                     {currentUser.name}
+                    {/* ✅ Fix: was hardcoded "(you)" — now translated */}
                     <span className='ms-1.5 text-[10px] font-normal text-muted-foreground'>
-                      (you)
+                      ({t('leaderboard.you', 'you')})
                     </span>
                   </span>
                   <div className='flex shrink-0 items-center gap-2'>

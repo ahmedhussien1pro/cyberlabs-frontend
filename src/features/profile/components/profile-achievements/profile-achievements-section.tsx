@@ -1,176 +1,213 @@
 // src/features/profile/components/profile-achievements/profile-achievements-section.tsx
+import { useState } from 'react';
+import { Trophy, BookOpen, Users, Flag, Star, CheckCircle2, Clock, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Trophy, Sparkles, Lock, Rocket } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import type { UserAchievement } from '../../types/profile.types';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useProfileAchievements, type AchievementItem } from '../../hooks/use-profile-achievements';
 
-const CATEGORY_STYLE: Record<string, string> = {
-  COURSE_COMPLETION: 'bg-blue-500/10   text-blue-500   border-blue-500/20',
-  LAB_SOLVED:        'bg-primary/10    text-primary    border-primary/20',
-  STREAK:            'bg-orange-500/10 text-orange-500 border-orange-500/20',
-  COMMUNITY:         'bg-purple-500/10 text-purple-500 border-purple-500/20',
-  CONTRIBUTION:      'bg-cyan-500/10   text-cyan-500   border-cyan-500/20',
-  CUSTOM:            'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
+// ── Category metadata ────────────────────────────────────────
+type IconFC = React.FC<{ className?: string }>;
+const CATS: Record<string, { Icon: IconFC; color: string; bg: string }> = {
+  LEARNING:    { Icon: BookOpen as IconFC, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+  COMMUNITY:   { Icon: Users as IconFC,    color: 'text-blue-500',    bg: 'bg-blue-500/10' },
+  COMPETITION: { Icon: Trophy as IconFC,   color: 'text-amber-500',   bg: 'bg-amber-500/10' },
+  MILESTONE:   { Icon: Flag as IconFC,     color: 'text-violet-500',  bg: 'bg-violet-500/10' },
+  CUSTOM:      { Icon: Star as IconFC,     color: 'text-pink-500',    bg: 'bg-pink-500/10' },
 };
+const DEFAULT_CAT = { Icon: Star as IconFC, color: 'text-pink-500', bg: 'bg-pink-500/10' };
 
-interface Props {
-  achievements: UserAchievement[];
-}
+type Tab = 'all' | 'completed' | 'in-progress';
 
-export function ProfileAchievementsSection({ achievements }: Props) {
-  const { t } = useTranslation('profile');
+// ── Component ────────────────────────────────────────────────────────
+export function ProfileAchievementsSection() {
+  const { i18n } = useTranslation('profile');
+  const isAr = i18n.language === 'ar';
+  const [tab, setTab] = useState<Tab>('all');
+  const { data: items = [], isLoading } = useProfileAchievements();
 
-  // ── Coming Soon empty state ────────────────────────────────────────
-  if (!achievements.length) {
-    return (
-      <section className='space-y-3'>
-        <h2 className='flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground'>
-          <Trophy className='h-4 w-4 text-yellow-500' />
-          {t('achievements.title')}
-        </h2>
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className='flex flex-col items-center gap-3 rounded-xl border border-dashed border-yellow-500/20 bg-yellow-500/[0.03] py-10 text-center'>
-          <div className='flex h-12 w-12 items-center justify-center rounded-2xl border border-yellow-500/20 bg-yellow-500/10'>
-            <Rocket className='h-5 w-5 text-yellow-500/70' />
-          </div>
-          <div className='space-y-1'>
-            <p className='text-sm font-semibold text-foreground/70'>Achievements</p>
-            <p className='max-w-xs text-xs leading-relaxed text-muted-foreground'>
-              Complete labs, courses, and streaks to unlock achievements.
-            </p>
-          </div>
-          <span className='rounded-full border border-yellow-500/30 bg-yellow-500/10 px-3 py-1 text-[11px] font-semibold text-yellow-600 dark:text-yellow-400'>
-            🚀 Coming Soon
-          </span>
-        </motion.div>
-      </section>
-    );
-  }
+  if (isLoading) return <AchievementsSkeleton />;
+  if (items.length === 0) return <EmptyAchievements isAr={isAr} />;
 
-  const achieved = achievements.filter((a) => !!a.achievedAt);
-  const inProgress = achievements.filter(
-    (a) => !a.achievedAt && a.progress != null,
-  );
-  const locked = achievements
-    .filter((a) => !a.achievedAt && a.progress == null)
-    .slice(0, 3);
+  const completedCount = items.filter((i) => i.achievedAt !== null).length;
+  const filtered =
+    tab === 'completed'   ? items.filter((i) => i.achievedAt !== null) :
+    tab === 'in-progress' ? items.filter((i) => i.achievedAt === null) :
+    items;
+
+  const TABS: { key: Tab; label: string; ar: string }[] = [
+    { key: 'all',         label: 'All',         ar: 'الكل' },
+    { key: 'completed',   label: 'Completed',   ar: 'مكتمل' },
+    { key: 'in-progress', label: 'In Progress', ar: 'جاري' },
+  ];
 
   return (
-    <section className='space-y-3'>
-      <h2 className='flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground'>
-        <Trophy className='h-4 w-4 text-yellow-500' />
-        {t('achievements.title')}
-        <span className='rounded-full bg-yellow-500/10 px-2 py-0.5 text-xs font-semibold text-yellow-500'>
-          {achieved.length}/{achievements.length}
-        </span>
-      </h2>
+    <section className='space-y-4'>
+      {/* Header */}
+      <div className='flex flex-wrap items-center justify-between gap-2'>
+        <div className='flex items-center gap-2'>
+          <Trophy className='h-5 w-5 text-amber-500' />
+          <h2 className='text-base font-bold text-foreground'>
+            {isAr ? 'الإنجازات' : 'Achievements'}
+          </h2>
+          {completedCount > 0 && (
+            <span className='rounded-full border border-amber-500/20 bg-amber-500/10 px-2 py-px text-xs font-bold text-amber-500'>
+              {completedCount}
+            </span>
+          )}
+        </div>
 
-      <div className='grid gap-2 sm:grid-cols-2 lg:grid-cols-3'>
-        {achieved.map((item, i) => (
-          <motion.div
-            key={item.id}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.04 }}
-            className='flex items-start gap-3 rounded-xl border border-border/40 bg-card p-3 transition-all hover:border-primary/20'>
-            <div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-yellow-500/10'>
-              {item.achievement.iconUrl ? (
-                <img src={item.achievement.iconUrl} alt='' className='h-5 w-5' />
-              ) : (
-                <Sparkles className='h-4 w-4 text-yellow-500' />
+        {/* Filter tabs */}
+        <div className='flex gap-1'>
+          {TABS.map(({ key, label, ar }) => (
+            <button
+              key={key}
+              onClick={() => setTab(key)}
+              className={cn(
+                'rounded-full px-3 py-1 text-xs font-medium transition-all duration-200',
+                tab === key
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground',
               )}
-            </div>
-            <div className='min-w-0 flex-1'>
-              <p className='truncate text-sm font-semibold text-foreground'>
-                {item.achievement.title}
-              </p>
-              {item.achievement.description && (
-                <p className='mt-0.5 line-clamp-1 text-[11px] text-muted-foreground'>
-                  {item.achievement.description}
-                </p>
-              )}
-              <div className='mt-1.5 flex flex-wrap items-center gap-1.5'>
-                <Badge
-                  variant='outline'
-                  className={cn(
-                    'border text-[10px]',
-                    CATEGORY_STYLE[item.achievement.category] ??
-                      CATEGORY_STYLE.CUSTOM,
-                  )}>
-                  {t(
-                    `achievements.categories.${item.achievement.category}`,
-                    item.achievement.category.replace(/_/g, ' '),
-                  )}
-                </Badge>
-                <span className='text-[10px] font-semibold text-primary'>
-                  +{item.achievement.xpReward} XP
-                </span>
-                {item.achievedAt && (
-                  <span className='text-[10px] text-muted-foreground'>
-                    {new Date(item.achievedAt).toLocaleDateString()}
-                  </span>
-                )}
-              </div>
-            </div>
-          </motion.div>
+            >
+              {isAr ? ar : label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Cards */}
+      <div className='grid gap-3 sm:grid-cols-2'>
+        {filtered.map((item, i) => (
+          <AchievementCard key={item.id} item={item} isAr={isAr} delay={i * 0.04} />
         ))}
+      </div>
+    </section>
+  );
+}
 
-        {inProgress.map((item, i) => (
-          <motion.div
-            key={item.id}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: (achieved.length + i) * 0.04 }}
-            className='flex items-start gap-3 rounded-xl border border-border/30 bg-card p-3 opacity-70'>
-            <div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted'>
-              {item.achievement.iconUrl ? (
-                <img src={item.achievement.iconUrl} alt='' className='h-5 w-5 opacity-50' />
-              ) : (
-                <Sparkles className='h-4 w-4 text-muted-foreground' />
+// ── Achievement Card ────────────────────────────────────────────────
+function AchievementCard({
+  item, isAr, delay,
+}: {
+  item: AchievementItem;
+  isAr: boolean;
+  delay: number;
+}) {
+  const cat = CATS[item.achievement.category] ?? DEFAULT_CAT;
+  const { Icon } = cat;
+  const isCompleted = item.achievedAt !== null;
+  const title = isAr ? (item.achievement.ar_title ?? item.achievement.title) : item.achievement.title;
+  const desc  = isAr ? (item.achievement.ar_description ?? item.achievement.description) : item.achievement.description;
+  const pct   = item.progress != null ? Math.round(item.progress * 100) : 0;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.28, delay }}
+      className={cn(
+        'flex gap-3 rounded-xl border p-3 transition-all duration-200',
+        isCompleted
+          ? 'border-amber-500/20 bg-amber-500/[0.04]'
+          : 'border-border/40 bg-card/60',
+        'hover:border-primary/30 hover:shadow-sm',
+      )}
+    >
+      {/* Category icon */}
+      <div className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-xl', cat.bg)}>
+        {item.achievement.iconUrl ? (
+          <img src={item.achievement.iconUrl} alt='' className='h-6 w-6 object-contain' />
+        ) : (
+          <Icon className={cn('h-5 w-5', cat.color)} />
+        )}
+      </div>
+
+      {/* Content */}
+      <div className='min-w-0 flex-1'>
+        {/* Title row */}
+        <div className='flex items-start justify-between gap-1'>
+          <p className='line-clamp-1 text-sm font-semibold leading-tight text-foreground'>
+            {title}
+          </p>
+          {isCompleted ? (
+            <CheckCircle2 className='h-4 w-4 shrink-0 text-amber-500' />
+          ) : (
+            <Clock className='h-4 w-4 shrink-0 text-muted-foreground/40' />
+          )}
+        </div>
+
+        {/* Description */}
+        {desc && (
+          <p className='mt-0.5 line-clamp-2 text-xs leading-relaxed text-muted-foreground'>{desc}</p>
+        )}
+
+        {/* Footer: XP + date / progress */}
+        <div className='mt-2 flex items-center gap-2'>
+          {item.achievement.xpReward > 0 && (
+            <span className='rounded-full bg-primary/10 px-2 py-px text-[9px] font-bold text-primary'>
+              +{item.achievement.xpReward} XP
+            </span>
+          )}
+
+          {isCompleted ? (
+            <span className='text-[10px] text-muted-foreground'>
+              {new Date(item.achievedAt!).toLocaleDateString(
+                isAr ? 'ar-EG' : 'en-US',
+                { year: 'numeric', month: 'short' },
               )}
-            </div>
-            <div className='min-w-0 flex-1'>
-              <p className='truncate text-sm font-semibold text-muted-foreground'>
-                {item.achievement.title}
-              </p>
-              <div className='mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted'>
-                <motion.div
-                  className='h-full rounded-full bg-primary/40'
-                  initial={{ width: 0 }}
-                  animate={{ width: `${item.progress}%` }}
-                  transition={{ duration: 0.8, delay: (achieved.length + i) * 0.04 + 0.2 }}
-                />
+            </span>
+          ) : pct > 0 ? (
+            <div className='flex flex-1 items-center gap-1.5'>
+              <div className='h-1 flex-1 overflow-hidden rounded-full bg-muted/60'>
+                <div className='h-full rounded-full bg-primary/60' style={{ width: `${pct}%` }} />
               </div>
-              <p className='mt-0.5 text-right text-[10px] text-muted-foreground'>
-                {item.progress}%
-              </p>
+              <span className='text-[9px] text-muted-foreground'>{pct}%</span>
             </div>
-          </motion.div>
-        ))}
+          ) : null}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
 
-        {locked.map((item, i) => (
-          <motion.div
-            key={item.id}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: (achieved.length + inProgress.length + i) * 0.04 }}
-            className='flex items-start gap-3 rounded-xl border border-dashed border-border/30 bg-muted/10 p-3 opacity-40 select-none'>
-            <div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted'>
-              <Lock className='h-4 w-4 text-muted-foreground' />
-            </div>
-            <div className='min-w-0 flex-1'>
-              <p className='truncate text-sm font-semibold text-muted-foreground'>
-                {item.achievement.title}
-              </p>
-              <p className='mt-0.5 text-[11px] text-muted-foreground'>
-                {t('achievements.locked')}
-              </p>
-            </div>
-          </motion.div>
+// ── Empty state ────────────────────────────────────────────────────────
+function EmptyAchievements({ isAr }: { isAr: boolean }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className='flex flex-col items-center gap-3 rounded-xl border border-dashed border-amber-500/20 bg-amber-500/[0.03] py-12 text-center'
+    >
+      <div className='flex h-12 w-12 items-center justify-center rounded-2xl border border-amber-500/20 bg-amber-500/10'>
+        <Sparkles className='h-5 w-5 text-amber-500/60' />
+      </div>
+      <p className='text-sm font-semibold text-foreground/70'>
+        {isAr ? 'لا توجد إنجازات بعد' : 'No achievements yet'}
+      </p>
+      <p className='max-w-xs text-xs leading-relaxed text-muted-foreground'>
+        {isAr
+          ? 'أتمّ المختبرات والكورسات وحافظ على سلسلتك لتفتح الإنجازات.'
+          : 'Complete labs, courses, and streaks to unlock achievements!'}
+      </p>
+    </motion.div>
+  );
+}
+
+// ── Skeleton ──────────────────────────────────────────────────────────────
+function AchievementsSkeleton() {
+  return (
+    <section className='space-y-4'>
+      <div className='flex items-center justify-between'>
+        <Skeleton className='h-6 w-36' />
+        <div className='flex gap-1'>
+          {[1, 2, 3].map((i) => <Skeleton key={i} className='h-7 w-20 rounded-full' />)}
+        </div>
+      </div>
+      <div className='grid gap-3 sm:grid-cols-2'>
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className='h-24 rounded-xl' />
         ))}
       </div>
     </section>

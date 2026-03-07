@@ -1,6 +1,22 @@
-export type UserRole = 'admin' | 'trainee' | 'content-creator';
+// src/features/auth/types/index.ts
+
+// ─── User role ─────────────────────────────────────────────────────────────
+// NOTE: Backend sends uppercase (e.g. STUDENT, ADMIN).
+// Keep this union broad enough to accept backend values at runtime.
+export type UserRole = 'admin' | 'trainee' | 'content-creator' | 'ADMIN' | 'STUDENT' | 'INSTRUCTOR' | 'CONTENT_CREATOR';
 export type UserSubscription = 'FREE' | 'PRO' | 'PREMIUM';
 
+/**
+ * Auth-store user shape.
+ *
+ * ⚠️  Field names MUST match what the backend login endpoint returns:
+ *   auth.service.ts → select: { id, email, name, avatarUrl, role, ... }
+ *
+ * History:
+ *   - `avatar` renamed to `avatarUrl` to align with backend field name.
+ *     Using `avatar` caused user.avatar to always be `undefined` at runtime
+ *     even though the actual JS object carried `avatarUrl`.
+ */
 export interface User {
   id: string;
   email: string;
@@ -8,8 +24,14 @@ export interface User {
   role: UserRole;
   subscription?: UserSubscription;
   emailVerified?: boolean;
+  isEmailVerified?: boolean;  // backend field name alias
   twoFactorEnabled?: boolean;
-  avatar?: string;
+  /**
+   * ✅ Renamed from `avatar` → `avatarUrl`.
+   * Backend returns `avatarUrl` in login, OAuth, and profile responses.
+   */
+  avatarUrl?: string;
+  isActive?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -145,7 +167,7 @@ export type AuthErrorCode = (typeof AuthErrorCode)[keyof typeof AuthErrorCode];
 export interface AuthError {
   code: AuthErrorCode;
   message: string;
-  details?: any;
+  details?: unknown;
 }
 
 export interface AuthState {

@@ -14,12 +14,10 @@ const ALLOWED = ['image/jpeg', 'image/png', 'image/webp'];
  * Extract a human-readable error message from whatever the API throws.
  *
  * The apiClient interceptor transforms Axios errors into ApiError objects:
- *   { message: string, statusCode: number, errors?: ... }
+ *   { message: string, statusCode: number }
  *
  * Raw Axios errors (e.g. from uploadToR2 via plain axios) have:
  *   { response: { data: { message: string } } }
- *
- * Both cases are handled here.
  */
 function extractApiError(err: unknown): string | null {
   if (!err || typeof err !== 'object') return null;
@@ -48,8 +46,12 @@ export function useUpdateProfile() {
   return useMutation({
     mutationFn: (payload: UpdateProfilePayload) => updateMyProfile(payload),
     onSuccess: (updated) => {
+      // Update React Query cache
       qc.setQueryData<UserProfile>(USER_QUERY_KEYS.me, updated);
+
+      // Sync auth store — name displayed in navbar
       if (updated.name) updateUser({ name: updated.name });
+
       toast.success(t('edit.success'));
     },
     onError: (err: unknown) => {
@@ -74,25 +76,31 @@ export function useUploadAvatar() {
     },
     onSuccess: (data) => {
       /**
-       * Step 1 — Optimistic cache update.
+       * Step 1 — Optimistic React Query cache update.
        * Immediately updates every component subscribed to USER_QUERY_KEYS.me
-       * (ProfileHero, EditAvatar, Navbar) without waiting for a network round-trip.
+       * (ProfileHero → ProfileAvatar) with the new avatarUrl.
        * The `key={avatarUrl}` on AvatarImage forces Radix to remount and
-       * reload the image when this new URL reaches the component as a prop.
+       * reload the image when the new URL reaches it as a prop.
        */
       qc.setQueryData<UserProfile>(USER_QUERY_KEYS.me, (old) =>
         old ? { ...old, avatarUrl: data.avatarUrl } : old,
       );
 
       /**
-       * Step 2 — Background refetch to get the authoritative server state.
+       * Step 2 — Background refetch to get authoritative server state.
        * Runs silently; the optimistic update above keeps the UI snappy.
        */
       void qc.invalidateQueries({ queryKey: USER_QUERY_KEYS.me });
 
-      // Step 3 — Sync navbar/auth store avatar immediately.
+      /**
+       * Step 3 — Sync auth store so the navbar avatar updates immediately.
+       *
+       * ✅ FIX: was `updateUser({ avatar: ... })` — `avatar` doesn't exist on
+       *         the User type; the backend field is `avatarUrl`.
+       *         Using the wrong key caused the navbar to never show the avatar.
+       */
       if (data.avatarUrl) {
-        updateUser({ avatar: data.avatarUrl });
+        updateUser({ avatarUrl: data.avatarUrl });
       }
 
       toast.success(t('edit.avatarSuccess'));

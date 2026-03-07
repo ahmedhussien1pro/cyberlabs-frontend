@@ -10,7 +10,7 @@ import {
   Loader2,
   AlertTriangle,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
@@ -18,10 +18,10 @@ import { ROUTES } from '@/shared/constants';
 import { TopicSidebar } from '../components/topic-sidebar';
 import { PaywallOverlay } from '../components/paywall-overlay';
 import CourseElementRenderer from '../components/CourseElementRenderer';
-import { CourseCompletionModal } from '../components/course-completion-modal'; // ✅
+import { CourseCompletionModal } from '../components/course-completion-modal';
 import { useCourse } from '../hooks/use-course';
 import { useCourseContent, useMarkTopicComplete } from '../hooks/use-topic';
-import { useUserProgress, useResetProgress } from '../hooks/use-user-progress'; // ✅
+import { useUserProgress, useResetProgress } from '../hooks/use-user-progress';
 
 export default function LessonPage() {
   const { slug = '', topicId = '' } = useParams<{
@@ -32,12 +32,20 @@ export default function LessonPage() {
   const lang = i18n.language === 'ar' ? 'ar' : 'en';
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [showCompletionModal, setShowCompletionModal] = useState(false); // ✅
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
+
+  // ✅ ref على الـ scrollable container
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // ✅ كل ما يتغير الـ topicId يسكرول للأول — يغطي كل طرق التنقل
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: 0, behavior: 'instant' });
+  }, [topicId]);
 
   const { data: course, isLoading: courseLoading } = useCourse(slug);
   const { data: content, isLoading: contentLoading } = useCourseContent(slug);
   const { mutate: markComplete, isPending: marking } = useMarkTopicComplete();
-  const { mutate: resetProgress } = useResetProgress(); // ✅
+  const { mutate: resetProgress } = useResetProgress();
 
   const { isEnrolled, isTopicCompleted } = useUserProgress();
 
@@ -68,10 +76,9 @@ export default function LessonPage() {
   const navigate_topic = (id: string) => {
     navigate(ROUTES.COURSES.TOPIC(slug, id));
     setSidebarOpen(false);
-    window.scrollTo({ top: 0 });
+    // ✅ لا حاجة لـ window.scrollTo — الـ useEffect بيتكفل بيه
   };
 
-  // ✅ إضافة: لو آخر topic → افتح مودال إكمال الكورس
   const handleMarkComplete = () => {
     if (!course) return;
     markComplete(
@@ -88,7 +95,6 @@ export default function LessonPage() {
     );
   };
 
-  // ✅ إضافة: Reset يمسح progress ويرجع لأول section
   const handleReset = () => {
     if (!course) return;
     resetProgress(course.id, {
@@ -201,7 +207,8 @@ export default function LessonPage() {
           </div>
         </div>
 
-        <div className='flex-1 overflow-y-auto'>
+        {/* ✅ scrollRef هنا — ده الـ container الفعلي اللي بيتسكرول */}
+        <div ref={scrollRef} className='flex-1 overflow-y-auto'>
           <div className='max-w-3xl mx-auto px-4 py-8'>
             {isLoading && <TopicSkeleton />}
             {!isLoading && isLocked && course && (
@@ -274,7 +281,6 @@ export default function LessonPage() {
         </div>
       </main>
 
-      {/* ✅ Completion Modal — يظهر تلقائياً لما يتم آخر topic */}
       <CourseCompletionModal
         open={showCompletionModal}
         courseTitle={courseDisplayTitle}

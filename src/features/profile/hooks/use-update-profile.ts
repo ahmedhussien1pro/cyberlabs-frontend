@@ -55,10 +55,26 @@ export function useUploadAvatar() {
       return uploadAvatar(file);
     },
     onSuccess: (data) => {
+      /**
+       * Step 1: Optimistic cache update — instant UI feedback, no network wait.
+       * This re-renders every component subscribed to USER_QUERY_KEYS.me,
+       * including ProfileHero and EditAvatar.
+       */
       qc.setQueryData<UserProfile>(USER_QUERY_KEYS.me, (old) =>
         old ? { ...old, avatarUrl: data.avatarUrl } : old,
       );
-      if (data.avatarUrl) updateUser({ avatar: data.avatarUrl });
+
+      /**
+       * Step 2: Invalidate to get a fresh authoritative profile from the server.
+       * Runs in background — the optimistic update above keeps the UI snappy.
+       */
+      void qc.invalidateQueries({ queryKey: USER_QUERY_KEYS.me });
+
+      // Step 3: Sync navbar avatar immediately via auth store
+      if (data.avatarUrl) {
+        updateUser({ avatar: data.avatarUrl });
+      }
+
       toast.success(t('edit.avatarSuccess'));
     },
     onError: (err: Error) => toast.error(err.message || t('edit.avatarError')),

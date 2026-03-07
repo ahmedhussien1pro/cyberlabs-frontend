@@ -49,10 +49,10 @@ export default function ProfilePage(): React.ReactElement {
   const { data: points } = useProfilePoints();
   const { data: activity } = useProfileActivity();
 
-  // ── Dedicated hooks — no more reading from profile object ─────────
-  const { data: badges = [] } = useProfileBadges();
-  const { data: careerPaths = [] } = useProfilePaths();
-  const { data: certifications = [] } = useProfileCertifications();
+  // ── Dedicated API hooks — no longer read from profile object ────────
+  const { data: badges = [] } = useProfileBadges();        // GET /badges/my
+  const { data: careerPaths = [] } = useProfilePaths();   // GET /paths/me
+  const { data: certifications = [] } = useProfileCertifications(); // GET /certificates/my
 
   if (isLoading) return <ProfilePageSkeleton />;
   if (isError || !profile) return <ProfilePageError />;
@@ -61,6 +61,7 @@ export default function ProfilePage(): React.ReactElement {
 
   return (
     <div className='relative min-h-screen bg-background'>
+
       {/* ── Ambient background ─────────────────────────────────────── */}
       <div className='pointer-events-none fixed inset-0 -z-10 overflow-hidden'>
         <div className='absolute -left-40 top-1/4 h-[600px] w-[600px] rounded-full bg-primary/[0.05] blur-3xl' />
@@ -69,9 +70,7 @@ export default function ProfilePage(): React.ReactElement {
       </div>
 
       {/* ── Sticky header ──────────────────────────────────────────── */}
-      <header
-        className='sticky top-0 z-40 flex items-center justify-between
-                   border-b border-border/40 bg-background/80 px-4 py-2.5 backdrop-blur-md'>
+      <header className='sticky top-0 z-40 flex items-center justify-between border-b border-border/40 bg-background/80 px-4 py-2.5 backdrop-blur-md'>
         <Button
           variant='ghost'
           size='sm'
@@ -97,7 +96,7 @@ export default function ProfilePage(): React.ReactElement {
           <ShareProfileButton userId={profile.id} />
         </div>
 
-        {/* ① Hero card */}
+        {/* ① Hero */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -110,14 +109,14 @@ export default function ProfilePage(): React.ReactElement {
           />
         </motion.div>
 
-        {/* ② Profile completion (hidden at 100%) */}
+        {/* ② Completion bar (hidden at 100%) */}
         <ProfileCompletionBar
           percentage={percentage}
           checks={checks}
           onEdit={() => setEditOpen(true)}
         />
 
-        {/* ③ Stats + XP progress */}
+        {/* ③ Stats + XP */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -135,21 +134,24 @@ export default function ProfilePage(): React.ReactElement {
           <ActivityHeatmap activities={activity} />
         </motion.div>
 
-        {/* ── Divider ── */}
+        {/* ── Section divider ── */}
         <div className='h-px bg-gradient-to-r from-transparent via-border/60 to-transparent' />
 
-        {/* ⑤ Badges — from /badges/my-badges */}
+        {/* ⑤ Badges — earned only, from GET /badges/my */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, delay: 0.1 }}>
-          <ProfileBadgesSection badges={badges} />
+          <ProfileBadgesSection
+            badges={badges}
+            showLocked={false}  {/* ✅ earned badges only on profile page */}
+          />
         </motion.div>
 
         {/* ⑥ Achievements — Coming Soon */}
         <ProfileAchievementsSection achievements={[]} />
 
-        {/* ⑦ Certifications — from /certificates/me */}
+        {/* ⑦ Certifications — from GET /certificates/my */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -163,7 +165,7 @@ export default function ProfilePage(): React.ReactElement {
         {/* ⑧ Skills — Coming Soon */}
         <ProfileSkillsSection skills={[]} />
 
-        {/* ── Divider ── */}
+        {/* ── Section divider ── */}
         <div className='h-px bg-gradient-to-r from-transparent via-border/60 to-transparent' />
 
         {/* ⑨ Completed Labs */}
@@ -174,7 +176,7 @@ export default function ProfilePage(): React.ReactElement {
           <ProfileLabsSection />
         </motion.div>
 
-        {/* ⑩ Courses (Active + Completed) */}
+        {/* ⑩ Courses */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -182,7 +184,7 @@ export default function ProfilePage(): React.ReactElement {
           <ActiveCoursesCard />
         </motion.div>
 
-        {/* ⑪ Career Paths — from /paths/me */}
+        {/* ⑪ Career Paths — from GET /paths/me */}
         {careerPaths.length > 0 && (
           <motion.section
             initial={{ opacity: 0, y: 12 }}
@@ -240,6 +242,7 @@ function ProfilePageSkeleton(): React.ReactElement {
         <Skeleton className='h-16 w-full rounded-xl' />
         <Skeleton className='h-40 w-full rounded-xl' />
         <Skeleton className='h-48 w-full rounded-xl' />
+        <Skeleton className='h-32 w-full rounded-xl' />
         <Skeleton className='h-32 w-full rounded-xl' />
       </div>
     </>

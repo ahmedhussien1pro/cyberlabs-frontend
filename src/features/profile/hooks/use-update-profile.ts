@@ -10,9 +10,27 @@ import { useAuthStore } from '@/core/store';
 const MAX_SIZE = 5 * 1024 * 1024;
 const ALLOWED = ['image/jpeg', 'image/png', 'image/webp'];
 
-/** Extract a readable message from an Axios error response */
+/**
+ * Extract a human-readable error message from whatever the API throws.
+ *
+ * The apiClient interceptor transforms Axios errors into ApiError objects:
+ *   { message: string, statusCode: number, errors?: ... }
+ *
+ * Raw Axios errors (e.g. from uploadToR2 via plain axios) have:
+ *   { response: { data: { message: string } } }
+ *
+ * Both cases are handled here.
+ */
 function extractApiError(err: unknown): string | null {
+  if (!err || typeof err !== 'object') return null;
   const e = err as Record<string, unknown>;
+
+  // ApiError format — produced by apiClient response interceptor
+  if (typeof e.message === 'string' && typeof e.statusCode === 'number') {
+    return e.message;
+  }
+
+  // Raw Axios error format — from plain axios.put (uploadToR2)
   const data = (e?.response as Record<string, unknown>)?.data as
     | Record<string, unknown>
     | undefined;
@@ -56,27 +74,35 @@ export function useUploadAvatar() {
     },
     onSuccess: (data) => {
       /**
-       * Step 1: Optimistic cache update — instant UI feedback, no network wait.
-       * This re-renders every component subscribed to USER_QUERY_KEYS.me,
-       * including ProfileHero and EditAvatar.
+       * Step 1 — Optimistic cache update.
+       * Immediately updates every component subscribed to USER_QUERY_KEYS.me
+       * (ProfileHero, EditAvatar, Navbar) without waiting for a network round-trip.
+       * The `key={avatarUrl}` on AvatarImage forces Radix to remount and
+       * reload the image when this new URL reaches the component as a prop.
        */
       qc.setQueryData<UserProfile>(USER_QUERY_KEYS.me, (old) =>
         old ? { ...old, avatarUrl: data.avatarUrl } : old,
       );
 
       /**
-       * Step 2: Invalidate to get a fresh authoritative profile from the server.
-       * Runs in background — the optimistic update above keeps the UI snappy.
+       * Step 2 — Background refetch to get the authoritative server state.
+       * Runs silently; the optimistic update above keeps the UI snappy.
        */
       void qc.invalidateQueries({ queryKey: USER_QUERY_KEYS.me });
 
-      // Step 3: Sync navbar avatar immediately via auth store
+      // Step 3 — Sync navbar/auth store avatar immediately.
       if (data.avatarUrl) {
         updateUser({ avatar: data.avatarUrl });
       }
 
       toast.success(t('edit.avatarSuccess'));
     },
-    onError: (err: Error) => toast.error(err.message || t('edit.avatarError')),
+    onError: (err: unknown) => {
+      const msg =
+        extractApiError(err) ||
+        (err instanceof Error ? err.message : null) ||
+        t('edit.avatarError');
+      toast.error(msg);
+    },
   });
 }

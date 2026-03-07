@@ -2,48 +2,62 @@
   "title": "Privacy Policy",
   "lastUpdated": "Last updated: February 16, 2026",
   "backToHome": "Back to Home",
+  "badge": "Privacy & Data Protection",
+  "summary": "How we collect, use, store, and protect your information when you use CyberLabs.",
+  "tocTitle": "On this page",
+  "disclaimer": "This page provides general information and does not constitute legal advice. For specific questions, please consult a qualified legal professional.",
   "section1": {
     "title": "1. Introduction",
-    "content": "At CyberLabs, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our platform. Please read this policy carefully."
+    "content": "At CyberLabs, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our platform, including our website, dashboard, labs environment, and related services. By accessing or using CyberLabs, you acknowledge that you have read and agree to the practices described in this policy."
   },
   "section2": {
     "title": "2. Information We Collect",
-    "intro": "We collect information that you provide directly to us, including:",
-    "point1": "Account information (name, email, username)",
-    "point2": "Profile information and preferences",
-    "point3": "Usage data and learning progress",
-    "point4": "Communication data when you contact us"
+    "intro": "Depending on how you use CyberLabs, we may collect the following categories of information:",
+    "point1": "Account and profile information — such as your name, email address, username, profile photo, bio, skills, and notification preferences.",
+    "point2": "Learning and activity data — such as courses and labs you enrol in, progress, completion status, scores, certificates earned, and session logs.",
+    "point3": "Technical and device data — such as IP address, browser type and version, operating system, device identifiers, and approximate location derived from IP.",
+    "point4": "Support and communications data — such as messages you send us, support tickets, survey responses, and feedback.",
+    "point5": "Billing and subscription data (where applicable) — such as your plan type, billing cycle, and payment history. Payment card details are processed exclusively by our PCI-compliant payment provider and are never stored in full by CyberLabs."
   },
   "section3": {
     "title": "3. How We Use Your Information",
-    "intro": "We use the information we collect to:",
-    "point1": "Provide, maintain, and improve our services",
-    "point2": "Personalize your learning experience",
-    "point3": "Send you updates, newsletters, and promotional materials",
-    "point4": "Respond to your comments and questions"
+    "intro": "We use the information we collect for the following purposes:",
+    "point1": "To provide, operate, and maintain the CyberLabs platform and all associated services.",
+    "point2": "To personalise your learning experience, recommend relevant courses and labs, and track your progress over time.",
+    "point3": "To monitor platform usage, ensure service security, detect fraud or abuse, and troubleshoot technical issues.",
+    "point4": "To communicate with you about service updates, security alerts, subscription changes, and support responses. You can manage most notification preferences directly in your account settings."
   },
   "section4": {
     "title": "4. Data Security",
-    "content": "We implement appropriate technical and organizational measures to protect your personal data against unauthorized access, alteration, disclosure, or destruction. However, no method of transmission over the Internet is 100% secure."
+    "content": "We implement appropriate technical and organisational measures to protect your personal data against unauthorised access, alteration, disclosure, or destruction. These measures include encryption of data in transit (TLS), access controls, regular security reviews, and least-privilege access policies for our internal systems. However, no method of transmission over the Internet or method of electronic storage is 100% secure, and we cannot guarantee absolute security."
   },
   "section5": {
     "title": "5. Cookies and Tracking",
-    "content": "We use cookies and similar tracking technologies to track activity on our platform and store certain information. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent."
+    "content": "We use cookies and similar tracking technologies to keep you signed in, remember your preferences, and understand how you interact with CyberLabs. Essential cookies are required for the platform to function. Analytics and preference cookies are used to improve the service, and where required by applicable law, we will request your consent before setting non-essential cookies. You can control or disable cookies through your browser settings at any time, though this may affect platform functionality."
   },
   "section6": {
     "title": "6. Third-Party Services",
-    "content": "We may employ third-party companies and individuals to facilitate our service. These third parties have access to your personal data only to perform tasks on our behalf and are obligated not to disclose or use it for any other purpose."
+    "content": "We work with trusted third-party providers to deliver certain parts of our service, including cloud hosting, CDN, email delivery, analytics, and payment processing. These providers only access your information to the extent necessary to perform their designated function on our behalf. They are contractually bound to protect your data and are prohibited from using it for any purpose beyond what we specify. We do not sell your personal data to third parties."
   },
   "section7": {
-    "title": "7. Your Rights",
-    "intro": "You have the right to:",
-    "point1": "Access and receive a copy of your personal data",
-    "point2": "Request correction of inaccurate data",
-    "point3": "Request deletion of your data",
-    "point4": "Opt-out of marketing communications"
+    "title": "7. Your Rights and Choices",
+    "intro": "Depending on your location and applicable data protection law, you may have some or all of the following rights:",
+    "point1": "Access — to request a copy of the personal data we hold about you.",
+    "point2": "Rectification — to request correction of inaccurate or incomplete personal data.",
+    "point3": "Erasure — to request deletion of your account and certain personal data, subject to legal and operational retention requirements.",
+    "point4": "Restriction or objection — to restrict or object to specific types of processing, such as direct marketing.",
+    "point5": "Withdrawal of consent — where we rely on your consent as a legal basis, you may withdraw it at any time without affecting the lawfulness of processing that occurred before withdrawal."
   },
   "section8": {
     "title": "8. Contact Us",
-    "content": "If you have any questions about this Privacy Policy, please contact us:"
+    "content": "If you have any questions about this Privacy Policy or wish to exercise any of your data rights, please contact us:"
+  },
+  "section9": {
+    "title": "9. Data Retention",
+    "content": "We retain your personal data for as long as your account is active or as needed to provide CyberLabs services. We may retain certain information for a longer period where required by law, to resolve disputes, enforce agreements, or for security, fraud prevention, and audit purposes. When data is no longer required for its original purpose and no legal basis exists to retain it, we take reasonable steps to securely delete or anonymise it."
+  },
+  "section10": {
+    "title": "10. Children's Privacy",
+    "content": "CyberLabs is intended for learners who are at least 13 years old. In certain regions, a higher minimum age may apply in accordance with local law (for example, 16 in some EU member states under the GDPR). We do not knowingly collect personal data from children below the applicable minimum age without verifiable parental or guardian consent. If you believe a child has provided us with personal data without appropriate consent, please contact us immediately so we can take the necessary steps, including deletion of that data where required."
   }
 }

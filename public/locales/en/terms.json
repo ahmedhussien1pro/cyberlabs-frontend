@@ -2,41 +2,53 @@
   "title": "Terms and Conditions",
   "lastUpdated": "Last updated: February 16, 2026",
   "backToHome": "Back to Home",
+  "badge": "Terms of Use",
+  "summary": "The rules and conditions that govern your use of the CyberLabs platform and services.",
+  "tocTitle": "On this page",
+  "disclaimer": "These terms are provided for general informational purposes and do not replace professional legal advice. Continued use of CyberLabs constitutes your acceptance of these terms.",
   "section1": {
     "title": "1. Introduction",
-    "content": "Welcome to CyberLabs. By accessing and using our platform, you agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, please do not use our services."
+    "content": "Welcome to CyberLabs. By accessing or using our website, learning platform, virtual labs, or any related services, you agree to be bound by these Terms and Conditions and our Privacy Policy. If you do not agree with any part of these terms, you must not use the CyberLabs services."
   },
   "section2": {
     "title": "2. Account Terms",
-    "intro": "When you create an account with us, you must provide accurate and complete information. You are responsible for:",
-    "point1": "Maintaining the security of your account and password",
-    "point2": "All activities that occur under your account",
-    "point3": "Notifying us immediately of any unauthorized use",
-    "point4": "Ensuring your account information is accurate and up-to-date"
+    "intro": "When you create an account with CyberLabs, you agree to:",
+    "point1": "Provide accurate, current, and complete information during registration and keep it up to date at all times.",
+    "point2": "Maintain the confidentiality of your login credentials and not share account access with any third party.",
+    "point3": "Notify us promptly at support@cyberlabs.io of any suspected unauthorised use of your account or security breach.",
+    "point4": "Be solely responsible for all activities and content submitted under your account."
   },
   "section3": {
     "title": "3. Acceptable Use",
-    "intro": "You agree not to use our platform to:",
-    "point1": "Violate any applicable laws or regulations",
-    "point2": "Infringe on intellectual property rights",
-    "point3": "Transmit malicious code or harmful content",
-    "point4": "Attempt to gain unauthorized access to systems",
-    "point5": "Harass, abuse, or harm other users"
+    "intro": "You agree not to use CyberLabs to:",
+    "point1": "Violate any applicable laws or regulations, including those related to cybersecurity, data protection, or export controls.",
+    "point2": "Infringe the intellectual property, privacy, or other legal rights of CyberLabs or any third party.",
+    "point3": "Upload, transmit, or distribute malicious code, malware, exploits, or any other harmful or disruptive content.",
+    "point4": "Attempt to gain unauthorised access to any system, network, lab environment, account, or data beyond what is explicitly permitted within a lab scenario.",
+    "point5": "Harass, threaten, abuse, or harm other users, or engage in any conduct that disrupts others' use of the platform."
   },
   "section4": {
     "title": "4. Intellectual Property",
-    "content": "All content, features, and functionality on CyberLabs are owned by us and are protected by international copyright, trademark, and other intellectual property laws. You may not reproduce, distribute, or create derivative works without our express written permission."
+    "content": "All content, course materials, lab scenarios, branding, and platform functionality available on CyberLabs are owned by us or our licensors and are protected by copyright, trademark, and other applicable intellectual property laws. You are granted a limited, personal, non-exclusive, non-transferable licence to access and use the platform solely for your own learning purposes. You may not reproduce, distribute, sublicense, resell, or create derivative works from any CyberLabs content without our prior written permission."
   },
   "section5": {
     "title": "5. Limitation of Liability",
-    "content": "CyberLabs and its affiliates will not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use or inability to use the service. Our total liability shall not exceed the amount you paid us in the past 12 months."
+    "content": "To the maximum extent permitted by applicable law, CyberLabs and its affiliates, directors, employees, and partners will not be liable for any indirect, incidental, special, consequential, or punitive damages arising out of or in connection with your use of — or inability to use — the platform, including loss of data, revenue, or business opportunities. Our total aggregate liability for any claims related to the service will not exceed the amount you have paid to CyberLabs, if any, in the twelve (12) months immediately preceding the event giving rise to the claim."
   },
   "section6": {
     "title": "6. Changes to Terms",
-    "content": "We reserve the right to modify these terms at any time. We will notify users of any material changes via email or through our platform. Continued use of our services after changes constitutes acceptance of the new terms."
+    "content": "We reserve the right to update or modify these Terms at any time. When we make material changes, we will notify you via a notice on the platform or by email sent to the address associated with your account. The updated Terms will be effective as of the date they are posted unless stated otherwise. Your continued use of CyberLabs after changes take effect constitutes your acceptance of the updated Terms."
   },
   "section7": {
     "title": "7. Contact Us",
-    "content": "If you have any questions about these Terms and Conditions, please contact us:"
+    "content": "If you have any questions about these Terms and Conditions or need support, please contact us:"
+  },
+  "section8": {
+    "title": "8. Subscriptions and Payments",
+    "content": "Certain features of CyberLabs are available on a paid subscription basis. By subscribing to a paid plan, you authorise our third-party payment provider to charge the applicable subscription fees and any taxes on a recurring basis (monthly or annually, depending on your selected plan) until you cancel. You may cancel your subscription at any time through your account settings or by contacting support; cancellation will take effect at the end of the current billing period. Subscription fees are generally non-refundable except where required by law or as explicitly stated in a separate refund policy. We reserve the right to change pricing and plans with reasonable advance notice."
+  },
+  "section9": {
+    "title": "9. Governing Law",
+    "content": "These Terms and any disputes or claims arising out of or in connection with them shall be governed by and construed in accordance with the laws of the jurisdiction in which CyberLabs is operated, without regard to its conflict of law rules. Where mandatory consumer protection laws in your country of residence apply, those rights are not excluded or limited by these Terms. Any legal proceedings shall be brought in the competent courts of the applicable jurisdiction unless you and CyberLabs agree otherwise in writing."
   }
 }

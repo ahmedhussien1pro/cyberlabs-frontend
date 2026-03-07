@@ -50,8 +50,8 @@ export default function ProfilePage(): React.ReactElement {
   const { data: activity } = useProfileActivity();
 
   // ── Dedicated API hooks — no longer read from profile object ────────
-  const { data: badges = [] } = useProfileBadges();        // GET /badges/my
-  const { data: careerPaths = [] } = useProfilePaths();   // GET /paths/me
+  const { data: badges = [] } = useProfileBadges(); // GET /badges/my
+  const { data: careerPaths = [] } = useProfilePaths(); // GET /paths/me
   const { data: certifications = [] } = useProfileCertifications(); // GET /certificates/my
 
   if (isLoading) return <ProfilePageSkeleton />;
@@ -61,7 +61,6 @@ export default function ProfilePage(): React.ReactElement {
 
   return (
     <div className='relative min-h-screen bg-background'>
-
       {/* ── Ambient background ─────────────────────────────────────── */}
       <div className='pointer-events-none fixed inset-0 -z-10 overflow-hidden'>
         <div className='absolute -left-40 top-1/4 h-[600px] w-[600px] rounded-full bg-primary/[0.05] blur-3xl' />
@@ -90,7 +89,6 @@ export default function ProfilePage(): React.ReactElement {
 
       {/* ── Page content ───────────────────────────────────────────── */}
       <div className='container max-w-4xl space-y-6 py-6'>
-
         {/* Share button */}
         <div className='flex justify-end'>
           <ShareProfileButton userId={profile.id} />
@@ -142,10 +140,7 @@ export default function ProfilePage(): React.ReactElement {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, delay: 0.1 }}>
-          <ProfileBadgesSection
-            badges={badges}
-            showLocked={false}  {/* ✅ earned badges only on profile page */}
-          />
+          <ProfileBadgesSection badges={badges} showLocked={false} />
         </motion.div>
 
         {/* ⑥ Achievements — Coming Soon */}
@@ -205,7 +200,6 @@ export default function ProfilePage(): React.ReactElement {
             </div>
           </motion.section>
         )}
-
       </div>
 
       {/* ── Edit modal ─────────────────────────────────────────────── */}

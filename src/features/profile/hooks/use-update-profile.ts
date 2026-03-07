@@ -10,28 +10,11 @@ import { useAuthStore } from '@/core/store';
 const MAX_SIZE = 5 * 1024 * 1024;
 const ALLOWED = ['image/jpeg', 'image/png', 'image/webp'];
 
-/**
- * Extract a human-readable error message from whatever the API throws.
- *
- * The apiClient interceptor transforms Axios errors into ApiError objects:
- *   { message: string, statusCode: number }
- *
- * Raw Axios errors (e.g. from uploadToR2 via plain axios) have:
- *   { response: { data: { message: string } } }
- */
 function extractApiError(err: unknown): string | null {
   if (!err || typeof err !== 'object') return null;
   const e = err as Record<string, unknown>;
-
-  // ApiError format — produced by apiClient response interceptor
-  if (typeof e.message === 'string' && typeof e.statusCode === 'number') {
-    return e.message;
-  }
-
-  // Raw Axios error format — from plain axios.put (uploadToR2)
-  const data = (e?.response as Record<string, unknown>)?.data as
-    | Record<string, unknown>
-    | undefined;
+  if (typeof e.message === 'string' && typeof e.statusCode === 'number') return e.message;
+  const data = (e?.response as Record<string, unknown>)?.data as Record<string, unknown> | undefined;
   const msg = data?.message;
   if (!msg) return null;
   if (Array.isArray(msg)) return msg.join(' — ');
@@ -46,12 +29,8 @@ export function useUpdateProfile() {
   return useMutation({
     mutationFn: (payload: UpdateProfilePayload) => updateMyProfile(payload),
     onSuccess: (updated) => {
-      // Update React Query cache
       qc.setQueryData<UserProfile>(USER_QUERY_KEYS.me, updated);
-
-      // Sync auth store — name displayed in navbar
       if (updated.name) updateUser({ name: updated.name });
-
       toast.success(t('edit.success'));
     },
     onError: (err: unknown) => {
@@ -75,30 +54,24 @@ export function useUploadAvatar() {
       return uploadAvatar(file);
     },
     onSuccess: (data) => {
-      /**
-       * Step 1 — Optimistic React Query cache update.
-       * Immediately updates every component subscribed to USER_QUERY_KEYS.me
-       * (ProfileHero → ProfileAvatar) with the new avatarUrl.
-       * The `key={avatarUrl}` on AvatarImage forces Radix to remount and
-       * reload the image when the new URL reaches it as a prop.
-       */
-      qc.setQueryData<UserProfile>(USER_QUERY_KEYS.me, (old) =>
-        old ? { ...old, avatarUrl: data.avatarUrl } : old,
-      );
+      // ℹ️ DEBUG — remove after avatar issue is confirmed fixed
+      if (import.meta.env.DEV) {
+        console.log('[useUploadAvatar] onSuccess → data:', data);
+      }
 
-      /**
-       * Step 2 — Background refetch to get authoritative server state.
-       * Runs silently; the optimistic update above keeps the UI snappy.
-       */
+      // Optimistic cache update — triggers re-render of ProfileHero → ProfileAvatar
+      qc.setQueryData<UserProfile>(USER_QUERY_KEYS.me, (old) => {
+        if (import.meta.env.DEV) {
+          console.log('[useUploadAvatar] setQueryData → old.avatarUrl:', old?.avatarUrl, '→ new:', data.avatarUrl);
+        }
+        return old ? { ...old, avatarUrl: data.avatarUrl } : old;
+      });
+
+      // Background refetch to sync with server
       void qc.invalidateQueries({ queryKey: USER_QUERY_KEYS.me });
 
-      /**
-       * Step 3 — Sync auth store so the navbar avatar updates immediately.
-       *
-       * ✅ FIX: was `updateUser({ avatar: ... })` — `avatar` doesn't exist on
-       *         the User type; the backend field is `avatarUrl`.
-       *         Using the wrong key caused the navbar to never show the avatar.
-       */
+      // Sync navbar avatar via auth store
+      // ✅ FIX: field is `avatarUrl` (not `avatar`) to match backend response
       if (data.avatarUrl) {
         updateUser({ avatarUrl: data.avatarUrl });
       }

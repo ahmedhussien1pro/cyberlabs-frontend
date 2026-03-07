@@ -1,4 +1,5 @@
 // src/features/profile/pages/public-profile-page.tsx
+import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +13,24 @@ import { ProfileCertificationsSection } from '../components/profile-certificatio
 import { ProfileAchievementsSection } from '../components/profile-achievements/profile-achievements-section';
 import { CareerPathCard } from '../components/profile-career/career-path-card';
 import { ShareProfileButton } from '../components/profile-share/share-profile-button';
+import type { UserAchievement, UserSkill } from '../types/profile.types';
+
+/**
+ * Type-cast helpers — these components were built to use internal hooks
+ * (they fetch the *current user's* data). For the public profile we pass
+ * the already-fetched profile data as props so the viewer sees the correct
+ * user’s content.
+ *
+ * TODO: refactor ProfileAchievementsSection & ProfileSkillsSection to accept
+ * an optional external data prop and short-circuit their internal hook when
+ * it is provided.
+ */
+const AchievementsWithProps = ProfileAchievementsSection as React.ComponentType<{
+  achievements?: UserAchievement[];
+}>;
+const SkillsWithProps = ProfileSkillsSection as React.ComponentType<{
+  skills?: UserSkill[];
+}>;
 
 export default function PublicProfilePage() {
   const { userId = '' } = useParams<{ userId: string }>();
@@ -73,8 +92,8 @@ export default function PublicProfilePage() {
         {/* ② Badges */}
         <ProfileBadgesSection badges={profile.badges ?? []} />
 
-        {/* ③ Achievements */}
-        <ProfileAchievementsSection achievements={profile.achievements ?? []} />
+        {/* ③ Achievements — pass external data so the public viewer sees this user’s achievements */}
+        <AchievementsWithProps achievements={profile.achievements ?? []} />
 
         {/* ④ Certifications */}
         <ProfileCertificationsSection
@@ -82,8 +101,8 @@ export default function PublicProfilePage() {
           userName={profile.name}
         />
 
-        {/* ⑤ Skills */}
-        <ProfileSkillsSection skills={profile.skills ?? []} />
+        {/* ⑤ Skills — pass external data so the public viewer sees this user’s skills */}
+        <SkillsWithProps skills={profile.skills ?? []} />
 
         {/* ⑥ Career Paths */}
         {!!profile.careerPaths?.length && (

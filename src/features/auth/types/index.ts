@@ -1,9 +1,14 @@
 // src/features/auth/types/index.ts
 
-// ─── User role ─────────────────────────────────────────────────────────────
-// NOTE: Backend sends uppercase (e.g. STUDENT, ADMIN).
-// Keep this union broad enough to accept backend values at runtime.
-export type UserRole = 'admin' | 'trainee' | 'content-creator' | 'ADMIN' | 'STUDENT' | 'INSTRUCTOR' | 'CONTENT_CREATOR';
+/**
+ * Frontend UserRole values (lowercase) used by role.util.ts hierarchy.
+ *
+ * NOTE: The backend sends UPPERCASE roles (ADMIN, STUDENT, INSTRUCTOR, etc.).
+ * Use `roleUtils.mapBackendRole()` to convert backend roles to this type.
+ * Do NOT add uppercase values here — it breaks Record<UserRole, ...> lookups
+ * in role.util.ts.
+ */
+export type UserRole = 'admin' | 'trainee' | 'content-creator';
 export type UserSubscription = 'FREE' | 'PRO' | 'PREMIUM';
 
 /**
@@ -23,15 +28,17 @@ export interface User {
   name: string;
   role: UserRole;
   subscription?: UserSubscription;
+  /** Frontend alias — maps to backend `isEmailVerified` */
   emailVerified?: boolean;
-  isEmailVerified?: boolean;  // backend field name alias
+  isEmailVerified?: boolean;
   twoFactorEnabled?: boolean;
+  isActive?: boolean;
   /**
    * ✅ Renamed from `avatar` → `avatarUrl`.
-   * Backend returns `avatarUrl` in login, OAuth, and profile responses.
+   * Backend login response returns `avatarUrl` (not `avatar`).
+   * Any component reading `user.avatar` was always getting `undefined`.
    */
   avatarUrl?: string;
-  isActive?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }

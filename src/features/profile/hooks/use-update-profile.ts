@@ -1,14 +1,26 @@
+// src/features/profile/hooks/use-update-profile.ts
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { updateMyProfile, uploadAvatar } from '../api/profile.api';
 import { USER_QUERY_KEYS } from '@/shared/constants/query-keys';
-import type { UpdateProfilePayload } from '../types/profile.types';
-import type { UserProfile } from '../types/profile.types';
+import type { UpdateProfilePayload, UserProfile } from '../types/profile.types';
 import { useAuthStore } from '@/core/store';
 
 const MAX_SIZE = 5 * 1024 * 1024;
 const ALLOWED = ['image/jpeg', 'image/png', 'image/webp'];
+
+/** Extract a readable message from an Axios error response */
+function extractApiError(err: unknown): string | null {
+  const e = err as Record<string, unknown>;
+  const data = (e?.response as Record<string, unknown>)?.data as
+    | Record<string, unknown>
+    | undefined;
+  const msg = data?.message;
+  if (!msg) return null;
+  if (Array.isArray(msg)) return msg.join(' — ');
+  return String(msg);
+}
 
 export function useUpdateProfile() {
   const qc = useQueryClient();
@@ -19,15 +31,13 @@ export function useUpdateProfile() {
     mutationFn: (payload: UpdateProfilePayload) => updateMyProfile(payload),
     onSuccess: (updated) => {
       qc.setQueryData<UserProfile>(USER_QUERY_KEYS.me, updated);
-      
-      // Sync the user's name with auth store so navbar updates
-      if (updated.name) {
-        updateUser({ name: updated.name });
-      }
-      
+      if (updated.name) updateUser({ name: updated.name });
       toast.success(t('edit.success'));
     },
-    onError: () => toast.error(t('edit.error')),
+    onError: (err: unknown) => {
+      const msg = extractApiError(err) ?? t('edit.error');
+      toast.error(msg);
+    },
   });
 }
 
@@ -48,12 +58,7 @@ export function useUploadAvatar() {
       qc.setQueryData<UserProfile>(USER_QUERY_KEYS.me, (old) =>
         old ? { ...old, avatarUrl: data.avatarUrl } : old,
       );
-      
-      // Sync the user's avatar with auth store so navbar updates immediately
-      if (data.avatarUrl) {
-        updateUser({ avatar: data.avatarUrl });
-      }
-      
+      if (data.avatarUrl) updateUser({ avatar: data.avatarUrl });
       toast.success(t('edit.avatarSuccess'));
     },
     onError: (err: Error) => toast.error(err.message || t('edit.avatarError')),

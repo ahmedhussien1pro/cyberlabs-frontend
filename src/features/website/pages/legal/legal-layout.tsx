@@ -1,5 +1,5 @@
 // src/features/website/pages/legal/legal-layout.tsx
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import {
@@ -122,10 +122,7 @@ export function LegalLayout({
             {sections.map((s) => {
               const Icon = s.icon ? iconMap[s.icon] : undefined;
               return (
-                <Card
-                  key={s.id}
-                  id={s.id}
-                  className='scroll-mt-28 p-6 sm:p-8'>
+                <Card key={s.id} id={s.id} className='scroll-mt-28 p-6 sm:p-8'>
                   <div className='flex items-start gap-3 mb-5'>
                     {Icon && (
                       <div className='mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary'>

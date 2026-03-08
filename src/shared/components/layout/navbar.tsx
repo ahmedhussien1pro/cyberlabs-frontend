@@ -1,5 +1,5 @@
 // src/shared/components/layout/navbar.tsx
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -14,7 +14,6 @@ import {
   FileText,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useProfile } from '../../../features/profile/hooks/use-profile';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -38,82 +37,99 @@ import { useSubscriptionBadge } from '@/features/pricing/hooks/use-pricing';
 import { SubscriptionBadge } from '@/shared/components/common/subscription-badge';
 
 export function Navbar() {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
   const { isAuthenticated, user, logout } = useAuthStore();
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const { planId, isSubscribed } = useSubscriptionBadge();
-  const { data: profile } = useProfile();
-  const userAvatar = profile?.avatarUrl;
 
-  const learningItems = [
-    {
-      label: t('navigation.paths', 'Career Paths'),
-      href: '/paths',
-      icon: <LayoutDashboard className='w-4 h-4' />,
-      description: t('navigation.pathsDesc', 'Guided roadmaps for your career'),
-    },
-    {
-      label: t('navigation.courses', 'Courses'),
-      href: '/courses',
-      icon: <GraduationCap className='w-4 h-4' />,
-      description: t(
-        'navigation.coursesDesc',
-        'Learn cybersecurity fundamentals',
-      ),
-    },
-    {
-      label: t('navigation.labs', 'Labs'),
-      href: '/labs',
-      icon: <Code className='w-4 h-4' />,
-      description: t(
-        'navigation.labsDesc',
-        'Practice in real-world environments',
-      ),
-    },
+  /**
+   * ✅ Fix: avatarUrl من auth store مباشرةً — بدل من useProfile() API call
+   * User.avatarUrl مخزون في store بعد login/persist
+   */
+  const userAvatar = user?.avatarUrl;
 
-    {
-      label: t('navigation.challenges', 'CTF Challenges'),
-      href: '/challenges',
-      icon: <Trophy className='w-4 h-4' />,
-      description: t(
-        'navigation.challengesDesc',
-        'Compete and test your skills',
-      ),
-      badge: 'Soon',
-    },
-  ];
+  /** ✅ Fix: RTL-aware Sheet side */
+  const isRTL = i18n.dir() === 'rtl';
 
-  const companyItems = [
-    {
-      label: t('navigation.about', 'About Us'),
-      href: ROUTES.ABOUT,
-      icon: <Info className='w-4 h-4' />,
-      description: t(
-        'navigation.aboutDesc',
-        'Learn about our mission and team',
-      ),
-    },
-    {
-      label: t('navigation.contact', 'Contact'),
-      href: ROUTES.CONTACT,
-      icon: <Mail className='w-4 h-4' />,
-      description: t('navigation.contactDesc', 'Get in touch with support'),
-    },
-    {
-      label: t('navigation.privacy', 'Privacy Policy'),
-      href: ROUTES.PRIVACY,
-      icon: <ShieldAlert className='w-4 h-4' />,
-      description: t('navigation.privacyDesc', 'How we protect your data'),
-    },
-    {
-      label: t('navigation.terms', 'Terms of Service'),
-      href: ROUTES.TERMS,
-      icon: <FileText className='w-4 h-4' />,
-      description: t('navigation.termsDesc', 'Rules and guidelines for usage'),
-    },
-  ];
+  /**
+   * ✅ Fix: useMemo — بيتجنب re-creation في كل render
+   * ✅ Fix: كل الأهريف بتستخدم ROUTES.* — بدل ال hardcoded strings
+   * ✅ Fix: 'Soon' badge بقى i18n — t('navigation.soon')
+   */
+  const learningItems = useMemo(
+    () => [
+      {
+        label: t('navigation.paths', 'Career Paths'),
+        href: ROUTES.PATHS.LIST,
+        icon: <LayoutDashboard className='w-4 h-4' />,
+        description: t('navigation.pathsDesc', 'Guided roadmaps for your career'),
+      },
+      {
+        label: t('navigation.courses', 'Courses'),
+        href: ROUTES.COURSES.LIST,
+        icon: <GraduationCap className='w-4 h-4' />,
+        description: t(
+          'navigation.coursesDesc',
+          'Learn cybersecurity fundamentals',
+        ),
+      },
+      {
+        label: t('navigation.labs', 'Labs'),
+        href: ROUTES.LABS.LIST,
+        icon: <Code className='w-4 h-4' />,
+        description: t(
+          'navigation.labsDesc',
+          'Practice in real-world environments',
+        ),
+      },
+      {
+        label: t('navigation.challenges', 'CTF Challenges'),
+        href: ROUTES.CHALLENGES.LIST,
+        icon: <Trophy className='w-4 h-4' />,
+        description: t(
+          'navigation.challengesDesc',
+          'Compete and test your skills',
+        ),
+        badge: t('navigation.soon', 'Soon'),
+      },
+    ],
+    [t],
+  );
+
+  const companyItems = useMemo(
+    () => [
+      {
+        label: t('navigation.about', 'About Us'),
+        href: ROUTES.ABOUT,
+        icon: <Info className='w-4 h-4' />,
+        description: t(
+          'navigation.aboutDesc',
+          'Learn about our mission and team',
+        ),
+      },
+      {
+        label: t('navigation.contact', 'Contact'),
+        href: ROUTES.CONTACT,
+        icon: <Mail className='w-4 h-4' />,
+        description: t('navigation.contactDesc', 'Get in touch with support'),
+      },
+      {
+        label: t('navigation.privacy', 'Privacy Policy'),
+        href: ROUTES.PRIVACY,
+        icon: <ShieldAlert className='w-4 h-4' />,
+        description: t('navigation.privacyDesc', 'How we protect your data'),
+      },
+      {
+        label: t('navigation.terms', 'Terms of Service'),
+        href: ROUTES.TERMS,
+        icon: <FileText className='w-4 h-4' />,
+        description: t('navigation.termsDesc', 'Rules and guidelines for usage'),
+      },
+    ],
+    [t],
+  );
 
   return (
     <>
@@ -155,13 +171,6 @@ export function Navbar() {
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  {/*
-                   * ── المبدأ ────────────────────────────────────────────
-                   * لما في تاج: pt-3 يعمل مساحة فوق الـ avatar.
-                   * التاج في top-0 داخل هذه المساحة.
-                   * الـ button نفسه overflow-visible عشان التاج ما يتقطعش.
-                   * النتيجة: avatar لابس تاج فوق رأسه مباشرةً.
-                   */}
                   <Button
                     variant='ghost'
                     className={cn(
@@ -170,7 +179,6 @@ export function Navbar() {
                       'overflow-visible',
                       isSubscribed ? 'pt-3' : 'pt-1',
                     )}>
-                    {/* ── التاج: فوق رأس الـ avatar مباشرةً ── */}
                     {isSubscribed && (
                       <SubscriptionBadge
                         planId={planId}
@@ -183,10 +191,11 @@ export function Navbar() {
                       <AvatarImage
                         src={userAvatar}
                         alt={user?.name}
-                        className='object-cover scale-130'
+                        /** ✅ Fix: scale-130 → scale-[1.3] (Tailwind arbitrary value) */
+                        className='object-cover scale-[1.3]'
                       />
                       <AvatarFallback>
-                        {user?.name?.charAt(0).toUpperCase() || 'U'}
+                        {user?.name?.charAt(0).toUpperCase() ?? 'U'}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
@@ -195,7 +204,6 @@ export function Navbar() {
                 <DropdownMenuContent align='end' className='w-60'>
                   <DropdownMenuLabel className='py-2.5 px-3'>
                     <div className='flex flex-col gap-1'>
-                      {/* اسم + pill badge صغير بجانبه */}
                       <div className='flex items-center gap-2'>
                         <span className='text-sm font-semibold truncate'>
                           {user?.name}
@@ -217,12 +225,14 @@ export function Navbar() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to='/profile'>
+                    {/* ✅ Fix: '/profile' hardcoded → ROUTES.PROFILE.VIEW */}
+                    <Link to={ROUTES.PROFILE.VIEW}>
                       {t('navigation.profile', 'Profile')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to={`${ROUTES.DASHBOARD.DashboardPage}/settings`}>
+                    {/* ✅ Fix: string concatenation → ROUTES.DASHBOARD.SettingsPage */}
+                    <Link to={ROUTES.DASHBOARD.SettingsPage}>
                       {t('navigation.settings', 'Settings')}
                     </Link>
                   </DropdownMenuItem>
@@ -238,6 +248,7 @@ export function Navbar() {
               <div className='hidden md:flex items-center gap-2'>
                 <Button variant='ghost' size='sm' asChild>
                   <Link to={ROUTES.AUTH.LOGIN}>{t('navigation.login')}</Link>
+
                 </Button>
                 <Button size='sm' asChild>
                   <Link to={ROUTES.AUTH.REGISTER}>
@@ -247,7 +258,7 @@ export function Navbar() {
               </div>
             )}
 
-            {/* Mobile menu */}
+            {/* Mobile menu — ✅ Fix: RTL-aware side */}
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild className='lg:hidden'>
                 <Button variant='ghost' size='icon'>
@@ -255,7 +266,9 @@ export function Navbar() {
                   <span className='sr-only'>Toggle menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side='right' className='w-80 overflow-y-auto'>
+              <SheetContent
+                side={isRTL ? 'left' : 'right'}
+                className='w-80 overflow-y-auto'>
                 <nav className='flex flex-col gap-4 mt-8'>
                   <Link
                     to={ROUTES.HOME}

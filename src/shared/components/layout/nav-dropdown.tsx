@@ -1,3 +1,4 @@
+// src/shared/components/layout/nav-dropdown.tsx
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
@@ -10,12 +11,18 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/shared/utils';
 
-interface NavDropdownItem {
+export interface NavDropdownItem {
   label: string;
   href: string;
   description?: string;
   icon?: React.ReactNode;
+  /** نص badge يظهر بجانب اللابل (مثل: 'Soon') */
   badge?: string;
+  /**
+   * ✅ Step 2: dedicated separator field — بدل ما كان badge === 'separator'
+   * يضيف خط فاصل فوق هذا العنصر
+   */
+  separator?: boolean;
 }
 
 interface NavDropdownProps {
@@ -42,12 +49,13 @@ export function NavDropdown({ label, items, className }: NavDropdownProps) {
           )}
         />
       </DropdownMenuTrigger>
+
       <DropdownMenuContent align='start' className='w-56'>
-        {items.map((item, index) => (
+        {items.map((item) => (
           <div key={item.href}>
-            {index > 0 && item.badge === 'separator' && (
-              <DropdownMenuSeparator />
-            )}
+            {/* ✅ separator field — استخدام منفصل بدل badge dual-use */}
+            {item.separator && <DropdownMenuSeparator />}
+
             <DropdownMenuItem asChild>
               <Link
                 to={item.href}
@@ -56,7 +64,7 @@ export function NavDropdown({ label, items, className }: NavDropdownProps) {
                 <div className='flex-1'>
                   <div className='flex items-center gap-2'>
                     <span>{item.label}</span>
-                    {item.badge && item.badge !== 'separator' && (
+                    {item.badge && (
                       <span className='text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded'>
                         {item.badge}
                       </span>

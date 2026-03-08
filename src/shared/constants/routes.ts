@@ -1,3 +1,4 @@
+// src/shared/constants/routes.ts
 export const ROUTES = {
   HOME: '/',
   ABOUT: '/about',
@@ -50,6 +51,12 @@ export const ROUTES = {
   LABS: {
     LIST: '/labs',
     DETAIL: (slug: string) => `/labs/${slug}`,
+  },
+
+  // ✅ Step 1: أضيفنا CHALLENGES route — كان hardcoded '/challenges'
+  CHALLENGES: {
+    LIST: '/challenges',
+    DETAIL: (slug: string) => `/challenges/${slug}`,
   },
 
   UNAUTHORIZED: '/401',

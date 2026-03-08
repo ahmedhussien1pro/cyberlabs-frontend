@@ -123,14 +123,24 @@ export const API_ENDPOINTS = {
   /** Gamification — Badges */
   BADGES: {
     BASE: '/badges',
-    ME: '/badges/me',  // full catalog + earned/locked status for dashboard
-    MY: '/badges/my', // earned badges only — for profile
+    ME: '/badges/me',
+    MY: '/badges/my',
   },
 
   /** Issued Certificates */
   CERTIFICATES: {
     MY: '/certificates/my',
     BY_ID: (id: string) => `/certificates/${id}`,
-    VERIFY: (verificationId: string) => `/certificates/verify/${verificationId}`,
+    VERIFY: (verificationId: string) =>
+      `/certificates/verify/${verificationId}`,
+  },
+
+  /**
+   * ✅ Step 2: Global search endpoint
+   * Backend: GET /search?q=<query>&limit=<n>&types=course,lab,path,challenge
+   * جاهز للربط بالباكند حين توفر الاندبوينت
+   */
+  SEARCH: {
+    GLOBAL: '/search',
   },
 } as const;

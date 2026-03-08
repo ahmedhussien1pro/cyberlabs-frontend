@@ -1,49 +1,59 @@
 {
-  "app": {
-    "name": "CyberLabs",
-    "description": "Security Platform"
-  },
   "navigation": {
     "home": "Home",
     "learning": "Learning",
-    "labs": "Labs",
-    "labsDesc": "Practice with hands-on cybersecurity labs",
-    "paths": "Paths",
-    "pathsDesc": "Follow structured learning paths",
-    "challenges": "Challenges",
-    "challengesDesc": "Test your skills with challenges",
-    "about": "About",
+    "company": "Company",
     "pricing": "Pricing",
+    "paths": "Career Paths",
+    "pathsDesc": "Guided roadmaps for your career",
+    "courses": "Courses",
+    "coursesDesc": "Learn cybersecurity fundamentals",
+    "labs": "Labs",
+    "labsDesc": "Practice in real-world environments",
+    "challenges": "CTF Challenges",
+    "challengesDesc": "Compete and test your skills",
+    "soon": "Soon",
+    "about": "About Us",
+    "aboutDesc": "Learn about our mission and team",
+    "contact": "Contact",
+    "contactDesc": "Get in touch with support",
+    "privacy": "Privacy Policy",
+    "privacyDesc": "How we protect your data",
+    "terms": "Terms of Service",
+    "termsDesc": "Rules and guidelines for usage",
     "dashboard": "Dashboard",
     "profile": "Profile",
     "settings": "Settings",
-    "logout": "Logout",
-    "soon": "Soon",
-    "toggleMenu": "Toggle menu",
-    "login": "Login",
-    "signUp": "Sign Up"
+    "logout": "Log Out",
+    "login": "Log In",
+    "signUp": "Sign Up",
+    "toggleMenu": "Toggle menu"
   },
   "search": {
-    "title": "Search",
-    "placeholder": "Search labs, challenges, and more...",
-    "button": "Search",
-    "noResults": "No results found",
-    "suggestions": "Try searching for labs, challenges, or topics",
-    "close": "Close"
+    "title": "Search CyberLabs",
+    "button": "Search anything...",
+    "placeholder": "Search courses, labs, paths, challenges...",
+    "noResults": "No results found. Try different keywords.",
+    "suggestionsLabel": "Popular Searches",
+    "error": "Something went wrong. Please try again.",
+    "defaultSuggestions": [
+      "SQL Injection",
+      "Network Security",
+      "CTF Basics",
+      "Linux Fundamentals"
+    ],
+    "type": {
+      "course": "Course",
+      "lab": "Lab",
+      "path": "Path",
+      "challenge": "Challenge"
+    },
+    "difficulty": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    }
   },
-  "actions": {
-    "save": "Save",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "edit": "Edit",
-    "close": "Close"
-  },
-  "messages": {
-    "loading": "Loading...",
-    "error": "An error occurred",
-    "success": "Operation successful"
-  },
-
   "language": {
     "change": "Change language",
     "english": "English",

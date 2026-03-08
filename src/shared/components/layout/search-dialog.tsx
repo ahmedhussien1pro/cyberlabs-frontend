@@ -26,7 +26,7 @@ import {
 } from '@/features/search/api/search.api';
 import { ROUTES } from '@/shared/constants';
 
-// ─── local debounce hook ─────────────────────────────────────────────────────────
+// ─── local debounce hook ──────────────────────────────────────────────────────
 
 function useDebounce<T>(value: T, delay = 300): T {
   const [debounced, setDebounced] = useState(value);
@@ -37,7 +37,7 @@ function useDebounce<T>(value: T, delay = 300): T {
   return debounced;
 }
 
-// ─── icon + href per type ───────────────────────────────────────────────────────────
+// ─── icon + href per type ─────────────────────────────────────────────────────
 
 const TYPE_ICON: Record<SearchResultType, React.ReactNode> = {
   course: <BookOpen className='w-4 h-4' />,
@@ -59,20 +59,19 @@ function resultHref(type: SearchResultType, slug: string): string {
   }
 }
 
-// ─── platform-aware shortcut label ──────────────────────────────────────────────────
-
+// ─── platform-aware shortcut label ───────────────────────────────────────────
+// ✅ Fix: navigator.platform deprecated → userAgent check
 const isMac =
   typeof navigator !== 'undefined' &&
-  navigator.platform.toUpperCase().includes('MAC');
+  (('userAgentData' in navigator &&
+    (
+      navigator as Navigator & { userAgentData?: { platform?: string } }
+    ).userAgentData?.platform
+      ?.toUpperCase()
+      .includes('MAC')) ??
+    /Mac|iPhone|iPad|iPod/.test(navigator.userAgent));
 
-// ─── SearchDialog ──────────────────────────────────────────────────────────────────
-
-const SUGGESTIONS = [
-  'SQL Injection',
-  'Network Security',
-  'CTF Basics',
-  'Linux Fundamentals',
-];
+// ─── SearchDialog ─────────────────────────────────────────────────────────────
 
 interface SearchDialogProps {
   open: boolean;
@@ -83,10 +82,19 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
   const { t } = useTranslation('common');
   const [query, setQuery] = useState('');
 
-  // 300ms debounce — بيجيب API call بس بعد ما يوقف المستخدم عن الكتابة
+  // ✅ Fix: SUGGESTIONS من locale بدل hardcoded English
+  const suggestions = t('search.defaultSuggestions', {
+    returnObjects: true,
+    defaultValue: [
+      'SQL Injection',
+      'Network Security',
+      'CTF Basics',
+      'Linux Fundamentals',
+    ],
+  }) as string[];
+
   const debouncedQuery = useDebounce(query, 300);
 
-  // ريست الكويري وقت إغلاق الديالوج
   useEffect(() => {
     if (!open) setQuery('');
   }, [open]);
@@ -103,20 +111,20 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
     return () => document.removeEventListener('keydown', down);
   }, [onOpenChange]);
 
-  // ✅ TanStack Query — enabled بس لو في حد أدنى 2 حروف
   const { data, isFetching, isError } = useQuery({
     queryKey: ['search', 'global', debouncedQuery],
     queryFn: () => globalSearch(debouncedQuery),
     enabled: debouncedQuery.trim().length >= 2,
-    staleTime: 1000 * 30, // 30s cache
+    staleTime: 1000 * 30,
     retry: false,
-    placeholderData: (prev) => prev, // يحافظ على النتائج القديمة أثناء التحميل
+    placeholderData: (prev) => prev,
   });
 
   const results = data?.results ?? [];
   const isTyping = query !== debouncedQuery;
   const isActive = debouncedQuery.trim().length >= 2;
-  const showEmpty = isActive && !isFetching && !isTyping && !isError && results.length === 0;
+  const showEmpty =
+    isActive && !isFetching && !isTyping && !isError && results.length === 0;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -147,17 +155,14 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
         {/* ── Results area ── */}
         <div className='min-h-[200px] max-h-[420px] overflow-y-auto'>
           {isError ? (
-            // Error state
             <div className='flex flex-col items-center justify-center h-40 text-sm text-muted-foreground gap-2'>
-              <p>{t('search.error', 'Something went wrong. Please try again.')}</p>
+              <p>{t('search.error')}</p>
             </div>
           ) : showEmpty ? (
-            // Empty results
             <div className='flex flex-col items-center justify-center h-40 text-sm text-muted-foreground gap-2'>
               <p>{t('search.noResults')}</p>
             </div>
           ) : results.length > 0 ? (
-            // Results list
             <ul className='py-2'>
               {results.map((item) => (
                 <li key={`${item.type}-${item.id}`}>
@@ -169,38 +174,54 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
                       {TYPE_ICON[item.type]}
                     </span>
                     <div className='flex-1 min-w-0'>
-                      <p className='text-sm font-medium truncate'>{item.title}</p>
+                      <p className='text-sm font-medium truncate'>
+                        {item.title}
+                      </p>
                       {item.description && (
                         <p className='text-xs text-muted-foreground truncate'>
                           {item.description}
                         </p>
                       )}
                     </div>
+
+                    {/* ✅ Fix: عرض الـ difficulty إن وُجد */}
+                    {item.difficulty && (
+                      <Badge
+                        variant='outline'
+                        className='text-xs capitalize shrink-0 hidden sm:inline-flex'>
+                        {t(
+                          `search.difficulty.${item.difficulty}`,
+                          item.difficulty,
+                        )}
+                      </Badge>
+                    )}
+
                     <Badge
                       variant='secondary'
                       className='text-xs capitalize shrink-0'>
                       {t(`search.type.${item.type}`, item.type)}
                     </Badge>
-                    <ArrowRight className='w-3.5 h-3.5 text-muted-foreground shrink-0 opacity-0 group-hover:opacity-100 transition-opacity' />
+                    <ArrowRight className='w-3.5 h-3.5 text-muted-foreground shrink-0 opacity-0 group-hover:opacity-100 transition-opacity rtl:rotate-180' />
                   </Link>
                 </li>
               ))}
             </ul>
           ) : (
-            // Default: اقتراحات
+            // ✅ Fix: suggestions من locale
             <div className='p-4 space-y-3'>
               <p className='text-xs font-semibold text-muted-foreground uppercase tracking-wide px-1'>
-                {t('search.suggestions')}
+                {t('search.suggestionsLabel')}
               </p>
               <div className='flex flex-wrap gap-2'>
-                {SUGGESTIONS.map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => setQuery(s)}
-                    className='text-xs px-3 py-1.5 rounded-full border bg-muted/50 hover:bg-muted transition-colors text-muted-foreground hover:text-foreground'>
-                    {s}
-                  </button>
-                ))}
+                {Array.isArray(suggestions) &&
+                  suggestions.map((s: string) => (
+                    <button
+                      key={s}
+                      onClick={() => setQuery(s)}
+                      className='text-xs px-3 py-1.5 rounded-full border bg-muted/50 hover:bg-muted transition-colors text-muted-foreground hover:text-foreground'>
+                      {s}
+                    </button>
+                  ))}
               </div>
             </div>
           )}
@@ -210,7 +231,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
   );
 }
 
-// ─── SearchButton trigger ──────────────────────────────────────────────────────────
+// ─── SearchButton trigger ─────────────────────────────────────────────────────
 
 export function SearchButton({ onClick }: { onClick: () => void }) {
   const { t } = useTranslation('common');
@@ -220,8 +241,8 @@ export function SearchButton({ onClick }: { onClick: () => void }) {
       onClick={onClick}
       className='hidden md:flex items-center gap-2 text-muted-foreground hover:text-foreground w-64 text-sm h-9 rounded-md border border-input bg-background px-3 shadow-sm hover:bg-accent transition-colors'>
       <Search className='w-4 h-4 shrink-0' />
-      <span className='flex-1 text-left'>{t('search.button')}</span>
-      {/* ✅ platform-aware: Mac → ⌘ | Windows/Linux → Ctrl */}
+      {/* ✅ Fix: text-left → text-start (RTL-aware) */}
+      <span className='flex-1 text-start'>{t('search.button')}</span>
       <kbd className='pointer-events-none inline-flex h-5 select-none items-center gap-0.5 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground'>
         <span>{isMac ? '⌘' : 'Ctrl'}</span>K
       </kbd>

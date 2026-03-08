@@ -16,7 +16,11 @@ export interface NavDropdownItem {
   href: string;
   description?: string;
   icon?: React.ReactNode;
+  /** نص badge يظهر بجانب اللابل (مثل: 'Soon' / 'قريباً') */
   badge?: string;
+  /**
+   * separator field — يضيف خط فاصل فوق هذا العنصر
+   */
   separator?: boolean;
 }
 
@@ -45,10 +49,8 @@ export function NavDropdown({ label, items, className }: NavDropdownProps) {
         />
       </DropdownMenuTrigger>
 
-      {/* ✅ Fix: min-w + max-w بدل w-56 الثابت — يتسع للنص العربي */}
-      <DropdownMenuContent
-        align='start'
-        className='min-w-[14rem] w-auto max-w-xs'>
+      {/* ✅ Fix: min-w-[14rem] + w-auto بدل w-56 الثابت — يتسع للنص العربي */}
+      <DropdownMenuContent align='start' className='min-w-[14rem] w-auto max-w-xs'>
         {items.map((item) => (
           <div key={item.href}>
             {item.separator && <DropdownMenuSeparator />}

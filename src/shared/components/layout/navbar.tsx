@@ -57,10 +57,7 @@ export function Navbar() {
         label: t('navigation.paths', 'Career Paths'),
         href: ROUTES.PATHS.LIST,
         icon: <LayoutDashboard className='w-4 h-4' />,
-        description: t(
-          'navigation.pathsDesc',
-          'Guided roadmaps for your career',
-        ),
+        description: t('navigation.pathsDesc', 'Guided roadmaps for your career'),
       },
       {
         label: t('navigation.courses', 'Courses'),
@@ -185,6 +182,7 @@ export function Navbar() {
                         className='absolute top-0 left-1/2 -translate-x-1/2'
                       />
                     )}
+
                     <Avatar className='h-9 w-9 overflow-hidden'>
                       <AvatarImage
                         src={userAvatar}
@@ -269,7 +267,8 @@ export function Navbar() {
                 side={isRTL ? 'left' : 'right'}
                 className='w-80 overflow-y-auto'>
                 <nav className='flex flex-col gap-4 mt-8'>
-                  {/* ✅ Fix: Mobile Search */}
+
+                  {/* ✅ Fix: Mobile Search زرار */}
                   <button
                     onClick={() => {
                       setMobileMenuOpen(false);

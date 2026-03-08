@@ -60,13 +60,12 @@ function resultHref(type: SearchResultType, slug: string): string {
 }
 
 // ─── platform-aware shortcut label ───────────────────────────────────────────
-// ✅ Fix: navigator.platform deprecated → userAgent check
+// ✅ Fix: navigator.platform deprecated → userAgent-based detection
 const isMac =
   typeof navigator !== 'undefined' &&
   (('userAgentData' in navigator &&
-    (
-      navigator as Navigator & { userAgentData?: { platform?: string } }
-    ).userAgentData?.platform
+    (navigator as Navigator & { userAgentData?: { platform?: string } })
+      .userAgentData?.platform
       ?.toUpperCase()
       .includes('MAC')) ??
     /Mac|iPhone|iPad|iPod/.test(navigator.userAgent));
@@ -174,9 +173,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
                       {TYPE_ICON[item.type]}
                     </span>
                     <div className='flex-1 min-w-0'>
-                      <p className='text-sm font-medium truncate'>
-                        {item.title}
-                      </p>
+                      <p className='text-sm font-medium truncate'>{item.title}</p>
                       {item.description && (
                         <p className='text-xs text-muted-foreground truncate'>
                           {item.description}
@@ -184,7 +181,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
                       )}
                     </div>
 
-                    {/* ✅ Fix: عرض الـ difficulty إن وُجد */}
+                    {/* ✅ Fix: عرض difficulty badge إن وُجد */}
                     {item.difficulty && (
                       <Badge
                         variant='outline'
@@ -201,13 +198,14 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
                       className='text-xs capitalize shrink-0'>
                       {t(`search.type.${item.type}`, item.type)}
                     </Badge>
+                    {/* ✅ Fix: rtl:rotate-180 للـ ArrowRight */}
                     <ArrowRight className='w-3.5 h-3.5 text-muted-foreground shrink-0 opacity-0 group-hover:opacity-100 transition-opacity rtl:rotate-180' />
                   </Link>
                 </li>
               ))}
             </ul>
           ) : (
-            // ✅ Fix: suggestions من locale
+            // Default: اقتراحات من locale
             <div className='p-4 space-y-3'>
               <p className='text-xs font-semibold text-muted-foreground uppercase tracking-wide px-1'>
                 {t('search.suggestionsLabel')}

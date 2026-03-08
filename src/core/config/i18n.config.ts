@@ -33,13 +33,17 @@ i18n
       'settings',
       'courses',
       'paths',
+      // ✅ added missing namespaces
       'search',
       'labs',
       'challenges',
       'pricing',
     ],
     defaultNS: 'common',
-    debug: true,
+
+    // ✅ CRITICAL: debug only in dev — never in production
+    debug: import.meta.env.DEV,
+
     backend: {
       loadPath: '/locales/{{lng}}/{{ns}}.json',
     },

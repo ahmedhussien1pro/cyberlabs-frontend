@@ -41,7 +41,6 @@ i18n
     ],
     defaultNS: 'common',
 
-    // ✅ CRITICAL: debug only in dev — never in production
     debug: import.meta.env.DEV,
 
     backend: {

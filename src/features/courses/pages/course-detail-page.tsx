@@ -15,7 +15,7 @@ import { useEnrollment } from '../hooks/use-enrollment';
 import {
   useUserProgress,
   useFavoriteMutation,
-  useResetProgress, // ✅ إضافة
+  useResetProgress,
 } from '../hooks/use-user-progress';
 import { useIsPro } from '@/features/pricing/hooks/use-pricing';
 import { ROUTES } from '@/shared/constants';
@@ -28,7 +28,7 @@ export default function CourseDetailPage() {
 
   const { data: course, isLoading, isError } = useCourse(slug);
   const { mutate: enroll, isPending: enrolling } = useEnrollment();
-  const { mutate: resetProgress, isPending: resetting } = useResetProgress(); // ✅ إضافة
+  const { mutate: resetProgress, isPending: resetting } = useResetProgress();
 
   const { isEnrolled, getProgress, getCompletedCount, isFavorite } =
     useUserProgress();
@@ -111,7 +111,6 @@ export default function CourseDetailPage() {
         ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  // ✅ handleReset: بيمسح كل progress للكورس ده
   const handleReset = () => {
     resetProgress(course.id, {
       onSuccess: () =>

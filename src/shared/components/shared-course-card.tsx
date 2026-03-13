@@ -39,18 +39,18 @@ export interface CourseCardData {
   id: string;
   slug: string;
   title: string;
-  ar_title?: string | null; // ✅ null allowed
-  description?: string | null; // ✅ null allowed
-  ar_description?: string | null; // ✅ null allowed
-  thumbnail?: string | null; // ✅ null allowed
-  image?: string | null; // ✅ null allowed
+  ar_title?: string | null;
+  description?: string | null;
+  ar_description?: string | null;
+  thumbnail?: string | null;
+  image?: string | null;
   color?: string;
-  difficulty?: string | null; // ✅ null allowed
-  ar_difficulty?: string | null; // ✅ null allowed
+  difficulty?: string | null;
+  ar_difficulty?: string | null;
   access?: string;
   contentType?: string;
-  category?: string | null; // ✅ null allowed
-  ar_category?: string | null; // ✅ null allowed
+  category?: string | null;
+  ar_category?: string | null;
   totalTopics?: number;
   estimatedHours?: number;
   state?: string;
@@ -257,7 +257,6 @@ function FullCard({
           </div>
         )}
 
-        {/* Completed overlay — نفس فكرة coming soon بس emerald */}
         {!comingSoon && isCompleted && (
           <div className='absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-[2px]'>
             <span className='flex items-center gap-1.5 rounded-full border border-emerald-500/60 bg-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-400 shadow-lg'>

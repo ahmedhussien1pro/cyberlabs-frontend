@@ -101,6 +101,12 @@ export const CourseDetailPage = lazy(
 export const LessonPage = lazy(
   () => import('@/features/courses/pages/lesson-page'),
 );
+
+// ── Admin Preview (public entry-point, authenticates then redirects) ──
+export const AdminPreviewPage = lazy(
+  () => import('@/features/courses/pages/admin-preview-page'),
+);
+
 // ── Labs──────────────
 export const LabsListPage = lazy(
   () => import('@/features/labs/pages/labs-list-page'),

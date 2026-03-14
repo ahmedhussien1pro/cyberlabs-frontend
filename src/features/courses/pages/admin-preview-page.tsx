@@ -1,8 +1,7 @@
 // src/features/courses/pages/admin-preview-page.tsx
 // Called from cyberlabs-admin when clicking "Preview" on a course.
 // URL format: /admin-preview/courses/:slug?at=<accessToken>&rt=<refreshToken>
-// It stores the tokens using tokenManager (re-encrypts with this window's session key)
-// then redirects to the normal (protected) course detail page.
+// Stores tokens, fetches user, updates auth store, then redirects to /courses/:slug
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { tokenManager } from '@/features/auth/utils';
@@ -28,22 +27,24 @@ export default function AdminPreviewPage() {
 
     (async () => {
       try {
-        // Store tokens (tokenManager re-encrypts with current window session key)
+        // Re-encrypt tokens with this window's own session key
         await tokenManager.setTokens(at, rt);
 
-        // Fetch the current user profile using the new token
-        const user = await authService.me();
+        // Fetch the authenticated user
+        const user = await authService.getCurrentUser();
+        if (!user) throw new Error('Could not fetch user profile');
 
-        // Update auth store so ProtectedRoute is satisfied
+        // Hydrate the auth store so ProtectedRoute passes
         await login(user, { accessToken: at, refreshToken: rt });
 
-        // Clean URL then redirect to the real course page
+        // Redirect to the real course page
         navigate(`/courses/${slug}`, { replace: true });
       } catch (err) {
         console.error('AdminPreview: auth failed', err);
         setError('Preview authentication failed. Please try again from the admin.');
       }
     })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (error) {

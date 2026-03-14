@@ -59,6 +59,12 @@ export const routes: RouteObject[] = [
     element: <LazyPage Component={Pages.OAuthCallbackPage} />,
   },
 
+  // ── Admin Preview (public – authenticates via token in query params) ──
+  {
+    path: '/admin-preview/courses/:slug',
+    element: <LazyPage Component={Pages.AdminPreviewPage} />,
+  },
+
   // ── Certificate Public Verification (no auth required) ────────
   {
     path: '/verify/:verificationId',

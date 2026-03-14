@@ -1,5 +1,5 @@
 // src/features/courses/pages/course-detail-page.tsx
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { Shield } from 'lucide-react';
@@ -9,7 +9,6 @@ import { apiClient } from '@/core/api/client';
 import MainLayout from '@/shared/components/layout/main-layout';
 import { CourseCurriculum } from '../components/course-curriculum';
 import { CourseDetailHero } from '../components/course-detail-hero';
-import { CourseLabsSection } from '../components/course-labs-section';
 import { useCourse } from '../hooks/use-course';
 import { useEnrollment } from '../hooks/use-enrollment';
 import {
@@ -25,6 +24,7 @@ export default function CourseDetailPage() {
   const { slug = '' } = useParams<{ slug: string }>();
   const { i18n, t } = useTranslation('courses');
   const lang = i18n.language === 'ar' ? 'ar' : 'en';
+  const navigate = useNavigate();
 
   const { data: course, isLoading, isError } = useCourse(slug);
   const { mutate: enroll, isPending: enrolling } = useEnrollment();
@@ -134,13 +134,9 @@ export default function CourseDetailPage() {
           hasLabs={hasLabs}
           onEnroll={handleEnroll}
           onToggleFav={handleToggleFav}
-          onReset={enrolled ? handleReset : undefined} // ✅ يظهر فقط لو enrolled
+          onReset={enrolled ? handleReset : undefined}
           onContinue={handleContinue}
-          onGoToLabs={() =>
-            document
-              .getElementById('course-labs-section')
-              ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-          }
+          onGoToLabs={() => navigate(ROUTES.COURSES.LABS(slug))}
         />
 
         <div className='container mx-auto px-4 py-10'>
@@ -154,7 +150,6 @@ export default function CourseDetailPage() {
             isEnrolled={enrolled}
             hasLabs={hasLabs}
           />
-          <CourseLabsSection courseSlug={slug} courseId={course.id} />
         </div>
       </div>
     </MainLayout>

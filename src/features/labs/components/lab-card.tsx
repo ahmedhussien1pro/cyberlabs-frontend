@@ -28,31 +28,31 @@ import { cn } from '@/lib/utils';
 import { ROUTES } from '@/shared/constants';
 import type { Lab } from '../types/lab.types';
 
-// ─── Config maps ───────────────────────────────────────────────────────────────
+// ─── Config maps ────────────────────────────────────────────────────────────
 const DIFF = {
   BEGINNER: {
     Icon: TrendingUp,
     label: 'Beginner',
     badge: 'border-emerald-500/40 text-emerald-400 bg-emerald-500/10',
-    ring: 'hover:ring-emerald-500/25',
-    bg: 'from-emerald-950 to-emerald-900/80 border-emerald-800/50',
-    text: 'text-emerald-400',
+    ring:  'hover:ring-emerald-500/25',
+    bg:    'from-emerald-950 to-emerald-900/80 border-emerald-800/50',
+    text:  'text-emerald-400',
   },
   INTERMEDIATE: {
     Icon: Gauge,
     label: 'Intermediate',
     badge: 'border-yellow-500/40 text-yellow-400 bg-yellow-500/10',
-    ring: 'hover:ring-yellow-500/25',
-    bg: 'from-yellow-950 to-yellow-900/80 border-yellow-800/50',
-    text: 'text-yellow-400',
+    ring:  'hover:ring-yellow-500/25',
+    bg:    'from-yellow-950 to-yellow-900/80 border-yellow-800/50',
+    text:  'text-yellow-400',
   },
   ADVANCED: {
     Icon: Flame,
     label: 'Advanced',
     badge: 'border-red-500/40 text-red-400 bg-red-500/10',
-    ring: 'hover:ring-red-500/25',
-    bg: 'from-red-950 to-red-900/80 border-red-800/50',
-    text: 'text-red-400',
+    ring:  'hover:ring-red-500/25',
+    bg:    'from-red-950 to-red-900/80 border-red-800/50',
+    text:  'text-red-400',
   },
 } as const;
 
@@ -63,7 +63,7 @@ const ACCESS_BADGE = {
 };
 const ACCESS_ICON = { free: Unlock, pro: Crown, premium: Gem };
 
-// ─── Component ─────────────────────────────────────────────────────────────────
+// ─── Component ──────────────────────────────────────────────────────────────────
 interface LabCardProps {
   lab: Lab;
   index?: number;
@@ -77,17 +77,20 @@ export function LabCard({ lab, index = 0 }: LabCardProps) {
   const title = lang === 'ar' ? lab.ar_title : lab.title;
   const desc  = lang === 'ar' ? lab.ar_description : lab.description;
 
-  const diff       = DIFF[lab.difficulty] ?? DIFF.BEGINNER;
-  const progress   = lab.usersProgress?.[0];
+  const diff        = DIFF[lab.difficulty] ?? DIFF.BEGINNER;
+  const progress    = lab.usersProgress?.[0];
   const isCompleted = !!progress?.flagSubmitted;
   const isStarted   = !!progress && !isCompleted;
   const access      = 'free' as 'free' | 'pro' | 'premium';
   const AccessIcon  = ACCESS_ICON[access];
 
   const { mutate: launchLab } = useStartLabMutation();
-  const isLaunching          = useLabStore((s) => s.isLaunching);
-  const activeLab            = useLabStore((s) => s.labId);
-  const isThisLabLaunching   = isLaunching && activeLab === lab.id;
+  const isLaunching         = useLabStore((s) => s.isLaunching);
+  const activeLab           = useLabStore((s) => s.labId);
+  const isThisLabLaunching  = isLaunching && activeLab === lab.id;
+
+  // Navigate to detail page using slug (preferred) or fallback to id
+  const detailRoute = ROUTES.LABS.DETAIL(lab.slug ?? lab.id);
 
   return (
     <motion.div
@@ -100,9 +103,9 @@ export function LabCard({ lab, index = 0 }: LabCardProps) {
         diff.ring,
         'hover:shadow-xl hover:-translate-y-0.5',
       )}
-      onClick={() => navigate(ROUTES.LABS.DETAIL(lab.id))}>
+      onClick={() => navigate(detailRoute)}>
 
-      {/* ── Thumbnail ───────────────────────────────────────── */}
+      {/* ── Thumbnail ──────────────────────────────────────────────────── */}
       <div className='relative aspect-video overflow-hidden bg-muted'>
         <div className={cn('w-full h-full flex flex-col items-center justify-center gap-2 bg-gradient-to-br border', diff.bg)}>
           <Terminal className={cn('h-9 w-9', diff.text)} />
@@ -140,7 +143,7 @@ export function LabCard({ lab, index = 0 }: LabCardProps) {
         </div>
       </div>
 
-      {/* ── Body ───────────────────────────────────────────── */}
+      {/* ── Body ──────────────────────────────────────────────────────── */}
       <div className='flex flex-col flex-1 p-4 gap-3'>
         <h3 className='text-sm font-bold text-foreground leading-snug line-clamp-2'>{title}</h3>
         <p className='text-xs text-muted-foreground leading-relaxed line-clamp-2'>{desc}</p>
@@ -213,7 +216,7 @@ export function LabCard({ lab, index = 0 }: LabCardProps) {
               if (isCompleted || isStarted) {
                 launchLab(lab.id);
               } else {
-                navigate(ROUTES.LABS.DETAIL(lab.id));
+                navigate(detailRoute);
               }
             }}>
             {isThisLabLaunching ? (

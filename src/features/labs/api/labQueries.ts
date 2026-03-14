@@ -1,3 +1,4 @@
+// src/features/labs/api/labQueries.ts
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/core/api/client';
 import { tokenManager } from '@/features/auth/utils';
@@ -12,7 +13,6 @@ export const useLabsQuery = () =>
   useQuery<LabsResponse>({
     queryKey: ['labs'],
     queryFn: async () => {
-      // apiClient interceptor returns response.data directly
       return apiClient.get('/practice-labs') as Promise<LabsResponse>;
     },
     staleTime: 1000 * 60 * 5,
@@ -52,9 +52,10 @@ export const useStartLabMutation = () => {
     onMutate: () => setLaunching(true),
     onSuccess: (data, labId) => {
       startLab(labId, data.launchUrl, data.instanceId);
-      toast.success('✅ Lab environment ready!');
+      toast.success('Lab environment is ready!');
 
-      // Pass accessToken via URL hash (never sent to server, cleared immediately by labs frontend)
+      // Pass accessToken via URL hash — never sent to server,
+      // cleared immediately by the labs frontend.
       void (async () => {
         const at = await tokenManager.getAccessToken();
         const url = at ? `${data.launchUrl}#at=${at}` : data.launchUrl;

@@ -11,6 +11,7 @@ export type {
 } from './types';
 
 export { useLabs } from './hooks';
+export { useLabsQuery, useLabDetailQuery, useStartLabMutation, useStopLabMutation } from './api';
 export { LabCard, LabCardSkeleton } from './components';
-export { default as LabListPage } from './pages/labs-list-page';
+export { default as LabListPage }    from './pages/labs-list-page';
 export { default as LabDetailsPage } from './pages/lab-detail-page';

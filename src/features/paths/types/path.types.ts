@@ -1,8 +1,10 @@
+// ─── Primitives ───────────────────────────────────────────────────────────────
 export type PathDifficulty =
   | 'Beginner'
   | 'Intermediate'
   | 'Advanced'
   | 'All Levels';
+
 export type PathColor =
   | 'emerald'
   | 'blue'
@@ -10,9 +12,44 @@ export type PathColor =
   | 'orange'
   | 'rose'
   | 'cyan';
+
 export type ModuleType = 'course' | 'lab' | 'quiz' | 'project';
 export type ModuleStatus = 'published' | 'coming_soon' | 'draft';
+export type ModuleState = 'done' | 'active' | 'locked' | 'soon';
 
+// ─── Nested entities ──────────────────────────────────────────────────────────
+export interface PathModuleCourse {
+  id: string;
+  title: string;
+  ar_title?: string;
+  slug: string;
+  thumbnail?: string;
+  color?: string;
+  difficulty?: string;
+  access?: 'FREE' | 'PRO' | 'PREMIUM';
+  duration?: number;
+  totalTopics?: number;
+  estimatedHours?: number;
+  description?: string;
+  ar_description?: string;
+  contentType?: string;
+}
+
+export interface PathModuleLab {
+  id: string;
+  title: string;
+  ar_title?: string;
+  slug: string;
+  difficulty?: string;
+  duration?: number;
+}
+
+export interface PathModuleProgress {
+  progress: number;
+  isCompleted: boolean;
+}
+
+// ─── PathModule ───────────────────────────────────────────────────────────────
 export interface PathModule {
   id: string;
   order: number;
@@ -25,32 +62,12 @@ export interface PathModule {
   estimatedHours: number;
   isLocked: boolean;
   slug?: string;
-  course?: {
-    id: string;
-    title: string;
-    ar_title?: string;
-    slug: string;
-    thumbnail?: string;
-    color?: string;
-    difficulty?: string;
-    access?: 'FREE' | 'PRO' | 'PREMIUM';
-    duration?: number;
-    totalTopics?: number;
-  };
-  lab?: {
-    id: string;
-    title: string;
-    ar_title?: string;
-    slug: string;
-    difficulty?: string;
-    duration?: number;
-  };
-  userProgress?: {
-    progress: number;
-    isCompleted: boolean;
-  };
+  course?: PathModuleCourse;
+  lab?: PathModuleLab;
+  userProgress?: PathModuleProgress;
 }
 
+// ─── LearningPath ─────────────────────────────────────────────────────────────
 export interface LearningPath {
   id: string;
   slug: string;
@@ -83,6 +100,7 @@ export interface LearningPath {
   completedAt?: string | null;
 }
 
+// ─── Filters & helpers ────────────────────────────────────────────────────────
 export interface PathFilters {
   difficulty?: PathDifficulty | 'all';
   search?: string;

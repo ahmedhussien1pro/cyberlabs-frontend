@@ -3,7 +3,7 @@
 import { Loader2, RefreshCw, Zap, Play, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-interface LabLaunchButtonProps {
+export interface LabLaunchButtonProps {
   isCompleted: boolean;
   isStarted: boolean;
   isLaunching: boolean;
@@ -11,7 +11,9 @@ interface LabLaunchButtonProps {
   fullWidth?: boolean;
   size?: 'sm' | 'default';
   onLaunch: () => void;
-  onViewDetail?: () => void;
+  onViewDetail?: () => void | Promise<void>;
+  /** compact: reduce height slightly */
+  compact?: boolean;
 }
 
 export function LabLaunchButton({
@@ -22,6 +24,7 @@ export function LabLaunchButton({
   size = 'sm',
   onLaunch,
   onViewDetail,
+  compact = false,
 }: LabLaunchButtonProps) {
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -35,7 +38,10 @@ export function LabLaunchButton({
   return (
     <Button
       size={size}
-      className={fullWidth ? 'w-full h-9 text-xs gap-1.5' : 'h-11 font-bold text-sm rounded-xl gap-2 w-full'}
+      className={fullWidth
+        ? compact ? 'w-full h-8 text-xs gap-1' : 'w-full h-9 text-xs gap-1.5'
+        : 'h-11 font-bold text-sm rounded-xl gap-2 w-full'
+      }
       variant={isCompleted ? 'outline' : 'default'}
       disabled={isLaunching}
       onClick={handleClick}>
@@ -58,7 +64,7 @@ export function LabLaunchButtonDetail({
   isStarted,
   isLaunching,
   onLaunch,
-}: Omit<LabLaunchButtonProps, 'onViewDetail' | 'fullWidth' | 'size'>) {
+}: Omit<LabLaunchButtonProps, 'onViewDetail' | 'fullWidth' | 'size' | 'compact'>) {
   return (
     <Button
       className='w-full h-11 font-bold text-sm rounded-xl gap-2'

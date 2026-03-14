@@ -1,16 +1,19 @@
 // src/features/labs/components/lab-skill-tags.tsx
 const MAX_VISIBLE = 3;
+const MAX_VISIBLE_COMPACT = 2;
 
-interface LabSkillTagsProps {
+export interface LabSkillTagsProps {
   skills: string[];
   max?: number;
+  compact?: boolean;
 }
 
-export function LabSkillTags({ skills, max = MAX_VISIBLE }: LabSkillTagsProps) {
+export function LabSkillTags({ skills, max, compact = false }: LabSkillTagsProps) {
   if (!skills?.length) return null;
 
-  const visible  = skills.slice(0, max);
-  const overflow = skills.length - max;
+  const effectiveMax = max ?? (compact ? MAX_VISIBLE_COMPACT : MAX_VISIBLE);
+  const visible  = skills.slice(0, effectiveMax);
+  const overflow = skills.length - effectiveMax;
 
   return (
     <div className='flex flex-wrap gap-1'>

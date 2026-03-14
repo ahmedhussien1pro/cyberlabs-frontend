@@ -1,3 +1,4 @@
+// src/features/labs/components/lab-card.tsx
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useStartLabMutation } from '../api/labQueries';
@@ -17,6 +18,8 @@ import {
   Terminal,
   Loader2,
   Trophy,
+  RefreshCw,
+  Play,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
@@ -25,6 +28,7 @@ import { cn } from '@/lib/utils';
 import { ROUTES } from '@/shared/constants';
 import type { Lab } from '../types/lab.types';
 
+// ─── Config maps ───────────────────────────────────────────────────────────────
 const DIFF = {
   BEGINNER: {
     Icon: TrendingUp,
@@ -37,28 +41,29 @@ const DIFF = {
   INTERMEDIATE: {
     Icon: Gauge,
     label: 'Intermediate',
-    badge: 'border-yellow-500/40  text-yellow-400  bg-yellow-500/10',
+    badge: 'border-yellow-500/40 text-yellow-400 bg-yellow-500/10',
     ring: 'hover:ring-yellow-500/25',
-    bg: 'from-yellow-950  to-yellow-900/80  border-yellow-800/50',
+    bg: 'from-yellow-950 to-yellow-900/80 border-yellow-800/50',
     text: 'text-yellow-400',
   },
   ADVANCED: {
     Icon: Flame,
     label: 'Advanced',
-    badge: 'border-red-500/40     text-red-400     bg-red-500/10',
+    badge: 'border-red-500/40 text-red-400 bg-red-500/10',
     ring: 'hover:ring-red-500/25',
-    bg: 'from-red-950     to-red-900/80     border-red-800/50',
+    bg: 'from-red-950 to-red-900/80 border-red-800/50',
     text: 'text-red-400',
   },
 } as const;
 
 const ACCESS_BADGE = {
-  free: 'border-emerald-500/40 text-emerald-400 bg-emerald-500/10',
-  pro: 'border-blue-500/40    text-blue-400    bg-blue-500/10',
+  free:    'border-emerald-500/40 text-emerald-400 bg-emerald-500/10',
+  pro:     'border-blue-500/40    text-blue-400    bg-blue-500/10',
   premium: 'border-violet-500/40  text-violet-400  bg-violet-500/10',
 };
 const ACCESS_ICON = { free: Unlock, pro: Crown, premium: Gem };
 
+// ─── Component ─────────────────────────────────────────────────────────────────
 interface LabCardProps {
   lab: Lab;
   index?: number;
@@ -70,19 +75,20 @@ export function LabCard({ lab, index = 0 }: LabCardProps) {
   const navigate = useNavigate();
 
   const title = lang === 'ar' ? lab.ar_title : lab.title;
-  const desc = lang === 'ar' ? lab.ar_description : lab.description;
+  const desc  = lang === 'ar' ? lab.ar_description : lab.description;
 
-  const diff = DIFF[lab.difficulty] ?? DIFF.BEGINNER;
-  const progress = lab.usersProgress?.[0];
+  const diff       = DIFF[lab.difficulty] ?? DIFF.BEGINNER;
+  const progress   = lab.usersProgress?.[0];
   const isCompleted = !!progress?.flagSubmitted;
-  const isStarted = !!progress && !isCompleted;
-  // labs don't have access field from backend yet — default free
-  const access = 'free' as 'free' | 'pro' | 'premium';
-  const AccessIcon = ACCESS_ICON[access];
+  const isStarted   = !!progress && !isCompleted;
+  const access      = 'free' as 'free' | 'pro' | 'premium';
+  const AccessIcon  = ACCESS_ICON[access];
+
   const { mutate: launchLab } = useStartLabMutation();
-  const isLaunching = useLabStore((s) => s.isLaunching);
-  const activeLab = useLabStore((s) => s.labId);
-  const isThisLabLaunching = isLaunching && activeLab === lab.id;
+  const isLaunching          = useLabStore((s) => s.isLaunching);
+  const activeLab            = useLabStore((s) => s.labId);
+  const isThisLabLaunching   = isLaunching && activeLab === lab.id;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 14 }}
@@ -95,20 +101,12 @@ export function LabCard({ lab, index = 0 }: LabCardProps) {
         'hover:shadow-xl hover:-translate-y-0.5',
       )}
       onClick={() => navigate(ROUTES.LABS.DETAIL(lab.id))}>
-      {/* ── Thumbnail ───────────────────────────────── */}
+
+      {/* ── Thumbnail ───────────────────────────────────────── */}
       <div className='relative aspect-video overflow-hidden bg-muted'>
-        <div
-          className={cn(
-            'w-full h-full flex flex-col items-center justify-center gap-2',
-            'bg-gradient-to-br border',
-            diff.bg,
-          )}>
+        <div className={cn('w-full h-full flex flex-col items-center justify-center gap-2 bg-gradient-to-br border', diff.bg)}>
           <Terminal className={cn('h-9 w-9', diff.text)} />
-          <p
-            className={cn(
-              'text-[11px] font-bold uppercase tracking-widest px-4',
-              diff.text,
-            )}>
+          <p className={cn('text-[11px] font-bold uppercase tracking-widest px-4', diff.text)}>
             {lab.category.replace(/_/g, ' ')}
           </p>
         </div>
@@ -116,24 +114,18 @@ export function LabCard({ lab, index = 0 }: LabCardProps) {
         {/* Status pill — top start */}
         <div className='absolute top-3 start-3'>
           {isCompleted ? (
-            <span
-              className='inline-flex items-center gap-1.5 rounded-full bg-emerald-500/90 backdrop-blur-sm
-                             px-2.5 py-1 text-[11px] font-bold text-white shadow-md'>
-              <span className='h-1.5 w-1.5 rounded-full bg-white' />
+            <span className='inline-flex items-center gap-1.5 rounded-full bg-emerald-500/90 backdrop-blur-sm px-2.5 py-1 text-[11px] font-bold text-white shadow-md'>
+              <CheckCircle2 className='h-3 w-3' />
               Solved
             </span>
           ) : isStarted ? (
-            <span
-              className='inline-flex items-center gap-1.5 rounded-full bg-yellow-500/90 backdrop-blur-sm
-                             px-2.5 py-1 text-[11px] font-bold text-white shadow-md'>
+            <span className='inline-flex items-center gap-1.5 rounded-full bg-yellow-500/90 backdrop-blur-sm px-2.5 py-1 text-[11px] font-bold text-white shadow-md'>
               <Timer className='h-3 w-3' />
               In Progress
             </span>
           ) : (
-            <span
-              className='inline-flex items-center gap-1.5 rounded-full bg-black/60 backdrop-blur-sm
-                             border border-white/10 px-2.5 py-1 text-[11px] font-bold text-white/70'>
-              <span className='h-1.5 w-1.5 rounded-full bg-white/50' />
+            <span className='inline-flex items-center gap-1.5 rounded-full bg-black/60 backdrop-blur-sm border border-white/10 px-2.5 py-1 text-[11px] font-bold text-white/70'>
+              <Play className='h-3 w-3' />
               New
             </span>
           )}
@@ -141,78 +133,49 @@ export function LabCard({ lab, index = 0 }: LabCardProps) {
 
         {/* XP pill — top end */}
         <div className='absolute top-3 end-3'>
-          <span
-            className='inline-flex items-center gap-1 rounded-full bg-black/60 backdrop-blur-sm
-                           border border-yellow-500/30 px-2.5 py-1 text-[11px] font-bold text-yellow-400'>
+          <span className='inline-flex items-center gap-1 rounded-full bg-black/60 backdrop-blur-sm border border-yellow-500/30 px-2.5 py-1 text-[11px] font-bold text-yellow-400'>
             <Zap className='h-3 w-3' />
             {lab.xpReward} XP
           </span>
         </div>
       </div>
 
-      {/* ── Body ────────────────────────────────────── */}
+      {/* ── Body ───────────────────────────────────────────── */}
       <div className='flex flex-col flex-1 p-4 gap-3'>
-        {/* Title */}
-        <h3 className='text-sm font-bold text-foreground leading-snug line-clamp-2'>
-          {title}
-        </h3>
+        <h3 className='text-sm font-bold text-foreground leading-snug line-clamp-2'>{title}</h3>
+        <p className='text-xs text-muted-foreground leading-relaxed line-clamp-2'>{desc}</p>
 
-        {/* Description */}
-        <p className='text-xs text-muted-foreground leading-relaxed line-clamp-2'>
-          {desc}
-        </p>
-
-        {/* Skill tags */}
+        {/* Skills */}
         {lab.skills?.length > 0 && (
           <div className='flex flex-wrap gap-1'>
             {lab.skills.slice(0, 3).map((s) => (
-              <span
-                key={s}
-                className='text-[10px] px-2 py-0.5 rounded-full bg-muted/60
-                           border border-border/40 text-muted-foreground'>
+              <span key={s} className='text-[10px] px-2 py-0.5 rounded-full bg-muted/60 border border-border/40 text-muted-foreground'>
                 {s}
               </span>
             ))}
             {lab.skills.length > 3 && (
-              <span
-                className='text-[10px] px-2 py-0.5 rounded-full bg-muted/60
-                               border border-border/40 text-muted-foreground'>
+              <span className='text-[10px] px-2 py-0.5 rounded-full bg-muted/60 border border-border/40 text-muted-foreground'>
                 +{lab.skills.length - 3}
               </span>
             )}
           </div>
         )}
 
-        {/* Badges row */}
+        {/* Badges */}
         <div className='flex flex-wrap items-center gap-1.5'>
-          {/* Difficulty */}
-          <Badge
-            variant='outline'
-            className={cn('gap-1 text-[10px] font-semibold', diff.badge)}>
+          <Badge variant='outline' className={cn('gap-1 text-[10px] font-semibold', diff.badge)}>
             <diff.Icon className='h-3 w-3' />
             {diff.label}
           </Badge>
-
-          {/* Access */}
-          <Badge
-            variant='outline'
-            className={cn('gap-1 text-[10px] font-bold', ACCESS_BADGE[access])}>
+          <Badge variant='outline' className={cn('gap-1 text-[10px] font-bold', ACCESS_BADGE[access])}>
             <AccessIcon className='h-3 w-3' />
             {access.toUpperCase()}
           </Badge>
-
-          {/* Duration */}
-          <Badge
-            variant='outline'
-            className='gap-1 text-[10px] font-semibold text-primary border-primary/30 bg-primary/5'>
+          <Badge variant='outline' className='gap-1 text-[10px] font-semibold text-primary border-primary/30 bg-primary/5'>
             <Clock className='h-3 w-3' />
             {lab.duration}m
           </Badge>
-
-          {/* Points */}
-          <Badge
-            variant='outline'
-            className='gap-1 text-[10px] text-muted-foreground border-border/40'>
+          <Badge variant='outline' className='gap-1 text-[10px] text-muted-foreground border-border/40'>
             <Trophy className='h-3 w-3' />
             {lab.pointsReward} pts
           </Badge>
@@ -225,13 +188,11 @@ export function LabCard({ lab, index = 0 }: LabCardProps) {
           </p>
         )}
 
-        {/* Progress bar — if started */}
+        {/* Progress bar */}
         {isStarted && progress && (
           <div className='space-y-1'>
             <div className='flex justify-between text-[10px] text-muted-foreground'>
-              <span>
-                {progress.attempts} attempt{progress.attempts !== 1 ? 's' : ''}
-              </span>
+              <span>{progress.attempts} attempt{progress.attempts !== 1 ? 's' : ''}</span>
               <span className='text-yellow-400'>In progress</span>
             </div>
             <div className='h-1 w-full rounded-full bg-muted overflow-hidden'>
@@ -244,39 +205,25 @@ export function LabCard({ lab, index = 0 }: LabCardProps) {
         <div className='mt-auto pt-1'>
           <Button
             size='sm'
-            className='w-full h-9 text-xs'
+            className='w-full h-9 text-xs gap-1.5'
             variant={isCompleted ? 'outline' : 'default'}
             disabled={isThisLabLaunching}
             onClick={(e) => {
               e.stopPropagation();
               if (isCompleted || isStarted) {
-                // Resume or retry → launch directly
                 launchLab(lab.id);
               } else {
-                e.stopPropagation();
                 navigate(ROUTES.LABS.DETAIL(lab.id));
               }
             }}>
             {isThisLabLaunching ? (
-              <>
-                <Loader2 className='h-3.5 w-3.5 me-1.5 animate-spin' />
-                Launching...
-              </>
+              <><Loader2 className='h-3.5 w-3.5 animate-spin' /> Launching...</>
             ) : isCompleted ? (
-              <>
-                <CheckCircle2 className='h-3.5 w-3.5 me-1.5' />
-                Try Again
-              </>
+              <><RefreshCw className='h-3.5 w-3.5' /> Try Again</>
             ) : isStarted ? (
-              <>
-                <Zap className='h-3.5 w-3.5 me-1.5' />
-                Resume Lab
-              </>
+              <><Zap className='h-3.5 w-3.5' /> Resume Lab</>
             ) : (
-              <>
-                Start Lab
-                <ArrowRight className='h-3.5 w-3.5 ms-1.5' />
-              </>
+              <>Start Lab <ArrowRight className='h-3.5 w-3.5' /></>
             )}
           </Button>
         </div>

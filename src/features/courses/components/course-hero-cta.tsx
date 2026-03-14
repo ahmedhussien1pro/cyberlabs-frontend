@@ -1,9 +1,9 @@
 // src/features/courses/components/course-hero-cta.tsx
-// CTA block used in CourseDetailHero — enroll / continue / completed actions
+// CTA block used in CourseDetailHero
 import {
   Clock, Zap, FlaskConical, Heart, Crown, Unlock,
   Rocket, Loader2, CheckCircle2, RotateCcw, ScrollText,
-  ChevronRight, ChevronLeft,
+  ChevronRight, ChevronLeft, Lock,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,7 @@ import {
 import { Star, Users, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { CourseStat } from './course-stat';
 import { COURSE_ACCESS_BADGE, COURSE_TEXT_COLOR } from '../constants/course-colors';
 import type { Course } from '../types/course.types';
@@ -36,6 +37,7 @@ interface CourseHeroCtaProps {
   onToggleFav: () => void;
   onReset?: () => void;
   onContinue?: () => void;
+  /** Called when user clicks Go to Labs AND course is completed */
   onGoToLabs?: () => void;
 }
 
@@ -61,6 +63,20 @@ export function CourseHeroCta({
   const col = course.color ?? 'blue';
   const comingSoon = course.state === 'COMING_SOON';
 
+  /** What happens when the Go To Labs button is clicked */
+  const handleLabsBtnClick = () => {
+    if (!hasLabs) return; // shouldn't happen — button is hidden
+    if (!isCompleted) {
+      toast.warning(
+        t('detail.completeFirst', 'Finish the course first to unlock the labs! 🔒'),
+        { duration: 3500, icon: '🔒' },
+      );
+      return;
+    }
+    // course is completed — open modal (parent handles this via onGoToLabs)
+    onGoToLabs?.();
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -70,30 +86,11 @@ export function CourseHeroCta({
 
       {/* Stats */}
       <div className='flex flex-wrap items-center gap-x-5 gap-y-1.5'>
-        <CourseStat
-          icon={<BookOpen className='h-3.5 w-3.5' />}
-          value={course.totalTopics}
-          label={t('detail.topics', 'Topics')}
-          textClass={COURSE_TEXT_COLOR[col]}
-        />
-        <CourseStat
-          icon={<Clock className='h-3.5 w-3.5' />}
-          value={`${course.estimatedHours}h`}
-          label={t('detail.estTime', 'est.')}
-          textClass={COURSE_TEXT_COLOR[col]}
-        />
-        <CourseStat
-          icon={<FlaskConical className='h-3.5 w-3.5' />}
-          value={t('detail.labsIncluded', 'Labs')}
-          textClass={COURSE_TEXT_COLOR[col]}
-        />
+        <CourseStat icon={<BookOpen className='h-3.5 w-3.5' />} value={course.totalTopics} label={t('detail.topics', 'Topics')} textClass={COURSE_TEXT_COLOR[col]} />
+        <CourseStat icon={<Clock className='h-3.5 w-3.5' />} value={`${course.estimatedHours}h`} label={t('detail.estTime', 'est.')} textClass={COURSE_TEXT_COLOR[col]} />
+        <CourseStat icon={<FlaskConical className='h-3.5 w-3.5' />} value={t('detail.labsIncluded', 'Labs')} textClass={COURSE_TEXT_COLOR[col]} />
         {(course.enrollmentCount ?? 0) > 0 && (
-          <CourseStat
-            icon={<Users className='h-3.5 w-3.5' />}
-            value={course.enrollmentCount.toLocaleString()}
-            label={t('detail.enrolled', 'enrolled')}
-            textClass={COURSE_TEXT_COLOR[col]}
-          />
+          <CourseStat icon={<Users className='h-3.5 w-3.5' />} value={course.enrollmentCount.toLocaleString()} label={t('detail.enrolled', 'enrolled')} textClass={COURSE_TEXT_COLOR[col]} />
         )}
         {(course.averageRating ?? 0) > 0 && (
           <div className='flex items-center gap-1.5 text-xs'>
@@ -112,21 +109,20 @@ export function CourseHeroCta({
         </Badge>
         {showProIndicator && (
           <span className='inline-flex items-center gap-1 rounded-full border border-blue-500/40 bg-blue-500/10 px-2 py-0.5 text-[10px] font-bold text-blue-400'>
-            <Crown className='h-2.5 w-2.5' />
-            {t('detail.proContent', 'PRO Unlocked')}
+            <Crown className='h-2.5 w-2.5' /> {t('detail.proContent', 'PRO Unlocked')}
           </span>
         )}
         {isCompleted && (
           <span className='inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400'>
-            <CheckCircle2 className='h-2.5 w-2.5' />
-            {t('detail.completed', 'Completed')}
+            <CheckCircle2 className='h-2.5 w-2.5' /> {t('detail.completed', 'Completed')}
           </span>
         )}
       </div>
 
       {/* Action buttons */}
-      <div className='flex flex-col items-start gap-1.5'>
-        <div className='flex items-center gap-2'>
+      <div className='flex flex-col items-start gap-2'>
+        <div className='flex items-center flex-wrap gap-2'>
+
           {/* Favorite */}
           <button
             onClick={onToggleFav}
@@ -137,28 +133,24 @@ export function CourseHeroCta({
                 : 'border-white/15 text-white/50 hover:border-rose-500/30 hover:text-rose-500',
             )}>
             <Heart className={cn('h-3.5 w-3.5 shrink-0', fav && 'fill-current')} />
-            <span className='hidden sm:inline'>
-              {fav ? t('detail.removeFav', 'Saved') : t('detail.addFav', 'Save')}
-            </span>
+            <span className='hidden sm:inline'>{fav ? t('detail.removeFav', 'Saved') : t('detail.addFav', 'Save')}</span>
           </button>
 
           {/* Main CTA */}
           {comingSoon ? (
             <div className='flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-4 py-1.5 text-xs text-white/50'>
-              <Clock className='h-3.5 w-3.5' />
-              {t('card.comingSoon', 'Coming Soon')}
+              <Clock className='h-3.5 w-3.5' /> {t('card.comingSoon', 'Coming Soon')}
             </div>
           ) : canAccess ? (
             isCompleted ? (
               <>
                 <Button size='sm' className='h-8 gap-1.5 px-5 text-xs font-semibold' onClick={onContinue}>
-                  <ScrollText className='h-3.5 w-3.5' />
-                  {t('detail.viewCurriculum', 'Review Course')}
+                  <ScrollText className='h-3.5 w-3.5' /> {t('detail.viewCurriculum', 'Review Course')}
                 </Button>
                 {onReset && (
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button variant='outline' size='sm' className={cn('h-8 w-8 p-0', 'border-orange-500/40 bg-orange-500/5 text-orange-400', 'hover:bg-orange-500/15 hover:border-orange-500/60')}>
+                      <Button variant='outline' size='sm' className={cn('h-8 w-8 p-0 border-orange-500/40 bg-orange-500/5 text-orange-400 hover:bg-orange-500/15 hover:border-orange-500/60')}>
                         <RotateCcw className='h-3.5 w-3.5' />
                       </Button>
                     </AlertDialogTrigger>
@@ -201,16 +193,29 @@ export function CourseHeroCta({
             </Button>
           )}
 
-          {/* Go To Labs — always visible when course has labs */}
-          {!comingSoon && hasLabs && onGoToLabs && (
-            <Button
-              size='sm'
-              variant='outline'
-              className='h-8 gap-1.5 px-4 text-xs font-semibold border-emerald-500/40 bg-emerald-500/5 text-emerald-400 hover:bg-emerald-500/15 hover:border-emerald-500/60'
-              onClick={onGoToLabs}>
-              <FlaskConical className='h-3.5 w-3.5' />
-              {t('detail.goToLabs', 'Go to Labs')}
-            </Button>
+          {/* ── Labs button: always visible (hasLabs or not), not on comingSoon course */}
+          {!comingSoon && (
+            hasLabs ? (
+              <button
+                onClick={handleLabsBtnClick}
+                className={cn(
+                  'flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all',
+                  isCompleted
+                    ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/15 hover:border-emerald-500/60'
+                    : 'border-white/15 bg-white/5 text-white/40 hover:border-white/25 hover:text-white/60 cursor-pointer',
+                )}>
+                {isCompleted
+                  ? <FlaskConical className='h-3.5 w-3.5' />
+                  : <Lock className='h-3.5 w-3.5' />
+                }
+                {t('detail.goToLabs', 'Go to Labs')}
+              </button>
+            ) : (
+              <span className='inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/35'>
+                <FlaskConical className='h-3.5 w-3.5' />
+                {t('detail.labsComingSoon', 'Labs Coming Soon')}
+              </span>
+            )
           )}
         </div>
 

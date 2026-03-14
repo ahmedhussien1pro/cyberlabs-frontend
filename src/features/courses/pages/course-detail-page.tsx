@@ -1,4 +1,5 @@
 // src/features/courses/pages/course-detail-page.tsx
+import { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
@@ -9,6 +10,7 @@ import { apiClient } from '@/core/api/client';
 import MainLayout from '@/shared/components/layout/main-layout';
 import { CourseCurriculum } from '../components/course-curriculum';
 import { CourseDetailHero } from '../components/course-detail-hero';
+import { CourseCompletionModal } from '../components/course-completion-modal';
 import { useCourse } from '../hooks/use-course';
 import { useEnrollment } from '../hooks/use-enrollment';
 import {
@@ -30,11 +32,12 @@ export default function CourseDetailPage() {
   const { mutate: enroll, isPending: enrolling } = useEnrollment();
   const { mutate: resetProgress, isPending: resetting } = useResetProgress();
 
-  const { isEnrolled, getProgress, getCompletedCount, isFavorite } =
-    useUserProgress();
-
+  const { isEnrolled, getProgress, getCompletedCount, isFavorite } = useUserProgress();
   const favMutation = useFavoriteMutation();
   const isPro = useIsPro();
+
+  // Completion modal state
+  const [completionModalOpen, setCompletionModalOpen] = useState(false);
 
   const { data: labsData } = useQuery<{ labs: any[] }>({
     queryKey: ['courses', slug, 'labs'],
@@ -58,28 +61,24 @@ export default function CourseDetailPage() {
       <MainLayout>
         <div className='flex flex-col items-center justify-center min-h-[60vh] gap-4'>
           <Shield className='h-12 w-12 text-muted-foreground' />
-          <p className='font-semibold'>
-            {t('detail.notFound', 'Course not found')}
-          </p>
+          <p className='font-semibold'>{t('detail.notFound', 'Course not found')}</p>
           <Link to={ROUTES.COURSES.LIST}>
-            <Button variant='outline' size='sm'>
-              {t('detail.backToList', 'All Courses')}
-            </Button>
+            <Button variant='outline' size='sm'>{t('detail.backToList', 'All Courses')}</Button>
           </Link>
         </div>
       </MainLayout>
     );
   }
 
-  const enrolled = isEnrolled(course.id);
-  const progress = getProgress(course.id);
-  const done = getCompletedCount(course.id);
-  const fav = isFavorite(course.id);
-  const longDesc =
-    lang === 'ar' ? course.ar_longDescription : course.longDescription;
+  const enrolled    = isEnrolled(course.id);
+  const progress    = getProgress(course.id);
+  const done        = getCompletedCount(course.id);
+  const fav         = isFavorite(course.id);
+  const longDesc    = lang === 'ar' ? course.ar_longDescription : course.longDescription;
+  const canProAccess = isPro && (course.access === 'PRO' || course.access === 'FREE');
+  const isCompleted = canProAccess && progress >= 100;
 
-  const canProAccess =
-    isPro && (course.access === 'PRO' || course.access === 'FREE');
+  const courseTitle = lang === 'ar' ? course.ar_title : course.title;
 
   const handleEnroll = () => {
     if (course.access === 'FREE' || canProAccess) {
@@ -93,10 +92,7 @@ export default function CourseDetailPage() {
     favMutation.mutate(
       { courseId: course.id, isFav: fav },
       {
-        onSuccess: () =>
-          toast(fav ? 'Removed from favorites' : 'Added to favorites', {
-            duration: 1500,
-          }),
+        onSuccess: () => toast(fav ? 'Removed from favorites' : 'Added to favorites', { duration: 1500 }),
         onError: () => toast.error('Failed to update favorites'),
       },
     );
@@ -105,19 +101,23 @@ export default function CourseDetailPage() {
   const handleContinue = () => {
     const el = document.getElementById(`topic-row-${done}`);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    else
-      document
-        .getElementById('course-curriculum')
-        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    else document.getElementById('course-curriculum')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   const handleReset = () => {
     resetProgress(course.id, {
-      onSuccess: () =>
-        toast.success(t('detail.resetSuccess', 'Progress reset successfully')),
-      onError: () =>
-        toast.error(t('detail.resetError', 'Failed to reset progress')),
+      onSuccess: () => toast.success(t('detail.resetSuccess', 'Progress reset successfully')),
+      onError: () => toast.error(t('detail.resetError', 'Failed to reset progress')),
     });
+  };
+
+  /**
+   * Called from CourseHeroCta when Go to Labs is clicked AND course is completed.
+   * Opens the completion modal first — inside the modal there's a "Start Hands-on Labs" button
+   * that navigates to the labs page.
+   */
+  const handleGoToLabsIntent = () => {
+    setCompletionModalOpen(true);
   };
 
   return (
@@ -136,7 +136,7 @@ export default function CourseDetailPage() {
           onToggleFav={handleToggleFav}
           onReset={enrolled ? handleReset : undefined}
           onContinue={handleContinue}
-          onGoToLabs={() => navigate(ROUTES.COURSES.LABS(slug))}
+          onGoToLabs={handleGoToLabsIntent}
         />
 
         <div className='container mx-auto px-4 py-10'>
@@ -145,13 +145,18 @@ export default function CourseDetailPage() {
               <p className='text-sm text-foreground/70 leading-7'>{longDesc}</p>
             </div>
           )}
-          <CourseCurriculum
-            course={course}
-            isEnrolled={enrolled}
-            hasLabs={hasLabs}
-          />
+          <CourseCurriculum course={course} isEnrolled={enrolled} hasLabs={hasLabs} />
         </div>
       </div>
+
+      {/* Completion modal — shown when user clicks Go to Labs on a completed course */}
+      <CourseCompletionModal
+        open={completionModalOpen}
+        courseTitle={courseTitle ?? ''}
+        onClose={() => setCompletionModalOpen(false)}
+        onReset={enrolled ? handleReset : undefined}
+        onGoToLabs={hasLabs ? () => navigate(ROUTES.COURSES.LABS(slug)) : undefined}
+      />
     </MainLayout>
   );
 }

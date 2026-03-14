@@ -10,17 +10,18 @@ import {
   Trophy,
   Zap,
   ChevronRight,
+  FlaskConical,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const CYBER_COLORS = [
-  '#10b981', // emerald
-  '#06b6d4', // cyan
-  '#8b5cf6', // violet
-  '#3b82f6', // blue
-  '#00ff9f', // cyber green
-  '#a855f7', // purple
+  '#10b981',
+  '#06b6d4',
+  '#8b5cf6',
+  '#3b82f6',
+  '#00ff9f',
+  '#a855f7',
 ];
 const CONFETTI = Array.from({ length: 36 }, (_, i) => ({
   color: CYBER_COLORS[i % CYBER_COLORS.length],
@@ -43,6 +44,8 @@ interface Props {
   courseTitle: string;
   onClose: () => void;
   onReset?: () => void;
+  /** If provided, shows a "Go to Labs" button in the modal actions */
+  onGoToLabs?: () => void;
 }
 
 export function CourseCompletionModal({
@@ -50,6 +53,7 @@ export function CourseCompletionModal({
   courseTitle,
   onClose,
   onReset,
+  onGoToLabs,
 }: Props) {
   const { t } = useTranslation('courses');
 
@@ -65,6 +69,11 @@ export function CourseCompletionModal({
   const handleReset = () => {
     onReset?.();
     onClose();
+  };
+
+  const handleGoToLabs = () => {
+    onClose();
+    onGoToLabs?.();
   };
 
   return (
@@ -100,7 +109,7 @@ export function CourseCompletionModal({
       <AnimatePresence>
         {open && (
           <>
-            {/* ── Backdrop ──────────────────────────────────────────── */}
+            {/* Backdrop */}
             <motion.div
               key='backdrop'
               initial={{ opacity: 0 }}
@@ -110,7 +119,7 @@ export function CourseCompletionModal({
               onClick={onClose}
             />
 
-            {/* ── Modal ─────────────────────────────────────────────── */}
+            {/* Modal */}
             <div className='fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none'>
               <motion.div
                 key='modal'
@@ -124,10 +133,9 @@ export function CourseCompletionModal({
                 )}
                 style={{ animation: 'cyber-pulse 2.5s ease-in-out infinite' }}
                 onClick={(e) => e.stopPropagation()}>
-                {/* ── Confetti ──────────────────────────────────────── */}
-                <div
-                  className='pointer-events-none absolute inset-0 overflow-hidden rounded-2xl'
-                  aria-hidden>
+
+                {/* Confetti */}
+                <div className='pointer-events-none absolute inset-0 overflow-hidden rounded-2xl' aria-hidden>
                   {CONFETTI.map((p, i) => (
                     <span
                       key={i}
@@ -146,28 +154,22 @@ export function CourseCompletionModal({
                   ))}
                 </div>
 
-                {/* ── Scan line overlay ──────────────────────────────── */}
-                <div
-                  className='pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-2xl opacity-[0.04]'
-                  aria-hidden>
-                  <div
-                    className='absolute inset-0 w-full h-1 bg-emerald-400'
-                    style={{ animation: 'scan-line 4s linear infinite' }}
-                  />
+                {/* Scan line */}
+                <div className='pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-2xl opacity-[0.04]' aria-hidden>
+                  <div className='absolute inset-0 w-full h-1 bg-emerald-400' style={{ animation: 'scan-line 4s linear infinite' }} />
                 </div>
 
-                {/* ── Grid pattern overlay ────────────────────────── */}
+                {/* Grid pattern */}
                 <div
                   className='pointer-events-none absolute inset-0 z-0 rounded-2xl opacity-[0.03]'
                   style={{
-                    backgroundImage:
-                      'linear-gradient(#10b981 1px, transparent 1px), linear-gradient(90deg, #10b981 1px, transparent 1px)',
+                    backgroundImage: 'linear-gradient(#10b981 1px, transparent 1px), linear-gradient(90deg, #10b981 1px, transparent 1px)',
                     backgroundSize: '28px 28px',
                   }}
                   aria-hidden
                 />
 
-                {/* ── Top accent bar ──────────────────────────────── */}
+                {/* Top bar */}
                 <div className='relative z-10 flex items-center gap-2 px-4 py-2.5 border-b border-emerald-500/20 bg-emerald-500/5'>
                   <span className='flex gap-1.5'>
                     <span className='h-2.5 w-2.5 rounded-full bg-rose-500/60' />
@@ -184,36 +186,20 @@ export function CourseCompletionModal({
                   </button>
                 </div>
 
-                {/* ── Content ─────────────────────────────────────── */}
+                {/* Content */}
                 <div className='relative z-10 flex flex-col items-center gap-5 px-7 pt-7 pb-8 text-center'>
-                  {/* Trophy icon */}
+                  {/* Trophy */}
                   <motion.div
                     initial={{ scale: 0, rotate: -15 }}
                     animate={{ scale: 1, rotate: 0 }}
-                    transition={{
-                      delay: 0.15,
-                      type: 'spring',
-                      stiffness: 220,
-                      damping: 12,
-                    }}>
-                    <div
-                      className={cn(
-                        'relative flex h-24 w-24 items-center justify-center rounded-full',
-                        'border-2 border-emerald-500/50 bg-emerald-500/10',
-                      )}>
-                      {/* Outer ring */}
+                    transition={{ delay: 0.15, type: 'spring', stiffness: 220, damping: 12 }}>
+                    <div className='relative flex h-24 w-24 items-center justify-center rounded-full border-2 border-emerald-500/50 bg-emerald-500/10'>
                       <div className='absolute inset-0 rounded-full border border-emerald-400/20 scale-110' />
                       <div className='absolute inset-0 rounded-full border border-emerald-400/10 scale-125' />
                       <Trophy className='h-11 w-11 text-emerald-400' />
-                      {/* Corner sparks */}
                       {[0, 90, 180, 270].map((deg) => (
-                        <Zap
-                          key={deg}
-                          className='absolute h-3 w-3 text-cyan-400 opacity-70'
-                          style={{
-                            transform: `rotate(${deg}deg) translateY(-42px)`,
-                          }}
-                        />
+                        <Zap key={deg} className='absolute h-3 w-3 text-cyan-400 opacity-70'
+                          style={{ transform: `rotate(${deg}deg) translateY(-42px)` }} />
                       ))}
                     </div>
                   </motion.div>
@@ -226,66 +212,67 @@ export function CourseCompletionModal({
                         initial={{ opacity: 0, x: -8 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: line.delay, duration: 0.3 }}
-                        className={cn(
-                          'text-[11px] leading-5',
-                          line.highlight
-                            ? 'text-emerald-400 font-bold'
-                            : 'text-zinc-400',
-                        )}>
+                        className={cn('text-[11px] leading-5', line.highlight ? 'text-emerald-400 font-bold' : 'text-zinc-400')}>
                         {line.text}
                         {i === TERMINAL_LINES.length - 1 && (
-                          <span
-                            className='inline-block w-1.5 h-3 bg-emerald-400 ms-0.5 align-middle'
-                            style={{
-                              animation: 'blink-cursor 1s step-end infinite',
-                            }}
-                          />
+                          <span className='inline-block w-1.5 h-3 bg-emerald-400 ms-0.5 align-middle'
+                            style={{ animation: 'blink-cursor 1s step-end infinite' }} />
                         )}
                       </motion.p>
                     ))}
                   </div>
 
                   {/* Main text */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1.3 }}
-                    className='space-y-1.5'>
+                  <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.3 }} className='space-y-1.5'>
                     <h2 className='text-xl font-black tracking-wide text-white'>
                       {t('completion.congrats', 'Mission Complete!')}
                     </h2>
                     <p className='text-sm text-zinc-400'>
-                      {t(
-                        'completion.finished',
-                        'You have successfully completed',
-                      )}
+                      {t('completion.finished', 'You have successfully completed')}
                     </p>
-                    <p className='font-bold text-emerald-400 text-sm'>
-                      {courseTitle}
-                    </p>
+                    <p className='font-bold text-emerald-400 text-sm'>{courseTitle}</p>
                   </motion.div>
 
                   {/* Achievement badge */}
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.85 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 1.5 }}>
+                  <motion.div initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 1.5 }}>
                     <div className='flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-xs font-semibold text-emerald-400'>
                       <ShieldCheck className='h-3.5 w-3.5 shrink-0' />
-                      {t(
-                        'completion.addedToStack',
-                        'Added to your achievements',
-                      )}
+                      {t('completion.addedToStack', 'Added to your achievements')}
                     </div>
                   </motion.div>
 
-                  {/* Actions */}
+                  {/* ── Labs CTA (only when hasLabs) ── */}
+                  {onGoToLabs && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1.7 }}
+                      className='w-full'>
+                      <button
+                        onClick={handleGoToLabs}
+                        className={cn(
+                          'w-full flex items-center justify-center gap-2 rounded-xl px-4 py-3',
+                          'border border-emerald-500/30 bg-emerald-500/8 text-emerald-400',
+                          'hover:bg-emerald-500/15 hover:border-emerald-500/50',
+                          'transition-all duration-200 font-semibold text-sm',
+                        )}>
+                        <FlaskConical className='h-4 w-4' />
+                        {t('completion.goToLabs', 'Start Hands-on Labs')}
+                        <ChevronRight className='h-4 w-4' />
+                      </button>
+                      <p className='mt-2 text-[11px] text-zinc-500 font-mono'>
+                        {'>'} hands-on labs are now unlocked for this course
+                      </p>
+                    </motion.div>
+                  )}
+
+                  {/* Actions row */}
                   <motion.div
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1.65 }}
+                    transition={{ delay: onGoToLabs ? 1.85 : 1.65 }}
                     className='flex gap-2.5 w-full'>
-                    {onReset ? (
+                    {onReset && (
                       <Button
                         variant='outline'
                         size='sm'
@@ -298,28 +285,21 @@ export function CourseCompletionModal({
                         <RotateCcw className='h-3.5 w-3.5' />
                         {t('completion.reset', 'Reset')}
                       </Button>
-                    ) : null}
-
+                    )}
                     <Button
                       size='sm'
                       className={cn(
                         'flex-1 gap-1.5 font-mono text-xs',
-                        'bg-emerald-600 hover:bg-emerald-500 text-white border-0',
-                        'shadow-lg shadow-emerald-900/40',
+                        'bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700',
                       )}
                       onClick={onClose}>
                       <Terminal className='h-3.5 w-3.5' />
-                      {t('completion.close', 'Continue')}
-                      <ChevronRight className='h-3 w-3' />
+                      {t('completion.close', 'Close')}
                     </Button>
                   </motion.div>
 
-                  {/* Reset warning */}
                   {onReset && (
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 1.8 }}
+                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2 }}
                       className='font-mono text-[10px] text-zinc-600'>
                       {'>'} reset will clear all completed topics
                     </motion.p>

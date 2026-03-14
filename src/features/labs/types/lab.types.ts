@@ -1,3 +1,5 @@
+// src/features/labs/types/lab.types.ts
+
 export type LabDifficulty = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
 
 export interface LabHint {
@@ -18,12 +20,15 @@ export interface LabUserProgress {
 
 export interface Lab {
   id: string;
-  scenario: string;
   slug?: string;
   title: string;
   ar_title: string;
   description: string;
   ar_description: string;
+  /** Full scenario description shown on detail page */
+  scenario?: string;
+  /** Lab objective / what the user needs to accomplish */
+  objective?: string;
   difficulty: LabDifficulty;
   category: string;
   executionMode: 'SHARED_BACKEND' | 'DOCKER' | 'VM';

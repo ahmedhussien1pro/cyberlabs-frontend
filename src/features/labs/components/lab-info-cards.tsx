@@ -1,6 +1,5 @@
 // src/features/labs/components/lab-info-cards.tsx
 import { BookOpen, Target, Code2 } from 'lucide-react';
-import type { Lab } from '../types/lab.types';
 
 interface LabInfoCardsProps {
   scenario?: string;

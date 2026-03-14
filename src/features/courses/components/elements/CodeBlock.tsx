@@ -5,7 +5,7 @@ import type { TranslatedText } from '@/core/types/common.types';
 
 const tl = (v: TranslatedText, l: Lang) => (l === 'ar' ? v.ar : v.en);
 
-export function CodeBlock({ el, lang }: { el: any; lang: Lang }) {
+export function CodeBlock({ el }: { el: any; lang: Lang }) {
   return (
     <div className='my-5 rounded-xl overflow-hidden border border-border shadow-sm'>
       <div className='flex items-center gap-2 px-4 py-2 bg-muted/60 border-b border-border'>

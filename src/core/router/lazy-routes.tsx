@@ -73,7 +73,6 @@ export const GoalsPage = lazy(
 export const CommunityPage = lazy(
   () => import('@/features/dashboard/pages/community-page'),
 );
-// ➕ Dashboard: Certificates
 export const CertificatesPage = lazy(
   () => import('@/features/dashboard/pages/certificates-page'),
 );
@@ -91,7 +90,7 @@ export const UnauthorizedPage = lazy(
   () => import('@/features/errors/pages/unauthorized-page'),
 );
 
-// ── Courses ────────
+// ── Courses ──────────────────────────────────────────────────────────────────
 export const CoursesListPage = lazy(
   () => import('@/features/courses/pages/courses-list-page'),
 );
@@ -101,14 +100,20 @@ export const CourseDetailPage = lazy(
 export const LessonPage = lazy(
   () => import('@/features/courses/pages/lesson-page'),
 );
-// ── Labs──────────────
+/** Labs scoped to a single course: /courses/:slug/labs */
+export const CourseLabsPage = lazy(
+  () => import('@/features/courses/pages/course-labs-page'),
+);
+
+// ── Labs ────────────────────────────────────────────────────────────────────
 export const LabsListPage = lazy(
   () => import('@/features/labs/pages/labs-list-page'),
 );
 export const LabDetailPage = lazy(
   () => import('@/features/labs/pages/lab-detail-page'),
 );
-// ── Learning Paths ──────────────────────────────
+
+// ── Learning Paths ───────────────────────────────────────────────────────
 export const PathsPage = lazy(
   () => import('@/features/paths/pages/paths-page'),
 );
@@ -116,24 +121,17 @@ export const PathDetailPage = lazy(
   () => import('@/features/paths/pages/path-detail-page'),
 );
 
-// ── Public Certificate Verification ─────────────────
+// ── Public Certificate Verification ──────────────────────────────────
 export const VerifyCertificatePage = lazy(
   () => import('@/features/dashboard/pages/verify-certificate-page'),
 );
 
-// Dev (temporary) Pages
-export const TempPage = lazy(() => import('@/features/dev/temp-page'));
-export const QuizResults = lazy(() => import('@/shared/components/labs/QuizResultsPage'))
-
-// Dev (Lab) Pages
-export const LabProtectedRoute = lazy(() => import("@/shared/components/labs/LabProtectedRoute"))
-
-export const LabLayout = lazy(() => import("@/shared/components/labs/StoreLab"))
-
-export const LabProductsPage = lazy(() => import("@/shared/components/labs/ProductsPageLab"))
-
-export const LabCartPage = lazy(() => import("@/shared/components/labs/CartItemsLab"))
-
-export const LabLoginPage = lazy(() => import("@/shared/components/labs/LoginLab"))
-
-export const LabAccountPage = lazy(() => import("@/shared/components/labs/AccountLab"))
+// ── Dev / Temporary Pages ─────────────────────────────────────────────
+export const TempPage       = lazy(() => import('@/features/dev/temp-page'));
+export const QuizResults    = lazy(() => import('@/shared/components/labs/QuizResultsPage'));
+export const LabProtectedRoute = lazy(() => import('@/shared/components/labs/LabProtectedRoute'));
+export const LabLayout      = lazy(() => import('@/shared/components/labs/StoreLab'));
+export const LabProductsPage = lazy(() => import('@/shared/components/labs/ProductsPageLab'));
+export const LabCartPage    = lazy(() => import('@/shared/components/labs/CartItemsLab'));
+export const LabLoginPage   = lazy(() => import('@/shared/components/labs/LoginLab'));
+export const LabAccountPage = lazy(() => import('@/shared/components/labs/AccountLab'));

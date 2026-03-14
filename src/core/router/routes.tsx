@@ -16,56 +16,29 @@ const LazyPage = ({
 );
 
 export const routes: RouteObject[] = [
-  // ── Website (Public) ─────────────────────────────────
-  { path: ROUTES.HOME, element: <LazyPage Component={Pages.HomePage} /> },
-  { path: ROUTES.ABOUT, element: <LazyPage Component={Pages.AboutPage} /> },
+  // ── Website (Public) ───────────────────────────────────────────────
+  { path: ROUTES.HOME,    element: <LazyPage Component={Pages.HomePage}    /> },
+  { path: ROUTES.ABOUT,   element: <LazyPage Component={Pages.AboutPage}   /> },
   { path: ROUTES.CONTACT, element: <LazyPage Component={Pages.ContactPage} /> },
   { path: ROUTES.PRICING, element: <LazyPage Component={Pages.PricingPage} /> },
-  { path: ROUTES.TERMS, element: <LazyPage Component={Pages.TermsPage} /> },
+  { path: ROUTES.TERMS,   element: <LazyPage Component={Pages.TermsPage}   /> },
   { path: ROUTES.PRIVACY, element: <LazyPage Component={Pages.PrivacyPage} /> },
 
-  // ── Auth (Public) ──────────────────────────────────
+  // ── Auth (Public) ──────────────────────────────────────────────────
   { path: ROUTES.AUTH.LOGIN, element: <LazyPage Component={Pages.AuthPage} /> },
-  {
-    path: ROUTES.AUTH.FORGOT_PASSWORD,
-    element: <LazyPage Component={Pages.ForgotPasswordPage} />,
-  },
-  {
-    path: ROUTES.AUTH.RESET_PASSWORD,
-    element: <LazyPage Component={Pages.ResetPasswordPage} />,
-  },
-  {
-    path: ROUTES.AUTH.VERIFY_EMAIL,
-    element: <LazyPage Component={Pages.VerifyEmailPage} />,
-  },
-  {
-    path: ROUTES.AUTH.OTP_VERIFICATION,
-    element: <LazyPage Component={Pages.OtpVerificationPage} />,
-  },
-  {
-    path: ROUTES.AUTH.LOGOUT,
-    element: <LazyPage Component={Pages.LogoutPage} />,
-  },
-  {
-    path: ROUTES.AUTH.OAUTH_CALLBACK,
-    element: <LazyPage Component={Pages.OAuthCallbackPage} />,
-  },
-  {
-    path: ROUTES.AUTH.GOOGLE_CALLBACK,
-    element: <LazyPage Component={Pages.OAuthCallbackPage} />,
-  },
-  {
-    path: ROUTES.AUTH.GITHUB_CALLBACK,
-    element: <LazyPage Component={Pages.OAuthCallbackPage} />,
-  },
+  { path: ROUTES.AUTH.FORGOT_PASSWORD, element: <LazyPage Component={Pages.ForgotPasswordPage} /> },
+  { path: ROUTES.AUTH.RESET_PASSWORD,  element: <LazyPage Component={Pages.ResetPasswordPage}  /> },
+  { path: ROUTES.AUTH.VERIFY_EMAIL,    element: <LazyPage Component={Pages.VerifyEmailPage}    /> },
+  { path: ROUTES.AUTH.OTP_VERIFICATION,element: <LazyPage Component={Pages.OtpVerificationPage}/> },
+  { path: ROUTES.AUTH.LOGOUT,          element: <LazyPage Component={Pages.LogoutPage}          /> },
+  { path: ROUTES.AUTH.OAUTH_CALLBACK,  element: <LazyPage Component={Pages.OAuthCallbackPage}  /> },
+  { path: ROUTES.AUTH.GOOGLE_CALLBACK, element: <LazyPage Component={Pages.OAuthCallbackPage}  /> },
+  { path: ROUTES.AUTH.GITHUB_CALLBACK, element: <LazyPage Component={Pages.OAuthCallbackPage}  /> },
 
-  // ── Certificate Public Verification (no auth required) ────────
-  {
-    path: '/verify/:verificationId',
-    element: <LazyPage Component={Pages.VerifyCertificatePage} />,
-  },
+  // ── Certificate Verification (Public) ─────────────────────────────
+  { path: '/verify/:verificationId', element: <LazyPage Component={Pages.VerifyCertificatePage} /> },
 
-  // ── Profile ──────────────────────────────
+  // ── Profile ─────────────────────────────────────────────────────
   {
     path: ROUTES.PROFILE.VIEW,
     element: (
@@ -74,12 +47,9 @@ export const routes: RouteObject[] = [
       </ProtectedRoute>
     ),
   },
-  {
-    path: '/profile/:userId',
-    element: <LazyPage Component={Pages.PublicProfilePage} />,
-  },
+  { path: '/profile/:userId', element: <LazyPage Component={Pages.PublicProfilePage} /> },
 
-  // ── Notifications ──────────────────────────
+  // ── Notifications ───────────────────────────────────────────────
   {
     path: '/notifications',
     element: (
@@ -89,7 +59,7 @@ export const routes: RouteObject[] = [
     ),
   },
 
-  // ── Dashboard (Protected) ──────────────────────────
+  // ── Dashboard (Protected) ───────────────────────────────────────────
   {
     path: ROUTES.DASHBOARD.DashboardPage,
     element: (
@@ -100,30 +70,17 @@ export const routes: RouteObject[] = [
       </ProtectedRoute>
     ),
     children: [
-      { index: true, element: <LazyPage Component={Pages.DashboardPage} /> },
-      { path: 'labs', element: <LazyPage Component={Pages.LabsPage} /> },
-      {
-        path: 'progress',
-        element: <LazyPage Component={Pages.ProgressPage} />,
-      },
-      { path: 'goals', element: <LazyPage Component={Pages.GoalsPage} /> },
-      {
-        path: 'community',
-        element: <LazyPage Component={Pages.CommunityPage} />,
-      },
-      {
-        path: 'settings',
-        element: <LazyPage Component={Pages.SettingsPage} />,
-      },
-      // ➕ Certificates tab inside dashboard
-      {
-        path: 'certificates',
-        element: <LazyPage Component={Pages.CertificatesPage} />,
-      },
+      { index: true,          element: <LazyPage Component={Pages.DashboardPage}    /> },
+      { path: 'labs',         element: <LazyPage Component={Pages.LabsPage}         /> },
+      { path: 'progress',     element: <LazyPage Component={Pages.ProgressPage}     /> },
+      { path: 'goals',        element: <LazyPage Component={Pages.GoalsPage}        /> },
+      { path: 'community',    element: <LazyPage Component={Pages.CommunityPage}    /> },
+      { path: 'settings',     element: <LazyPage Component={Pages.SettingsPage}     /> },
+      { path: 'certificates', element: <LazyPage Component={Pages.CertificatesPage} /> },
     ],
   },
 
-  // ── Courses (Protected) ──────────────────────────
+  // ── Courses (Protected) ───────────────────────────────────────────
   {
     path: '/courses',
     element: (
@@ -148,8 +105,17 @@ export const routes: RouteObject[] = [
       </ProtectedRoute>
     ),
   },
+  {
+    // Labs scoped to a course — must come BEFORE /courses/:slug/lessons/:lessonId
+    path: '/courses/:slug/labs',
+    element: (
+      <ProtectedRoute>
+        <LazyPage Component={Pages.CourseLabsPage} />
+      </ProtectedRoute>
+    ),
+  },
 
-  // ── Labs (Protected) ─────────────────────────────
+  // ── Labs (Protected) ───────────────────────────────────────────────
   {
     path: '/labs',
     element: (
@@ -167,7 +133,7 @@ export const routes: RouteObject[] = [
     ),
   },
 
-  // ── Learning Paths (Protected) ─────────────────────
+  // ── Learning Paths (Protected) ─────────────────────────────────────
   {
     path: '/paths',
     element: (
@@ -185,49 +151,24 @@ export const routes: RouteObject[] = [
     ),
   },
 
-  // ── Errors ─────────────────────────────
-  {
-    path: ROUTES.UNAUTHORIZED,
-    element: <LazyPage Component={Pages.UnauthorizedPage} />,
-  },
+  // ── Errors ──────────────────────────────────────────────────────────
+  { path: ROUTES.UNAUTHORIZED, element: <LazyPage Component={Pages.UnauthorizedPage} /> },
+  { path: '*',                 element: <LazyPage Component={Pages.NotFoundPage}      /> },
 
-  {
-    path: '*',
-    element: <LazyPage Component={Pages.NotFoundPage} />,
-  },
-
-  // ── Temporary Pages ───────────────────────────
-  {
-    path: '/temp',
-    element: <LazyPage Component={Pages.TempPage} />,
-  },
-  {
-    path: '/temp/quiz-result',
-    element: <LazyPage Component={Pages.QuizResults} />,
-  },
+  // ── Temporary / Dev Pages ──────────────────────────────────────────
+  { path: '/temp',             element: <LazyPage Component={Pages.TempPage}    /> },
+  { path: '/temp/quiz-result', element: <LazyPage Component={Pages.QuizResults} /> },
   {
     path: '/temp-lab',
     element: <LazyPage Component={Pages.LabLayout} />,
     children: [
-      {
-        index: true,
-        element: <LazyPage Component={Pages.LabProductsPage} />,
-      },
-      {
-        path: 'login',
-        element: <LazyPage Component={Pages.LabLoginPage} />,
-      },
+      { index: true,  element: <LazyPage Component={Pages.LabProductsPage} /> },
+      { path: 'login',element: <LazyPage Component={Pages.LabLoginPage}    /> },
       {
         element: <LazyPage Component={Pages.LabProtectedRoute} />,
         children: [
-          {
-            path: 'cart',
-            element: <LazyPage Component={Pages.LabCartPage} />,
-          },
-          {
-            path: 'account',
-            element: <LazyPage Component={Pages.LabAccountPage} />,
-          },
+          { path: 'cart',    element: <LazyPage Component={Pages.LabCartPage}    /> },
+          { path: 'account', element: <LazyPage Component={Pages.LabAccountPage} /> },
         ],
       },
     ],

@@ -42,6 +42,8 @@ export const ROUTES = {
   COURSES: {
     LIST: '/courses',
     DETAIL: (slug: string) => `/courses/${slug}`,
+    /** Labs scoped to a specific course: /courses/:slug/labs */
+    LABS: (slug: string) => `/courses/${slug}/labs`,
     TOPIC: (slug: string, topicId: string) =>
       `/courses/${slug}/topics/${topicId}`,
     LESSON: (courseId: string, lessonId: string) =>
@@ -53,7 +55,6 @@ export const ROUTES = {
     DETAIL: (slug: string) => `/labs/${slug}`,
   },
 
-  // ✅ Step 1: أضيفنا CHALLENGES route — كان hardcoded '/challenges'
   CHALLENGES: {
     LIST: '/challenges',
     DETAIL: (slug: string) => `/challenges/${slug}`,

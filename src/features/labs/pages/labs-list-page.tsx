@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 import MainLayout from '@/shared/components/layout/main-layout';
 import { MatrixRain } from '@/shared/components/common/landing/matrix-rain';
 import { Skeleton } from '@/components/ui/skeleton';
-import { LabCard } from '../components/lab-card';
+import { LabRowCard } from '../components/lab-row-card';
 import { useLabs } from '../hooks/use-labs';
 
 const DIFF_FILTERS = [
@@ -23,8 +23,6 @@ const DIFF_FILTERS = [
   { v: 'INTERMEDIATE', label: 'Intermediate', activeClass: 'border-yellow-500/50  text-yellow-400  bg-yellow-500/10'  },
   { v: 'ADVANCED',     label: 'Advanced',     activeClass: 'border-red-500/50     text-red-400     bg-red-500/10'     },
 ];
-
-const SKELETON_COUNT = 8;
 
 export default function LabListPage() {
   const { i18n } = useTranslation('labs');
@@ -36,7 +34,7 @@ export default function LabListPage() {
     [data],
   );
 
-  const [search, setSearch]       = useState('');
+  const [search, setSearch]         = useState('');
   const [activeDiff, setActiveDiff] = useState<string>('all');
 
   const filtered = useMemo(() => {
@@ -71,25 +69,21 @@ export default function LabListPage() {
     <MainLayout>
       <div className='min-h-screen bg-background'>
 
-        {/* ── Hero ── */}
+        {/* Hero */}
         <div className='relative overflow-hidden border-b border-border/50 bg-background/80'>
           <MatrixRain className='absolute inset-0 opacity-[0.07]' />
           <div className='relative z-10 container mx-auto px-4 py-14 text-center space-y-4'>
-
             <span className='inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-xs font-bold text-primary uppercase tracking-wider'>
               <Terminal className='h-3.5 w-3.5' />
               Practice Labs
             </span>
-
             <h1 className='text-4xl md:text-5xl font-black tracking-tight text-foreground'>
               Hack. <span className='text-primary'>Learn.</span> Master.
             </h1>
-
             <p className='text-muted-foreground text-base max-w-lg mx-auto'>
               Real-world vulnerable environments — no setup needed.
               Attack, exploit, and submit the flag.
             </p>
-
             {!isLoading && data && (
               <div className='flex items-center justify-center gap-8 pt-3 flex-wrap'>
                 {[
@@ -111,11 +105,9 @@ export default function LabListPage() {
           </div>
         </div>
 
-        {/* ── Toolbar ── */}
+        {/* Toolbar */}
         <div className='border-b border-border/40 bg-card/50 backdrop-blur-sm sticky top-0 z-30'>
           <div className='container mx-auto px-4 py-3 flex items-center gap-3 flex-wrap'>
-
-            {/* Search */}
             <div className='relative flex-1 min-w-[180px] max-w-xs'>
               <Search className='absolute start-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none' />
               <input
@@ -130,8 +122,6 @@ export default function LabListPage() {
                 }
               />
             </div>
-
-            {/* Difficulty filters */}
             <div className='flex items-center gap-1.5'>
               <SlidersHorizontal className='h-3.5 w-3.5 text-muted-foreground shrink-0' />
               {DIFF_FILTERS.map(({ v, label, activeClass }) => (
@@ -141,16 +131,12 @@ export default function LabListPage() {
                   className={cn(
                     'rounded-full border border-border/50 px-3 py-1 text-xs font-semibold transition-all',
                     'text-muted-foreground hover:text-foreground hover:border-border',
-                    activeDiff === v
-                      ? activeClass ?? 'border-primary/50 text-primary bg-primary/10'
-                      : '',
+                    activeDiff === v ? activeClass ?? 'border-primary/50 text-primary bg-primary/10' : '',
                   )}>
                   {label}
                 </button>
               ))}
             </div>
-
-            {/* Count */}
             {!isLoading && (
               <span className='ms-auto text-xs text-muted-foreground hidden sm:flex items-center gap-1'>
                 <Shield className='h-3 w-3' />
@@ -160,33 +146,34 @@ export default function LabListPage() {
           </div>
         </div>
 
-        {/* ── Content ── */}
-        <div className='container mx-auto px-4 py-10 space-y-12'>
+        {/* Content */}
+        <div className='container mx-auto px-4 py-10 space-y-10'>
 
-          {/* Error */}
           {isError && (
             <div className='rounded-xl border border-destructive/30 bg-destructive/10 p-8 text-center text-sm text-destructive'>
               Failed to load labs. Please try again.
             </div>
           )}
 
-          {/* Skeletons — 4-col compact grid */}
+          {/* Skeletons */}
           {isLoading && (
-            <div className='space-y-10'>
+            <div className='space-y-8'>
               {[1, 2].map((g) => (
-                <div key={g} className='space-y-4'>
-                  <Skeleton className='h-6 w-40 rounded-lg' />
-                  <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
-                    {Array.from({ length: SKELETON_COUNT / 2 }).map((_, i) => (
-                      <div key={i} className='rounded-2xl border border-border/40 bg-card overflow-hidden'>
-                        <Skeleton className='h-32 w-full' />
-                        <div className='p-3 space-y-2'>
-                          <div className='flex gap-1.5'>
-                            {[1, 2].map((x) => <Skeleton key={x} className='h-4 w-12 rounded-full' />)}
-                          </div>
+                <div key={g} className='space-y-3'>
+                  <Skeleton className='h-5 w-36 rounded-lg' />
+                  <div className='space-y-2'>
+                    {Array.from({ length: 4 }).map((_, i) => (
+                      <div key={i} className='flex items-center gap-3 p-3.5 rounded-xl border border-border/40 bg-card'>
+                        <Skeleton className='h-9 w-9 rounded-lg shrink-0' />
+                        <div className='flex-1 space-y-2'>
                           <Skeleton className='h-4 w-3/4' />
-                          <Skeleton className='h-8 w-full rounded-lg' />
+                          <div className='flex gap-2'>
+                            <Skeleton className='h-4 w-20 rounded-full' />
+                            <Skeleton className='h-4 w-12' />
+                            <Skeleton className='h-4 w-14' />
+                          </div>
                         </div>
+                        <Skeleton className='h-4 w-4 rounded shrink-0' />
                       </div>
                     ))}
                   </div>
@@ -195,11 +182,11 @@ export default function LabListPage() {
             </div>
           )}
 
-          {/* Categories — 4-col compact grid */}
+          {/* Categories — row layout */}
           {!isLoading && filtered.map((category) => (
-            <section key={category.id} className='space-y-4'>
+            <section key={category.id} className='space-y-3'>
               <div className='flex items-center gap-3'>
-                <h2 className='text-lg font-bold text-foreground'>
+                <h2 className='text-base font-bold text-foreground'>
                   {lang === 'ar' ? category.ar_name : category.name}
                 </h2>
                 <span className='rounded-full bg-muted border border-border/40 px-2.5 py-0.5 text-xs font-semibold text-muted-foreground'>
@@ -208,16 +195,16 @@ export default function LabListPage() {
                 <div className='flex-1 h-px bg-border/40' />
               </div>
 
-              {/* compact=true → smaller cards, 4 columns on xl */}
-              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
+              {/* Two-column row grid on md+ */}
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
                 {category.labs.map((lab, i) => (
-                  <LabCard key={lab.id} lab={lab} index={i} compact />
+                  <LabRowCard key={lab.id} lab={lab} index={i} />
                 ))}
               </div>
             </section>
           ))}
 
-          {/* Empty state */}
+          {/* Empty */}
           {!isLoading && filtered.length === 0 && (
             <div className='flex flex-col items-center justify-center py-28 gap-4 text-center'>
               <div className='h-14 w-14 rounded-2xl bg-muted flex items-center justify-center border border-border/40'>

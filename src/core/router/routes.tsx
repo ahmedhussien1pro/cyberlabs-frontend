@@ -16,7 +16,7 @@ const LazyPage = ({
 );
 
 export const routes: RouteObject[] = [
-  // ── Website (Public) ───────────────────────────────
+  // ── Website (Public) ─────────────────────────────────
   { path: ROUTES.HOME, element: <LazyPage Component={Pages.HomePage} /> },
   { path: ROUTES.ABOUT, element: <LazyPage Component={Pages.AboutPage} /> },
   { path: ROUTES.CONTACT, element: <LazyPage Component={Pages.ContactPage} /> },
@@ -24,7 +24,7 @@ export const routes: RouteObject[] = [
   { path: ROUTES.TERMS, element: <LazyPage Component={Pages.TermsPage} /> },
   { path: ROUTES.PRIVACY, element: <LazyPage Component={Pages.PrivacyPage} /> },
 
-  // ── Auth (Public) ─────────────────────────────────
+  // ── Auth (Public) ──────────────────────────────────
   { path: ROUTES.AUTH.LOGIN, element: <LazyPage Component={Pages.AuthPage} /> },
   {
     path: ROUTES.AUTH.FORGOT_PASSWORD,
@@ -59,19 +59,13 @@ export const routes: RouteObject[] = [
     element: <LazyPage Component={Pages.OAuthCallbackPage} />,
   },
 
-  // ── Admin Preview (public – authenticates via token in query params) ──
-  {
-    path: '/admin-preview/courses/:slug',
-    element: <LazyPage Component={Pages.AdminPreviewPage} />,
-  },
-
   // ── Certificate Public Verification (no auth required) ────────
   {
     path: '/verify/:verificationId',
     element: <LazyPage Component={Pages.VerifyCertificatePage} />,
   },
 
-  // ── Profile ────────────────────────────────────
+  // ── Profile ──────────────────────────────
   {
     path: ROUTES.PROFILE.VIEW,
     element: (
@@ -85,7 +79,7 @@ export const routes: RouteObject[] = [
     element: <LazyPage Component={Pages.PublicProfilePage} />,
   },
 
-  // ── Notifications ──────────────────────────────
+  // ── Notifications ──────────────────────────
   {
     path: '/notifications',
     element: (
@@ -191,7 +185,7 @@ export const routes: RouteObject[] = [
     ),
   },
 
-  // ── Errors ─────────────────────────────────────
+  // ── Errors ─────────────────────────────
   {
     path: ROUTES.UNAUTHORIZED,
     element: <LazyPage Component={Pages.UnauthorizedPage} />,
@@ -202,7 +196,7 @@ export const routes: RouteObject[] = [
     element: <LazyPage Component={Pages.NotFoundPage} />,
   },
 
-  // ── Temporary Pages ───────────────────────────────
+  // ── Temporary Pages ───────────────────────────
   {
     path: '/temp',
     element: <LazyPage Component={Pages.TempPage} />,

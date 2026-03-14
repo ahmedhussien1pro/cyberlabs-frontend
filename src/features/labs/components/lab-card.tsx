@@ -16,9 +16,11 @@ import type { Lab } from '../types/lab.types';
 interface LabCardProps {
   lab: Lab;
   index?: number;
+  /** compact: smaller thumbnail, tighter padding — for dense 4-col grids */
+  compact?: boolean;
 }
 
-export function LabCard({ lab, index = 0 }: LabCardProps) {
+export function LabCard({ lab, index = 0, compact = false }: LabCardProps) {
   const { i18n } = useTranslation('labs');
   const lang = i18n.language === 'ar' ? 'ar' : 'en';
   const navigate = useNavigate();
@@ -41,7 +43,7 @@ export function LabCard({ lab, index = 0 }: LabCardProps) {
     <motion.div
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.28, delay: index * 0.06 }}
+      transition={{ duration: 0.28, delay: index * 0.04 }}
       className={cn(
         'group relative flex flex-col rounded-2xl border bg-card overflow-hidden',
         'transition-all duration-300 ring-1 ring-transparent cursor-pointer',
@@ -50,36 +52,44 @@ export function LabCard({ lab, index = 0 }: LabCardProps) {
       )}
       onClick={() => navigate(detailRoute)}>
 
-      {/* ── Thumbnail + status/XP overlays ── */}
+      {/* Thumbnail */}
       <LabThumbnail
         difficulty={lab.difficulty}
         category={lab.category}
         xpReward={lab.xpReward}
         isCompleted={isCompleted}
         isStarted={isStarted}
+        compact={compact}
       />
 
-      {/* ── Body ── */}
-      <div className='flex flex-col flex-1 p-4 gap-3'>
-        <h3 className='text-sm font-bold text-foreground leading-snug line-clamp-2'>{title}</h3>
-        <p className='text-xs text-muted-foreground leading-relaxed line-clamp-2'>{desc}</p>
+      {/* Body */}
+      <div className={cn('flex flex-col flex-1 gap-2', compact ? 'p-3' : 'p-4 gap-3')}>
+        <h3 className={cn(
+          'font-bold text-foreground leading-snug line-clamp-2',
+          compact ? 'text-xs' : 'text-sm',
+        )}>{title}</h3>
 
-        <LabSkillTags skills={lab.skills} />
+        {!compact && (
+          <p className='text-xs text-muted-foreground leading-relaxed line-clamp-2'>{desc}</p>
+        )}
+
+        <LabSkillTags skills={lab.skills} compact={compact} />
 
         <LabMetaBadges
           difficulty={lab.difficulty}
           duration={lab.duration}
           pointsReward={lab.pointsReward}
+          compact={compact}
         />
 
-        {/* Hints count */}
-        {lab.hints?.length > 0 && (
+        {/* Hints — only in normal mode */}
+        {!compact && lab.hints?.length > 0 && (
           <p className='text-[11px] text-muted-foreground/60'>
             {lab.hints.length} hint{lab.hints.length > 1 ? 's' : ''} available
           </p>
         )}
 
-        {/* Progress bar — only when in progress */}
+        {/* Progress bar */}
         {isStarted && progress && (
           <div className='space-y-1'>
             <div className='flex justify-between text-[10px] text-muted-foreground'>
@@ -100,6 +110,7 @@ export function LabCard({ lab, index = 0 }: LabCardProps) {
             isLaunching={isThisLabLaunching}
             onLaunch={() => launchLab(lab.id)}
             onViewDetail={() => navigate(detailRoute)}
+            compact={compact}
           />
         </div>
       </div>

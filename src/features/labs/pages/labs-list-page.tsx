@@ -19,12 +19,12 @@ import { useLabs } from '../hooks/use-labs';
 
 const DIFF_FILTERS = [
   { v: 'all', label: 'All' },
-  { v: 'BEGINNER', label: 'Beginner', activeClass: 'border-emerald-500/50 text-emerald-400 bg-emerald-500/10' },
-  { v: 'INTERMEDIATE', label: 'Intermediate', activeClass: 'border-yellow-500/50 text-yellow-400 bg-yellow-500/10' },
-  { v: 'ADVANCED', label: 'Advanced', activeClass: 'border-red-500/50 text-red-400 bg-red-500/10' },
+  { v: 'BEGINNER',     label: 'Beginner',     activeClass: 'border-emerald-500/50 text-emerald-400 bg-emerald-500/10' },
+  { v: 'INTERMEDIATE', label: 'Intermediate', activeClass: 'border-yellow-500/50  text-yellow-400  bg-yellow-500/10'  },
+  { v: 'ADVANCED',     label: 'Advanced',     activeClass: 'border-red-500/50     text-red-400     bg-red-500/10'     },
 ];
 
-const SKELETON_COUNT = 6;
+const SKELETON_COUNT = 8;
 
 export default function LabListPage() {
   const { i18n } = useTranslation('labs');
@@ -36,7 +36,7 @@ export default function LabListPage() {
     [data],
   );
 
-  const [search, setSearch] = useState('');
+  const [search, setSearch]       = useState('');
   const [activeDiff, setActiveDiff] = useState<string>('all');
 
   const filtered = useMemo(() => {
@@ -45,8 +45,8 @@ export default function LabListPage() {
       .map((cat) => ({
         ...cat,
         labs: cat.labs.filter((lab) => {
-          const matchDiff = activeDiff === 'all' || lab.difficulty === activeDiff;
-          const q = search.toLowerCase();
+          const matchDiff   = activeDiff === 'all' || lab.difficulty === activeDiff;
+          const q           = search.toLowerCase();
           const matchSearch =
             !q ||
             lab.title.toLowerCase().includes(q) ||
@@ -59,10 +59,10 @@ export default function LabListPage() {
   }, [data, search, activeDiff]);
 
   const stats = useMemo(() => ({
-    total: allLabs.length,
-    beginner: allLabs.filter((l) => l.difficulty === 'BEGINNER').length,
+    total:        allLabs.length,
+    beginner:     allLabs.filter((l) => l.difficulty === 'BEGINNER').length,
     intermediate: allLabs.filter((l) => l.difficulty === 'INTERMEDIATE').length,
-    solved: allLabs.filter((l) => l.usersProgress?.[0]?.flagSubmitted).length,
+    solved:       allLabs.filter((l) => l.usersProgress?.[0]?.flagSubmitted).length,
   }), [allLabs]);
 
   const totalFiltered = filtered.reduce((n, c) => n + c.labs.length, 0);
@@ -71,7 +71,7 @@ export default function LabListPage() {
     <MainLayout>
       <div className='min-h-screen bg-background'>
 
-        {/* ── Hero ────────────────────────────────────────────────── */}
+        {/* ── Hero ── */}
         <div className='relative overflow-hidden border-b border-border/50 bg-background/80'>
           <MatrixRain className='absolute inset-0 opacity-[0.07]' />
           <div className='relative z-10 container mx-auto px-4 py-14 text-center space-y-4'>
@@ -93,10 +93,10 @@ export default function LabListPage() {
             {!isLoading && data && (
               <div className='flex items-center justify-center gap-8 pt-3 flex-wrap'>
                 {[
-                  { Icon: Shield,     label: 'Total Labs',   value: stats.total,        cls: 'text-foreground'  },
-                  { Icon: TrendingUp, label: 'Beginner',     value: stats.beginner,     cls: 'text-emerald-400' },
-                  { Icon: Zap,        label: 'Intermediate', value: stats.intermediate, cls: 'text-yellow-400'  },
-                  { Icon: CheckCircle2, label: 'Solved',     value: stats.solved,       cls: 'text-primary'    },
+                  { Icon: Shield,       label: 'Total Labs',   value: stats.total,        cls: 'text-foreground'  },
+                  { Icon: TrendingUp,   label: 'Beginner',     value: stats.beginner,     cls: 'text-emerald-400' },
+                  { Icon: Zap,          label: 'Intermediate', value: stats.intermediate, cls: 'text-yellow-400'  },
+                  { Icon: CheckCircle2, label: 'Solved',       value: stats.solved,       cls: 'text-primary'    },
                 ].map(({ Icon, label, value, cls }) => (
                   <div key={label} className='flex flex-col items-center gap-0.5'>
                     <div className='flex items-center gap-1.5'>
@@ -111,7 +111,7 @@ export default function LabListPage() {
           </div>
         </div>
 
-        {/* ── Toolbar ─────────────────────────────────────────────── */}
+        {/* ── Toolbar ── */}
         <div className='border-b border-border/40 bg-card/50 backdrop-blur-sm sticky top-0 z-30'>
           <div className='container mx-auto px-4 py-3 flex items-center gap-3 flex-wrap'>
 
@@ -160,7 +160,7 @@ export default function LabListPage() {
           </div>
         </div>
 
-        {/* ── Content ─────────────────────────────────────────────── */}
+        {/* ── Content ── */}
         <div className='container mx-auto px-4 py-10 space-y-12'>
 
           {/* Error */}
@@ -170,23 +170,22 @@ export default function LabListPage() {
             </div>
           )}
 
-          {/* Skeletons */}
+          {/* Skeletons — 4-col compact grid */}
           {isLoading && (
             <div className='space-y-10'>
               {[1, 2].map((g) => (
                 <div key={g} className='space-y-4'>
                   <Skeleton className='h-6 w-40 rounded-lg' />
-                  <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5'>
+                  <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
                     {Array.from({ length: SKELETON_COUNT / 2 }).map((_, i) => (
                       <div key={i} className='rounded-2xl border border-border/40 bg-card overflow-hidden'>
-                        <Skeleton className='aspect-video w-full' />
-                        <div className='p-4 space-y-3'>
-                          <div className='flex gap-2'>
-                            {[1, 2, 3].map((x) => <Skeleton key={x} className='h-5 w-16 rounded-full' />)}
+                        <Skeleton className='h-32 w-full' />
+                        <div className='p-3 space-y-2'>
+                          <div className='flex gap-1.5'>
+                            {[1, 2].map((x) => <Skeleton key={x} className='h-4 w-12 rounded-full' />)}
                           </div>
-                          <Skeleton className='h-5 w-3/4' />
-                          <Skeleton className='h-4 w-full' />
-                          <Skeleton className='h-9 w-full rounded-lg' />
+                          <Skeleton className='h-4 w-3/4' />
+                          <Skeleton className='h-8 w-full rounded-lg' />
                         </div>
                       </div>
                     ))}
@@ -196,9 +195,9 @@ export default function LabListPage() {
             </div>
           )}
 
-          {/* Categories */}
+          {/* Categories — 4-col compact grid */}
           {!isLoading && filtered.map((category) => (
-            <section key={category.id} className='space-y-5'>
+            <section key={category.id} className='space-y-4'>
               <div className='flex items-center gap-3'>
                 <h2 className='text-lg font-bold text-foreground'>
                   {lang === 'ar' ? category.ar_name : category.name}
@@ -208,9 +207,11 @@ export default function LabListPage() {
                 </span>
                 <div className='flex-1 h-px bg-border/40' />
               </div>
-              <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5'>
+
+              {/* compact=true → smaller cards, 4 columns on xl */}
+              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
                 {category.labs.map((lab, i) => (
-                  <LabCard key={lab.id} lab={lab} index={i} />
+                  <LabCard key={lab.id} lab={lab} index={i} compact />
                 ))}
               </div>
             </section>

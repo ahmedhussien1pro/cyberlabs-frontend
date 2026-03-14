@@ -151,12 +151,9 @@ export function CourseHeroCta({
           ) : canAccess ? (
             isCompleted ? (
               <>
-                <Button size='sm' className='h-8 gap-1.5 px-5 text-xs font-semibold' onClick={hasLabs ? onGoToLabs : onContinue}>
-                  {hasLabs ? (
-                    <><FlaskConical className='h-3.5 w-3.5' />{t('detail.goToLabs', 'Go to Labs')}</>
-                  ) : (
-                    <><ScrollText className='h-3.5 w-3.5' />{t('detail.viewCurriculum', 'Review Course')}</>
-                  )}
+                <Button size='sm' className='h-8 gap-1.5 px-5 text-xs font-semibold' onClick={onContinue}>
+                  <ScrollText className='h-3.5 w-3.5' />
+                  {t('detail.viewCurriculum', 'Review Course')}
                 </Button>
                 {onReset && (
                   <AlertDialog>
@@ -201,6 +198,18 @@ export function CourseHeroCta({
               ) : (
                 <><Crown className='h-3.5 w-3.5' />{t('detail.upgrade', 'Upgrade to {{plan}}', { plan: course.access })}<BreadcrumbChevron className='h-3.5 w-3.5' /></>
               )}
+            </Button>
+          )}
+
+          {/* Go To Labs — always visible when course has labs */}
+          {!comingSoon && hasLabs && onGoToLabs && (
+            <Button
+              size='sm'
+              variant='outline'
+              className='h-8 gap-1.5 px-4 text-xs font-semibold border-emerald-500/40 bg-emerald-500/5 text-emerald-400 hover:bg-emerald-500/15 hover:border-emerald-500/60'
+              onClick={onGoToLabs}>
+              <FlaskConical className='h-3.5 w-3.5' />
+              {t('detail.goToLabs', 'Go to Labs')}
             </Button>
           )}
         </div>

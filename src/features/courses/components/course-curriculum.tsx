@@ -1,10 +1,11 @@
 // src/features/courses/components/course-curriculum.tsx
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlaskConical, ExternalLink } from 'lucide-react';
+import { FlaskConical, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 import { useUserProgress } from '../hooks/use-user-progress';
 import { useCurriculum } from '../hooks/use-curriculum';
 import type { Course } from '../types/course.types';
@@ -12,6 +13,8 @@ import { CourseCompletionModal } from './course-completion-modal';
 import { CurriculumSkeleton } from './curriculum/CurriculumSkeleton';
 import { TopicRow } from './curriculum/TopicRow';
 import type { CurriculumTopic } from './curriculum/TopicRow';
+import { ROUTES } from '@/shared/constants';
+import { useNavigate } from 'react-router-dom';
 
 interface CourseCurriculumProps {
   course: Course;
@@ -22,8 +25,9 @@ interface CourseCurriculumProps {
 export function CourseCurriculum({ course, isEnrolled, hasLabs = false }: CourseCurriculumProps) {
   const { t, i18n } = useTranslation('courses');
   const lang = i18n.language === 'ar' ? 'ar' : 'en';
+  const navigate = useNavigate();
   const [openId, setOpenId] = useState<string | null>(null);
-  const [celebrateOpen, setCelebrateOpen] = useState(false);
+  const [completionModalOpen, setCompletionModalOpen] = useState(false);
 
   const { getProgress, getCompletedCount } = useUserProgress();
   const { data: curriculumData, isLoading } = useCurriculum(course.slug);
@@ -34,19 +38,31 @@ export function CourseCurriculum({ course, isEnrolled, hasLabs = false }: Course
   const total     = topics.length;
   const doneCount = getCompletedCount(course.id);
   const pct       = getProgress(course.id);
+  const isCompleted = pct >= 100;
   const courseTitle = lang === 'ar' ? (course.ar_title ?? course.title) : course.title;
 
-  const handleScrollToLabs = () => {
-    document.getElementById('course-labs-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  /** Go To Labs button handler */
+  const handleLabsClick = () => {
+    if (!hasLabs) return; // button disabled
+    if (!isCompleted) {
+      toast.warning(
+        t('detail.completeFirst', 'Finish the course first to unlock the labs! 🔒'),
+        { duration: 3500, icon: '🔒' },
+      );
+      return;
+    }
+    // Course completed — show completion modal with labs CTA
+    setCompletionModalOpen(true);
   };
 
   return (
     <section id='course-curriculum' className='space-y-6'>
+      {/* Completion modal — triggered by Go To Labs when course is done */}
       <CourseCompletionModal
-        open={celebrateOpen}
+        open={completionModalOpen}
         courseTitle={courseTitle}
-        onClose={() => setCelebrateOpen(false)}
-        onReset={undefined}
+        onClose={() => setCompletionModalOpen(false)}
+        onGoToLabs={hasLabs ? () => navigate(ROUTES.COURSES.LABS(course.slug)) : undefined}
       />
 
       {/* Header */}
@@ -97,30 +113,42 @@ export function CourseCurriculum({ course, isEnrolled, hasLabs = false }: Course
                 courseState={course.state}
                 isOpen={openId === topic.id}
                 onToggle={() => toggle(topic.id)}
-                onCourseComplete={() => setCelebrateOpen(true)}
+                onCourseComplete={() => setCompletionModalOpen(false)}
               />
             ))}
           </ol>
         </div>
       )}
 
-      {/* Labs button */}
+      {/* ── Go To Labs button ── */}
       <div className='flex justify-center pt-4'>
-        <Button
-          variant='outline'
-          size='lg'
-          onClick={hasLabs ? handleScrollToLabs : undefined}
-          disabled={!hasLabs}
-          className={cn(
-            'gap-2.5 min-w-[220px] rounded-xl border-primary/40 font-semibold',
-            hasLabs
-              ? 'hover:bg-primary/10 hover:border-primary/60 hover:text-primary transition-all cursor-pointer'
-              : 'opacity-50 cursor-not-allowed',
+        {hasLabs ? (
+          <Button
+            variant='outline'
+            size='lg'
+            onClick={handleLabsClick}
+            className={cn(
+              'gap-2.5 min-w-[220px] rounded-xl font-semibold transition-all',
+              isCompleted
+                ? 'border-emerald-500/40 bg-emerald-500/5 text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/60 cursor-pointer'
+                : 'border-white/15 bg-white/5 text-white/40 hover:border-white/25 hover:text-white/60 cursor-pointer',
+            )}>
+            {isCompleted
+              ? <FlaskConical className='h-5 w-5' />
+              : <Lock className='h-4.5 w-4.5' />
+            }
+            {t('curriculum.goToLabs', 'Go To Labs')}
+          </Button>
+        ) : (
+          <span className={cn(
+            'inline-flex items-center gap-2.5 min-w-[220px] justify-center',
+            'rounded-xl border border-white/10 bg-white/5 px-5 py-2.5',
+            'text-sm font-semibold text-white/30',
           )}>
-          <FlaskConical className='h-5 w-5' />
-          {hasLabs ? t('curriculum.goToLabs', 'Go To Labs') : t('curriculum.noLabs', 'No Labs Available')}
-          {hasLabs && <ExternalLink className='h-3.5 w-3.5 opacity-70' />}
-        </Button>
+            <FlaskConical className='h-5 w-5' />
+            {t('curriculum.labsComingSoon', 'Labs Coming Soon')}
+          </span>
+        )}
       </div>
     </section>
   );

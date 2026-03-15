@@ -15,7 +15,7 @@ export function HeroSection() {
     <section className='relative overflow-hidden  flex items-center font-sans px-10'>
       <ParticlesBackground />
 
-      <div className='container relative z-10 py-5 mx-auto px-10'>
+      <div className='container relative z-10 py-5 mx-auto '>
         <div className='flex flex-col lg:flex-row items-center gap-10'>
           {/* Text Side */}
           <motion.div

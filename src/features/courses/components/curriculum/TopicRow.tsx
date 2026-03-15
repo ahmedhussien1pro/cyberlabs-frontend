@@ -60,7 +60,7 @@ export function TopicRow({
 }) {
   const { i18n, t } = useTranslation('courses');
   const lang = i18n.language === 'ar' ? 'ar' : 'en';
-  const { isTopicCompleted, isCourseCompleted } = useUserProgress();
+  const { isTopicCompleted, getCompletedCount } = useUserProgress();
   const { mutate: markComplete, isPending: marking } = useMarkTopicComplete();
 
   const state = getTopicState(topicIndex, sectionId, courseId, isEnrolled, courseState, isTopicCompleted);
@@ -72,13 +72,19 @@ export function TopicRow({
 
   const handleMarkComplete = () => {
     if (!sectionId) return;
+
+    // Optimistic check: current doneCount + this topic = total means course will be complete
+    const currentDone = getCompletedCount(courseId);
+    const willComplete = total > 0 && (currentDone + 1) >= total;
+
     markComplete(
       { courseId, topicId: sectionId },
       {
         onSuccess: () => {
-          setTimeout(() => {
-            if (isCourseCompleted(courseId, total)) onCourseComplete();
-          }, 150);
+          if (willComplete) {
+            // Small delay so UI can update the topic state first, then show modal
+            setTimeout(() => onCourseComplete(), 400);
+          }
         },
       },
     );

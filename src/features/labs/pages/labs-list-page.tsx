@@ -9,10 +9,11 @@ import {
   TrendingUp,
   Search,
   SlidersHorizontal,
+  FlaskConical,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import MainLayout from '@/shared/components/layout/main-layout';
-import { MatrixRain } from '@/shared/components/common/landing/matrix-rain';
+import { DetailPageHero } from '@/shared/components/common/detail-page-hero';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LabRowCard } from '../components/lab-row-card';
 import { useLabs } from '../hooks/use-labs';
@@ -69,43 +70,54 @@ export default function LabListPage() {
     <MainLayout>
       <div className='min-h-screen bg-background'>
 
-        {/* Hero */}
-        <div className='relative overflow-hidden border-b border-border/50 bg-background/80'>
-          <MatrixRain className='absolute inset-0 opacity-[0.07]' />
-          <div className='relative z-10 container mx-auto px-4 py-14 text-center space-y-4'>
-            <span className='inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-xs font-bold text-primary uppercase tracking-wider'>
-              <Terminal className='h-3.5 w-3.5' />
+        {/* ── Hero ── */}
+        <DetailPageHero
+          matrixColor='#10b981'
+          stripeClass='bg-gradient-to-r from-emerald-500 via-cyan-500 to-emerald-500'
+          bloomClass='bg-emerald-500'
+          iconSlot={
+            <div className='h-14 w-14 shrink-0 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 flex items-center justify-center ring-1 ring-white/10'>
+              <FlaskConical className='h-7 w-7 text-emerald-400' />
+            </div>
+          }
+          badgesSlot={
+            <span className='inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[11px] font-bold text-emerald-400 uppercase tracking-wider'>
+              <Terminal className='h-3 w-3' />
               Practice Labs
             </span>
-            <h1 className='text-4xl md:text-5xl font-black tracking-tight text-foreground'>
-              Hack. <span className='text-primary'>Learn.</span> Master.
+          }
+          titleSlot={
+            <h1 className='text-2xl font-black leading-tight tracking-tight text-white sm:text-3xl lg:text-4xl'>
+              Hack. <span className='text-emerald-400'>Learn.</span> Master.
             </h1>
-            <p className='text-muted-foreground text-base max-w-lg mx-auto'>
+          }
+          descriptionSlot={
+            <p className='mt-1 max-w-xl text-sm leading-relaxed text-white/60'>
               Real-world vulnerable environments — no setup needed.
               Attack, exploit, and submit the flag.
             </p>
-            {!isLoading && data && (
-              <div className='flex items-center justify-center gap-8 pt-3 flex-wrap'>
+          }
+          statsSlot={
+            !isLoading && data ? (
+              <>
                 {[
-                  { Icon: Shield,       label: 'Total Labs',   value: stats.total,        cls: 'text-foreground'  },
+                  { Icon: Shield,       label: 'Total Labs',   value: stats.total,        cls: 'text-white'       },
                   { Icon: TrendingUp,   label: 'Beginner',     value: stats.beginner,     cls: 'text-emerald-400' },
                   { Icon: Zap,          label: 'Intermediate', value: stats.intermediate, cls: 'text-yellow-400'  },
-                  { Icon: CheckCircle2, label: 'Solved',       value: stats.solved,       cls: 'text-primary'    },
+                  { Icon: CheckCircle2, label: 'Solved',       value: stats.solved,       cls: 'text-cyan-400'   },
                 ].map(({ Icon, label, value, cls }) => (
-                  <div key={label} className='flex flex-col items-center gap-0.5'>
-                    <div className='flex items-center gap-1.5'>
-                      <Icon className={cn('h-4 w-4', cls)} />
-                      <span className={cn('text-2xl font-black', cls)}>{value}</span>
-                    </div>
-                    <span className='text-[11px] text-muted-foreground uppercase tracking-wider'>{label}</span>
+                  <div key={label} className='flex items-center gap-1.5'>
+                    <Icon className={cn('h-4 w-4', cls)} />
+                    <span className={cn('font-black text-lg leading-none', cls)}>{value}</span>
+                    <span className='text-[11px] text-white/40 uppercase tracking-wider'>{label}</span>
                   </div>
                 ))}
-              </div>
-            )}
-          </div>
-        </div>
+              </>
+            ) : null
+          }
+        />
 
-        {/* Toolbar */}
+        {/* ── Toolbar ── */}
         <div className='border-b border-border/40 bg-card/50 backdrop-blur-sm sticky top-0 z-30'>
           <div className='container mx-auto px-4 py-3 flex items-center gap-3 flex-wrap'>
             <div className='relative flex-1 min-w-[180px] max-w-xs'>
@@ -146,7 +158,7 @@ export default function LabListPage() {
           </div>
         </div>
 
-        {/* Content */}
+        {/* ── Content ── */}
         <div className='container mx-auto px-4 py-10 space-y-10'>
 
           {isError && (
@@ -155,7 +167,6 @@ export default function LabListPage() {
             </div>
           )}
 
-          {/* Skeletons */}
           {isLoading && (
             <div className='space-y-8'>
               {[1, 2].map((g) => (
@@ -182,7 +193,6 @@ export default function LabListPage() {
             </div>
           )}
 
-          {/* Categories — row layout */}
           {!isLoading && filtered.map((category) => (
             <section key={category.id} className='space-y-3'>
               <div className='flex items-center gap-3'>
@@ -194,8 +204,6 @@ export default function LabListPage() {
                 </span>
                 <div className='flex-1 h-px bg-border/40' />
               </div>
-
-              {/* Two-column row grid on md+ */}
               <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
                 {category.labs.map((lab, i) => (
                   <LabRowCard key={lab.id} lab={lab} index={i} />
@@ -204,7 +212,6 @@ export default function LabListPage() {
             </section>
           ))}
 
-          {/* Empty */}
           {!isLoading && filtered.length === 0 && (
             <div className='flex flex-col items-center justify-center py-28 gap-4 text-center'>
               <div className='h-14 w-14 rounded-2xl bg-muted flex items-center justify-center border border-border/40'>

@@ -9,4 +9,22 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  test: {
+    globals: true,
+    environment: 'happy-dom',
+    setupFiles: ['./src/test/setup.ts'],
+    include: ['src/**/*.{test,spec}.{ts,tsx}'],
+    exclude: ['node_modules', 'dist'],
+    coverage: {
+      reporter: ['text', 'lcov'],
+      exclude: [
+        'node_modules/',
+        'src/test/',
+        'src/main.tsx',
+        'src/App.tsx',
+        '**/*.d.ts',
+        '**/*.config.*',
+      ],
+    },
+  },
 });

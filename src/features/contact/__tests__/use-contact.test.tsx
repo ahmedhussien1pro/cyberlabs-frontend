@@ -1,24 +1,32 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
-import { render } from '@/test/utils';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type { ReactNode } from 'react';
 import { useContact } from '../hooks/use-contact';
 
-const mockPost = vi.fn();
-
-vi.mock('@/core/api/client', () => ({ apiClient: { post: mockPost } }));
+// IMPORTANT: vi.mock factory must NOT reference variables declared outside
+// because vi.mock is hoisted. Use inline vi.fn() instead.
+vi.mock('@/core/api/client', () => ({
+  apiClient: { post: vi.fn() },
+}));
 
 vi.mock('sonner', () => ({
-  toast: {
-    success: vi.fn(),
-    error: vi.fn(),
-  },
+  toast: { success: vi.fn(), error: vi.fn() },
 }));
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (k: string) => k, i18n: { language: 'en' } }),
 }));
 
+import { apiClient } from '@/core/api/client';
 import { toast } from 'sonner';
+
+function wrapper({ children }: { children: ReactNode }) {
+  const qc = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  });
+  return <QueryClientProvider client={qc}>{children}</QueryClientProvider>;
+}
 
 const payload = {
   name: 'Ahmed',
@@ -30,35 +38,31 @@ const payload = {
 describe('useContact hook', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('returns a mutate function', () => {
-    const { result } = renderHook(() => useContact(), {
-      wrapper: ({ children }) => render(<>{children}</>).container.parentElement as never,
-    });
-    // Use render wrapper from test/utils instead
-    expect(result).toBeDefined();
+  it('returns mutate, isPending, isSuccess', () => {
+    const { result } = renderHook(() => useContact(), { wrapper });
+    expect(typeof result.current.mutate).toBe('function');
+    expect(result.current.isPending).toBe(false);
+    expect(result.current.isSuccess).toBe(false);
   });
 
   it('calls toast.success on API success', async () => {
-    mockPost.mockResolvedValueOnce({ data: {} });
-    const { result } = renderHook(() => useContact(), {
-      wrapper: ({ children }: { children: React.ReactNode }) => {
-        const { container } = render(<>{children}</>);
-        return container as never;
-      },
-    });
+    vi.mocked(apiClient.post).mockResolvedValueOnce({ data: {} });
+    const { result } = renderHook(() => useContact(), { wrapper });
     result.current.mutate(payload);
     await waitFor(() => expect(toast.success).toHaveBeenCalledWith('form.success'));
   });
 
   it('calls toast.error on API failure', async () => {
-    mockPost.mockRejectedValueOnce(new Error('fail'));
-    const { result } = renderHook(() => useContact(), {
-      wrapper: ({ children }: { children: React.ReactNode }) => {
-        const { container } = render(<>{children}</>);
-        return container as never;
-      },
-    });
+    vi.mocked(apiClient.post).mockRejectedValueOnce(new Error('fail'));
+    const { result } = renderHook(() => useContact(), { wrapper });
     result.current.mutate(payload);
     await waitFor(() => expect(toast.error).toHaveBeenCalledWith('form.error'));
+  });
+
+  it('isSuccess becomes true after successful mutation', async () => {
+    vi.mocked(apiClient.post).mockResolvedValueOnce({ data: {} });
+    const { result } = renderHook(() => useContact(), { wrapper });
+    result.current.mutate(payload);
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
   });
 });

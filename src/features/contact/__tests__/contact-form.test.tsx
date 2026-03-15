@@ -20,12 +20,6 @@ vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (k: string) => k, i18n: { language: 'en' } }),
 }));
 
-// Mock shadcn/ui form components
-vi.mock('@/components/ui/form', async () => {
-  const actual = await vi.importActual<typeof import('@/components/ui/form')>('@/components/ui/form');
-  return actual;
-});
-
 describe('ContactForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -38,7 +32,7 @@ describe('ContactForm', () => {
     expect(container.firstChild).toBeInTheDocument();
   });
 
-  it('renders name, email, subject, message fields', () => {
+  it('renders name, email, subject, message field labels', () => {
     render(<ContactForm />);
     expect(screen.getByText('form.name')).toBeInTheDocument();
     expect(screen.getByText('form.email')).toBeInTheDocument();
@@ -46,7 +40,7 @@ describe('ContactForm', () => {
     expect(screen.getByText('form.message')).toBeInTheDocument();
   });
 
-  it('renders submit button with i18n key', () => {
+  it('renders submit button', () => {
     render(<ContactForm />);
     expect(screen.getByRole('button', { name: /form.submit/i })).toBeInTheDocument();
   });
@@ -62,30 +56,26 @@ describe('ContactForm', () => {
     expect(screen.getByRole('button')).toBeDisabled();
   });
 
-  it('shows loading spinner text when isPending=true', () => {
+  it('shows loading text when isPending=true', () => {
     mockIsPending = true;
     render(<ContactForm />);
     expect(screen.getByText('form.submitting')).toBeInTheDocument();
   });
 
-  it('shows ContactSuccess when isSuccess=true', () => {
+  it('hides form fields when isSuccess=true', () => {
     mockIsSuccess = true;
     render(<ContactForm />);
-    // ContactSuccess renders — form fields gone
     expect(screen.queryByText('form.name')).not.toBeInTheDocument();
   });
 
   it('calls mutate with correct values on valid submit', async () => {
     const user = userEvent.setup();
     render(<ContactForm />);
-
     await user.type(screen.getByPlaceholderText('form.namePlaceholder'), 'Ahmed Ali');
     await user.type(screen.getByPlaceholderText('form.emailPlaceholder'), 'ahmed@test.com');
     await user.type(screen.getByPlaceholderText('form.subjectPlaceholder'), 'Test Subject');
     await user.type(screen.getByPlaceholderText('form.messagePlaceholder'), 'This is a test message body.');
-
     await user.click(screen.getByRole('button', { name: /form.submit/i }));
-
     await waitFor(() =>
       expect(mockMutate).toHaveBeenCalledWith({
         name: 'Ahmed Ali',
@@ -96,11 +86,13 @@ describe('ContactForm', () => {
     );
   });
 
-  it('does NOT call mutate when fields are empty (validation fails)', async () => {
+  it('does NOT call mutate when all fields empty', async () => {
     const user = userEvent.setup();
     render(<ContactForm />);
     await user.click(screen.getByRole('button', { name: /form.submit/i }));
-    await waitFor(() => expect(mockMutate).not.toHaveBeenCalled());
+    // wait briefly then assert mutate was never called
+    await new Promise((r) => setTimeout(r, 50));
+    expect(mockMutate).not.toHaveBeenCalled();
   });
 
   it('does NOT call mutate with invalid email', async () => {
@@ -109,8 +101,9 @@ describe('ContactForm', () => {
     await user.type(screen.getByPlaceholderText('form.namePlaceholder'), 'Ahmed');
     await user.type(screen.getByPlaceholderText('form.emailPlaceholder'), 'not-an-email');
     await user.type(screen.getByPlaceholderText('form.subjectPlaceholder'), 'Sub');
-    await user.type(screen.getByPlaceholderText('form.messagePlaceholder'), 'Some message here.');
+    await user.type(screen.getByPlaceholderText('form.messagePlaceholder'), 'Some message here ok.');
     await user.click(screen.getByRole('button', { name: /form.submit/i }));
-    await waitFor(() => expect(mockMutate).not.toHaveBeenCalled());
+    await new Promise((r) => setTimeout(r, 50));
+    expect(mockMutate).not.toHaveBeenCalled();
   });
 });

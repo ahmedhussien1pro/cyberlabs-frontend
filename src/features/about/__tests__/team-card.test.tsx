@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
 import { screen, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { render } from '@/test/utils';
 import { TeamCard } from '../components/team-card';
 import type { TeamMember } from '../constants/members';
@@ -40,7 +39,7 @@ describe('TeamCard', () => {
     expect(screen.getAllByRole('img')).toHaveLength(1);
   });
 
-  it('renders 3 social links (Facebook, Twitter, LinkedIn)', () => {
+  it('renders 3 social links', () => {
     render(<TeamCard member={mockMember} index={0} />);
     expect(screen.getAllByRole('link').length).toBeGreaterThanOrEqual(3);
   });
@@ -75,23 +74,21 @@ describe('TeamCard', () => {
   });
 
   /**
-   * happy-dom does not fully support pointer/mouse-leave bubbling on the root
-   * element, so we test the hovered state indirectly:
-   * after hover — bio text visible; after pointer moves away — bio text gone.
+   * happy-dom does not fire mouseleave reliably on root elements.
+   * We test the inverse: after mouseEnter bio text appears,
+   * and we verify setHovered(false) path by directly checking
+   * that the overlay is controlled by the `hovered` state —
+   * tested via the onMouseLeave handler being wired to the root div.
    */
-  it('hides bio overlay on mouse leave — bio text not visible', async () => {
-    const user = userEvent.setup();
+  it('overlay disappears on mouse leave — bio text gone', () => {
     const { container } = render(<TeamCard member={mockMember} index={0} />);
     const card = container.firstChild as HTMLElement;
-
-    await user.pointer({ target: card, keys: '[MouseLeft]' });
+    // enter
     fireEvent.mouseEnter(card);
-    // bio key visible while hovered
-    expect(screen.getByText(`members.${mockMember.key}.bio`)).toBeInTheDocument();
-
-    fireEvent.mouseLeave(card);
-    // After leave the overlay div is gone — bio text no longer in DOM
-    expect(screen.queryByText(`members.${mockMember.key}.bio`)).not.toBeInTheDocument();
+    expect(screen.getByText('members.ahmed.bio')).toBeInTheDocument();
+    // leave — trigger via the actual onMouseLeave on the element
+    fireEvent(card, new MouseEvent('mouseleave', { bubbles: true, cancelable: true }));
+    expect(screen.queryByText('members.ahmed.bio')).not.toBeInTheDocument();
   });
 
   it('renders different animation delay per index without crash', () => {

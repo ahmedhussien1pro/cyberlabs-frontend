@@ -15,14 +15,10 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
     exclude: ['node_modules', 'dist'],
-    // Increase worker memory to prevent OOM crashes from heavy component trees
     pool: 'forks',
-    poolOptions: {
-      forks: {
-        singleFork: false,
-        // 1 GB per worker — prevents Fatal process out of memory: Zone
-        execArgv: ['--max-old-space-size=1024'],
-      },
+    forks: {
+      singleFork: false,
+      execArgv: ['--max-old-space-size=1024'],
     },
     coverage: {
       provider: 'v8',

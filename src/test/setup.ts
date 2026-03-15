@@ -1,7 +1,8 @@
+/// <reference types="vitest/globals" />
 import '@testing-library/jest-dom';
 
-// suppress console.error for expected test errors
 const originalError = console.error;
+
 beforeAll(() => {
   console.error = (...args: unknown[]) => {
     if (
@@ -15,6 +16,7 @@ beforeAll(() => {
     originalError(...args);
   };
 });
+
 afterAll(() => {
   console.error = originalError;
 });

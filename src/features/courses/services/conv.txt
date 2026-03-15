@@ -1,7 +1,0 @@
-1. In use-courses.ts    → replace MOCK_COURSES_RESPONSE with coursesApi.list(filters)
-2. In use-course.ts     → replace MOCK_COURSES.find() with coursesApi.get(slug)
-3. In use-topic.ts      → replace getTopicById() with coursesApi.getTopic(slug, topicId)
-4. In use-enrollment.ts → replace mockEnroll() with coursesApi.enroll(courseId)
-5. In use-mark-complete.ts → replace mockMark() with coursesApi.markComplete(...)
-6. In App.tsx / ProtectedRoute → add useSyncProgress(isAuthenticated)
-7. Delete: data/mock-courses.ts, data/mock-topics.ts, data/json/*.json

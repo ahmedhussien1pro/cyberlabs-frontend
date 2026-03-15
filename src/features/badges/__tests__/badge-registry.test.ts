@@ -6,7 +6,7 @@ import {
   ALL_BADGE_SLUGS,
   getBadgeConfig,
 } from '../constants/badge-registry';
-import type { BadgeCategory } from '../constants/badge-registry';
+import type { BadgeCategory } from '../types/badge.types';
 
 describe('TIER_DESIGNS', () => {
   const tiers = ['BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'DIAMOND'] as const;

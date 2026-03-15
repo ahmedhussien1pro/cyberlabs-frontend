@@ -18,15 +18,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { LabRowCard } from '../components/lab-row-card';
 import { useLabs } from '../hooks/use-labs';
 
-const DIFF_FILTERS = [
-  { v: 'all', label: 'All' },
-  { v: 'BEGINNER',     label: 'Beginner',     activeClass: 'border-emerald-500/50 text-emerald-400 bg-emerald-500/10' },
-  { v: 'INTERMEDIATE', label: 'Intermediate', activeClass: 'border-yellow-500/50  text-yellow-400  bg-yellow-500/10'  },
-  { v: 'ADVANCED',     label: 'Advanced',     activeClass: 'border-red-500/50     text-red-400     bg-red-500/10'     },
-];
-
 export default function LabListPage() {
-  const { i18n } = useTranslation('labs');
+  const { t, i18n } = useTranslation('labs');
   const lang = i18n.language === 'ar' ? 'ar' : 'en';
   const { data, isLoading, isError } = useLabs();
 
@@ -37,6 +30,13 @@ export default function LabListPage() {
 
   const [search, setSearch]         = useState('');
   const [activeDiff, setActiveDiff] = useState<string>('all');
+
+  const DIFF_FILTERS = [
+    { v: 'all',          label: t('filters.all', 'All') },
+    { v: 'BEGINNER',     label: t('filters.beginner', 'Beginner'),     activeClass: 'border-emerald-500/50 text-emerald-400 bg-emerald-500/10' },
+    { v: 'INTERMEDIATE', label: t('filters.intermediate', 'Intermediate'), activeClass: 'border-yellow-500/50 text-yellow-400 bg-yellow-500/10' },
+    { v: 'ADVANCED',     label: t('filters.advanced', 'Advanced'),     activeClass: 'border-red-500/50 text-red-400 bg-red-500/10' },
+  ];
 
   const filtered = useMemo(() => {
     if (!data?.categories) return [];
@@ -70,7 +70,7 @@ export default function LabListPage() {
     <MainLayout>
       <div className='min-h-screen bg-background'>
 
-        {/* ── Hero ── */}
+        {/* Hero */}
         <DetailPageHero
           matrixColor='#10b981'
           stripeClass='bg-gradient-to-r from-emerald-500 via-cyan-500 to-emerald-500'
@@ -83,28 +83,29 @@ export default function LabListPage() {
           badgesSlot={
             <span className='inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[11px] font-bold text-emerald-400 uppercase tracking-wider'>
               <Terminal className='h-3 w-3' />
-              Practice Labs
+              {t('list.eyebrow', 'Practice Labs')}
             </span>
           }
           titleSlot={
             <h1 className='text-2xl font-black leading-tight tracking-tight text-white sm:text-3xl lg:text-4xl'>
-              Hack. <span className='text-emerald-400'>Learn.</span> Master.
+              {t('list.titleStart', 'Hack.')}{' '}
+              <span className='text-emerald-400'>{t('list.titleHighlight', 'Learn.')}</span>{' '}
+              {t('list.titleEnd', 'Master.')}
             </h1>
           }
           descriptionSlot={
             <p className='mt-1 max-w-xl text-sm leading-relaxed text-white/60'>
-              Real-world vulnerable environments — no setup needed.
-              Attack, exploit, and submit the flag.
+              {t('list.subtitle', 'Real-world vulnerable environments — no setup needed. Attack, exploit, and submit the flag.')}
             </p>
           }
           statsSlot={
             !isLoading && data ? (
               <>
                 {[
-                  { Icon: Shield,       label: 'Total Labs',   value: stats.total,        cls: 'text-white'       },
-                  { Icon: TrendingUp,   label: 'Beginner',     value: stats.beginner,     cls: 'text-emerald-400' },
-                  { Icon: Zap,          label: 'Intermediate', value: stats.intermediate, cls: 'text-yellow-400'  },
-                  { Icon: CheckCircle2, label: 'Solved',       value: stats.solved,       cls: 'text-cyan-400'   },
+                  { Icon: Shield,       label: t('list.statsTotal', 'Total Labs'),   value: stats.total,        cls: 'text-white'       },
+                  { Icon: TrendingUp,   label: t('list.statsBeginner', 'Beginner'),     value: stats.beginner,     cls: 'text-emerald-400' },
+                  { Icon: Zap,          label: t('list.statsIntermediate', 'Intermediate'), value: stats.intermediate, cls: 'text-yellow-400'  },
+                  { Icon: CheckCircle2, label: t('list.statsSolved', 'Solved'),       value: stats.solved,       cls: 'text-cyan-400'   },
                 ].map(({ Icon, label, value, cls }) => (
                   <div key={label} className='flex items-center gap-1.5'>
                     <Icon className={cn('h-4 w-4', cls)} />
@@ -117,7 +118,7 @@ export default function LabListPage() {
           }
         />
 
-        {/* ── Toolbar ── */}
+        {/* Toolbar */}
         <div className='border-b border-border/40 bg-card/50 backdrop-blur-sm sticky top-0 z-30'>
           <div className='container mx-auto px-4 py-3 flex items-center gap-3 flex-wrap'>
             <div className='relative flex-1 min-w-[180px] max-w-xs'>
@@ -126,7 +127,7 @@ export default function LabListPage() {
                 type='text'
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder='Search labs or skills...'
+                placeholder={t('filters.searchPlaceholder', 'Search labs or skills...')}
                 className={
                   'w-full rounded-lg border border-border/60 bg-muted/40 ps-9 pe-3 py-1.5 ' +
                   'text-sm text-foreground placeholder:text-muted-foreground ' +
@@ -152,18 +153,18 @@ export default function LabListPage() {
             {!isLoading && (
               <span className='ms-auto text-xs text-muted-foreground hidden sm:flex items-center gap-1'>
                 <Shield className='h-3 w-3' />
-                <span className='font-bold text-foreground'>{totalFiltered}</span> labs
+                <span className='font-bold text-foreground'>{totalFiltered}</span> {t('filters.countLabel', 'labs')}
               </span>
             )}
           </div>
         </div>
 
-        {/* ── Content ── */}
+        {/* Content */}
         <div className='container mx-auto px-4 py-10 space-y-10'>
 
           {isError && (
             <div className='rounded-xl border border-destructive/30 bg-destructive/10 p-8 text-center text-sm text-destructive'>
-              Failed to load labs. Please try again.
+              {t('list.error', 'Failed to load labs. Please try again.')}
             </div>
           )}
 
@@ -217,13 +218,13 @@ export default function LabListPage() {
               <div className='h-14 w-14 rounded-2xl bg-muted flex items-center justify-center border border-border/40'>
                 <Terminal className='h-7 w-7 text-muted-foreground' />
               </div>
-              <p className='font-semibold text-foreground'>No labs match your filters</p>
-              <p className='text-sm text-muted-foreground'>Try resetting or searching with different terms</p>
+              <p className='font-semibold text-foreground'>{t('list.empty', 'No labs match your filters')}</p>
+              <p className='text-sm text-muted-foreground'>{t('list.emptyHint', 'Try resetting or searching with different terms')}</p>
               <button
                 onClick={() => { setSearch(''); setActiveDiff('all'); }}
                 className='text-xs text-primary hover:underline underline-offset-2 flex items-center gap-1'>
                 <SlidersHorizontal className='h-3 w-3' />
-                Clear filters
+                {t('list.clearFilters', 'Clear filters')}
               </button>
             </div>
           )}

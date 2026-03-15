@@ -26,21 +26,21 @@ interface CourseLabsResponse {
   course?: { title: string; ar_title?: string; slug: string; color?: string };
 }
 
-const DIFF_FILTERS = [
-  { v: 'all',          label: 'All' },
-  { v: 'BEGINNER',     label: 'Beginner',     activeClass: 'border-emerald-500/50 text-emerald-400 bg-emerald-500/10' },
-  { v: 'INTERMEDIATE', label: 'Intermediate', activeClass: 'border-yellow-500/50 text-yellow-400 bg-yellow-500/10' },
-  { v: 'ADVANCED',     label: 'Advanced',     activeClass: 'border-red-500/50    text-red-400    bg-red-500/10' },
-];
-
 export default function CourseLabsPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { i18n } = useTranslation('labs');
+  const { t, i18n } = useTranslation('labs');
   const lang = i18n.language === 'ar' ? 'ar' : 'en';
 
   const [search, setSearch]         = useState('');
   const [activeDiff, setActiveDiff] = useState('all');
+
+  const DIFF_FILTERS = [
+    { v: 'all',          label: t('filters.all', 'All') },
+    { v: 'BEGINNER',     label: t('filters.beginner', 'Beginner'),     activeClass: 'border-emerald-500/50 text-emerald-400 bg-emerald-500/10' },
+    { v: 'INTERMEDIATE', label: t('filters.intermediate', 'Intermediate'), activeClass: 'border-yellow-500/50 text-yellow-400 bg-yellow-500/10' },
+    { v: 'ADVANCED',     label: t('filters.advanced', 'Advanced'),     activeClass: 'border-red-500/50 text-red-400 bg-red-500/10' },
+  ];
 
   const { data, isLoading, isError } = useQuery<CourseLabsResponse>({
     queryKey: ['courses', slug, 'labs'],
@@ -57,7 +57,7 @@ export default function CourseLabsPage() {
       ? data.course.ar_title
       : (data?.course?.title ?? slug ?? '');
 
-  const solved   = allLabs.filter((l) => l.usersProgress?.[0]?.flagSubmitted).length;
+  const solved     = allLabs.filter((l) => l.usersProgress?.[0]?.flagSubmitted).length;
   const inProgress = allLabs.filter((l) => l.usersProgress?.[0] && !l.usersProgress[0].flagSubmitted).length;
 
   const filtered = useMemo(() => {
@@ -77,7 +77,7 @@ export default function CourseLabsPage() {
     <MainLayout>
       <div className='min-h-screen bg-background'>
 
-        {/* ── Hero ── */}
+        {/* Hero */}
         <DetailPageHero
           matrixColor='#10b981'
           stripeClass='bg-gradient-to-r from-emerald-500 via-cyan-500 to-emerald-500'
@@ -85,7 +85,7 @@ export default function CourseLabsPage() {
           breadcrumb={
             <>
               <Link to={ROUTES.COURSES.LIST} className='transition-colors hover:text-white/70'>
-                Courses
+                {t('courseLabs.breadcrumbCourses', 'Courses')}
               </Link>
               <ChevronRight className='h-3 w-3 shrink-0' />
               <Link
@@ -94,7 +94,7 @@ export default function CourseLabsPage() {
                 {courseTitle}
               </Link>
               <ChevronRight className='h-3 w-3 shrink-0' />
-              <span className='text-white/65'>Labs</span>
+              <span className='text-white/65'>{t('courseLabs.breadcrumbLabs', 'Labs')}</span>
             </>
           }
           iconSlot={
@@ -105,17 +105,17 @@ export default function CourseLabsPage() {
           badgesSlot={
             <span className='inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[11px] font-bold text-emerald-400 uppercase tracking-wider'>
               <Terminal className='h-3 w-3' />
-              Hands-on Labs
+              {t('courseLabs.eyebrow', 'Hands-on Labs')}
             </span>
           }
           titleSlot={
             <h1 className='text-xl font-black leading-tight tracking-tight text-white sm:text-2xl lg:text-3xl'>
-              {courseTitle} — <span className='text-emerald-400'>Labs</span>
+              {courseTitle} — <span className='text-emerald-400'>{t('courseLabs.titleSuffix', 'Labs')}</span>
             </h1>
           }
           descriptionSlot={
             <p className='mt-1 max-w-xl text-sm leading-relaxed text-white/60'>
-              Real-world vulnerable environments for this course. Complete all labs to master the skills.
+              {t('courseLabs.subtitle', 'Real-world vulnerable environments for this course. Complete all labs to master the skills.')}
             </p>
           }
           statsSlot={
@@ -124,24 +124,24 @@ export default function CourseLabsPage() {
                 <div className='flex items-center gap-1.5'>
                   <FlaskConical className='h-4 w-4 text-emerald-400' />
                   <span className='font-black text-lg leading-none text-white'>{allLabs.length}</span>
-                  <span className='text-[11px] text-white/40 uppercase tracking-wider'>Total</span>
+                  <span className='text-[11px] text-white/40 uppercase tracking-wider'>{t('courseLabs.statsTotal', 'Total')}</span>
                 </div>
                 <div className='flex items-center gap-1.5'>
                   <CheckCircle2 className='h-4 w-4 text-emerald-400' />
                   <span className='font-black text-lg leading-none text-emerald-400'>{solved}</span>
-                  <span className='text-[11px] text-white/40 uppercase tracking-wider'>Solved</span>
+                  <span className='text-[11px] text-white/40 uppercase tracking-wider'>{t('courseLabs.statsSolved', 'Solved')}</span>
                 </div>
                 <div className='flex items-center gap-1.5'>
                   <Lock className='h-4 w-4 text-yellow-400' />
                   <span className='font-black text-lg leading-none text-yellow-400'>{inProgress}</span>
-                  <span className='text-[11px] text-white/40 uppercase tracking-wider'>In Progress</span>
+                  <span className='text-[11px] text-white/40 uppercase tracking-wider'>{t('courseLabs.statsInProgress', 'In Progress')}</span>
                 </div>
               </>
             ) : null
           }
         />
 
-        {/* ── Toolbar ── */}
+        {/* Toolbar */}
         <div className='border-b border-border/40 bg-card/50 backdrop-blur-sm sticky top-0 z-30'>
           <div className='container mx-auto px-4 py-3 flex items-center gap-3 flex-wrap'>
             <div className='relative flex-1 min-w-[180px] max-w-xs'>
@@ -150,7 +150,7 @@ export default function CourseLabsPage() {
                 type='text'
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder='Search labs or skills...'
+                placeholder={t('filters.searchPlaceholder', 'Search labs or skills...')}
                 className={
                   'w-full rounded-lg border border-border/60 bg-muted/40 ps-9 pe-3 py-1.5 ' +
                   'text-sm text-foreground placeholder:text-muted-foreground ' +
@@ -176,18 +176,18 @@ export default function CourseLabsPage() {
             {!isLoading && (
               <span className='ms-auto text-xs text-muted-foreground hidden sm:flex items-center gap-1'>
                 <FlaskConical className='h-3 w-3' />
-                <span className='font-bold text-foreground'>{filtered.length}</span> labs
+                <span className='font-bold text-foreground'>{filtered.length}</span> {t('courseLabs.countLabel', 'labs')}
               </span>
             )}
           </div>
         </div>
 
-        {/* ── Content ── */}
+        {/* Content */}
         <div className='container mx-auto px-4 py-10'>
 
           {isError && (
             <div className='rounded-xl border border-destructive/30 bg-destructive/10 p-8 text-center text-sm text-destructive'>
-              Failed to load labs for this course. Please try again.
+              {t('courseLabs.error', 'Failed to load labs for this course. Please try again.')}
             </div>
           )}
 
@@ -222,18 +222,18 @@ export default function CourseLabsPage() {
               <div className='h-14 w-14 rounded-2xl bg-muted flex items-center justify-center border border-border/40'>
                 <Terminal className='h-7 w-7 text-muted-foreground' />
               </div>
-              <p className='font-semibold text-foreground'>No labs match your filters</p>
+              <p className='font-semibold text-foreground'>{t('courseLabs.empty', 'No labs match your filters')}</p>
               <p className='text-sm text-muted-foreground'>
                 {allLabs.length === 0
-                  ? 'This course has no labs yet.'
-                  : 'Try resetting or adjusting your search.'}
+                  ? t('courseLabs.noLabs', 'This course has no labs yet.')
+                  : t('courseLabs.emptyHint', 'Try resetting or adjusting your search.')}
               </p>
               {allLabs.length > 0 && (
                 <button
                   onClick={() => { setSearch(''); setActiveDiff('all'); }}
                   className='text-xs text-primary hover:underline underline-offset-2 flex items-center gap-1'>
                   <SlidersHorizontal className='h-3 w-3' />
-                  Clear filters
+                  {t('courseLabs.clearFilters', 'Clear filters')}
                 </button>
               )}
             </div>

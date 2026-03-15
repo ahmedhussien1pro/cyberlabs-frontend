@@ -1,15 +1,41 @@
 {
   "list": {
     "eyebrow": "Practice Labs",
-    "title": "Hack. Learn. Master.",
-    "subtitle": "Real-world vulnerable environments. No setup needed. Just attack.",
+    "title": "Hack. <em>Learn.</em> Master.",
+    "titleStart": "Hack.",
+    "titleHighlight": "Learn.",
+    "titleEnd": "Master.",
+    "subtitle": "Real-world vulnerable environments — no setup needed. Attack, exploit, and submit the flag.",
     "empty": "No labs match your filters",
-    "emptyHint": "Try resetting the filters",
-    "error": "Failed to load labs. Please try again."
+    "emptyHint": "Try resetting or searching with different terms",
+    "error": "Failed to load labs. Please try again.",
+    "clearFilters": "Clear filters",
+    "statsTotal": "Total Labs",
+    "statsBeginner": "Beginner",
+    "statsIntermediate": "Intermediate",
+    "statsSolved": "Solved"
+  },
+  "courseLabs": {
+    "eyebrow": "Hands-on Labs",
+    "titleSuffix": "Labs",
+    "subtitle": "Real-world vulnerable environments for this course. Complete all labs to master the skills.",
+    "statsTotal": "Total",
+    "statsSolved": "Solved",
+    "statsInProgress": "In Progress",
+    "back": "Back to Course",
+    "breadcrumbCourses": "Courses",
+    "breadcrumbLabs": "Labs",
+    "error": "Failed to load labs for this course. Please try again.",
+    "noLabs": "This course has no labs yet.",
+    "empty": "No labs match your filters",
+    "emptyHint": "Try resetting or adjusting your search.",
+    "clearFilters": "Clear filters",
+    "countLabel": "labs"
   },
   "filters": {
     "title": "Filters",
-    "search": "Search labs...",
+    "search": "Search labs or skills...",
+    "searchPlaceholder": "Search labs or skills...",
     "active": "active",
     "reset": "Reset",
     "myProgress": "My Progress",
@@ -17,15 +43,34 @@
     "completed": "Completed",
     "level": "Difficulty",
     "allLevels": "All Levels",
+    "all": "All",
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced",
     "access": "Access",
     "allAccess": "All Access",
     "category": "Category",
-    "all": "All Categories"
+    "allCategories": "All Categories",
+    "countLabel": "labs"
   },
   "card": {
     "start": "Start Lab",
     "resume": "Resume Lab",
     "retry": "Try Again",
-    "attempts": "Attempts"
+    "attempts": "Attempts",
+    "inProgress": "In Progress"
+  },
+  "tabs": {
+    "instructions": "Instructions",
+    "hints": "Hints",
+    "terminal": "Terminal"
+  },
+  "xss_basic": {
+    "title": "XSS Basics",
+    "description": "In this lab, the application has a Reflected XSS vulnerability. Find a way to inject JavaScript that reads document.cookie.",
+    "hints": {
+      "1": "Try entering regular HTML tags in the search field to see if they are reflected on the page.",
+      "2": "Use a <script> tag with alert() to confirm code execution."
+    }
   }
 }

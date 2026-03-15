@@ -1,23 +1,20 @@
 import { describe, it, expect, vi } from 'vitest';
 import { screen } from '@testing-library/react';
 import { render } from '@/test/utils';
-import TeamSection from '../components/team-section';
+import { TeamSection } from '../components/team-section';
 import { TEAM_MEMBERS } from '../constants/members';
 
-vi.mock('framer-motion', async () => {
-  const actual = await vi.importActual<typeof import('framer-motion')>('framer-motion');
-  return {
-    ...actual,
-    motion: new Proxy({} as typeof actual.motion, {
-      get: (_: unknown, tag: string) =>
-        ({ children, ...props }: React.HTMLAttributes<HTMLElement> & { children?: React.ReactNode }) => {
-          const Tag = tag as keyof JSX.IntrinsicElements;
-          return <Tag {...(props as object)}>{children}</Tag>;
-        },
-    }),
-    AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  };
-});
+vi.mock('framer-motion', () => import('@/test/mocks/framer-motion'));
+
+// Mock SectionHeader — it’s a shared component, not under test here
+vi.mock('@/shared/components/common', () => ({
+  SectionHeader: ({ title, subtitle }: { title: string; subtitle: string }) => (
+    <div>
+      <h2>{title}</h2>
+      <p>{subtitle}</p>
+    </div>
+  ),
+}));
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -29,18 +26,28 @@ vi.mock('react-i18next', () => ({
 describe('TeamSection', () => {
   it('renders without crashing', () => {
     const { container } = render(<TeamSection />);
-    expect(container.firstChild).toBeInTheDocument();
+    expect(container.querySelector('section')).toBeInTheDocument();
   });
 
   it(`renders ${TEAM_MEMBERS.length} team member cards`, () => {
     render(<TeamSection />);
-    // Each TeamCard renders at least one img
+    // each TeamCard renders at least 1 img
     const imgs = screen.getAllByRole('img');
     expect(imgs.length).toBeGreaterThanOrEqual(TEAM_MEMBERS.length);
   });
 
-  it('renders section heading from i18n', () => {
+  it('renders section heading via SectionHeader', () => {
+    render(<TeamSection />);
+    expect(screen.getByText('team.label')).toBeInTheDocument();
+  });
+
+  it('renders section subtitle via SectionHeader', () => {
     render(<TeamSection />);
     expect(screen.getByText('team.title')).toBeInTheDocument();
+  });
+
+  it('renders team.subtitle divider text', () => {
+    render(<TeamSection />);
+    expect(screen.getByText('team.subtitle')).toBeInTheDocument();
   });
 });

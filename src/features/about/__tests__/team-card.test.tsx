@@ -4,23 +4,8 @@ import { render } from '@/test/utils';
 import { TeamCard } from '../components/team-card';
 import type { TeamMember } from '../constants/members';
 
-// Mock framer-motion to avoid animation issues in tests
-vi.mock('framer-motion', async () => {
-  const actual = await vi.importActual<typeof import('framer-motion')>('framer-motion');
-  return {
-    ...actual,
-    motion: new Proxy({} as typeof actual.motion, {
-      get: (_: unknown, tag: string) =>
-        ({ children, ...props }: React.HTMLAttributes<HTMLElement> & { children?: React.ReactNode }) => {
-          const Tag = tag as keyof JSX.IntrinsicElements;
-          return <Tag {...(props as object)}>{children}</Tag>;
-        },
-    }),
-    AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  };
-});
+vi.mock('framer-motion', () => import('@/test/mocks/framer-motion'));
 
-// Mock react-i18next
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
@@ -40,8 +25,8 @@ const mockMember: TeamMember = {
 
 describe('TeamCard', () => {
   it('renders without crashing', () => {
-    render(<TeamCard member={mockMember} index={0} />);
-    expect(screen.getByRole('img')).toBeInTheDocument();
+    const { container } = render(<TeamCard member={mockMember} index={0} />);
+    expect(container.firstChild).toBeInTheDocument();
   });
 
   it('renders member image with correct src', () => {
@@ -77,20 +62,32 @@ describe('TeamCard', () => {
     expect(liLink).toHaveAttribute('href', mockMember.links.linkedin);
   });
 
-  it('shows bio overlay on hover', () => {
+  it('Twitter link has correct href', () => {
     render(<TeamCard member={mockMember} index={0} />);
-    const card = screen.getByRole('img').closest('div[class*="group"]') as HTMLElement
-      ?? screen.getByRole('img').parentElement!.parentElement!;
-    fireEvent.mouseEnter(card);
-    // bio overlay should appear — check that multiple images are now present
-    const imgs = screen.getAllByRole('img');
-    expect(imgs.length).toBeGreaterThanOrEqual(1);
+    const twLink = screen.getByRole('link', { name: /twitter/i });
+    expect(twLink).toHaveAttribute('href', mockMember.links.twitter);
   });
 
-  it('renders different animation delay per index', () => {
-    const { unmount } = render(<TeamCard member={mockMember} index={2} />);
-    // Just ensure it renders without error at different index
-    expect(screen.getByRole('img')).toBeInTheDocument();
+  it('shows bio overlay on hover — renders 2 images', () => {
+    const { container } = render(<TeamCard member={mockMember} index={0} />);
+    const card = container.firstChild as HTMLElement;
+    fireEvent.mouseEnter(card);
+    const imgs = screen.getAllByRole('img');
+    expect(imgs.length).toBe(2);
+  });
+
+  it('hides bio overlay on mouse leave — back to 1 image', () => {
+    const { container } = render(<TeamCard member={mockMember} index={0} />);
+    const card = container.firstChild as HTMLElement;
+    fireEvent.mouseEnter(card);
+    fireEvent.mouseLeave(card);
+    const imgs = screen.getAllByRole('img');
+    expect(imgs.length).toBe(1);
+  });
+
+  it('renders different animation delay per index without crash', () => {
+    const { unmount } = render(<TeamCard member={mockMember} index={3} />);
+    expect(screen.getAllByRole('img').length).toBeGreaterThanOrEqual(1);
     unmount();
   });
 });

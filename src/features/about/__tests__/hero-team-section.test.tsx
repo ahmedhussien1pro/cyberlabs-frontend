@@ -3,26 +3,12 @@ import { screen } from '@testing-library/react';
 import { render } from '@/test/utils';
 import { HeroTeamSection } from '../components/hero-team-section';
 
-vi.mock('framer-motion', async () => {
-  const actual = await vi.importActual<typeof import('framer-motion')>('framer-motion');
-  return {
-    ...actual,
-    motion: new Proxy({} as typeof actual.motion, {
-      get: (_: unknown, tag: string) =>
-        ({ children, ...props }: React.HTMLAttributes<HTMLElement> & { children?: React.ReactNode }) => {
-          const Tag = tag as keyof JSX.IntrinsicElements;
-          return <Tag {...(props as object)}>{children}</Tag>;
-        },
-    }),
-    AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  };
-});
+vi.mock('framer-motion', () => import('@/test/mocks/framer-motion'));
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, opts?: { returnObjects?: boolean }) => {
       if (opts?.returnObjects) {
-        // return a fake stat object for stats array
         if (key.includes('members')) return { value: '10+', label: 'Members' };
         if (key.includes('labs'))    return { value: '50+', label: 'Labs' };
         if (key.includes('users'))   return { value: '1k+', label: 'Users' };
@@ -35,8 +21,8 @@ vi.mock('react-i18next', () => ({
 
 describe('HeroTeamSection', () => {
   it('renders without crashing', () => {
-    render(<HeroTeamSection />);
-    expect(screen.getByRole('region') ?? document.querySelector('section')).toBeTruthy();
+    const { container } = render(<HeroTeamSection />);
+    expect(container.querySelector('section')).toBeInTheDocument();
   });
 
   it('renders the hero label from i18n', () => {
@@ -46,7 +32,7 @@ describe('HeroTeamSection', () => {
 
   it('renders the hero title from i18n', () => {
     render(<HeroTeamSection />);
-    expect(screen.getByText('hero.title')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('hero.title');
   });
 
   it('renders 3 stat cards', () => {
@@ -54,6 +40,13 @@ describe('HeroTeamSection', () => {
     expect(screen.getByText('10+')).toBeInTheDocument();
     expect(screen.getByText('50+')).toBeInTheDocument();
     expect(screen.getByText('1k+')).toBeInTheDocument();
+  });
+
+  it('renders stat labels', () => {
+    render(<HeroTeamSection />);
+    expect(screen.getByText('Members')).toBeInTheDocument();
+    expect(screen.getByText('Labs')).toBeInTheDocument();
+    expect(screen.getByText('Users')).toBeInTheDocument();
   });
 
   it('renders 4 icon boxes (Security, Technology, Monitoring, Targeting)', () => {
@@ -70,5 +63,15 @@ describe('HeroTeamSection', () => {
     expect(svg).toBeInTheDocument();
     const lines = svg?.querySelectorAll('line');
     expect(lines?.length).toBe(2);
+  });
+
+  it('renders hero subtitle from i18n', () => {
+    render(<HeroTeamSection />);
+    expect(screen.getByText('hero.subtitle')).toBeInTheDocument();
+  });
+
+  it('renders hero mission text from i18n', () => {
+    render(<HeroTeamSection />);
+    expect(screen.getByText('hero.mission')).toBeInTheDocument();
   });
 });

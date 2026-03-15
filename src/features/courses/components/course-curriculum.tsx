@@ -43,7 +43,7 @@ export function CourseCurriculum({ course, isEnrolled, hasLabs = false }: Course
 
   /** Go To Labs button handler */
   const handleLabsClick = () => {
-    if (!hasLabs) return; // button disabled
+    if (!hasLabs) return;
     if (!isCompleted) {
       toast.warning(
         t('detail.completeFirst', 'Finish the course first to unlock the labs! 🔒'),
@@ -51,13 +51,12 @@ export function CourseCurriculum({ course, isEnrolled, hasLabs = false }: Course
       );
       return;
     }
-    // Course completed — show completion modal with labs CTA
     setCompletionModalOpen(true);
   };
 
   return (
     <section id='course-curriculum' className='space-y-6'>
-      {/* Completion modal — triggered by Go To Labs when course is done */}
+      {/* Completion modal */}
       <CourseCompletionModal
         open={completionModalOpen}
         courseTitle={courseTitle}
@@ -113,7 +112,7 @@ export function CourseCurriculum({ course, isEnrolled, hasLabs = false }: Course
                 courseState={course.state}
                 isOpen={openId === topic.id}
                 onToggle={() => toggle(topic.id)}
-                onCourseComplete={() => setCompletionModalOpen(false)}
+                onCourseComplete={() => setCompletionModalOpen(true)}
               />
             ))}
           </ol>

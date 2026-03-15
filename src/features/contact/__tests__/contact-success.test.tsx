@@ -3,35 +3,38 @@ import { screen, fireEvent } from '@testing-library/react';
 import { render } from '@/test/utils';
 import { ContactSuccess } from '../components/contact-success';
 
+// ContactSuccess uses useTranslation('contact').
+// Actual keys: t('form.success'), t('form.successDesc'), t('form.submit')
+
 describe('ContactSuccess', () => {
   it('renders without crashing', () => {
     const { container } = render(<ContactSuccess onReset={vi.fn()} />);
     expect(container.firstChild).toBeInTheDocument();
   });
 
-  it('renders success.title i18n key', () => {
+  it('renders success title (t("form.success"))', () => {
     render(<ContactSuccess onReset={vi.fn()} />);
-    expect(screen.getByText('success.title')).toBeInTheDocument();
+    expect(screen.getByText('form.success')).toBeInTheDocument();
   });
 
-  it('renders success.description i18n key', () => {
+  it('renders success description (t("form.successDesc"))', () => {
     render(<ContactSuccess onReset={vi.fn()} />);
-    expect(screen.getByText('success.description')).toBeInTheDocument();
+    expect(screen.getByText('form.successDesc')).toBeInTheDocument();
   });
 
-  it('renders success.sendAnother i18n key button', () => {
+  it('renders reset button (t("form.submit"))', () => {
     render(<ContactSuccess onReset={vi.fn()} />);
-    expect(screen.getByText('success.sendAnother')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'form.submit' })).toBeInTheDocument();
   });
 
   it('calls onReset when button is clicked', () => {
     const onReset = vi.fn();
     render(<ContactSuccess onReset={onReset} />);
-    fireEvent.click(screen.getByText('success.sendAnother'));
+    fireEvent.click(screen.getByRole('button', { name: 'form.submit' }));
     expect(onReset).toHaveBeenCalledTimes(1);
   });
 
-  it('renders a checkmark or success icon', () => {
+  it('renders a success icon (svg)', () => {
     const { container } = render(<ContactSuccess onReset={vi.fn()} />);
     expect(container.querySelector('svg')).toBeInTheDocument();
   });

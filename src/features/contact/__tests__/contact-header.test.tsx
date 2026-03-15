@@ -1,14 +1,7 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { screen } from '@testing-library/react';
 import { render } from '@/test/utils';
 import { ContactHeader } from '../components/contact-header';
-
-vi.mock('framer-motion', () => import('@/test/mocks/framer-motion'));
-
-// contact-header uses t('label'), t('title'), t('subtitle') — no namespace prefix
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({ t: (k: string) => k, i18n: { language: 'en' } }),
-}));
 
 describe('ContactHeader', () => {
   it('renders without crashing', () => {
@@ -16,23 +9,23 @@ describe('ContactHeader', () => {
     expect(container.firstChild).toBeInTheDocument();
   });
 
-  it('renders label text from i18n', () => {
+  it('renders header title i18n key', () => {
     render(<ContactHeader />);
-    expect(screen.getByText('label')).toBeInTheDocument();
+    expect(screen.getByText('header.title')).toBeInTheDocument();
   });
 
-  it('renders title heading from i18n', () => {
+  it('renders header subtitle i18n key', () => {
     render(<ContactHeader />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('title');
+    expect(screen.getByText('header.subtitle')).toBeInTheDocument();
   });
 
-  it('renders subtitle paragraph from i18n', () => {
+  it('renders email info key', () => {
     render(<ContactHeader />);
-    expect(screen.getByText('subtitle')).toBeInTheDocument();
+    expect(screen.getByText('info.email')).toBeInTheDocument();
   });
 
-  it('renders a decorative span line element', () => {
-    const { container } = render(<ContactHeader />);
-    expect(container.querySelector('span.h-px')).toBeInTheDocument();
+  it('renders location info key', () => {
+    render(<ContactHeader />);
+    expect(screen.getByText('info.location')).toBeInTheDocument();
   });
 });

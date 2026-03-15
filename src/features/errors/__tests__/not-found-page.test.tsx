@@ -1,13 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
-import { screen } from '@testing-library/react';
-import { fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import { render } from '@/test/utils';
 import NotFoundPage from '../pages/not-found-page';
 
-vi.mock('framer-motion', () => import('@/test/mocks/framer-motion'));
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({ t: (k: string) => k, i18n: { language: 'en' } }),
-}));
 vi.mock('@/shared/constants', () => ({
   ROUTES: { HOME: '/' },
 }));
@@ -20,7 +15,6 @@ describe('NotFoundPage', () => {
 
   it('renders 404 glitch text', () => {
     render(<NotFoundPage />);
-    // GlitchText renders 3 spans with "404"
     const matches = screen.getAllByText('404');
     expect(matches.length).toBeGreaterThanOrEqual(1);
   });
@@ -54,7 +48,7 @@ describe('NotFoundPage', () => {
     backSpy.mockRestore();
   });
 
-  it('renders terminal block (cyberlabs — bash header)', () => {
+  it('renders terminal block header', () => {
     render(<NotFoundPage />);
     expect(screen.getByText(/cyberlabs — bash/i)).toBeInTheDocument();
   });

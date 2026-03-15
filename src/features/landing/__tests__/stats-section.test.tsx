@@ -3,9 +3,6 @@ import { screen } from '@testing-library/react';
 import { render } from '@/test/utils';
 import { StatsSection } from '../components/stats-section';
 
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({ t: (k: string) => k, i18n: { language: 'en' } }),
-}));
 vi.mock('@/shared/components/common', () => ({
   SectionHeader: ({ title, subtitle }: { title: string; subtitle: string }) => (
     <div>
@@ -14,7 +11,6 @@ vi.mock('@/shared/components/common', () => ({
     </div>
   ),
 }));
-// Mock use-count-up: IntersectionObserver not available in happy-dom
 vi.mock('../hooks/use-count-up', () => ({
   useCountUp: ({ end }: { end: number }) => ({
     count: end,
@@ -35,12 +31,11 @@ describe('StatsSection', () => {
     expect(screen.getByText('stats.subtitle')).toBeInTheDocument();
   });
 
-  it('renders 4 stat labels', () => {
+  it('renders all 4 stat labels', () => {
     render(<StatsSection />);
-    expect(screen.getByText('stats.students')).toBeInTheDocument();
-    expect(screen.getByText('stats.courses')).toBeInTheDocument();
-    expect(screen.getByText('stats.events')).toBeInTheDocument();
-    expect(screen.getByText('stats.trainers')).toBeInTheDocument();
+    ['stats.students', 'stats.courses', 'stats.events', 'stats.trainers'].forEach(
+      (key) => expect(screen.getByText(key)).toBeInTheDocument(),
+    );
   });
 
   it('renders correct stat values', () => {

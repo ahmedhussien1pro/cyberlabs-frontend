@@ -3,17 +3,12 @@ import { screen } from '@testing-library/react';
 import { render } from '@/test/utils';
 import { HeroSection } from '../components/hero-section';
 
-vi.mock('framer-motion', () => import('@/test/mocks/framer-motion'));
 vi.mock('../components/particles-background', () => ({
   ParticlesBackground: () => <div data-testid='particles' />,
 }));
 vi.mock('../styles/landing.css', () => ({}));
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({ t: (k: string) => k, i18n: { language: 'en' } }),
-}));
 vi.mock('@/shared/constants', () => ({
   ROUTES: { HOME: '/' },
-  landingImage: '/landing.png',
 }));
 vi.mock('@/shared/constants/constants', () => ({
   landingImage: '/landing.png',

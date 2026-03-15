@@ -3,43 +3,36 @@ import { screen, fireEvent } from '@testing-library/react';
 import { render } from '@/test/utils';
 import { ContactSuccess } from '../components/contact-success';
 
-vi.mock('framer-motion', () => import('@/test/mocks/framer-motion'));
-
-// contact-success uses t('form.success'), t('form.successDesc'), t('form.submit')
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({ t: (k: string) => k, i18n: { language: 'en' } }),
-}));
-
 describe('ContactSuccess', () => {
   it('renders without crashing', () => {
-    const { container } = render(<ContactSuccess onReset={() => {}} />);
+    const { container } = render(<ContactSuccess onReset={vi.fn()} />);
     expect(container.firstChild).toBeInTheDocument();
   });
 
-  it('renders success title (form.success key)', () => {
-    render(<ContactSuccess onReset={() => {}} />);
-    expect(screen.getByText('form.success')).toBeInTheDocument();
+  it('renders success.title i18n key', () => {
+    render(<ContactSuccess onReset={vi.fn()} />);
+    expect(screen.getByText('success.title')).toBeInTheDocument();
   });
 
-  it('renders success description (form.successDesc key)', () => {
-    render(<ContactSuccess onReset={() => {}} />);
-    expect(screen.getByText('form.successDesc')).toBeInTheDocument();
+  it('renders success.description i18n key', () => {
+    render(<ContactSuccess onReset={vi.fn()} />);
+    expect(screen.getByText('success.description')).toBeInTheDocument();
   });
 
-  it('renders a reset/submit button', () => {
-    render(<ContactSuccess onReset={() => {}} />);
-    expect(screen.getByRole('button')).toBeInTheDocument();
+  it('renders success.sendAnother i18n key button', () => {
+    render(<ContactSuccess onReset={vi.fn()} />);
+    expect(screen.getByText('success.sendAnother')).toBeInTheDocument();
   });
 
   it('calls onReset when button is clicked', () => {
     const onReset = vi.fn();
     render(<ContactSuccess onReset={onReset} />);
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByText('success.sendAnother'));
     expect(onReset).toHaveBeenCalledTimes(1);
   });
 
-  it('renders check icon (svg)', () => {
-    const { container } = render(<ContactSuccess onReset={() => {}} />);
+  it('renders a checkmark or success icon', () => {
+    const { container } = render(<ContactSuccess onReset={vi.fn()} />);
     expect(container.querySelector('svg')).toBeInTheDocument();
   });
 });

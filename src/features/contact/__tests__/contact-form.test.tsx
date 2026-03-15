@@ -17,10 +17,6 @@ vi.mock('../hooks/use-contact', () => ({
   }),
 }));
 
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({ t: (k: string) => k, i18n: { language: 'en' } }),
-}));
-
 describe('ContactForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -69,7 +65,7 @@ describe('ContactForm', () => {
     expect(screen.queryByText('form.name')).not.toBeInTheDocument();
   });
 
-  it('mutate is NOT called on initial render (no user interaction)', () => {
+  it('mutate is NOT called on initial render', () => {
     render(<ContactForm />);
     expect(mockMutate).not.toHaveBeenCalled();
   });

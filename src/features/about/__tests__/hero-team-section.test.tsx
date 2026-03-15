@@ -1,77 +1,55 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { screen } from '@testing-library/react';
 import { render } from '@/test/utils';
 import { HeroTeamSection } from '../components/hero-team-section';
 
-vi.mock('framer-motion', () => import('@/test/mocks/framer-motion'));
-
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string, opts?: { returnObjects?: boolean }) => {
-      if (opts?.returnObjects) {
-        if (key.includes('members')) return { value: '10+', label: 'Members' };
-        if (key.includes('labs'))    return { value: '50+', label: 'Labs' };
-        if (key.includes('users'))   return { value: '1k+', label: 'Users' };
-      }
-      return key;
-    },
-    i18n: { language: 'en' },
-  }),
-}));
-
 describe('HeroTeamSection', () => {
   it('renders without crashing', () => {
     const { container } = render(<HeroTeamSection />);
-    expect(container.querySelector('section')).toBeInTheDocument();
+    expect(container.firstChild).toBeInTheDocument();
   });
 
-  it('renders the hero label from i18n', () => {
+  it('renders the about.hero.header i18n key', () => {
     render(<HeroTeamSection />);
-    expect(screen.getByText('hero.label')).toBeInTheDocument();
+    expect(screen.getByText('about.hero.header')).toBeInTheDocument();
   });
 
-  it('renders the hero title from i18n', () => {
+  it('renders the about.hero.title i18n key', () => {
     render(<HeroTeamSection />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('hero.title');
+    expect(screen.getByText('about.hero.title')).toBeInTheDocument();
   });
 
-  it('renders 3 stat cards', () => {
+  it('renders the about.hero.description i18n key', () => {
     render(<HeroTeamSection />);
-    expect(screen.getByText('10+')).toBeInTheDocument();
-    expect(screen.getByText('50+')).toBeInTheDocument();
-    expect(screen.getByText('1k+')).toBeInTheDocument();
+    expect(screen.getByText('about.hero.description')).toBeInTheDocument();
   });
 
-  it('renders stat labels', () => {
+  it('renders the about.hero.mission.title i18n key', () => {
     render(<HeroTeamSection />);
-    expect(screen.getByText('Members')).toBeInTheDocument();
-    expect(screen.getByText('Labs')).toBeInTheDocument();
-    expect(screen.getByText('Users')).toBeInTheDocument();
+    expect(screen.getByText('about.hero.mission.title')).toBeInTheDocument();
   });
 
-  it('renders 4 icon boxes (Security, Technology, Monitoring, Targeting)', () => {
+  it('renders the about.hero.mission.description i18n key', () => {
     render(<HeroTeamSection />);
-    expect(screen.getByText('Security')).toBeInTheDocument();
-    expect(screen.getByText('Technology')).toBeInTheDocument();
-    expect(screen.getByText('Monitoring')).toBeInTheDocument();
-    expect(screen.getByText('Targeting')).toBeInTheDocument();
+    expect(
+      screen.getByText('about.hero.mission.description'),
+    ).toBeInTheDocument();
   });
 
-  it('renders connecting SVG lines', () => {
-    const { container } = render(<HeroTeamSection />);
-    const svg = container.querySelector('svg');
-    expect(svg).toBeInTheDocument();
-    const lines = svg?.querySelectorAll('line');
-    expect(lines?.length).toBe(2);
-  });
-
-  it('renders hero subtitle from i18n', () => {
+  it('renders the about.hero.vision.title i18n key', () => {
     render(<HeroTeamSection />);
-    expect(screen.getByText('hero.subtitle')).toBeInTheDocument();
+    expect(screen.getByText('about.hero.vision.title')).toBeInTheDocument();
   });
 
-  it('renders hero mission text from i18n', () => {
+  it('renders the about.hero.vision.description i18n key', () => {
     render(<HeroTeamSection />);
-    expect(screen.getByText('hero.mission')).toBeInTheDocument();
+    expect(
+      screen.getByText('about.hero.vision.description'),
+    ).toBeInTheDocument();
+  });
+
+  it('renders the hero section element', () => {
+    render(<HeroTeamSection />);
+    expect(screen.getByRole('region')).toBeInTheDocument();
   });
 });

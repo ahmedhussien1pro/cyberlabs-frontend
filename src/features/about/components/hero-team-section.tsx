@@ -3,48 +3,21 @@ import { motion } from 'framer-motion';
 import { ShieldCheck, Cpu, Activity, Crosshair } from 'lucide-react';
 
 const ICONS = [
-  {
-    Icon: ShieldCheck,
-    delay: 0,
-    x: -40,
-    y: -40,
-    pos: 'left-0 top-0',
-    label: 'Security',
-  },
-  {
-    Icon: Cpu,
-    delay: 0.1,
-    x: 40,
-    y: -40,
-    pos: 'right-0 top-0',
-    label: 'Technology',
-  },
-  {
-    Icon: Activity,
-    delay: 0.2,
-    x: -40,
-    y: 40,
-    pos: 'bottom-0 left-0',
-    label: 'Monitoring',
-  },
-  {
-    Icon: Crosshair,
-    delay: 0.3,
-    x: 40,
-    y: 40,
-    pos: 'bottom-0 right-0',
-    label: 'Targeting',
-  },
+  { Icon: ShieldCheck, delay: 0,   x: -40, y: -40, pos: 'left-0 top-0',    label: 'Security'   },
+  { Icon: Cpu,         delay: 0.1, x: 40,  y: -40, pos: 'right-0 top-0',   label: 'Technology' },
+  { Icon: Activity,    delay: 0.2, x: -40, y: 40,  pos: 'bottom-0 left-0', label: 'Monitoring' },
+  { Icon: Crosshair,   delay: 0.3, x: 40,  y: 40,  pos: 'bottom-0 right-0',label: 'Targeting'  },
 ] as const;
+
+const STAT_KEYS = ['members', 'labs', 'users'] as const;
 
 export function HeroTeamSection() {
   const { t } = useTranslation('about');
 
-  const stats = [
-    t('hero.stats.members', { returnObjects: true }),
-    t('hero.stats.labs', { returnObjects: true }),
-    t('hero.stats.users', { returnObjects: true }),
-  ] as { value: string; label: string }[];
+  const stats = STAT_KEYS.map((k) => ({
+    key: k,
+    ...(t(`hero.stats.${k}`, { returnObjects: true }) as { value: string; label: string }),
+  }));
 
   return (
     <section className='relative overflow-hidden py-6 md:py-10'>
@@ -82,15 +55,13 @@ export function HeroTeamSection() {
             <div className='flex flex-wrap gap-6 pt-2'>
               {stats.map((stat, i) => (
                 <motion.div
-                  key={stat.label}
+                  key={stat.key}
                   initial={{ opacity: 0, y: 12 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: false }}
                   transition={{ duration: 0.4, delay: 0.3 + i * 0.1 }}
                   className='rounded-xl border border-border/40 bg-card/60 px-4 py-3 text-center shadow-sm'>
-                  <p className='text-2xl font-bold text-primary'>
-                    {stat.value}
-                  </p>
+                  <p className='text-2xl font-bold text-primary'>{stat.value}</p>
                   <p className='text-xs text-muted-foreground'>{stat.label}</p>
                 </motion.div>
               ))}
@@ -105,71 +76,31 @@ export function HeroTeamSection() {
             viewport={{ once: false, amount: 0.3 }}
             transition={{ duration: 0.6 }}>
             <div className='relative h-80 w-80'>
-              {/* Pulse rings */}
               <motion.div
                 className='absolute left-1/2 top-1/2 h-28 w-28 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/15'
                 animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.1, 0.4] }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               />
               <motion.div
                 className='absolute left-1/2 top-1/2 h-44 w-44 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/8'
                 animate={{ scale: [1, 1.1, 1], opacity: [0.2, 0.05, 0.2] }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                  delay: 0.5,
-                }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
               />
 
-              {/* Center glow blur */}
               <div className='absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/[0.05] blur-xl' />
-
-              {/* Ring */}
               <div className='absolute left-1/2 top-1/2 h-14 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 ring-1 ring-primary/25' />
 
-              {/* Center dot */}
               <motion.div
                 className='absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/70 shadow-md shadow-primary/30'
                 animate={{ scale: [1, 1.4, 1] }}
-                transition={{
-                  duration: 2.5,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
               />
 
-              {/* Connecting lines */}
-              <svg
-                className='absolute inset-0 h-full w-full opacity-50'
-                aria-hidden='true'>
-                <line
-                  x1='20%'
-                  y1='20%'
-                  x2='80%'
-                  y2='80%'
-                  stroke='currentColor'
-                  strokeWidth='1'
-                  className='text-primary'
-                  strokeDasharray='4 4'
-                />
-                <line
-                  x1='80%'
-                  y1='20%'
-                  x2='20%'
-                  y2='80%'
-                  stroke='currentColor'
-                  strokeWidth='1'
-                  className='text-primary'
-                  strokeDasharray='4 4'
-                />
+              <svg className='absolute inset-0 h-full w-full opacity-50' aria-hidden='true'>
+                <line x1='20%' y1='20%' x2='80%' y2='80%' stroke='currentColor' strokeWidth='1' className='text-primary' strokeDasharray='4 4' />
+                <line x1='80%' y1='20%' x2='20%' y2='80%' stroke='currentColor' strokeWidth='1' className='text-primary' strokeDasharray='4 4' />
               </svg>
 
-              {/* Icon boxes */}
               {ICONS.map(({ Icon, delay, x, y, pos, label }) => (
                 <motion.div
                   key={label}
@@ -177,15 +108,10 @@ export function HeroTeamSection() {
                   initial={{ opacity: 0, x, y }}
                   whileInView={{ opacity: 1, x: 0, y: 0 }}
                   viewport={{ once: false }}
-                  whileHover={{
-                    scale: 1.12,
-                    borderColor: 'hsl(var(--primary) / 0.5)',
-                  }}
+                  whileHover={{ scale: 1.12, borderColor: 'hsl(var(--primary) / 0.5)' }}
                   transition={{ duration: 0.6, delay }}>
                   <Icon className='h-6 w-6 text-primary' />
-                  <span className='text-[0.55rem] font-medium text-muted-foreground'>
-                    {label}
-                  </span>
+                  <span className='text-[0.55rem] font-medium text-muted-foreground'>{label}</span>
                 </motion.div>
               ))}
             </div>

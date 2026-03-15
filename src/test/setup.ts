@@ -20,24 +20,20 @@ beforeAll(() => {
     originalWarn(...args);
   };
 
-  // Suppress ZodError unhandled rejections from @hookform/resolvers
-  // These are expected when testing form validation (empty submit).
-  // react-hook-form catches them internally — the unhandled rejection
-  // is a false positive from the promise chain in happy-dom.
-  if (typeof process !== 'undefined') {
-    process.on('unhandledRejection', (reason) => {
-      if (
-        reason != null &&
-        typeof reason === 'object' &&
-        '_zod' in reason
-      ) {
-        // swallow ZodError unhandled rejections silently
-        return;
-      }
-      // re-throw everything else
-      throw reason;
-    });
-  }
+  // Suppress ZodError unhandled rejections that bubble up from
+  // @hookform/resolvers in happy-dom during validation tests.
+  // react-hook-form handles them internally — this is a false positive.
+  const handler = (event: PromiseRejectionEvent) => {
+    const reason = event.reason;
+    if (
+      reason != null &&
+      typeof reason === 'object' &&
+      '_zod' in reason
+    ) {
+      event.preventDefault();
+    }
+  };
+  window.addEventListener('unhandledrejection', handler);
 });
 
 afterAll(() => {

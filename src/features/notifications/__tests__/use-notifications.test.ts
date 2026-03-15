@@ -10,13 +10,17 @@ import {
   useArchiveNotification,
 } from '../hooks/use-notifications';
 
-const mockGet = vi.fn();
-const mockPatch = vi.fn();
-const mockDelete = vi.fn();
+// ─── hoisted mocks (must be declared before vi.mock factories) ───
+const { mockGet, mockPatch, mockDelete } = vi.hoisted(() => ({
+  mockGet: vi.fn(),
+  mockPatch: vi.fn(),
+  mockDelete: vi.fn(),
+}));
 
 vi.mock('@/core/api/client', () => ({
   apiClient: { get: mockGet, patch: mockPatch, delete: mockDelete },
 }));
+
 vi.mock('@/core/api/endpoints', () => ({
   API_ENDPOINTS: {
     NOTIFICATIONS: {
@@ -71,7 +75,9 @@ describe('useMarkAsRead', () => {
       wrapper: createWrapper(),
     });
     result.current.mutate('1');
-    await waitFor(() => expect(mockPatch).toHaveBeenCalledWith('/notifications/1/read'));
+    await waitFor(() =>
+      expect(mockPatch).toHaveBeenCalledWith('/notifications/1/read'),
+    );
   });
 });
 

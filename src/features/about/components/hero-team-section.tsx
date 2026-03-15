@@ -170,9 +170,9 @@ export function HeroTeamSection() {
               </svg>
 
               {/* Icon boxes */}
-              {ICONS.map(({ Icon, delay, x, y, pos, label }, i) => (
+              {ICONS.map(({ Icon, delay, x, y, pos, label }) => (
                 <motion.div
-                  key={i}
+                  key={label}
                   className={`absolute ${pos} flex h-[4.5rem] w-[4.5rem] cursor-default flex-col items-center justify-center gap-1 rounded-2xl border border-primary/20 bg-card shadow-lg shadow-primary/5`}
                   initial={{ opacity: 0, x, y }}
                   whileInView={{ opacity: 1, x: 0, y: 0 }}

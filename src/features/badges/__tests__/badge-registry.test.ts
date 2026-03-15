@@ -6,6 +6,7 @@ import {
   ALL_BADGE_SLUGS,
   getBadgeConfig,
 } from '../constants/badge-registry';
+import type { BadgeCategory } from '../constants/badge-registry';
 
 describe('TIER_DESIGNS', () => {
   const tiers = ['BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'DIAMOND'] as const;
@@ -78,7 +79,10 @@ describe('BADGE_REGISTRY', () => {
     const categories = new Set(
       Object.values(BADGE_REGISTRY).map((b) => b!.category),
     );
-    ['learning', 'labs', 'paths', 'streak', 'xp', 'leaderboard', 'special'].forEach(
+    const expected: BadgeCategory[] = [
+      'learning', 'labs', 'paths', 'streak', 'xp', 'leaderboard', 'special',
+    ];
+    expected.forEach(
       (cat) => expect(categories.has(cat), `missing category: ${cat}`).toBe(true),
     );
   });

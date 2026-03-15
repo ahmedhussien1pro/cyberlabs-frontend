@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent, act } from '@testing-library/react';
 import { render } from '@/test/utils';
 import { TeamCard } from '../components/team-card';
 import type { TeamMember } from '../constants/members';
@@ -31,8 +31,7 @@ describe('TeamCard', () => {
 
   it('renders member image with correct src', () => {
     render(<TeamCard member={mockMember} index={0} />);
-    const img = screen.getAllByRole('img')[0];
-    expect(img).toHaveAttribute('src', mockMember.img);
+    expect(screen.getAllByRole('img')[0]).toHaveAttribute('src', mockMember.img);
   });
 
   it('initially renders exactly 1 image (no overlay)', () => {
@@ -42,8 +41,7 @@ describe('TeamCard', () => {
 
   it('renders 3 social links (Facebook, Twitter, LinkedIn)', () => {
     render(<TeamCard member={mockMember} index={0} />);
-    const links = screen.getAllByRole('link');
-    expect(links.length).toBeGreaterThanOrEqual(3);
+    expect(screen.getAllByRole('link').length).toBeGreaterThanOrEqual(3);
   });
 
   it('social links have target=_blank and rel=noopener noreferrer', () => {
@@ -56,42 +54,31 @@ describe('TeamCard', () => {
 
   it('Facebook link has correct href', () => {
     render(<TeamCard member={mockMember} index={0} />);
-    expect(screen.getByRole('link', { name: /facebook/i })).toHaveAttribute(
-      'href',
-      mockMember.links.fb,
-    );
+    expect(screen.getByRole('link', { name: /facebook/i })).toHaveAttribute('href', mockMember.links.fb);
   });
 
   it('LinkedIn link has correct href', () => {
     render(<TeamCard member={mockMember} index={0} />);
-    expect(screen.getByRole('link', { name: /linkedin/i })).toHaveAttribute(
-      'href',
-      mockMember.links.linkedin,
-    );
+    expect(screen.getByRole('link', { name: /linkedin/i })).toHaveAttribute('href', mockMember.links.linkedin);
   });
 
   it('Twitter link has correct href', () => {
     render(<TeamCard member={mockMember} index={0} />);
-    expect(screen.getByRole('link', { name: /twitter/i })).toHaveAttribute(
-      'href',
-      mockMember.links.twitter,
-    );
+    expect(screen.getByRole('link', { name: /twitter/i })).toHaveAttribute('href', mockMember.links.twitter);
   });
 
   it('shows bio overlay on hover — renders 2 images', () => {
     const { container } = render(<TeamCard member={mockMember} index={0} />);
-    fireEvent.mouseEnter(container.firstChild as HTMLElement);
+    act(() => { fireEvent.mouseEnter(container.firstChild as HTMLElement); });
     expect(screen.getAllByRole('img')).toHaveLength(2);
   });
 
   it('hides bio overlay on mouse leave — back to 1 image', () => {
     const { container } = render(<TeamCard member={mockMember} index={0} />);
     const card = container.firstChild as HTMLElement;
-    fireEvent.mouseEnter(card);
-    // verify overlay appeared
+    act(() => { fireEvent.mouseEnter(card); });
     expect(screen.getAllByRole('img')).toHaveLength(2);
-    fireEvent.mouseLeave(card);
-    // overlay removed — AnimatePresence mock unmounts immediately (no exit delay)
+    act(() => { fireEvent.mouseLeave(card); });
     expect(screen.getAllByRole('img')).toHaveLength(1);
   });
 

@@ -24,12 +24,25 @@ function makeMotionComponent(tag: string) {
   return Component;
 }
 
-export const motion = new Proxy({} as Record<string, ReturnType<typeof makeMotionComponent>>, {
-  get: (_target, tag: string) => makeMotionComponent(tag),
-});
+export const motion = new Proxy(
+  {} as Record<string, ReturnType<typeof makeMotionComponent>>,
+  { get: (_target, tag: string) => makeMotionComponent(tag) },
+);
 
-export const AnimatePresence = ({ children }: { children: React.ReactNode }) =>
-  React.createElement(React.Fragment, null, children);
+/**
+ * AnimatePresence mock that actually unmounts children when they are removed.
+ * React already handles conditional rendering — we just render children as-is.
+ * The key behaviour we need: when the parent removes a child from the tree
+ * (hovered=false removes the overlay), AnimatePresence should NOT keep it alive.
+ * Returning children directly achieves this because there is no exit-animation delay.
+ */
+export const AnimatePresence = ({
+  children,
+}: {
+  children?: React.ReactNode;
+  mode?: string;
+  initial?: boolean;
+}) => React.createElement(React.Fragment, null, children ?? null);
 
 export const useAnimation = () => ({ start: () => {}, stop: () => {} });
 export const useMotionValue = (initial: number) => ({ get: () => initial, set: () => {} });

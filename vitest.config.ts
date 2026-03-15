@@ -15,17 +15,14 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
     exclude: ['node_modules', 'dist'],
-    // Suppress ZodError false-positive unhandled rejections from
-    // @hookform/resolvers — react-hook-form handles them internally.
-    onUnhandledRejection(error) {
-      if (
-        error != null &&
-        typeof error === 'object' &&
-        '_zod' in error
-      ) {
-        return; // swallow silently
-      }
-      throw error;
+    // Increase worker memory to prevent OOM crashes from heavy component trees
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: false,
+        // 1 GB per worker — prevents Fatal process out of memory: Zone
+        execArgv: ['--max-old-space-size=1024'],
+      },
     },
     coverage: {
       provider: 'v8',

@@ -3,16 +3,38 @@ import { render, type RenderOptions } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
 
-/** Creates a fresh QueryClient for each test (no retries, no staleTime) */
-function makeTestQueryClient() {
+// ─── QueryClient factory ───────────────────────────────────────────────────
+export function makeTestQueryClient() {
   return new QueryClient({
     defaultOptions: {
-      queries: { retry: false, staleTime: 0 },
+      queries: { retry: false, staleTime: 0, gcTime: 0 },
       mutations: { retry: false },
     },
   });
 }
 
+// ─── createWrapper ─────────────────────────────────────────────────────────
+/**
+ * Returns a stable React wrapper component that provides:
+ *   - A fresh QueryClient (one per createWrapper() call, NOT per render)
+ *   - MemoryRouter
+ *
+ * Use with renderHook: `renderHook(() => useMyHook(), { wrapper: createWrapper() })`
+ */
+export function createWrapper(initialEntries: string[] = ['/']) {
+  const qc = makeTestQueryClient();
+  return function Wrapper({ children }: { children: React.ReactNode }) {
+    return (
+      <QueryClientProvider client={qc}>
+        <MemoryRouter initialEntries={initialEntries}>
+          {children}
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+  };
+}
+
+// ─── AllProviders (used by customRender) ──────────────────────────────────
 interface WrapperProps {
   children: React.ReactNode;
   initialEntries?: string[];
@@ -29,7 +51,11 @@ function AllProviders({ children, initialEntries = ['/'] }: WrapperProps) {
   );
 }
 
-/** Custom render that wraps with QueryClient + Router */
+// ─── customRender ─────────────────────────────────────────────────────────
+/**
+ * Drop-in replacement for @testing-library/react `render`.
+ * Wraps the component with QueryClient + MemoryRouter.
+ */
 function customRender(
   ui: ReactElement,
   options?: Omit<RenderOptions, 'wrapper'> & { initialEntries?: string[] },

@@ -78,8 +78,9 @@ describe('ContactForm', () => {
     expect(screen.getByPlaceholderText('form.messagePlaceholder')).toBeInTheDocument();
   });
 
+  // delay:null disables per-keystroke timer — prevents 5s timeout with long strings
   it('calls mutate with correct values on valid submit', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<ContactForm />);
     await user.type(screen.getByPlaceholderText('form.namePlaceholder'), 'Ahmed Ali');
     await user.type(screen.getByPlaceholderText('form.emailPlaceholder'), 'ahmed@test.com');
@@ -94,5 +95,5 @@ describe('ContactForm', () => {
         message: 'This is a test message body.',
       }),
     );
-  });
+  }, 15_000);
 });
